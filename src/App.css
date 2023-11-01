@@ -1,0 +1,754 @@
+navbarText {
+  color: "#fff !important";
+}
+
+link {
+  color: "#afd9fd !important";
+  &:hover {
+    color: "#57affa !important";
+  }
+}
+
+univLogo {
+  padding: "10px";
+}
+footerUnivLogo {
+  padding: "20px 10px 0 10px";
+}
+
+
+:root {
+  /* --gg-blue: #2f78b4; */
+  --gg-blue: #2f78b7 !important;
+  --dark-blue-1: #215b9e;
+  --dark-blue-2: #175385;
+  --gg-dark-blue: #1c4e78 !important;
+  --gg-light-blue: #afd9fd !important;
+  --gg-dark-hover: #57affa !important;
+  --gg-green: #60ba4b !important;
+  --table-header: #4B85B6 !important;
+  --gg-white: white; 
+  /* --gg-green: #1d9901 !important; */
+}
+
+.app {
+  height: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* overflow-x: hidden !important; */
+}
+a {
+  text-decoration: none !important;
+  color: var(--gg-blue) !important;
+}
+a:hover {
+  color: var(--gg-dark-hover) !important;
+}
+
+hr {
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  width: 70%;
+}
+.devider {
+  height: 1px !important;
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+.gg-blue {
+  color: var(--gg-blue) !important;
+}
+.gg-blue-bg {
+  background-color: var(--gg-blue) !important;
+}
+.gg-green {
+  color: var(--gg-green) !important;
+}
+.page-heading {
+  color: var(--gg-blue);
+  text-align: center;
+  padding-bottom: 15px;
+  /* font-weight: 700; */
+}
+.horizontal-heading h1 {
+  font-size: 38px;
+  /* font-weight: 100; */
+  font-weight: 300;
+  line-height: 45px;
+  text-transform: capitalize;
+}
+/* =========================================
+                Content Boxes
+============================================ */
+
+.content-box-sm {
+  padding: 20px 0;
+}
+.content-box-md {
+  padding: 40px 0;
+}
+.content-box-lg {
+  padding: 60px 0;
+}
+.content-box-xl {
+  padding: 80px 0;
+}
+
+/* ========================================
+    GlyGen Array Margin, Padding,
+  ==========================================*/
+.gg-ml-10 {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.gg-profile-mr-ml {
+  margin-right: 40px !important;
+  margin-left: 40px !important;
+}
+.gg-mr-20 {
+  margin-right: 20px !important;
+}
+.gg-ml-20 {
+  margin-left: 20px !important;
+}
+.gg-mr-40 {
+  margin-right: 40px !important;
+}
+.gg-ml-40 {
+  margin-left: 40px !important;
+}
+.gg-mt-20 {
+  margin-top: 20px !important
+}
+.gg-mt-40 {
+  margin-top: 40px !important
+}
+.gg-mt-60 {
+  margin-top: 60px !important
+}
+.gg-mb-20 {
+  margin-bottom: 20px !important
+}
+.gg-mb-40 {
+  margin-bottom: 40px !important
+}
+/* =========================================
+        Content Align
+============================================ */
+.gg-align-right {
+  justify-content: flex-end !important;
+}
+.gg-align-center {
+  justify-content: center !important;
+}
+.gg-align-left {
+  justify-content: flex-start !important;
+}
+/* ========================================
+               Bootstrap Card
+  ==========================================*/
+/* :not(.MuiCard-root) .brand-link,
+  .brand-link:hover {
+    color: white;
+    text-decoration: none;
+  } */
+
+/* ========================================
+                Fields
+  ==========================================*/
+.form-control.is-valid,
+.was-validated .form-control:valid {
+  border-color: var(--dark-blue-1) !important;
+}
+
+.custom-text-fields {
+  border: 1px solid #dddfe2;
+  /* font-size: 15px !important; */
+  padding: 24px 16px !important;
+  border-radius: 6px !important;
+  /* background: #f5f6f7 !important; */
+}
+
+.label {
+  font-size: 18px;
+  margin-top: -50px;
+  margin-left: 15px;
+  color: grey;
+  position: absolute;
+}
+
+input[type]:focus + label,
+input[type]:not(:placeholder-shown) + label {
+  opacity: 100;
+  color: #215b9e;
+  background-color: #fff;
+  padding: 0 5px 0 5px;
+  transform: scale(0.75) translateY(-175%) translateX(-20%);
+}
+
+/* For IE Browsers*/
+input[type]:focus + label,
+input[type]:not(:-ms-input-placeholder) + label {
+  opacity: 1;
+  transform: scale(0.75) translateY(-140%) translateX(-15%);
+}
+
+/* .form-check-label {
+  background-color: #f5f5f5 !important;
+} */
+
+.password-visibility {
+  cursor: pointer;
+  float: right;
+  height: 16px;
+  border-radius: 50%;
+  bottom: 11px;
+  position: relative;
+  margin-top: -30px;
+  right: 12px;
+  width: 28px;
+}
+
+.required-asterik:after {
+  content: "\00a0*";
+  color: red;
+}
+
+.line-break-1 {
+  margin-bottom: 10px;
+  /* margin-top: 2em; */
+}
+
+/* .line-break-2 {
+  margin-bottom: 1em;
+} */
+
+.hide-content {
+  display: none !important;
+}
+
+.get-btn {
+  height: 38px !important;
+  text-transform: none !important;
+  background-color: var(--gg-blue) !important;
+  color: white !important;
+}
+.btn-to-lower {
+  text-transform: none !important;
+}
+
+.form-control:valid {
+  background-image: none !important;
+  border-color: none !important;
+}
+
+/* ========================================
+               Cards
+  ==========================================*/
+.card-page-container {
+  vertical-align: middle !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10%;
+  margin-bottom: 90%;
+}
+.card-page-sm {
+  padding: 30px;
+  vertical-align: middle;
+  -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background-color: white;
+}
+/* custom class for pages completely on bootstrap card */
+.card-page {
+  /* position: absolute !important; */
+  margin-top: 350px;
+  left: 50% !important;
+  margin-right: -50% !important;
+  transform: translate(-50%, -50%) !important;
+  padding: 50px;
+}
+
+.gg-card-hover {
+  width: 100%;
+  -webkit-transition: -webkit-box-shadow 0.25s;
+  transition: -webkit-box-shadow 0.25s;
+  transition: box-shadow 0.25s;
+  transition: box-shadow 0.25s, -webkit-box-shadow 0.25s;
+  /* border-radius: 8px !important; */
+}
+.gg-card-hover:hover {
+  -webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  -webkit-transition: -webkit-box-shadow 0.25s;
+  transition: -webkit-box-shadow 0.25s;
+  transition: box-shadow 0.25s;
+  transition: box-shadow 0.25s, -webkit-box-shadow 0.25s;
+}
+
+
+.error-form-invalid {
+  display: block;
+  text-align: left;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 80%;
+  color: #dc3545;
+}
+
+.accordion > .card:first-of-type {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+.list-group-item.active {
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important;
+}
+.list-group-item.active span {
+  background-color: var(--gg-blue) !important;
+  color: var(--gg-light-blue) !important;
+}
+.borderless td, .borderless th {
+  border: none !important;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th,
+.table-body > .table-row:hover,
+.table-body > .table-row:nth-child(2n):hover {
+  background-color: #e2e8ef;
+}
+.table {
+  background-color: white;
+}
+.table-body > .table-row {
+  background-color: #fff;
+}
+.table-body > .table-row:nth-child(2n) {
+  background: #f3f3f3;
+}
+.results-table-top {
+  width: 50% !important;
+  margin: 0 auto;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+.table-header {
+  background-color: var(--table-header);
+  color: #fff;
+}
+.table td,
+.table th {
+  border: 1px solid #dee2e6;
+}
+/* ========================================
+              Header 
+==========================================*/
+/* .table-header {
+  color: white;
+  font-size: large;
+  font-weight: 500;
+  background-color: cadetblue;
+} */
+.rt-resizable-header-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: var(--table-header);
+  color: white;
+  font-weight: 500;
+  padding-left: 15px;
+}
+
+.gg-green {
+  color: var(--gg-green) !important;
+}
+
+.arrow-btn,
+.arrow-btn:focus,
+.arrow-btn :active {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: 0 !important;
+  background-color: transparent !important;
+}
+
+.MuiCard-root {
+  border-radius: 8px !important;
+  overflow: unset !important;
+  /* margin: 260px; */
+  background-color: white !important;
+}
+
+.view-password {
+  margin-left: -55px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+/* =========================================
+          Buttons
+  ============================================ */
+.scroll-to-top {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  animation: fadeIn 700ms ease-in-out 1s both;
+  cursor: pointer;
+  z-index: 1;
+}
+.goToTop {
+  float: right;
+  padding-right: 5%;
+  padding-left: 5%;
+  color: #2e78b7;
+}
+
+.gg-btn-blue-reg {
+  color: #ffffff !important;
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important;
+  -webkit-transition: all 0.5s !important;
+  transition: ease-in-out 0.5s !important;
+}
+
+.gg-btn-blue {
+  color: #ffffff !important;
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important;
+  -webkit-transition: all 0.5s !important;
+  transition: ease-in-out 0.5s !important;
+  width: 270px;
+}
+
+.gg-btn-blue:hover,
+.gg-btn-blue-reg:hover {
+  background-color: var(--gg-dark-blue) !important;
+  border-color: var(--gg-dark-blue) !important;
+}
+
+.gg-btn-outline {
+  color: var(--gg-blue) !important;
+  background-color: #fff !important;
+  border-color: var(--gg-blue) !important;
+  -webkit-transition: all 0.5s !important;
+  transition: ease-in-out 0.5s !important;
+  border: 1px solid !important;
+  width: 270px;
+}
+.gg-btn-outline:hover,
+.gg-btn-outline-reg:hover {
+  color: #fff !important;
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important;
+}
+.gg-btn-outline-reg {
+  color: var(--gg-blue) !important;
+  background-color: #fff !important;
+  border-color: var(--gg-blue) !important;
+  -webkit-transition: all 0.5s !important;
+  transition: ease-in-out 0.5s !important;
+  border: 1px solid !important;
+}
+
+.gg-btn-outline-white {
+  text-decoration: none !important;
+  color: #fff !important;
+  text-transform: uppercase;
+  font-weight: 700 !important;
+  background-color: transparent !important;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px 10px !important;
+  display: block !important;
+  white-space: nowrap;
+  -webkit-transition: all 0.3s !important;
+  transition: ease-in-out 0.3s !important;
+}
+.gg-btn-outline-white:hover {
+  color: #fff !important;
+  background-color: var(--gg-dark-hover) !important;
+}
+.gg-btn-outline-blue {
+  text-decoration: none !important;
+  font-size: 1rem;
+  color: #fff !important;
+  background-color: var(--gg-blue) !important;
+  /* background-color: transparent !important; */
+  text-transform: uppercase;
+  font-weight: 700 !important;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px 10px !important;
+  display: block !important;
+  white-space: nowrap;
+  -webkit-transition: all 0.3s !important;
+  transition: ease-in-out 0.3s !important;
+}
+.gg-btn-outline-blue:hover {
+  color: #fff !important;
+  background-color: var(--gg-dark-hover) !important;
+}
+.btn-outline-white-col {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  /* text-align: right; */
+}
+
+.gg-btn-blue:disabled,
+.gg-btn-blue:disabled:hover {
+  /* cursor: no-drop !important; */
+  /* color: #ffffff !important;
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important; */
+  color: rgba(255, 255, 255) !important;
+  background-color: rgba(47, 120, 183, 0.6) !important;
+  border-color: rgba(47, 120, 183, 0.6) !important;
+  cursor: no-drop !important;
+}
+.gg-btn-outline:disabled,
+.gg-btn-outline:disabled:hover,
+.gg-btn-outline-reg:disabled,
+.gg-btn-outline-reg:disabled:hover {
+  color: rgba(47, 120, 183, 0.6) !important;
+  background-color: #fff !important;
+  border-color: rgba(47, 120, 183, 0.6) !important;
+  cursor: no-drop !important;
+}
+
+/* .no-drop {cursor: no-drop !important;} */
+/* =========================================
+                Card Loader
+  ============================================ */
+.card-loader-image {
+  height: 75px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+}
+.card-loader-row {
+  justify-content: center;
+}
+.card-loader-overlay {
+  z-index: 2000 !important;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* =========================================
+                Page Loader
+  ============================================ */
+.page-loader-backdrop {
+  z-index: 2000 !important;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.page-loader-image {
+  width: 75px;
+  height: 75px;
+}
+
+.download-spinner {
+  position: fixed;
+  bottom: 5.0rem;
+  right: 0.5rem;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.download-spinner-image {
+  width: 40px;
+  height: 40px;
+}
+@media (min-width: 600px) {
+  .MuiContainer-root {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* body > :not(.page-container),
+body > :not(.card) {
+  padding-top: 70px !important;
+} */
+
+/* .MuiPaper-root {
+  background-color: #f5f5f5 !important;
+} */
+
+.download-btn {
+  color: var(--gg-blue);
+}
+
+.gg-dropdown-navbar .dropdown-menu {
+  background-color: var(--gg-blue) !important;
+}
+
+.gg-dropdown-navbar-active {
+  color: var(--white) !important;
+  border-bottom: 4px solid var(--gg-light-blue) !important;
+  padding-bottom: 0 !important;
+}
+
+.dropdown-item {
+  color: white !important;
+}
+
+.dropdown-item:hover {
+  color: var(--gg-dark-blue) !important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: rgb(250, 250, 250, 0.25) !important;
+}
+.col-link-button {
+  text-align: left;
+  padding-left: 0px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="radio" i],
+input[type="check" i] {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.form-check-input {
+  position: inherit !important;
+  margin-right: 10px !important;
+  margin-left: 0px !important;
+}
+
+/* =========================================
+                Glycan List Summary
+  ============================================ */
+.summary-panel {
+  width: 50% !important;
+  margin: 0 auto !important;
+}
+.panelHeadBgr {
+  background: #f0f0f0 !important;
+}
+.panelHeadBgr h3 {
+  margin: 0 auto;
+}
+.panelHeadText {
+  color: #1d9901 !important;
+  position: relative;
+}
+
+/* =========================================
+                Link Button
+============================================ */
+
+.lnk-btn {
+  text-decoration: none !important;
+  color: var(--gg-blue) !important;
+  border-width: 0 !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+  vertical-align: inherit !important;
+}
+  
+.lnk-btn-left {
+  text-align: left !important;
+}
+.lnk-btn:hover {
+  color: var(--gg-dark-hover) !important;
+}
+
+.lnk-btn:disabled:hover,
+.lnk-btn:disabled {
+  pointer-events: auto !important;
+  cursor: no-drop !important;
+  color: var(--gg-blue) !important;
+}
+
+.gg-download-btn {
+  text-decoration: none !important;
+  color: var(--gg-blue) !important;
+  /* margin-left: 55px !important; */
+}
+.gg-download-btn:hover {
+  color: var(--gg-dark-hover) !important;
+}
+/* ========================================
+              Footer
+  ==========================================*/
+.gg-footer {
+  margin-top: auto;
+}
+
+/* =============================== */
+.text-overflow {
+  display: block;
+  padding: 9px 0;
+  /* margin-bottom: 25px; */
+  /* line-height: 1.42857143; */
+  /* background-color: rgba(0, 0, 0, 0.05); */
+  overflow: auto;
+  word-break: break-all;
+  word-wrap: break-word;
+  /* border: 1px solid #ddd;
+    border-radius: 4px; */
+  overflow-x: "scroll";
+  white-space: pre-line;
+}
+
+.text-max-height {
+  max-height: 150px !important;
+}
+
+.modal-backdrop {
+  opacity: 0.9 !important;
+}
+
+.text_desc {
+  font-size: 14px;
+  color: #040402;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+.MuiTableCell-Header {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  background-color: rgba(0, 0, 0, .03);
+}
+
+.MuiTableCell-Name {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+.MuiTableCell-Value {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+.MuiTableCell-Button {
+  padding: 3px !important;
+}
