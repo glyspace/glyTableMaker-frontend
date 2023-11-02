@@ -31,7 +31,7 @@ const TableMakerRoutes = props => {
             })*/}
 
             <Route exact path='/' element={<Home/>}/>
-            <Route path="/login" element={<Login/>} />
+            <Route path="/login" element={<Login updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent}/>} />
             </Routes>
             </>
     );

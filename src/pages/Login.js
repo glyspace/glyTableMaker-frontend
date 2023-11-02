@@ -1,12 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useReducer, useEffect } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Login.css";
 import Container from "@mui/material/Container";
 import { GoogleLogin } from '@react-oauth/google';
+import { postFormDataToCallBack } from "../utils/api";
 
 const Login = props => {
   useEffect(() => {
@@ -19,7 +20,8 @@ const Login = props => {
   const [showErrorSummary, setShowErrorSummary] = useState(false);
   const [pageErrorMessage, setPageErrorMessage] = useState("");
   const [viewPassword, setViewPassword] = useState(false);
-  const history = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const userDetails = {
     userName: "",
@@ -128,26 +130,26 @@ const Login = props => {
     setValidated(true);
     if (e.currentTarget.checkValidity() === true) {
       const loginData = { username: credentials.userName, password: credentials.password };
-      //wsCall("login", "POST", null, false, loginData, logInSuccess, logInError);
+      postFormDataToCallBack("api/account/authenticate", loginData, {}, logInSuccess, logInError);
     }
   }
 
   function logInSuccess(response) {
-    var token = response.headers.get("Authorization");
+    var token = response.data;
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.setItem(base ? base + "_token" : "token", token);
     window.localStorage.setItem(base ? base + "_loggedinuser" : "loggedinuser", credentials.userName);
     props.updateLogin(true);
 
     var redirectedFrom = "";
-    if (history.location.state && history.location.state.redirectedFrom) {
-      redirectedFrom = history.location.state.redirectedFrom;
+    if (location.state && location.state.redirectedFrom) {
+      redirectedFrom = location.state.redirectedFrom;
     }
 
     if (redirectedFrom) {
-      history.push(redirectedFrom);
+      navigate(redirectedFrom);
     } else {
-      history.push("/");
+      navigate("/");
     }
   }
 
