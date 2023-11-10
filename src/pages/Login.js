@@ -40,6 +40,10 @@ const Login = props => {
     <>
       <Container maxWidth="md" className="card-page-container">
         <div className="card-page-sm">
+        {showErrorSummary === true && (
+          <div>
+          {pageErrorMessage}
+         </div>)}
           <Form noValidate validated={validated} onSubmit={e => handleSubmit(e)}>
           <h2 className="page-heading">Login</h2>
             <Form.Group as={Row} controlId="username">

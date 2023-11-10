@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const TABLEMAKER_API = process.env.REACT_APP_API_URL;
+const base = process.env.REACT_APP_BASENAME;
 /**
  * Gets JSON from REST api call.
  * @param {string} url - url for REST api call.
@@ -11,6 +12,23 @@ export const getJson = (url, headers = {}) => {
     headers
   });
 };
+
+export const getJsonWithCallback = (url, headers = {}, onSuccess, onFailure) => {
+  const myHeaders = {
+    "Content-Type": "application/json",
+    ...headers
+  };
+
+  const options = {
+    method: "GET",
+    headers: myHeaders,
+    url: TABLEMAKER_API + url
+  };
+
+  axios(options).then(response=> 
+    { onSuccess ? onSuccess(response.data) : defaultSuccess(response.data)})
+    .catch (err => {onFailure ? onFailure (err) : defaultFailure (err)});
+}
 
 export const postTo = (url, headers = {}) => {
   const options = {
@@ -109,4 +127,10 @@ export const getPageData = (url, headers = {}) => {
     responseType: 'blob',
     headers
   });
+};
+
+export const getAuthorizationHeader = () => {
+  const headers = {};
+  headers["Authorization"] = "Bearer " + window.localStorage.getItem(base ? base + "_token" : "token") || "";
+  return headers;
 };

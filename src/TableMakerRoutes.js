@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import Home  from "./pages/Home";
 import { Login } from "./pages/Login";
+import { Profile } from "./pages/Profile";
 
 const TableMakerRoutes = props => {
     const routes = [
@@ -32,6 +33,7 @@ const TableMakerRoutes = props => {
 
             <Route exact path='/' element={<Home/>}/>
             <Route path="/login" element={<Login updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent}/>} />
+            <Route path="/profile" element={<Profile authCheckAgent={props.authCheckAgent} />} />
             </Routes>
             </>
     );

@@ -253,6 +253,7 @@ input[type]:not(:-ms-input-placeholder) + label {
   justify-content: center;
   margin-top: 10%;
   margin-bottom: 90%;
+  width: 500px;;
 }
 .card-page-sm {
   padding: 30px;
@@ -261,6 +262,7 @@ input[type]:not(:-ms-input-placeholder) + label {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   background-color: white;
+  width: 500px;
 }
 /* custom class for pages completely on bootstrap card */
 .card-page {
