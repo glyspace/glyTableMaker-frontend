@@ -3,6 +3,12 @@ import { Col, Row } from "react-bootstrap";
 import Home  from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
+import { Signup } from "./pages/Signup";
+import { EmailConfirmation } from "./pages/EmailConfirmation";
+import { VerifyToken } from "./pages/VerifyToken";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ForgotUsername } from "./pages/ForgotUsername";
+import { ChangePassword } from "./pages/ChangePassword";
 
 const TableMakerRoutes = props => {
     const routes = [
@@ -34,6 +40,12 @@ const TableMakerRoutes = props => {
             <Route exact path='/' element={<Home/>}/>
             <Route path="/login" element={<Login updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent}/>} />
             <Route path="/profile" element={<Profile authCheckAgent={props.authCheckAgent} />} />
+            <Route path="/register" element={<Signup/>} />
+            <Route path="/emailConfirmation/:token" element={<EmailConfirmation/>} />
+            <Route path="/verifyToken" element={<VerifyToken/>} />
+            <Route path="/forgotPassword" element={<ForgotPassword/>} />
+            <Route path="/forgotUsername" element={<ForgotUsername/>} />
+            <Route path="/changePassword" element={<ChangePassword/>} />
             </Routes>
             </>
     );

@@ -7,7 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Login.css";
 import Container from "@mui/material/Container";
 import { GoogleLogin } from '@react-oauth/google';
-import { postFormDataToCallBack } from "../utils/api";
+import { postJson } from "../utils/api";
+import { axiosError } from "../utils/axiosError";
+import TextAlert from "../components/TextAlert";
+import DialogAlert from "../components/DialogAlert";
 
 const Login = props => {
   useEffect(() => {
@@ -17,11 +20,18 @@ const Login = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [validated, setValidated] = useState(false);
-  const [showErrorSummary, setShowErrorSummary] = useState(false);
-  const [pageErrorMessage, setPageErrorMessage] = useState("");
   const [viewPassword, setViewPassword] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [alertDialogInput, setAlertDialogInput] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    { show: false, id: "" }
+  );
+  const [textAlertInput, setTextAlertInput] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    { show: false, id: "" }
+  );
 
   const userDetails = {
     userName: "",
@@ -33,6 +43,7 @@ const Login = props => {
   const handleChange = e => {
     const name = e.currentTarget.name;
     const value = e.currentTarget.value;
+    setTextAlertInput({"show": false, "id": ""});
     setCredentials({ [name]: value });
   };
 
@@ -40,10 +51,13 @@ const Login = props => {
     <>
       <Container maxWidth="md" className="card-page-container">
         <div className="card-page-sm">
-        {showErrorSummary === true && (
-          <div>
-          {pageErrorMessage}
-         </div>)}
+          <TextAlert alertInput={textAlertInput}/>
+          <DialogAlert
+              alertInput={alertDialogInput}
+              setOpen={input => {
+                setAlertDialogInput({ show: input });
+              }}
+            />
           <Form noValidate validated={validated} onSubmit={e => handleSubmit(e)}>
           <h2 className="page-heading">Login</h2>
             <Form.Group as={Row} controlId="username">
@@ -134,12 +148,25 @@ const Login = props => {
     setValidated(true);
     if (e.currentTarget.checkValidity() === true) {
       const loginData = { username: credentials.userName, password: credentials.password };
-      postFormDataToCallBack("api/account/authenticate", loginData, {}, logInSuccess, logInError);
+      postJson ("api/account/authenticate", loginData, {}).then ( (data) => {
+        logInSuccess(data);
+      }).catch (function(error) {
+        if (error && error.response && error.response.data) {
+          if  (error.response.data["code"] == 401) {
+            // invalid login
+            setTextAlertInput ({"show": true, "id": "badCredentials"});
+          } else {
+            setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+          }
+        } else {
+            axiosError(error, null, setAlertDialogInput);
+        }
+      });
     }
   }
 
   function logInSuccess(response) {
-    var token = response.data;
+    var token = response.data.data;
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.setItem(base ? base + "_token" : "token", token);
     window.localStorage.setItem(base ? base + "_loggedinuser" : "loggedinuser", credentials.userName);
@@ -155,11 +182,6 @@ const Login = props => {
     } else {
       navigate("/");
     }
-  }
-
-  function logInError() {
-    setPageErrorMessage("Invalid credentials. Please try again.");
-    setShowErrorSummary(true);
   }
 };
 

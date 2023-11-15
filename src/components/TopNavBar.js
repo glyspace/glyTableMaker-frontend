@@ -72,7 +72,7 @@ const TopNavBar = (props) => {
                       LOG IN
                     </Nav.Link>
                   </LinkContainer>
-                  <LinkContainer to="/signup" className="gg-nav-link" exact>
+                  <LinkContainer to="/register" className="gg-nav-link" exact>
                     <Nav.Link>
                       <span style={{ paddingRight: "10px" }}>
                         <FaUserPlus key={"signup"} size="22px" className="mb-1" title="signup" />

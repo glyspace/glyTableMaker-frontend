@@ -13,23 +13,6 @@ export const getJson = (url, headers = {}) => {
   });
 };
 
-export const getJsonWithCallback = (url, headers = {}, onSuccess, onFailure) => {
-  const myHeaders = {
-    "Content-Type": "application/json",
-    ...headers
-  };
-
-  const options = {
-    method: "GET",
-    headers: myHeaders,
-    url: TABLEMAKER_API + url
-  };
-
-  axios(options).then(response=> 
-    { onSuccess ? onSuccess(response.data) : defaultSuccess(response.data)})
-    .catch (err => {onFailure ? onFailure (err) : defaultFailure (err)});
-}
-
 export const postTo = (url, headers = {}) => {
   const options = {
     method: "POST",
@@ -62,31 +45,37 @@ export const postFormDataTo = (url, formData = {}, headers = {}) => {
   return axios(options);
 };
 
-export const postFormDataToCallBack = (url, data = {}, headers = {}, onSuccess, onFailure) => {
-    const myHeaders = {
-      "Content-Type": "application/json",
-      ...headers
-    };
-  
-    const options = {
-      method: "POST",
-      headers: myHeaders,
-      data: data,
-      url: TABLEMAKER_API + url
-    };
-  
-    axios(options).then(response=> 
-        { onSuccess ? onSuccess(response.data) : defaultSuccess(response.data)})
-        .catch (err => {onFailure ? onFailure (err) : defaultFailure (err)});
+export const postJson = (url, data = {}, headers = {}) => {
+  const myHeaders = {
+    "Content-Type": "application/json",
+    ...headers
+  };
+
+  const options = {
+    method: "POST",
+    headers: myHeaders,
+    data: data,
+    url: TABLEMAKER_API + url
+  };
+
+  return axios(options);
 };
 
-function defaultSuccess (data) {
-    return data;
-}
+export const putJson = (url, data = {}, headers = {}) => {
+  const myHeaders = {
+    "Content-Type": "application/json",
+    ...headers
+  };
 
-function defaultFailure (error) {
-    console.log(error);
-}
+  const options = {
+    method: "PUT",
+    headers: myHeaders,
+    data: data,
+    url: TABLEMAKER_API + url
+  };
+
+  return axios(options);
+};
 
 
 export const postFormDataTo1 = (url, formData = {}, headers = {}) => {

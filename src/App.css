@@ -754,3 +754,71 @@ input[type="check" i] {
 .MuiTableCell-Button {
   padding: 3px !important;
 }
+
+/* =========================================
+              Alert Dialog
+============================================ */
+.alert-dialog {
+  border: 1px solid #eee !important;
+  -webkit-box-shadow: 5px 10px 40px 0 rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 5px 10px 40px 0 rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px;
+  display: flex;
+}
+.alert-dialog-root {
+  z-index: 2100 !important;
+}
+.alert-dialog-title {
+  color: #fff !important;
+  background-color: var(--gg-blue) !important;
+  padding: 15px !important;
+  text-align: left;
+  margin: 0px !important;
+}
+.sups-dialog-title {
+  color: #fff !important;
+  background-color: var(--gg-blue) !important;
+  padding: 20px !important;
+  text-align: center;
+  margin: 0px !important;
+}
+.alert-dialog-content {
+  padding: 15px !important;
+}
+.alert-dialog-content-text {
+  color: rgba(0, 0, 0, 0.87) !important;
+  padding-bottom: 15px !important;
+}
+.alert-banner-message {
+  font-size: 20px;
+  overflow: hidden !important;
+  /* text-align: center !important;
+	margin: 0 auto !important; */
+}
+.alert-banner-icon {
+  font-size: 40px !important;
+  margin-right: 20px !important;
+  color:#2e78b7 !important;
+}
+.alert-banner-message a {
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+.alert-banner-message a:hover {
+  /* font-weight: 900 !important; */
+  color: #333 !important;
+  font-weight: 700 !important;
+  /* text-decoration: underline !important; */
+}
+.alert-banner-darkgrey {
+  background-color: #555 !important;
+  border-radius: 0 !important;
+}
+.alert-banner-darkgrey a {
+  color: red !important;
+  /* font-weight: 200 !important; */
+}
+.alert-banner-darkgrey a:hover {
+  color: #bf0101 !important;
+  /* font-weight: 200 !important; */
+}

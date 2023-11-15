@@ -4,7 +4,9 @@ import { Feedback, Title } from "../components/FormControls";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Container from "@mui/material/Container";
-import { getAuthorizationHeader, getJson, getJsonWithCallback, postFormDataToCallBack } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { axiosError } from "../utils/axiosError";
+import DialogAlert from "../components/DialogAlert";
 
 const Profile = (props) => {
   const profile = {
@@ -23,12 +25,15 @@ const Profile = (props) => {
     profile
   );
 
+  const [alertDialogInput, setAlertDialogInput] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    { show: false, id: "" }
+  );
+
   var base = process.env.REACT_APP_BASENAME;
   const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
   const [validated, setValidate] = useState(false);
   const [isUpdate, setIsupdate] = useState(false);
-  const [showErrorSummary, setShowErrorSummary] = useState(false);
-  const [pageErrorsJson, setPageErrorsJson] = useState({});
   const [title, setTitle] = useState("User Profile");
 
   useEffect(props.authCheckAgent, []);
@@ -62,10 +67,12 @@ const Profile = (props) => {
         <div className="card-page-sm">
           <Title title={title} />
 
-            {showErrorSummary === true && (
-                <div>
-                {pageErrorsJson}
-               </div>)}
+          <DialogAlert
+              alertInput={alertDialogInput}
+              setOpen={input => {
+                setAlertDialogInput({ show: input });
+              }}
+            />
 
           <Form noValidate validated={validated} onSubmit={e => handleSubmit(e)}>
             <Row>
@@ -203,15 +210,11 @@ const Profile = (props) => {
   );
 
   function getProfile() {
-    getJsonWithCallback ("api/account/user/" + username, getAuthorizationHeader(), getProfileSuccess, getProfileError);
-  }
-
-  function getProfileSuccess(response) {
-    setUserProfile(response.data);
-  }
-
-  function getProfileError(response) {
-    console.log(response);
+    getJson ("api/account/user/" + username, getAuthorizationHeader()).then (({ data }) => {
+        setUserProfile(data.data);
+    }).catch(function(error) {
+        axiosError(error, null, setAlertDialogInput);
+      });
   }
 
   function handlecancel() {
@@ -220,34 +223,16 @@ const Profile = (props) => {
     getProfile();
   }
 
-  function editProfileSuccess(response) {
-    console.log(response);
-    setTitle("User Profile");
-    setIsupdate(false);
-  }
-
-  function editProfileError(response) {
-    response.json().then((response) => {
-      console.log(response);
-      setShowErrorSummary(true);
-      setPageErrorsJson(response);
-    });
-  }
-
   function handleSubmit(e) {
     setValidate(true);
 
     if (e.currentTarget.checkValidity()) {
-      postFormDataToCallBack("api/account/update/"+ username, userProfile, getAuthorizationHeader(), editProfileSuccess, editProfileError);
-      /*wsCall(
-        "update",
-        "POST",
-        [userProfile.userName],
-        true,
-        userProfile,
-        editProfileSuccess,
-        editProfileError
-      );*/
+        postJson("api/account/update/"+ username, userProfile, getAuthorizationHeader()).then (({ data }) => {
+            setTitle("User Profile");
+            setIsupdate(false);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
     }
 
     e.preventDefault();
