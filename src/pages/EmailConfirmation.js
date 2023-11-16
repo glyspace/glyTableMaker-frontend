@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import Alert from "react-bootstrap/Alert";
 import { useParams, Link } from "react-router-dom";
 import { Form } from "react-bootstrap";

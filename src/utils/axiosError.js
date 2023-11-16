@@ -11,10 +11,6 @@ import messages from '../data/messages';
 export const axiosError = (error, setPageLoading, setAlertDialogInput) => {
     console.log(error);
     if (!error || !error.response) {
-        let agent = "";
-        if (navigator && navigator.userAgent) {
-            agent = navigator.userAgent;
-        }
         (setPageLoading && setPageLoading(false));
         (setAlertDialogInput && setAlertDialogInput({"show": true, "id": messages.errors.networkError.id}));
     } else if (error.response && !error.response.data) {

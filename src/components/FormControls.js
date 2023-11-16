@@ -3,8 +3,6 @@ import { Form, Button, Col } from "react-bootstrap";
 import "./FormControls.css";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import Checkbox from "@mui/material/Checkbox";
-import Radio from "@mui/material/Radio";
 
 const FormLabel = (props) => {
   FormLabel.propTypes = {

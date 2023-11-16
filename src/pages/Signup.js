@@ -27,7 +27,6 @@ const Signup = () => {
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
   const [pageErrorMessage, setPageErrorMessage] = useState("");
-  const [pageErrorsJson, setPageErrorsJson] = useState({});
   const [viewPassword, setViewPassword] = useState(false);
   const [viewConfirmPassword, setViewConfirmPassword] = useState(false);
   const navigate = useNavigate();
@@ -158,10 +157,10 @@ const Signup = () => {
                     <Form.Label className={"label required-asterik"}>Password</Form.Label>
                     <Feedback message="Password must contain at least:" />
                     <Feedback className="ml-2" message={`* 5 - 20 characters in length,`} />
-                    <Feedback className="ml-2" message={`* 1 uppercase character,`} />
-                    <Feedback className="ml-2" message={`* 1 lowercase character,`} />
-                    <Feedback className="ml-2" message={`* 1 numeric value,`} />
-                    <Feedback className="ml-2" message={`* 1 special character (!@#$%^&).`} />
+                    <Feedback className="ml-2" message={`* at least 1 uppercase character,`} />
+                    <Feedback className="ml-2" message={`* at least 1 lowercase character,`} />
+                    <Feedback className="ml-2" message={`* at least 1 numeric value,`} />
+                    <Feedback className="ml-2" message={`* at least 1 special character (!@#$%^&).`} />
                     {!validated && (
                       <FontAwesomeIcon
                         className={"password-visibility"}
@@ -296,7 +295,7 @@ const Signup = () => {
       .catch(function(error) {
         setShowError(true);
         // check error code to display the appropriate message
-        if (error && error.response && error.response.data && error.response.data["code"] == 400) {
+        if (error && error.response && error.response.data && error.response.data["code"] === 400) {
             // already exists
             setAlertDialogInput ({"show": true, "id": "duplicateAccount"});
         } else {
@@ -338,7 +337,7 @@ const Signup = () => {
             navigate("/verifyToken");
       }).catch(function(error) {
 
-        if (error && error.response && error.response.data && error.response.data["code"] == 400) {
+        if (error && error.response && error.response.data && error.response.data["code"] === 400) {
             // duplicate
             setTextAlertInput ({"show": true, "message": error.response.data["message"]});
         } else {

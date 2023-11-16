@@ -152,7 +152,7 @@ const Login = props => {
         logInSuccess(data);
       }).catch (function(error) {
         if (error && error.response && error.response.data) {
-          if  (error.response.data["code"] == 401) {
+          if  (error.response.data["code"] === 401) {
             // invalid login
             setTextAlertInput ({"show": true, "id": "badCredentials"});
           } else {

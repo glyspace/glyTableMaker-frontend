@@ -1,17 +1,15 @@
 import React from "react";
 import "./TopNavBar.css";
-import { Link, NavLink } from "react-router-dom";
-import { NavDropdown, Nav, Navbar, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Nav, Navbar, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import logo from "../images/glygen-logoW-top.svg";
 import { BiLogOut } from "react-icons/bi";
 import { BiLogIn } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
 
 const TopNavBar = (props) => {
-  const location = useLocation();
   return (
     <React.Fragment>
       <Navbar collapseOnSelect className="gg-blue-bg topbar" expand="lg">

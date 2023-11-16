@@ -21,7 +21,7 @@ export default function TextAlert(props) {
     }
 
     if (input === "title") {
-        if (props.alertInput.id == "" && props.alertInput.message) {
+        if (props.alertInput.id === "" && props.alertInput.message) {
             // no title necessary
             return "";
         }

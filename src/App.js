@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-import { useNavigate, useLocation, BrowserRouter } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import './App.css';
 import Footer from './components/Footer';
 //import { ThemeProvider } from '@emotion/react;
@@ -57,8 +57,6 @@ function App() {
       if (jwt.exp === "undefined") return true; // never expires
       if (jwt.exp < current_time) {
         /* expired */
-  
-        var base = process.env.REACT_APP_BASENAME;
         window.localStorage.removeItem(base ? base + "_token" : "token");
         window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
         //window.localStorage.clear();
