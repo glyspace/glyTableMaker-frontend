@@ -1,4 +1,5 @@
 {
+  "homepage": "https://glygen.ccrc.uga.edu/tablemaker",
   "name": "glytablemaker-frontend",
   "version": "0.1.0",
   "private": true,
