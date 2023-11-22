@@ -188,11 +188,6 @@ const Profile = (props) => {
                   <Button className="link-button mt-3">Change Password</Button>
                 </Link>
               </Col>
-              <Col md={4}>
-                <Link to="/changeEmail">
-                  <Button className="link-button mt-3">Change Email</Button>
-                </Link>
-              </Col>
             </Row>
 
             <div className={isUpdate ? "text-center mt-2" : "hide-content"}>
