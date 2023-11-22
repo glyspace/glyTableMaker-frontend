@@ -128,7 +128,7 @@ const Login = props => {
           />
            <hr />
               <div>
-                <Link to="/signup">New user?</Link>
+                <Link to="/register">New user?</Link>
               </div>
               <div>
                 <Link to="/forgotPassword">Forgot password?</Link>
