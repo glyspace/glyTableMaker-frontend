@@ -86,7 +86,7 @@ function App() {
       "login",
       "forgotUsername",
       "forgotPassword",
-      "signup",
+      "register",
       "emailConfirmation",
       "verifyToken"
     ];

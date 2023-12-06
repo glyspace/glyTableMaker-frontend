@@ -21,20 +21,6 @@ const TopNavBar = (props) => {
         {/*<Navbar.Toggle aria-controls="basic-navbar-nav" className="navbar-dark" />*/}
         <Navbar.Collapse className="gg-blue-bg" id="basic-navbar-nav">
           <Col xs={12} sm={12} md={12} lg={6} xl={8}>
-            <Nav activeKey={window.location.pathname}>
-              <LinkContainer className="gg-nav-link" to="/" exact>
-                <Nav.Link>HOME</Nav.Link>
-              </LinkContainer>
-              {/* Top bar menu links when logged in */}
-              {props.loggedInFlag && (
-                <LinkContainer className="gg-nav-link" to="/contribute" exact>
-                  <Nav.Link>CONTRIBUTE</Nav.Link>
-                </LinkContainer>
-              )}
-              <LinkContainer className="gg-nav-link" to="/data" exact>
-                <Nav.Link>TABLE</Nav.Link>
-              </LinkContainer>
-            </Nav>
           </Col>
           <Col xs={12} sm={12} md={12} lg={6} xl={4} className="align-right-header">
             <Nav activeKey={window.location.pathname}>
