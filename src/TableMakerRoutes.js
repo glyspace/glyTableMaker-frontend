@@ -8,6 +8,7 @@ import { VerifyToken } from "./pages/VerifyToken";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { ForgotUsername } from "./pages/ForgotUsername";
 import { ChangePassword } from "./pages/ChangePassword";
+import OAuth2Redirect from './components/OAuth2Redirect'
 
 const TableMakerRoutes = props => {
      return (
@@ -16,6 +17,7 @@ const TableMakerRoutes = props => {
             <Route exact path='/' element={<Home/>}/>
             <Route path="/login" element={<Login updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent}/>} />
             <Route path="/profile" element={<Profile authCheckAgent={props.authCheckAgent} />} />
+            <Route path='/oauth2/redirect' element={<OAuth2Redirect updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent} />} />
             <Route path="/register" element={<Signup/>} />
             <Route path="/emailConfirmation/:token" element={<EmailConfirmation/>} />
             <Route path="/verifyToken" element={<VerifyToken/>} />

@@ -12,7 +12,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { ScrollToTopBtn } from "./components/ScrollToTop";
 import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
-//import { useAuth0 } from '@auth0/auth0-react';
+import { parseJwt } from "./utils/api";
 
 
 function App() {
@@ -120,21 +120,6 @@ function App() {
     window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
     setLoggedIn(false);
     navigate("/");
-  }
-
-  function parseJwt(token) {
-    //var token1 = token.split(" ")[1];
-    var base64Url = token.split(".")[1];
-    var atobResult = atob(base64Url);
-    var base64 = decodeURIComponent(
-      atobResult
-        .split("")
-        .map(function(c) {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join("")
-    );
-    return JSON.parse(base64);
   }
 
   function getPageName(history) {

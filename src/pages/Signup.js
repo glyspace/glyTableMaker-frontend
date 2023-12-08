@@ -49,7 +49,7 @@ const Signup = () => {
 
   return (
     <>
-      <Container maxWidth="md" className="card-page-container">
+      <Container maxWidth="lg" className="card-page-container">
         <div className="card-page-sm">
           <Title title={"Sign Up"} />
           {showError && (
@@ -207,7 +207,7 @@ const Signup = () => {
               </Col>
             </Row>
             <Row>
-              <Col md={6}>
+              <Col md={12}>
                 <Form.Group controlId="formGroupName">
                   <Form.Control
                     type="text"
@@ -221,7 +221,9 @@ const Signup = () => {
                   <Form.Label className={"label"}>Group name</Form.Label>
                 </Form.Group>
               </Col>
-              <Col md={6}>
+              </Row>
+              <Row>
+              <Col md={12}>
                 <Form.Group as={Row} controlId="formDepartment">
                   <Col>
                     <Form.Control
@@ -239,7 +241,7 @@ const Signup = () => {
               </Col>
             </Row>
             <Row>
-              <Col md={6}>
+              <Col md={12}>
                 <Form.Group controlId="formAffiliation">
                   <Form.Control
                     type="text"
@@ -253,7 +255,8 @@ const Signup = () => {
                   <Form.Label className={"label"}>Organization/Institution</Form.Label>
                 </Form.Group>
               </Col>
-              <Col md={6}>
+              </Row><Row>
+              <Col md={12}>
                 <Form.Group as={Row} controlId="formAffiliationWebsite">
                   <Col>
                     <Form.Control
@@ -295,7 +298,7 @@ const Signup = () => {
       .catch(function(error) {
         setShowError(true);
         // check error code to display the appropriate message
-        if (error && error.response && error.response.data && error.response.data["code"] === 400) {
+        if (error && error.response && error.response.data && error.response.data["code"] === "400") {
             // already exists
             setAlertDialogInput ({"show": true, "id": "duplicateAccount"});
         } else {
@@ -337,7 +340,7 @@ const Signup = () => {
             navigate("/verifyToken");
       }).catch(function(error) {
 
-        if (error && error.response && error.response.data && error.response.data["code"] === 400) {
+        if (error && error.response && error.response.data && error.response.data["code"] === "400") {
             // duplicate
             setTextAlertInput ({"show": true, "message": error.response.data["message"]});
         } else {

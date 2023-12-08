@@ -78,7 +78,6 @@ const Profile = (props) => {
             <Row>
               <Col md={6}>
                 <Form.Group controlId="firstName">
-                  <Form.Label className={isUpdate ? "required-asterik" : ""}>First Name</Form.Label>
                   <Form.Control
                     type="text"
                     name="firstName"
@@ -87,13 +86,14 @@ const Profile = (props) => {
                     value={userProfile.firstName}
                     required
                     maxLength={100}
+                    className="custom-text-fields"
                   />
+                  <Form.Label className={isUpdate ? "label required-asterik" : "label"}>First Name</Form.Label>
                   <Feedback message="First name is required" />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="lastName">
-                  <Form.Label className={isUpdate ? "required-asterik" : ""}>Last Name</Form.Label>
                   <Form.Control
                     type="text"
                     name="lastName"
@@ -102,7 +102,9 @@ const Profile = (props) => {
                     value={userProfile.lastName}
                     required
                     maxLength={100}
+                    className="custom-text-fields"
                   />
+                  <Form.Label className={isUpdate ? "label required-asterik" : "label"}>Last Name</Form.Label>
                   <Feedback message="Last name is required" />
                 </Form.Group>
               </Col>
@@ -110,21 +112,20 @@ const Profile = (props) => {
             <Row>
               <Col md={6}>
                 <Form.Group controlId="username">
-                  <Form.Label>Username</Form.Label>
-                  <Form.Control type="text" name="userName" disabled value={userProfile.userName} />
+                  <Form.Control type="text" name="userName" disabled value={userProfile.userName} className="custom-text-fields"/>
+                  <Form.Label className={"label"}>Username</Form.Label>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="email">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control type="text" name="email" disabled value={userProfile.email} />
+                  <Form.Control type="text" name="email" disabled value={userProfile.email} className="custom-text-fields"/>
+                  <Form.Label className={"label"}>Email</Form.Label>
                 </Form.Group>
               </Col>
             </Row>
             <Row>
-              <Col md={6}>
+              <Col md={12}>
                 <Form.Group controlId="groupName">
-                  <Form.Label>Group Name</Form.Label>
                   <Form.Control
                     type="text"
                     name="groupName"
@@ -132,12 +133,16 @@ const Profile = (props) => {
                     disabled={!isUpdate}
                     value={userProfile.groupName}
                     maxLength={250}
+                    className="custom-text-fields"
                   />
+                  <Form.Label className={"label"}>Group Name</Form.Label>
                 </Form.Group>
               </Col>
-              <Col md={6}>
+            </Row>
+            <Row>
+              <Col md={12}>
                 <Form.Group controlId="department">
-                  <Form.Label>Department</Form.Label>
+                  
                   <Form.Control
                     type="text"
                     name="department"
@@ -145,14 +150,15 @@ const Profile = (props) => {
                     disabled={!isUpdate}
                     value={userProfile.department}
                     maxLength={250}
+                    className="custom-text-fields"
                   />
+                  <Form.Label className={"label"}>Department</Form.Label>
                 </Form.Group>
               </Col>
             </Row>
             <Row>
-              <Col md={6}>
+              <Col md={12}>
                 <Form.Group controlId="affiliation">
-                  <Form.Label>Organization/Institution</Form.Label>
                   <Form.Control
                     type="text"
                     name="affiliation"
@@ -160,12 +166,15 @@ const Profile = (props) => {
                     disabled={!isUpdate}
                     value={userProfile.affiliation}
                     maxLength={250}
+                    className="custom-text-fields"
                   />
+                  <Form.Label className={"label"}>Organization/Institution</Form.Label>
                 </Form.Group>
               </Col>
-              <Col md={6}>
+            </Row>
+            <Row>
+              <Col md={12}>
                 <Form.Group controlId="affiliationWebsite">
-                  <Form.Label>Website</Form.Label>
                   <Form.Control
                     type="text"
                     name="affiliationWebsite"
@@ -173,22 +182,20 @@ const Profile = (props) => {
                     disabled={!isUpdate}
                     value={userProfile.affiliationWebsite}
                     maxLength={250}
+                    className="custom-text-fields"
                   />
+                  <Form.Label className={"label"}>Website</Form.Label>
                 </Form.Group>
               </Col>
             </Row>
-            <Row className={!isUpdate ? "text-center mt-2" : "hide-content"}>
-              <Col md={4}>
-                <Button className="link-button mt-3" onClick={() => editUser()}>
+            <div className={!isUpdate ? "text-center mt-2" : "hide-content"}>
+                <Button className="gg-btn-blue mt-3 gg-mr-20" onClick={() => editUser()}>
                   Edit
                 </Button>
-              </Col>
-              <Col md={4}>
                 <Link to="/changePassword">
-                  <Button className="link-button mt-3">Change Password</Button>
+                  <Button className="gg-btn-blue mt-3 gg-ml-20">Change Password</Button>
                 </Link>
-              </Col>
-            </Row>
+             </div>
 
             <div className={isUpdate ? "text-center mt-2" : "hide-content"}>
               <Button className="gg-btn-outline mt-3 gg-mr-20" onClick={() => handlecancel()}>

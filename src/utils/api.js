@@ -2,6 +2,9 @@ import axios from "axios";
 
 const TABLEMAKER_API = process.env.REACT_APP_API_URL;
 const base = process.env.REACT_APP_BASENAME;
+//const OAUTH2_REDIRECT_URI = "http://localhost:3000/oauth2/redirect";
+const OAUTH2_REDIRECT_URI = process.env.OAUTH2_REDIRECT_URI;
+
 /**
  * Gets JSON from REST api call.
  * @param {string} url - url for REST api call.
@@ -123,3 +126,22 @@ export const getAuthorizationHeader = () => {
   headers["Authorization"] = "Bearer " + window.localStorage.getItem(base ? base + "_token" : "token") || "";
   return headers;
 };
+
+export function getSocialLoginUrl(name) {
+  return `${TABLEMAKER_API}oauth2/authorization/${name}?redirect_uri=${OAUTH2_REDIRECT_URI}`
+}
+
+export function parseJwt(token) {
+  //var token1 = token.split(" ")[1];
+  var base64Url = token.split(".")[1];
+  var atobResult = atob(base64Url);
+  var base64 = decodeURIComponent(
+    atobResult
+      .split("")
+      .map(function(c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(base64);
+}

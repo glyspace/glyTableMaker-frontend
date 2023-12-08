@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Login.css";
 import Container from "@mui/material/Container";
-import { GoogleLogin } from '@react-oauth/google';
-import { postJson } from "../utils/api";
+import { getSocialLoginUrl, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
@@ -77,7 +76,7 @@ const Login = props => {
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} controlId="password" className="mt-4">
+            <Form.Group as={Row} controlId="password">
               <Col>
                 <Form.Control
                   type={viewPassword ? "text" : "password"}
@@ -116,17 +115,9 @@ const Login = props => {
               <div className="divider d-flex align-items-center my-4">
             <p className="text-center fw-bold mx-3 mb-0">OR</p>
           </div>
-              <GoogleLogin
-            onSuccess={credentialResponse => {
-              console.log(credentialResponse);
-            }}
-          
-            onError={() => {
-              console.log('Login Failed');
-            }}
-          
-          />
-           <hr />
+              <Link to={getSocialLoginUrl('google')}> Google
+              </Link>
+              <hr />
               <div>
                 <Link to="/register">New user?</Link>
               </div>

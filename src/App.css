@@ -164,14 +164,15 @@ hr {
 .custom-text-fields {
   border: 1px solid #dddfe2;
   /* font-size: 15px !important; */
-  padding: 24px 16px !important;
+  padding: 16px 16px !important;
   border-radius: 6px !important;
   /* background: #f5f6f7 !important; */
+  margin-bottom: 16px;
 }
 
 .label {
   font-size: 18px;
-  margin-top: -50px;
+  margin-top: -60px;
   margin-left: 15px;
   color: grey;
   position: absolute;
@@ -183,7 +184,7 @@ input[type]:not(:placeholder-shown) + label {
   color: #215b9e;
   background-color: #fff;
   padding: 0 5px 0 5px;
-  transform: scale(0.75) translateY(-175%) translateX(-20%);
+  transform: scale(0.75) translateY(-140%) translateX(-20%);
 }
 
 /* For IE Browsers*/
@@ -204,7 +205,7 @@ input[type]:not(:-ms-input-placeholder) + label {
   border-radius: 50%;
   bottom: 11px;
   position: relative;
-  margin-top: -30px;
+  margin-top: -45px;
   right: 12px;
   width: 28px;
 }
@@ -262,7 +263,7 @@ input[type]:not(:-ms-input-placeholder) + label {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   background-color: white;
-  width: 500px;
+  width: 700px;
 }
 /* custom class for pages completely on bootstrap card */
 .card-page {
