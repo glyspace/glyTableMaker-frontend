@@ -6,10 +6,13 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Login.css";
 import Container from "@mui/material/Container";
+import { Menu } from "@mui/material";
+import { Icon } from "@mui/material";
 import { getSocialLoginUrl, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
+import googleLogo from "../images/google-login.svg";
 
 const Login = props => {
   useEffect(() => {
@@ -113,10 +116,19 @@ const Login = props => {
               </Button>
              
               <div className="divider d-flex align-items-center my-4">
-            <p className="text-center fw-bold mx-3 mb-0">OR</p>
-          </div>
-              <Link to={getSocialLoginUrl('google')}> Google
-              </Link>
+                <p className="text-center fw-bold mx-3 mb-0">OR</p>
+              </div>
+              <button class="gsi-material-button" onClick={() => { window.location.href = getSocialLoginUrl('google')}}>
+                <div class="gsi-material-button-state"></div>
+                <div class="gsi-material-button-content-wrapper">
+                  <div class="gsi-material-button-icon">
+                    <img src={googleLogo}/>
+                  </div>
+                  <span class="gsi-material-button-contents">Sign in with Google</span>
+                  <span style={{display: "none"}}>Sign in with Google</span>
+                </div>
+              </button>
+              
               <hr />
               <div>
                 <Link to="/register">New user?</Link>

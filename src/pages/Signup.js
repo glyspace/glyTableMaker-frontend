@@ -50,7 +50,7 @@ const Signup = () => {
   return (
     <>
       <Container maxWidth="lg" className="card-page-container">
-        <div className="card-page-sm">
+        <div className="card-page-md">
           <Title title={"Sign Up"} />
           {showError && (
             <div>

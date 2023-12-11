@@ -3,7 +3,7 @@ import axios from "axios";
 const TABLEMAKER_API = process.env.REACT_APP_API_URL;
 const base = process.env.REACT_APP_BASENAME;
 //const OAUTH2_REDIRECT_URI = "http://localhost:3000/oauth2/redirect";
-const OAUTH2_REDIRECT_URI = process.env.OAUTH2_REDIRECT_URI;
+const OAUTH2_REDIRECT_URI = process.env.REACT_APP_OAUTH2_REDIRECT_URI;
 
 /**
  * Gets JSON from REST api call.

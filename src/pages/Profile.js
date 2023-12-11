@@ -64,7 +64,7 @@ const Profile = (props) => {
   return (
     <>
       <Container maxWidth="md" className="card-page-container">
-        <div className="card-page-sm">
+        <div className="card-page-md">
           <Title title={title} />
 
           <DialogAlert
