@@ -46,7 +46,9 @@ function App() {
           <Route path="/profile" element={<Profile authCheckAgent={checkAuthorization} />} />
           <Route path='/oauth2/redirect/' element={<OAuth2Redirect updateLogin={loginUpdater} authCheckAgent={checkAuthorization} />} />
           <Route path="/register" element={<Signup/>} />
-          <Route path="/emailConfirmation/:token" element={<EmailConfirmation/>} />
+          <Route path="/emailConfirmation">
+            <Route path=":token" element={<EmailConfirmation/>} />
+          </Route>
           <Route path="/verifyToken" element={<VerifyToken/>} />
           <Route path="/forgotPassword" element={<ForgotPassword/>} />
           <Route path="/forgotUsername" element={<ForgotUsername/>} />
