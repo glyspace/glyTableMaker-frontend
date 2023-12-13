@@ -14,12 +14,14 @@ const TableMakerRoutes = props => {
      return (
         <>
           <Routes>
-            <Route exact path='/' element={<Home/>}/>
+            <Route exact="true" path="/" element={<Home/>}/>
             <Route path="/login" element={<Login updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent}/>} />
             <Route path="/profile" element={<Profile authCheckAgent={props.authCheckAgent} />} />
-            <Route path='/oauth2/redirect' element={<OAuth2Redirect updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent} />} />
+            <Route path='/oauth2/redirect/' element={<OAuth2Redirect updateLogin={props.updateLogin} authCheckAgent={props.authCheckAgent} />} />
             <Route path="/register" element={<Signup/>} />
-            <Route path="/emailConfirmation/:token" element={<EmailConfirmation/>} />
+            <Route path="/emailConfirmation">
+              <Route path=":token" element={<EmailConfirmation/>} />"
+            </Route>
             <Route path="/verifyToken" element={<VerifyToken/>} />
             <Route path="/forgotPassword" element={<ForgotPassword/>} />
             <Route path="/forgotUsername" element={<ForgotUsername/>} />

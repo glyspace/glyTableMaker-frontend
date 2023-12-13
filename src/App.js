@@ -53,7 +53,16 @@ function App() {
     if (token) {
       // check if it is expired
       var current_time = Date.now() / 1000;
-      var jwt = parseJwt(token);
+      try {
+        var jwt = parseJwt(token);
+      } catch (error) {
+        console.log("invalid token, removing the token");
+        var base = process.env.REACT_APP_BASENAME;
+        window.localStorage.removeItem(base ? base + "_token" : "token");
+        window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+        setLoggedIn(false);
+        return false;
+      }
       if (jwt.exp === "undefined") return true; // never expires
       if (jwt.exp < current_time) {
         /* expired */
