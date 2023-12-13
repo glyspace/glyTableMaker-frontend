@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Login.css";
 import Container from "@mui/material/Container";
-import { Menu } from "@mui/material";
-import { Icon } from "@mui/material";
 import { getSocialLoginUrl, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
@@ -122,7 +120,7 @@ const Login = props => {
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                   <div class="gsi-material-button-icon">
-                    <img src={googleLogo}/>
+                    <img src={googleLogo} alt="google signin"/>
                   </div>
                   <span class="gsi-material-button-contents">Sign in with Google</span>
                   <span style={{display: "none"}}>Sign in with Google</span>

@@ -1,18 +1,26 @@
 import React, { useState } from "react";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Routes, Route, BrowserRouter } from "react-router-dom";
 import './App.css';
-import Footer from './components/Footer';
-//import { ThemeProvider } from '@emotion/react;
 import "bootstrap/dist/css/bootstrap.min.css";
 import { TopNavBar } from "./components/TopNavBar";
-import { TableMakerRoutes } from "./TableMakerRoutes";
-import { Container } from "react-bootstrap";
+import TableMakerRoutes from "./TableMakerRoutes";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { ScrollToTopBtn } from "./components/ScrollToTop";
 import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
+import { Container } from "react-bootstrap";
+import Home  from "./pages/Home";
+import { Login } from "./pages/Login";
+import { Profile } from "./pages/Profile";
+import { Signup } from "./pages/Signup";
+import { EmailConfirmation } from "./pages/EmailConfirmation";
+import { VerifyToken } from "./pages/VerifyToken";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ForgotUsername } from "./pages/ForgotUsername";
+import { ChangePassword } from "./pages/ChangePassword";
+import OAuth2Redirect from './components/OAuth2Redirect'
 
 
 function App() {
@@ -31,20 +39,39 @@ function App() {
     faEye,
   );
   return (
-    <div className="App">
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/login" element={<Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/>} />
+          <Route path="/profile" element={<Profile authCheckAgent={checkAuthorization} />} />
+          <Route path='/oauth2/redirect/' element={<OAuth2Redirect updateLogin={loginUpdater} authCheckAgent={checkAuthorization} />} />
+          <Route path="/register" element={<Signup/>} />
+          <Route path="/emailConfirmation/:token" element={<EmailConfirmation/>} />
+          <Route path="/verifyToken" element={<VerifyToken/>} />
+          <Route path="/forgotPassword" element={<ForgotPassword/>} />
+          <Route path="/forgotUsername" element={<ForgotUsername/>} />
+          <Route path="/changePassword" element={<ChangePassword/>} />
+        </Route>
+      </Routes>
+  );
+
+  function Layout() {
+    return (
+      <>
+      <div className="App">
       <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} />
       <CssBaseline />
       <ScrollToTopBtn />
       <Container  className="d-flex align-items-center justify-content-center"
-        style={{ minHeight: "100vh" }}
-         >
+        style={{ minHeight: "100vh" }}>
           <div className="w-100" style={{ maxWidth: "400px" }}>
-            <TableMakerRoutes updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/>
-            </div>
-            </Container>
-        {/* <Footer/> */}
+           <Outlet />
+         </div>
+      </Container> 
     </div>
-  );
+      </>
+    )
+  }
 
   function getLoginStatus() {
     var base = process.env.REACT_APP_BASENAME;
@@ -57,7 +84,6 @@ function App() {
         var jwt = parseJwt(token);
       } catch (error) {
         console.log("invalid token, removing the token");
-        var base = process.env.REACT_APP_BASENAME;
         window.localStorage.removeItem(base ? base + "_token" : "token");
         window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
         setLoggedIn(false);
@@ -131,7 +157,7 @@ function App() {
     navigate("/");
   }
 
-  function getPageName(history) {
+  function getPageName(location) {
     var path = location.pathname;
     var pagename = path.substring(1, path.indexOf("/", 1) > 0 ? path.indexOf("/", 1) : path.length);
     return pagename;
