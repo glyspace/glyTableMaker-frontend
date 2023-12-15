@@ -26,6 +26,8 @@ const Signup = () => {
 
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [showEye, setShowEye] = useState(false);
+  const [showEye2, setShowEye2] = useState(false);
   const [pageErrorMessage, setPageErrorMessage] = useState("");
   const [viewPassword, setViewPassword] = useState(false);
   const [viewConfirmPassword, setViewConfirmPassword] = useState(false);
@@ -43,8 +45,16 @@ const Signup = () => {
   const handleChange = e => {
     const name = e.target.name;
     const newValue = e.target.value;
+    if (newValue) {
+      if (name === "password") setShowEye(true);
+      if (name === "confirmPassword") setShowEye2(true);
+    }
     setShowError(false);
     setUserInput({ [name]: newValue });
+    if (!e.currentTarget.checkValidity()) {
+      if (name === "password") setShowEye(false);
+      if (name === "confirmPassword") setShowEye2(false);
+    }
   };
 
   return (
@@ -79,7 +89,7 @@ const Signup = () => {
                     className={"custom-text-fields"}
                   />
                   <Form.Label className={"label required-asterik"}>First name</Form.Label>
-                  <Feedback message="Please enter first name." />
+                  <Feedback className={"feedback"} message="Please enter first name." />
                   {/* {userInput.firstName && userInput.firstName.length > 100 ? (
                     <Feedback message="Entry is too long - max length is 100." maxLength={true} />
                   ) : (
@@ -100,7 +110,7 @@ const Signup = () => {
                     className={"custom-text-fields"}
                   />
                   <Form.Label className={"label required-asterik"}>Last name</Form.Label>
-                  <Feedback message="Please enter last name." />
+                  <Feedback className={"feedback"} message="Please enter last name." />
                 </Form.Group>
               </Col>
             </Row>
@@ -120,7 +130,7 @@ const Signup = () => {
                     className={"custom-text-fields"}
                   />
                   <Form.Label className={"label required-asterik"}>Username</Form.Label>
-                  <Feedback message="Username should be between 5 and 20 characters." />
+                  <Feedback className={"feedback"} message="Username should be between 5 and 20 characters." />
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -135,7 +145,7 @@ const Signup = () => {
                     className={"custom-text-fields"}
                   />
                   <Form.Label className={"label required-asterik"}>Email</Form.Label>
-                  <Feedback message="Please enter a valid email" />
+                  <Feedback className={"feedback"} message="Please enter a valid email" />
                 </Form.Group>
               </Col>
             </Row>
@@ -150,18 +160,18 @@ const Signup = () => {
                       name="password"
                       value={userInput.password}
                       onChange={handleChange}
-                      pattern="^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{5,20}$"
+                      pattern="^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{5,30}$"
                       required
                       className={"custom-text-fields"}
                     />
                     <Form.Label className={"label required-asterik"}>Password</Form.Label>
-                    <Feedback message="Password must contain at least:" />
-                    <Feedback className="ml-2" message={`* 5 - 20 characters in length,`} />
-                    <Feedback className="ml-2" message={`* at least 1 uppercase character,`} />
-                    <Feedback className="ml-2" message={`* at least 1 lowercase character,`} />
-                    <Feedback className="ml-2" message={`* at least 1 numeric value,`} />
-                    <Feedback className="ml-2" message={`* at least 1 special character (!@#$%^&).`} />
-                    {!validated && (
+                    <Feedback className={"feedback"} message="Password must contain at least:" />
+                    <Feedback className="feedback ml-2" message={`* 5 - 30 characters in length,`} />
+                    <Feedback className="feedback ml-2" message={`* at least 1 uppercase character,`} />
+                    <Feedback className="feedback ml-2" message={`* at least 1 lowercase character,`} />
+                    <Feedback className="feedback ml-2" message={`* at least 1 numeric value,`} />
+                    <Feedback className="feedback ml-2" message={`* at least 1 special character (!@#$%^&).`} />
+                    {showEye && (
                       <FontAwesomeIcon
                         className={"password-visibility"}
                         key={"view"}
@@ -189,9 +199,9 @@ const Signup = () => {
                       className={"custom-text-fields"}
                     />
                     <Form.Label className={"label required-asterik"}>Confirm password</Form.Label>
-                    <Feedback message="Please confirm password." />
+                    <Feedback className={"feedback"} message="Please confirm password." />
 
-                    {!validated && (
+                    {showEye2 && (
                       <FontAwesomeIcon
                         className={"password-visibility"}
                         key={"view"}
@@ -266,10 +276,11 @@ const Signup = () => {
                       value={userInput.affiliationWebsite}
                       onChange={handleChange}
                       maxLength={250}
+                      pattern="(\b(https?)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]"
                       className={"custom-text-fields"}
                     />
                     <Form.Label className={"label"}>Website</Form.Label>
-                    <Feedback message="Please enter a valid affiliation website." />
+                    <Feedback className={"feedback"} message="Please enter a valid affiliation website." />
                   </Col>
                 </Form.Group>
               </Col>
@@ -326,14 +337,14 @@ const Signup = () => {
 
   function handleSubmit(e) {
     setValidated(true);
+    setTextAlertInput({show: false, id: ""});
 
     if (
       userInput.password !== "" &&
       userInput.confirmPassword !== "" &&
       userInput.password !== userInput.confirmPassword
     ) {
-      setPageErrorMessage("Passwords must match.");
-      setShowError(true);
+      setTextAlertInput ({"show": true, "id" : "", "message": "New and confirm passwords must match."});
     } else if (e.currentTarget.checkValidity()) {
       checkUserName();
       postJson ("api/account/register", userInput, null).then ( (data) => {
@@ -347,6 +358,9 @@ const Signup = () => {
             axiosError(error, null, setAlertDialogInput);
         }
       });
+    } else {
+        setShowEye(false);
+        setShowEye2(false);
     }
     e.preventDefault();
   }

@@ -93,6 +93,8 @@ const ForgotPassword = () => {
   function handleSubmit(e) {
     e.preventDefault();
     setValidated(true);
+    setTextAlertInput({show: false, id: ""});
+    setShowSuccessMessage("");
     if (e.currentTarget.checkValidity() === true) {
       const username = userInput.username;
       getJson ("api/account/"+username+ "/password", {}).then ( (data) => {

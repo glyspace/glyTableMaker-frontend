@@ -87,6 +87,7 @@ const VerifyToken = () => {
 
   function handleSubmit(e) {
     setValidated(true);
+    setTextAlertInput({show: false, id: ""});
 
     const token = confirmRegistration.token;
 

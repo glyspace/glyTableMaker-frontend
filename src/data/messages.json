@@ -38,7 +38,7 @@
         },
         "duplicateAccount" : {
             "title" : "Duplicate",
-            "message" : "There is already an account with this username or email",
+            "message" : "There is already an account with this username",
             "showContactUs" : false
         },
         "badCredentials" : {

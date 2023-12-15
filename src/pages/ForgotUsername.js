@@ -86,6 +86,8 @@ const ForgotUsername = () => {
 
   function handleSubmit(e) {
     setValidated(true);
+    setTextAlertInput({show: false, id: ""});
+    setShowSuccessMessage("");
     if (e.currentTarget.checkValidity() === true) {
       const email = userInput.email;
       getJson ("api/account/recover?email="+email, {}).then ( (data) => {

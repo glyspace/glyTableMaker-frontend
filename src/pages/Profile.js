@@ -176,12 +176,13 @@ const Profile = (props) => {
               <Col md={12}>
                 <Form.Group controlId="affiliationWebsite">
                   <Form.Control
-                    type="text"
+                    type="url"
                     name="affiliationWebsite"
                     onChange={handleChange}
                     disabled={!isUpdate}
                     value={userProfile.affiliationWebsite}
                     maxLength={250}
+                    pattern="(\b(https?)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]"
                     className="custom-text-fields"
                   />
                   <Form.Label className={"label"}>Website</Form.Label>

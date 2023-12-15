@@ -33,7 +33,8 @@ export default function TextAlert(props) {
 
   return (
     <>
-    {props.alertInput.show && <div>
+    {props.alertInput.show && 
+    <div style={{marginBottom: "15px"}}>
       <Alert severity="error">
          <AlertTitle>{getValue("title")}</AlertTitle>
             <span className="alert-text">

@@ -18,6 +18,9 @@ const ChangePassword = () => {
 
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [showEye, setShowEye] = useState(false);
+  const [showEye2, setShowEye2] = useState(false);
+  const [showEye3, setShowEye3] = useState(false);
   const [viewCurrentPassword, setViewCurrentPassword] = useState(false);
   const [viewNewPassword, setViewNewPassword] = useState(false);
   const [viewConfirmPassword, setViewConfirmPassword] = useState(false);
@@ -35,12 +38,23 @@ const ChangePassword = () => {
   const history = useNavigate();
 
   const handleChange = (e) => {
+    //setValidated(true);
     const name = e.target.name;
     const newValue = e.target.value;
 
     setShowError(false);
     setTextAlertInput({"show": false, id: ""});
+    if (newValue) {
+      if (name === "currentPassword") setShowEye(true);
+      if (name === "newPassword") setShowEye2(true);
+      if (name === "confirmPassword") setShowEye3(true);
+    }
     setUserInput({ [name]: newValue });
+    if (!e.currentTarget.checkValidity()) {
+      if (name === "currentPassword") setShowEye(false);
+      if (name === "newPassword") setShowEye2(false);
+      if (name === "confirmPassword") setShowEye3(false);
+    }
   };
 
   return (
@@ -69,8 +83,9 @@ const ChangePassword = () => {
                   className={"custom-text-fields"}
                 />
                 <Form.Label className={"label required-asterik"}>Current Password</Form.Label>
-                <Feedback message="Please enter current password." />
+                <Feedback className={"feedback"} message="Please enter current password." />
 
+                {showEye &&
                 <FontAwesomeIcon
                   key={"view"}
                   icon={["far", viewCurrentPassword ? "eye" : "eye-slash"]}
@@ -78,7 +93,7 @@ const ChangePassword = () => {
                   title="password"
                   className={"password-visibility"}
                   onClick={() => setViewCurrentPassword(!viewCurrentPassword)}
-                />
+                />}
               </Col>
             </Form.Group>
 
@@ -94,8 +109,9 @@ const ChangePassword = () => {
                   className={"custom-text-fields"}
                 />
                 <Form.Label className={"label required-asterik"}>New Password</Form.Label>
-                <Feedback message="Please enter new password." />
+                <Feedback className={"feedback"} message="Please enter new password." />
 
+                {showEye2 &&
                 <FontAwesomeIcon
                   key={"view"}
                   icon={["far", viewNewPassword ? "eye" : "eye-slash"]}
@@ -103,7 +119,7 @@ const ChangePassword = () => {
                   title="password"
                   className={"password-visibility"}
                   onClick={() => setViewNewPassword(!viewNewPassword)}
-                />
+                />}
               </Col>
             </Form.Group>
 
@@ -119,8 +135,9 @@ const ChangePassword = () => {
                   className={"custom-text-fields"}
                 />
                 <Form.Label className={"label required-asterik"}>Confirm Password</Form.Label>
-                <Feedback message="Please confirm password." />
+                <Feedback className={"feedback"} message="Please confirm password." />
 
+                {showEye3 &&
                 <FontAwesomeIcon
                   key={"view"}
                   icon={["far", viewConfirmPassword ? "eye" : "eye-slash"]}
@@ -128,7 +145,7 @@ const ChangePassword = () => {
                   title="password"
                   className={"password-visibility"}
                   onClick={() => setViewConfirmPassword(!viewConfirmPassword)}
-                />
+                />}
               </Col>
             </Form.Group>
 
@@ -152,6 +169,7 @@ const ChangePassword = () => {
 
   function handleSubmit(e) {
     setValidated(true);
+    setTextAlertInput({"show": false, "id": ""});
     var base = process.env.REACT_APP_BASENAME;
     const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
 
@@ -173,6 +191,10 @@ const ChangePassword = () => {
             axiosError(error, null, setAlertDialogInput);
         }
       });
+    } else {
+      setShowEye(false);
+      setShowEye2(false);
+      setShowEye3(false);
     }
     e.preventDefault();
   }

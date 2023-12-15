@@ -147,6 +147,7 @@ const Login = props => {
   function handleSubmit(e) {
     e.preventDefault();
     setValidated(true);
+    setTextAlertInput({"show": false, "id": ""});
     if (e.currentTarget.checkValidity() === true) {
       const loginData = { username: credentials.userName, password: credentials.password };
       postJson ("api/account/authenticate", loginData, {}).then ( (data) => {
