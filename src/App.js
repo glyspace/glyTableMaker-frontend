@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 
-import { useNavigate, useLocation, Outlet, Routes, Route, BrowserRouter } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Routes, Route } from "react-router-dom";
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { TopNavBar } from "./components/TopNavBar";
-import TableMakerRoutes from "./TableMakerRoutes";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { ScrollToTopBtn } from "./components/ScrollToTop";
 import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
