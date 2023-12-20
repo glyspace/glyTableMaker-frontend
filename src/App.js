@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useNavigate, useLocation, Outlet, Routes, Route } from "react-router-dom";
 import './App.css';
@@ -9,7 +9,7 @@ import { ScrollToTopBtn } from "./components/ScrollToTop";
 import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
-import { Container } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import Home  from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
@@ -19,14 +19,28 @@ import { VerifyToken } from "./pages/VerifyToken";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { ForgotUsername } from "./pages/ForgotUsername";
 import { ChangePassword } from "./pages/ChangePassword";
-import OAuth2Redirect from './components/OAuth2Redirect'
+import OAuth2Redirect from './components/OAuth2Redirect';
+import stringConstants from './data/stringConstants.json';
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./pages/Dashboard";
+import Collections from "./pages/Collections";
+import Glycans from "./pages/Glycans";
+import CoC from "./pages/CoC";
+import Tablemaker from "./pages/Tablemaker";
 
+const items = [
+  { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
+  { label: stringConstants.sidebar.glycan, id: "Glycan", route: stringConstants.routes.glycans},  
+  { label: stringConstants.sidebar.collection, id: "Col", route: stringConstants.routes.collection},
+  { label: stringConstants.sidebar.collectioncollection, id: "ColCol", route: stringConstants.routes.collectioncollection },
+  { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker},
+];  
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loginUpdater = flag => setLoggedIn(flag);
   const logoutHandler = e => logout(e);
-  //const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [sideBarData, setSidebarData] = useState(items);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,11 +51,113 @@ function App() {
     faEyeSlash,
     faEye,
   );
+
+  useEffect(checkAuthorization, [loggedIn]);
+
+  const routes = [
+    {
+      path: "/",
+      sidebar: () => loggedIn ? <Sidebar items={sideBarData}/> : "",
+      main: () => loggedIn ? <Dashboard authCheckAgent={checkAuthorization}/> : <Home />,
+    },
+    {
+      path: "/login",
+      main: () => <Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/profile",
+      main: () => <Profile authCheckAgent={checkAuthorization} />,
+      sidebar: () => "",
+    },
+    {
+      path: "/oauth2/redirect/",
+      main: () => <OAuth2Redirect updateLogin={loginUpdater} authCheckAgent={checkAuthorization} />,
+      sidebar: () => "",
+    },
+    {
+      path: "/register",
+      main: () => <Signup/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/emailConfirmation/:token",
+      main: () => <EmailConfirmation/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/verifyToken",
+      main: () => <VerifyToken/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/forgotPassword",
+      main: () => <ForgotPassword/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/forgotUsername",
+      main: () => <ForgotUsername/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/changePassword",
+      main: () => <ChangePassword/>,
+      sidebar: () => "",
+    },
+    {
+      path: stringConstants.routes.dashboard,
+      main: () => <Dashboard authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.glycans,
+      main: () => <Glycans authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.collection,
+      main: () => <Collections authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.collectioncollection,
+      main: () => <CoC authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.tablemaker,
+      main: () => <Tablemaker authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+  ];
+
   return (
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/login" element={<Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/>} />
+        {routes.map((element, index) => {
+          return <Route key={index} path={element.path} element={
+            <>
+              {element.sidebar() !== "" && <Row>
+                <Col sm={12} md={12} lg={12} xl={2}>{element.sidebar()}</Col>
+                <Col sm={12} md={12} lg={12} xl={10}>{element.main()}</Col>
+              </Row>}
+              {element.sidebar() === "" && (element.main())}
+          </>
+          } />
+        })}
+        </Route>
+      </Routes>
+
+/*
+
+          <Route path="/" element={!loggedIn ? <Home/> : 
+            <Row>
+              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
+              <Col sm={12} md={12} lg={12} xl={10}><Dashboard authCheckAgent={checkAuthorization}/></Col>
+            </Row>}/>
+          <Route path="/login" element={<Container  className="d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}><div className="w-100" style={{ maxWidth: "400px" }}><Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/></div></Container>} />
           <Route path="/profile" element={<Profile authCheckAgent={checkAuthorization} />} />
           <Route path='/oauth2/redirect/' element={<OAuth2Redirect updateLogin={loginUpdater} authCheckAgent={checkAuthorization} />} />
           <Route path="/register" element={<Signup/>} />
@@ -52,8 +168,38 @@ function App() {
           <Route path="/forgotPassword" element={<ForgotPassword/>} />
           <Route path="/forgotUsername" element={<ForgotUsername/>} />
           <Route path="/changePassword" element={<ChangePassword/>} />
+          <Route path={stringConstants.routes.dashboard} element={
+            <Row>
+              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
+              <Col sm={12} md={12} lg={12} xl={10}><Dashboard authCheckAgent={checkAuthorization}/></Col>
+            </Row>
+          }/>
+          <Route path={stringConstants.routes.glycans} element={
+            <Row>
+              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
+              <Col sm={12} md={12} lg={12} xl={10}><Glycans authCheckAgent={checkAuthorization}/></Col>
+            </Row>
+          }/>
+          <Route path={stringConstants.routes.collection} element={
+            <Row>
+              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
+              <Col sm={12} md={12} lg={12} xl={10}><Collections authCheckAgent={checkAuthorization}/></Col>
+            </Row>
+          }/>
+          <Route path={stringConstants.routes.collectioncollection} element={
+            <Row>
+              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
+              <Col sm={12} md={12} lg={12} xl={10}><CoC authCheckAgent={checkAuthorization}/></Col>
+            </Row>
+          }/>
+          <Route path={stringConstants.routes.tablemaker} element={
+            <Row>
+              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
+              <Col sm={12} md={12} lg={12} xl={10}><Tablemaker authCheckAgent={checkAuthorization}/></Col>
+            </Row>
+          }/>
         </Route>
-      </Routes>
+      </Routes>*/
   );
 
   function Layout() {
@@ -63,13 +209,8 @@ function App() {
       <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} />
       <CssBaseline />
       <ScrollToTopBtn />
-      <Container  className="d-flex align-items-center justify-content-center"
-        style={{ minHeight: "100vh" }}>
-          <div className="w-100" style={{ maxWidth: "400px" }}>
-           <Outlet />
-         </div>
-      </Container> 
-    </div>
+      <Outlet />
+      </div>
       </>
     )
   }

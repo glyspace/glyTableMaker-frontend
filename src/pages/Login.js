@@ -11,6 +11,7 @@ import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import googleLogo from "../images/google-login.svg";
+import stringConstants from '../data/stringConstants.json';
 
 const Login = props => {
   useEffect(() => {
@@ -182,7 +183,7 @@ const Login = props => {
     if (redirectedFrom) {
       navigate(redirectedFrom);
     } else {
-      navigate("/");
+      navigate(stringConstants.routes.dashboard);
     }
   }
 };

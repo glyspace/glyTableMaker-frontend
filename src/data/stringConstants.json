@@ -1,0 +1,17 @@
+{
+    "sidebar" : {
+        "dashboard": "Dashboard",
+        "glycan": "Glycans",
+        "collection": "Collections",
+        "collectioncollection": "Collections of Collections",
+        "tablemaker" : "Table Maker"
+    },
+
+    "routes" : {
+        "glycans" : "/glycans/",
+        "dashboard": "/dashboard/",
+        "collection": "/collections/",
+        "collectioncollection": "/coc/",
+        "tablemaker" : "/table/"
+    }
+}

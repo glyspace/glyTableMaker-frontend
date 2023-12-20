@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Navbar } from 'react-bootstrap';
 import PropTypes from "prop-types";
 import messages from '../data/messages';
-import routeConstants from '../data/routeConstants';
 import Button from 'react-bootstrap/Button';
 import { Dialog } from "@mui/material";
 
@@ -44,7 +43,7 @@ export default function DialogAlert(props) {
                     {messages.errors[getID()].showContactUs && <>{' '}{messages.errors.contactUsMsg}{' '}
                         <Navbar.Text
                             as={Link}
-                            to={routeConstants.contactUs}
+                            to={"/contactUs/"}
                             style={{padding:0}}
                         >
                             contact us
