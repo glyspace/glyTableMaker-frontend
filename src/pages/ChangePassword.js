@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Feedback, Title } from "../components/FormControls";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Container from "@mui/material/Container";
@@ -10,6 +10,8 @@ import { getAuthorizationHeader, putJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 
 const ChangePassword = () => {
+  const { state } = useLocation();
+  const { forceLogout } = state;
   const [userInput, setUserInput] = useReducer((state, newState) => ({ ...state, ...newState }), {
     currentPassword: "",
     newPassword: "",
@@ -201,7 +203,14 @@ const ChangePassword = () => {
 
   function passwordChangeSuccess(response) {
     console.log(response);
-    history("/profile");
+    if (forceLogout) {
+      var base = process.env.REACT_APP_BASENAME;
+      window.localStorage.removeItem(base ? base + "_token" : "token");
+      window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+      history ("/login");
+    } else {
+      history("/profile");
+    }
   }
 
 };
