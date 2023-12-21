@@ -169,7 +169,8 @@ const Login = props => {
   }
 
   function logInSuccess(response) {
-    var token = response.data.data;
+    var token = response.data.data.token;
+    var user = response.data.data.user;
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.setItem(base ? base + "_token" : "token", token);
     window.localStorage.setItem(base ? base + "_loggedinuser" : "loggedinuser", credentials.userName);
@@ -179,8 +180,11 @@ const Login = props => {
     if (location.state && location.state.redirectedFrom) {
       redirectedFrom = location.state.redirectedFrom;
     }
-
-    if (redirectedFrom) {
+    if (user.tempPassword) {
+      // need to force passwordChange
+      navigate("/changePassword", { state: { forceLogout: true } });
+    }
+    else if (redirectedFrom) {
       navigate(redirectedFrom);
     } else {
       navigate(stringConstants.routes.dashboard);
