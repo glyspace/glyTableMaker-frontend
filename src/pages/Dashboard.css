@@ -1,0 +1,36 @@
+.sidenav {
+    height: 100%;
+    position: sticky !important;
+    z-index: 1;
+    top: 0;
+      /* left: 0; */
+    background-color: #e6e6e6;
+    overflow-x: hidden;
+    transition: 0.5s;
+    /* padding-top: 10px; */
+      /* margin-top: 72px; */
+      /* margin-bottom: 50px !important; */
+    text-align: center;
+    /* min-width: 250px !important; */
+      /* padding-bottom: 150px; */
+      overflow-y: auto;
+      display: flex !important;
+  }
+  
+  .sidenav a {
+    color: #4a4a4a;
+    display: block;
+    transition: 0.3s;
+  }
+  
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+  .page-container {
+    margin-bottom: 40px;
+    padding-left: 5%;
+    padding-right: 5%;
+    /* width: 90%; */
+  }
+ 

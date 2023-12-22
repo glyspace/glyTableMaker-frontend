@@ -13,5 +13,9 @@
         "collection": "/collections/",
         "collectioncollection": "/coc/",
         "tablemaker" : "/table/"
+    },
+    "api": {
+        "statistics" : "api/data/statistics",
+        "login": "api/account/login"
     }
 }

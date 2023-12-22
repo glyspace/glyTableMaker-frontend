@@ -9,7 +9,7 @@ import { ScrollToTopBtn } from "./components/ScrollToTop";
 import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import Home  from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
