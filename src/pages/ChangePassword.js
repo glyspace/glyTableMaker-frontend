@@ -11,7 +11,7 @@ import { axiosError } from "../utils/axiosError";
 
 const ChangePassword = () => {
   const { state } = useLocation();
-  const { forceLogout } = state;
+  const { forceLogout } = state ? state : false;
   const [userInput, setUserInput] = useReducer((state, newState) => ({ ...state, ...newState }), {
     currentPassword: "",
     newPassword: "",
