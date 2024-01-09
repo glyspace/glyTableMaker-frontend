@@ -68,7 +68,7 @@ function App() {
     {
       path: "/profile",
       main: () => <Profile authCheckAgent={checkAuthorization} />,
-      sidebar: () => "",
+      sidebar: () => <Sidebar items={sideBarData} />,
     },
     {
       path: "/oauth2/redirect/",
@@ -103,7 +103,7 @@ function App() {
     {
       path: "/changePassword",
       main: () => <ChangePassword/>,
-      sidebar: () => "",
+      sidebar: () => <Sidebar items={sideBarData} />,
     },
     {
       path: stringConstants.routes.dashboard,

@@ -264,6 +264,7 @@ input[type]:not(:-ms-input-placeholder) + label {
   border-radius: 4px;
   background-color: white;
   width: 400px;
+  margin: 0 auto;
 }
 
 .card-page-md {
@@ -274,6 +275,7 @@ input[type]:not(:-ms-input-placeholder) + label {
   border-radius: 4px;
   background-color: white;
   width: 700px;
+  margin: 0 auto;
 }
 
 /* custom class for pages completely on bootstrap card */
