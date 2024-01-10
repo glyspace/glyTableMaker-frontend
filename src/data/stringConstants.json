@@ -12,7 +12,8 @@
         "dashboard": "/dashboard/",
         "collection": "/collections/",
         "collectioncollection": "/coc/",
-        "tablemaker" : "/table/"
+        "tablemaker" : "/table/",
+        "addglycan" : "/glycans/addglycan"
     },
     "api": {
         "statistics" : "api/data/statistics",

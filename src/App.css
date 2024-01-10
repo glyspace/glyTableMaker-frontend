@@ -618,6 +618,38 @@ body > :not(.card) {
   padding-bottom: 0 !important;
 }
 
+.gg-dropdown-nav {
+  color: var(--gg-blue) !important;
+  padding: 0px  !important;
+}
+
+.gg-dropdown-navitem {
+  padding: 0px  !important;
+}
+
+.gg-dropdown-navitem > .dropdown-toggle.nav-link{
+  color: var(--light) !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  /* padding-left: 0px !important; */
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: 0.4px;
+}
+
+.gg-dropdown-btn {
+  border-radius: 0.5rem;
+  padding-left: 10px;
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+  font-size: 16px !important;
+  font-weight: var(--bs-btn-font-weight)  !important;
+}
+
+.gg-dropdown-navbar {
+  color: var(--white) !important;
+}
+
 .dropdown-item {
   color: white !important;
 }

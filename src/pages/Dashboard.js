@@ -87,6 +87,12 @@ function StatisticsCard(props) {
 
 const sections = [
   {
+    name: "Glycans",
+    items: [
+      { title: "Glycan", value: "glycanCount", link: stringConstants.routes.glycans}
+    ],
+  },
+  {
     name: "Collections",
     items: [
       {
@@ -99,12 +105,6 @@ const sections = [
         value: "cocCount",
         link: stringConstants.routes.collectioncollection,
       },
-    ],
-  },
-  {
-    name: "Glycans",
-    items: [
-      { title: "Glycan", value: "glycanCount", link: stringConstants.routes.glycans}
     ],
   },
 ];
