@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -64,10 +64,11 @@ const data = [
     },
   ];
 
-const Glycans = () => {
+const Glycans = (props) => {
 
+  useEffect(props.authCheckAgent, []);
 
-const columns = useMemo(
+  const columns = useMemo(
     () => [
       {
         accessorKey: 'glytoucanid', 
