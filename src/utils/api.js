@@ -80,6 +80,21 @@ export const putJson = (url, data = {}, headers = {}) => {
   return axios(options);
 };
 
+export const deleteJson = (url, headers={}) => {
+  const myHeaders = {
+    "Content-Type": "application/json",
+    ...headers
+  };
+
+  const options = {
+    method: "DELETE",
+    headers: myHeaders,
+    url: TABLEMAKER_API + url
+  };
+
+  return axios(options);
+}
+
 
 export const postFormDataTo1 = (url, formData = {}, headers = {}) => {
   // const formDataElement = new FormData();

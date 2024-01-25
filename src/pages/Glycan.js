@@ -104,6 +104,7 @@ const Glycan = (props) => {
     function addGlycan(glycan) {
         setShowLoading(true);
         setError(false);
+        props.authCheckAgent();
 
         postJson ("api/data/addglycan", glycan, getAuthorizationHeader()).then ( (data) => {
             addGlycanSuccess(data);

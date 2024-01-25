@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState, useReducer } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -15,63 +15,81 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import stringConstants from '../data/stringConstants.json';
-
-const data = [
-    {
-      glytoucanid: 'G17689DH',
-      status: 'registered',
-      mass: 2368.84,
-      information: '',
-      image: 'https://image.glycosmos.org/snfg/png/G17689DH',
-      numberCollections: 1
-    },
-    {
-      glytoucanid: 'G22310AV',
-      status: 'newly registered',
-      mass: 2368.84,
-      information: 'composition',
-      image: 'https://image.glycosmos.org/snfg/png/G22310AV',
-      numberCollections: 1
-    },
-    {
-      glytoucanid: 'G61734US',
-      status: 'registered',
-      mass: 2659.94,
-      image: 'https://image.glycosmos.org/snfg/png/G61734US',
-      information: '',
-      numberCollections: 1
-    },
-    {
-      glytoucanid: 'G12923TG',
-      status: 'newly registered',
-      mass: 123.54,
-      information: '',
-      numberCollections: 1
-    },
-    {
-      glytoucanid: 'G12931TG',
-      status: 'newly registered',
-      mass: 123.54,
-      information: '',
-      numberCollections: 1
-    },
-    {
-      glytoucanid: 'G12231TG',
-      status: 'newly registered',
-      mass: 123.54,
-      information: '',
-      numberCollections: 1
-    },
-  ];
+import { deleteJson, getAuthorizationHeader, getJson } from '../utils/api';
+import { axiosError } from '../utils/axiosError';
+import DialogAlert from '../components/DialogAlert';
 
 const Glycans = (props) => {
+
+  //data and fetching state
+  const [data, setData] = useState([]);
+  const [isError, setIsError] = useState(false);
+  const [isDeleteError, setIsDeleteError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [rowCount, setRowCount] = useState(0);
+
+  //table state
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [sorting, setSorting] = useState([{"id":"dateCreated","desc":true}]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [alertDialogInput, setAlertDialogInput] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    { show: false, id: "" }
+  );
+
+  const fetchData = async () => {
+    if (!data.length) {
+      setIsLoading(true);
+    } else {
+      setIsRefetching(true);
+    }
+
+    let searchParams = "start=" + pagination.pageIndex * pagination.pageSize;
+    searchParams += "&size=" + pagination.pageSize;
+    searchParams += "&filters=" + encodeURI(JSON.stringify(columnFilters ?? []));
+    searchParams += "&globalFilter=" + globalFilter ?? '';
+    searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
+
+    getJson ("api/data/getglycans?" + searchParams, getAuthorizationHeader()).then ( (json) => {
+      setData(json.data.data.glycans);
+      setRowCount(json.data.data.totalItems);
+    }).catch (function(error) {
+      if (error && error.response && error.response.data) {
+          setIsError(true);
+          return;
+      } else {
+          axiosError(error, null, setAlertDialogInput);
+          return;
+      }
+    });
+    setIsError(false);
+    setIsLoading(false);
+    setIsRefetching(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    columnFilters,
+    globalFilter,
+    pagination.pageIndex,
+    pagination.pageSize,
+    sorting,
+  ]);
 
   useEffect(props.authCheckAgent, []);
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'glytoucanid', 
+        accessorKey: 'glytoucanID', 
         header: 'GlyTouCan ID',
         size: 50,
       },
@@ -81,11 +99,11 @@ const Glycans = (props) => {
         size: 100,
       },
       {
-        accessorKey: 'image',
+        accessorKey: 'cartoon',
         header: 'Image',
         size: 150,
         columnDefType: 'display',
-        Cell: ({ cell }) => <img src={cell.getValue()} />,
+        Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} />,
       },
       {
         accessorKey: 'mass', 
@@ -93,12 +111,12 @@ const Glycans = (props) => {
         size: 100,
       },
       {
-        accessorKey: 'numberCollections',
+        accessorKey: 'glycanCollections.length',
         header: '# Collections',
         size: 30,
       },
       {
-        accessorKey: 'information',
+        accessorKey: 'information',  //TODO make it a clickable icon to open modal dialog if there is glytoucanhash or error
         header: 'Information',
         size: 150,
       },
@@ -108,10 +126,35 @@ const Glycans = (props) => {
 
   const openDeleteConfirmModal = (row) => {
     if (window.confirm('Are you sure you want to delete this glycan?')) {
-      //deleteUser(row.original.id);
-      console.log("deleting row " + row.original.glytoucanid);
+      deleteGlycan(row.original.glycanId);
+      console.log("deleting row " + row.original.glycanId);
     }
   };
+
+  const deleteGlycan = (id) => {
+    setIsLoading(true);
+    setIsError(false);
+    props.authCheckAgent();
+
+    deleteJson ("api/data/delete/" + id, getAuthorizationHeader()).then ( (data) => {
+        setIsLoading(false);
+        fetchData();
+      }).catch (function(error) {
+        if (error && error.response && error.response.data) {
+            setIsError(true);
+            setIsDeleteError(true);
+            return;
+        } else {
+            axiosError(error, null, setAlertDialogInput);
+        }
+      }
+    );
+    setIsError(false);
+    setIsDeleteError(false);
+    setIsLoading(false);
+    setIsRefetching(false);
+  }
+  
 
   const table = useMaterialReactTable({
     columns,
@@ -127,6 +170,31 @@ const Glycans = (props) => {
         </Tooltip>
       </Box>
     ),
+    getRowId: (row) => row.glycanId,
+    initialState: {showColumnFilters: false},
+    manualFiltering: true,
+    manualPagination: true,
+    manualSorting: true,
+    muiToolbarAlertBannerProps: isError
+      ? {
+          color: 'error',
+          children: isDeleteError ? 'Error deleting' : 'Error loading data',
+        }
+      : undefined,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    rowCount,
+    state: {
+      columnFilters,
+      globalFilter,
+      isLoading,
+      pagination,
+      showAlertBanner: isError,
+      showProgressBars: isRefetching,
+      sorting,
+    },
   });
 
   return (
@@ -138,6 +206,12 @@ const Glycans = (props) => {
               subTitle="The table below displays a list of all glycans that have been uploaded. New glycans may be added, old glycans can be edited, and unused glycans can
               be removed."
           />
+          <DialogAlert
+                alertInput={alertDialogInput}
+                setOpen={input => {
+                    setAlertDialogInput({ show: input });
+                }}
+                />
           <Card>
             <Card.Body>
               <div className="text-center mb-4">
