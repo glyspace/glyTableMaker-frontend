@@ -119,6 +119,7 @@ const Glycans = (props) => {
         accessorKey: 'information',  //TODO make it a clickable icon to open modal dialog if there is glytoucanhash or error
         header: 'Information',
         size: 150,
+        columnDefType: 'display',
       },
     ],
     [],
