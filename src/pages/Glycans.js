@@ -18,6 +18,7 @@ import stringConstants from '../data/stringConstants.json';
 import { deleteJson, getAuthorizationHeader, getJson } from '../utils/api';
 import { axiosError } from '../utils/axiosError';
 import DialogAlert from '../components/DialogAlert';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 
 const Glycans = (props) => {
 
@@ -28,6 +29,8 @@ const Glycans = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(-1);
 
   //table state
   const [columnFilters, setColumnFilters] = useState([]);
@@ -103,7 +106,7 @@ const Glycans = (props) => {
         header: 'Image',
         size: 150,
         columnDefType: 'display',
-        Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} />,
+        Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
       },
       {
         accessorKey: 'mass', 
@@ -126,11 +129,15 @@ const Glycans = (props) => {
   );
 
   const openDeleteConfirmModal = (row) => {
-    if (window.confirm('Are you sure you want to delete this glycan?')) {
-      deleteGlycan(row.original.glycanId);
-      console.log("deleting row " + row.original.glycanId);
-    }
+    setSelectedId(row.original.glycanId);
+    setShowDeleteModal(true);
   };
+
+  const confirmDelete = () => {
+    if (selectedId !== -1) {
+      deleteGlycan(selectedId);
+    }
+  }
 
   const deleteGlycan = (id) => {
     setIsLoading(true);
@@ -155,8 +162,13 @@ const Glycans = (props) => {
     setIsLoading(false);
     setIsRefetching(false);
   }
-  
 
+  const toggle = () => {
+    document.getElementById("gg-dropdown-navbar1").setAttribute("aria-expanded", "true");
+    document.getElementById("gg-dropdown-navbar1").classList.toggle("show");
+    document.querySelector('[aria-labelledby="gg-dropdown-navbar1"]').classList.toggle("show");
+  }
+  
   const table = useMaterialReactTable({
     columns,
     data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
@@ -213,6 +225,13 @@ const Glycans = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+          <ConfirmationModal
+            showModal={showDeleteModal}
+            onCancel={() => setShowDeleteModal(false)}
+            onConfirm={confirmDelete}
+            title="Confirm Delete"
+            body="Are you sure you want to delete?"
+          />
           <Card>
             <Card.Body>
               <div className="text-center mb-4">
@@ -222,13 +241,13 @@ const Glycans = (props) => {
                     className="gg-btn-blue gg-dropdown-btn"
                     style={{
                       marginLeft: "10px"
-                    }}>
+                    }} onClick={()=> toggle()}>
                       <span  style={{display:"inline-block"}}>
                         <NavDropdown
                           className={ "gg-dropdown-navbar gg-dropdown-navitem"}
                           style={{display:"inline-block", padding: "0px !important"}}
                           title="Add Glycan"
-                          id="gg-dropdown-navbar"
+                          id="gg-dropdown-navbar1"
                         >
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=sequence`}>
                             Sequence
@@ -259,7 +278,7 @@ const Glycans = (props) => {
                           className={ "gg-dropdown-navbar gg-dropdown-navitem"}
                           style={{display:"inline-block", padding: "0px !important"}}
                           title="Add Glycan from File"
-                          id="gg-dropdown-navbar"
+                          id="gg-dropdown-navbar2"
                         >
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=file`}>
                             Glycoworkbench File (.gws)
