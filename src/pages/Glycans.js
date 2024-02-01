@@ -53,7 +53,7 @@ const Glycans = (props) => {
       setIsRefetching(true);
     }
 
-    let searchParams = "start=" + pagination.pageIndex * pagination.pageSize;
+    let searchParams = "start=" + pagination.pageIndex;
     searchParams += "&size=" + pagination.pageSize;
     searchParams += "&filters=" + encodeURI(JSON.stringify(columnFilters ?? []));
     searchParams += "&globalFilter=" + globalFilter ?? '';
@@ -62,18 +62,23 @@ const Glycans = (props) => {
     getJson ("api/data/getglycans?" + searchParams, getAuthorizationHeader()).then ( (json) => {
       setData(json.data.data.glycans);
       setRowCount(json.data.data.totalItems);
+      setIsError(false);
+      setIsLoading(false);
+      setIsRefetching(false);
     }).catch (function(error) {
       if (error && error.response && error.response.data) {
           setIsError(true);
+          setIsLoading(false);
+          setIsRefetching(false);
           return;
       } else {
+          setIsRefetching(false);
+          setIsLoading(false);
           axiosError(error, null, setAlertDialogInput);
           return;
       }
     });
-    setIsError(false);
-    setIsLoading(false);
-    setIsRefetching(false);
+    
   };
 
   useEffect(() => {
@@ -111,7 +116,8 @@ const Glycans = (props) => {
       {
         accessorKey: 'mass', 
         header: 'Mass',
-        size: 100,
+        size: 80,
+        Cell: ({ cell }) => cell.getValue().toFixed(2),
       },
       {
         accessorKey: 'glycanCollections.length',
@@ -146,27 +152,21 @@ const Glycans = (props) => {
 
     deleteJson ("api/data/delete/" + id, getAuthorizationHeader()).then ( (data) => {
         setIsLoading(false);
+        setIsError(false);
+        setIsDeleteError(false);
         fetchData();
       }).catch (function(error) {
         if (error && error.response && error.response.data) {
             setIsError(true);
             setIsDeleteError(true);
+            setIsLoading(false);
             return;
         } else {
+            setIsLoading(false);
             axiosError(error, null, setAlertDialogInput);
         }
       }
     );
-    setIsError(false);
-    setIsDeleteError(false);
-    setIsLoading(false);
-    setIsRefetching(false);
-  }
-
-  const toggle = () => {
-    document.getElementById("gg-dropdown-navbar1").setAttribute("aria-expanded", "true");
-    document.getElementById("gg-dropdown-navbar1").classList.toggle("show");
-    document.querySelector('[aria-labelledby="gg-dropdown-navbar1"]').classList.toggle("show");
   }
   
   const table = useMaterialReactTable({
@@ -241,7 +241,7 @@ const Glycans = (props) => {
                     className="gg-btn-blue gg-dropdown-btn"
                     style={{
                       marginLeft: "10px"
-                    }} onClick={()=> toggle()}>
+                    }}>
                       <span  style={{display:"inline-block"}}>
                         <NavDropdown
                           className={ "gg-dropdown-navbar gg-dropdown-navitem"}
