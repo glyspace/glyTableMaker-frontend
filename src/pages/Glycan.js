@@ -13,6 +13,7 @@ import { getAuthorizationHeader, postJson } from "../utils/api";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { axiosError } from "../utils/axiosError";
+import Composition from "../components/Composition";
 
 const Glycan = (props) => {
 
@@ -24,6 +25,7 @@ const Glycan = (props) => {
     
 
     const [glycoGlyphDialog, setGlycoGlyphDialog] = useState(type ? type === "draw" : false);
+    const [compositionDialog, setCompositionDialog] = useState(type ? type === "composition" : false);
     const [validate, setValidate] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [readOnly, setReadOnly] = useState(false);
@@ -43,7 +45,8 @@ const Glycan = (props) => {
         glytoucanId: "",
         sequence: "",
         sequenceType: "GLYCOCT",
-        glycoGlyphName: ""
+        glycoGlyphName: "",
+        composition: ""
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
@@ -79,11 +82,18 @@ const Glycan = (props) => {
                 setError(true);
                 return;
             }
+        } else if (type === "composition") {
+            if (userSelection.composition === "" || userSelection.compostion.trim().length < 1) {
+              setValidate(true);
+              setError(true);
+              return;
+          }
         }
 
         const glycan = { 
             sequence: userSelection.sequence,
             glytoucanID: userSelection.glytoucanId,
+            composition: userSelection.composition,
             format: userSelection.sequenceType}
         
         addGlycan(glycan);
@@ -139,6 +149,17 @@ const Glycan = (props) => {
             title={"GlycoGlyph"}
             setOpen={(input) => {
                 setGlycoGlyphDialog(input)
+            }}
+            submit={(input) => addGlycan(input)}
+        />
+         <Composition
+            show={compositionDialog}
+            composition={userSelection.composition}
+            setInputValue={setUserSelection}
+            inputValue={userSelection}
+            title={"Glycan Composition"}
+            setOpen={(input) => {
+                setCompositionDialog(input)
             }}
             submit={(input) => addGlycan(input)}
         />

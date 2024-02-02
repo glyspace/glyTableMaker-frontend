@@ -1,0 +1,186 @@
+[ {
+    "name" : "Hexose",
+    "id" : "Hex",
+    "ignore" : false,
+    "image" : "hex.svg",
+    "url" : "https://en.wikipedia.org/wiki/Hexose",
+    "pubChemCompound" : 206,
+    "children" : [ {
+        "name" : "Glucose",
+        "id" : "Glc",
+        "ignore" : false,
+        "image" : "glc.svg",
+        "url" : "https://en.wikipedia.org/wiki/Glucose",
+        "pubChemCompound" : 5793
+      }, {
+      "name" : "Galactose",
+      "id" : "Gal",
+      "ignore" : false,
+      "image" : "gal.svg",
+      "url" : "https://en.wikipedia.org/wiki/Galactose",
+      "pubChemCompound" : 6036
+    }, {
+        "name" : "Mannose",
+        "id" : "Man",
+        "ignore" : false,
+        "image" : "man.svg",
+        "url" : "https://en.wikipedia.org/wiki/Mannose",
+        "pubChemCompound" : 18950
+      } ]
+  }, {
+    "name" : "N-acetyl Hexosamine",
+    "id" : "HexNAc",
+    "ignore" : false,
+    "image" : "hexnac.svg",
+    "pubChemCompound" : 899,
+    "children" : [{
+        "name" : "N-acetyl Glucosamine",
+        "id" : "GlcNAc",
+        "ignore" : false,
+        "image" : "glcnac.svg",
+        "url" : "https://en.wikipedia.org/wiki/N-Acetylglucosamine",
+        "pubChemCompound" : 439174
+      }, {
+      "name" : "N-acetyl Galactosamine",
+      "id" : "GalNAc",
+      "ignore" : false,
+      "image" : "galnac.svg",
+      "url" : "https://en.wikipedia.org/wiki/N-Acetylgalactosamine",
+      "pubChemCompound" : 35717
+    } ]
+  }, {
+    "name" : "deoxy Hexose",
+    "id" : "dHex",
+    "ignore" : false,
+    "image" : "dhex.svg",
+    "url" : "https://en.wikipedia.org/wiki/Hexose#Deoxyhexoses",
+    "pubChemCompound" : 840,
+    "children" : [ {
+      "name" : "Fucose",
+      "id" : "Fuc",
+      "ignore" : false,
+      "image" : "fuc.svg",
+      "url" : "https://en.wikipedia.org/wiki/Fucose",
+      "pubChemCompound" : 17106
+    } ]
+  }, {
+    "name" : "Deoxynonulosonate",
+    "id" : "NulO",
+    "ignore" : false,
+    "image" : "nulo.svg",
+    "url" : "https://en.wikipedia.org/wiki/Sialic_acid",
+    "pubChemCompound" : 5086735,
+    "children" : [ {
+        "name" : "Keto-Deoxy-Nonulonic acid",
+        "id" : "Kdn",
+        "ignore" : false,
+        "image" : "kdn.svg",
+        "pubChemCompound" : 13991616
+      }, {
+      "name" : "N-acetyl Neuraminic acid",
+      "id" : "Neu5Ac",
+      "ignore" : false,
+      "image" : "neu5ac.svg",
+      "url" : "https://en.wikipedia.org/wiki/N-Acetylneuraminic_acid",
+      "pubChemCompound" : 439197
+    }, {
+        "name" : "N-glycolyl Neuraminic acid",
+        "id" : "Neu5Gc",
+        "ignore" : false,
+        "image" : "neu5gc.svg",
+        "url" : "https://en.wikipedia.org/wiki/N-Glycolylneuraminic_acid",
+        "pubChemCompound" : 440001
+    }, {
+        "name" : "Neuraminic acid",
+        "id" : "Neu",
+        "ignore" : false,
+        "image" : "neu.svg",
+        "url" : "https://en.wikipedia.org/wiki/Neuraminic_acid",
+        "pubChemCompound" : 513472
+    } ]
+  }, {
+    "name" : "3-Deoxy-D-manno-octulosonic acid",
+    "id" : "Kdo",
+    "ignore" : false,
+    "image" : "kdo.svg",
+    "url" : "https://en.wikipedia.org/wiki/3-Deoxy-D-manno-oct-2-ulosonic_acid",
+    "pubChemCompound" : 445569
+  }, {
+    "name" : "Hexosamine",
+    "id" : "HexN",
+    "ignore" : false,
+    "image" : "hexn.svg",
+    "url" : "https://en.wikipedia.org/wiki/Hexosamines",
+    "pubChemCompound" : 739,
+    "children" : [ {
+      "name" : "Glucosamine",
+      "id" : "GlcN",
+      "ignore" : false,
+      "image" : "glcn.svg",
+      "url" : "https://en.wikipedia.org/wiki/Glucosamine",
+      "pubChemCompound" : 439213
+    } ]
+  }, {
+    "name" : "Hexuronic acid",
+    "id" : "HexA",
+    "ignore" : false,
+    "image" : "hexa.svg",
+    "url" : "https://en.wikipedia.org/wiki/Hexuronic_acid",
+    "pubChemCompound" : 104899,
+    "children" : [ {
+      "name" : "Glucuronic acid",
+      "id" : "GlcA",
+      "ignore" : false,
+      "image" : "glca.svg",
+      "url" : "https://en.wikipedia.org/wiki/Glucuronic_acid",
+      "pubChemCompound" : 94715
+    }, {
+      "name" : "Iduronic acid",
+      "id" : "IdoA",
+      "ignore" : false,
+      "image" : "idoa.svg",
+      "url" : "https://en.wikipedia.org/wiki/Iduronic_acid",
+      "pubChemCompound" : 441039
+    } ]
+  },  {
+    "name" : "Pentose",
+    "id" : "Pent",
+    "ignore" : false,
+    "image" : "pent.svg",
+    "url" : "https://en.wikipedia.org/wiki/Pentose",
+    "pubChemCompound" : 229,
+    "children" : [{
+        "name" : "Arabinose",
+        "id" : "Ara",
+        "ignore" : false,
+        "image" : "ara.svg",
+        "url" : "https://en.wikipedia.org/wiki/Arabinose",
+        "pubChemCompound" : 5460291
+    }, {
+      "name" : "Xylose",
+      "id" : "Xyl",
+      "ignore" : false,
+      "image" : "xyl.svg",
+      "url" : "https://en.wikipedia.org/wiki/Xylose",
+      "pubChemCompound" : 135191
+    },  {
+        "name" : "Ribose",
+        "id" : "Rib",
+        "ignore" : false,
+        "image" : "rib.svg",
+        "url" : "https://en.wikipedia.org/wiki/Ribose",
+        "pubChemCompound" : 5779
+        } ]
+  }, {
+    "name" : "Phosphate",
+    "id" : "P",
+    "ignore" : false,
+    "url" : "https://en.wikipedia.org/wiki/Phosphate",
+    "pubChemCompound" : 1061
+  }, {
+    "name" : "Sulfate",
+    "id" : "S",
+    "ignore" : false,
+    "url" : "https://en.wikipedia.org/wiki/Sulfate",
+    "pubChemCompound" : 1117
+  } ]

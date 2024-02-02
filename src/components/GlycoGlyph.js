@@ -72,7 +72,7 @@ const GlycoGlyph = (props) => {
                 <div style={{ marginTop: "20px", marginRight: "50px" }}>
                     <Button
                         className='gg-btn-blue mb-5'
-                        style={{ float: "right" }}
+                        style={{ float: "right", marginLeft: "5px" }}
                         onClick={() => {
 
                             //Select the frame element
