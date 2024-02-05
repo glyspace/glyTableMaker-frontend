@@ -117,7 +117,7 @@ const Glycans = (props) => {
         accessorKey: 'mass', 
         header: 'Mass',
         size: 80,
-        Cell: ({ cell }) => cell.getValue().toFixed(2),
+        Cell: ({ cell }) => cell.getValue() ? cell.getValue().toFixed(2) : null,
       },
       {
         accessorKey: 'glycanCollections.length',
