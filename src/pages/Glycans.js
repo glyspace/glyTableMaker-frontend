@@ -4,7 +4,7 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import Container from "@mui/material/Container";
-import { Card } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
 import { Link } from "react-router-dom";
 import { NavDropdown, Nav } from "react-bootstrap";
@@ -14,6 +14,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import stringConstants from '../data/stringConstants.json';
 import { deleteJson, getAuthorizationHeader, getJson } from '../utils/api';
 import { axiosError } from '../utils/axiosError';
@@ -31,6 +32,9 @@ const Glycans = (props) => {
   const [rowCount, setRowCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState(-1);
+  const [infoError, setInfoError] = useState("");
+  const [glytoucanHash, setGlytoucanHash] = useState("");
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   //table state
   const [columnFilters, setColumnFilters] = useState([]);
@@ -117,7 +121,7 @@ const Glycans = (props) => {
         accessorKey: 'mass', 
         header: 'Mass',
         size: 80,
-        Cell: ({ cell }) => cell.getValue() ? cell.getValue().toFixed(2) : null,
+        Cell: ({ cell }) => cell.getValue() ? Number(cell.getValue().toFixed(2)).toLocaleString('en-US') : null,
       },
       {
         accessorKey: 'glycanCollections.length',
@@ -125,10 +129,24 @@ const Glycans = (props) => {
         size: 30,
       },
       {
-        accessorKey: 'information',  //TODO make it a clickable icon to open modal dialog if there is glytoucanhash or error
+        id: 'information',
         header: 'Information',
         size: 150,
         columnDefType: 'display',
+        Cell: ({ row }) => (
+          (row.original.glytoucanHash || row.original.error) &&
+
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip title="Information">
+              <IconButton onClick={() => {
+                  setGlytoucanHash(row.original.glytoucanHash);
+                  setInfoError(row.original.error);
+                  setShowInfoModal(true);}}>
+                <InfoIcon style={{ color: '#2f78b7' }}/>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
       },
     ],
     [],
@@ -232,6 +250,28 @@ const Glycans = (props) => {
             title="Confirm Delete"
             body="Are you sure you want to delete?"
           />
+          <Modal
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            show={showInfoModal}
+            onHide={() => setShowInfoModal(false)}
+          >
+            <Modal.Header closeButton className= "alert-dialog-title">
+              <Modal.Title id="contained-modal-title-vcenter" >
+                Glytoucan Registration Information
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>{infoError ? "Registration failed. Error: " + infoError : glytoucanHash ? 
+            "Registration request sent. Got hash: " + glytoucanHash : ""} </Modal.Body>
+            <Modal.Footer></Modal.Footer>
+          </Modal>
+                
+              
           <Card>
             <Card.Body>
               <div className="text-center mb-4">
