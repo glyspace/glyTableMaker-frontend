@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextAlert from "./TextAlert";
 import { Button, Col, Image, Row } from "react-bootstrap";
@@ -12,9 +12,27 @@ const Composition = (props) => {
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+    const [compositionString, setCompositionString] = useState ("");
 
-    let monoList = [];
-    let monoListSecondCol = [];
+    const [monoList, setMonoList] = useState([]);
+    const [monoListSecondCol, setMonoListSecondCol] = useState([]);
+
+    useEffect (() => {
+        let mono1 = [];
+        let mono2 = [];
+        compositionList.map (mono => {
+            let monoWithCount = {};
+            monoWithCount.mono = mono;
+            monoWithCount.count = 0;
+            if (mono1.length > 12) {
+                mono2.push(monoWithCount);
+            } else {
+                mono1.push (monoWithCount);
+            }
+        });
+        setMonoList(mono1);
+        setMonoListSecondCol(mono2);
+    }, []);
 
     const changeCount = (element, increment) => {
         if (increment) {
@@ -38,21 +56,12 @@ const Composition = (props) => {
                 tspan.textContent = element.count+"";
             }
         }
+
+        createCompositionString(false);
         
     }
 
-    const getCompositionSelections = () => {
-        compositionList.map (mono => {
-            let monoWithCount = {};
-            monoWithCount.mono = mono;
-            monoWithCount.count = 0;
-            if (monoList.length > 12) {
-                monoListSecondCol.push(monoWithCount);
-            } else {
-                monoList.push (monoWithCount);
-            }
-        })
-        
+    const getCompositionSelections = () => {   
         let rows = [];
         monoList.forEach ((monoWithCount, index) => {
                 rows.push(
@@ -117,7 +126,7 @@ const Composition = (props) => {
         return rows;
     };
 
-    const createCompositionString = () => {
+    const createCompositionString = (commit) => {
         // if no monosacchradide is selected, set textAlertInput
         // else create the string and set in the props
         let composition = "";
@@ -131,19 +140,24 @@ const Composition = (props) => {
                 composition += element.mono.id + ":" + element.count + "|";
             }
         })
-        if (composition === "") {
+        if (commit && composition === "") {
             // error
             setTextAlertInput ({"show": true, "message": "No selection has been made!"});
             return;
         }
-        else if (composition.endsWith("|")) {
+        else if (composition && composition.endsWith("|")) {
             composition = composition.substring(0, composition.length-1);
         }
-        props.setOpen(false);
-        const glycan = { 
-            composition: composition
-        }
-        props.submit(glycan);
+
+        setCompositionString (composition);
+
+        if (commit) {
+            props.setOpen(false);
+            const glycan = { 
+                composition: composition
+            }
+            props.submit(glycan);
+        } 
     }
 
     return (
@@ -162,16 +176,16 @@ const Composition = (props) => {
             }}
         >
             <div style={{ overflow: 'hidden' }}>
-                <h5 className="sups-dialog-title">{props.title}</h5>
+                <h5 className="sups-dialog-title">{props.title}: {compositionString}</h5>
                 <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '73vh' }}>
                     <TextAlert alertInput={textAlertInput}/>
-                    { getCompositionSelections() }
+                    { monoList.length > 0 && getCompositionSelections() }
                 </div>
                 <div style={{ marginTop: "20px", marginRight: "50px" }}>
                     <Button
                         className='gg-btn-blue mb-5'
                         style={{ float: "right", marginLeft: "5px" }}
-                        onClick={() => {createCompositionString()}}
+                        onClick={() => {createCompositionString(true)}}
                     >
                         Add Glycan
                     </Button>
