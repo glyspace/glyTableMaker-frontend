@@ -138,7 +138,7 @@
     "pubChemCompound" : 441039
   }, {
     "name" : "Pentose",
-    "id" : "Pent",
+    "id" : "Pen",
     "ignore" : false,
     "image" : "pent.svg",
     "url" : "https://en.wikipedia.org/wiki/Pentose",
