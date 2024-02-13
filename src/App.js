@@ -28,6 +28,7 @@ import Glycans from "./pages/Glycans";
 import CoC from "./pages/CoC";
 import Tablemaker from "./pages/Tablemaker";
 import Glycan from "./pages/Glycan";
+import { GlycanFromFile } from "./pages/GlycanFromFile";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -134,6 +135,11 @@ function App() {
     {
       path: stringConstants.routes.addglycan,
       main: () => <Glycan authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.addglycanfromfile,
+      main: () => <GlycanFromFile authCheckAgent={checkAuthorization}/>,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
   ];

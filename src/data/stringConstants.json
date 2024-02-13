@@ -13,10 +13,13 @@
         "collection": "/collections/",
         "collectioncollection": "/coc/",
         "tablemaker" : "/table/",
-        "addglycan" : "/glycans/addglycan"
+        "addglycan" : "/glycans/addglycan",
+        "addglycanfromfile": "/glycans/addglycanfromfile"
     },
     "api": {
         "statistics" : "api/data/statistics",
-        "login": "api/account/login"
+        "login": "api/account/login",
+        "upload": "api/file/upload",
+        "addglycanfromfile" : "api/data/addglycanfromfile"
     }
 }

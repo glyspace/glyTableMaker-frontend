@@ -320,7 +320,7 @@ const Glycans = (props) => {
                           title="Add Glycan from File"
                           id="gg-dropdown-navbar2"
                         >
-                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=file`}>
+                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=gws`}>
                             Glycoworkbench File (.gws)
                           </NavDropdown.Item>
                         </NavDropdown>
