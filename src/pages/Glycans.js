@@ -34,6 +34,7 @@ const Glycans = (props) => {
   const [selectedId, setSelectedId] = useState(-1);
   const [infoError, setInfoError] = useState("");
   const [glytoucanHash, setGlytoucanHash] = useState("");
+  const [date, setDate] = useState("");
   const [showInfoModal, setShowInfoModal] = useState(false);
 
   //table state
@@ -140,6 +141,7 @@ const Glycans = (props) => {
             <Tooltip title="Information">
               <IconButton onClick={() => {
                   setGlytoucanHash(row.original.glytoucanHash);
+                  setDate(row.original.dateCreated);
                   setInfoError(row.original.error);
                   setShowInfoModal(true);}}>
                 <InfoIcon style={{ color: '#2f78b7' }}/>
@@ -266,11 +268,13 @@ const Glycans = (props) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-            }}>{infoError ? "Registration failed. Error: " + infoError : glytoucanHash ? 
-            "Registration request sent. Got hash: " + glytoucanHash : ""} </Modal.Body>
+            }}>{infoError ? 
+              "Glycan is submitted to Glytoucan on " + date + 
+              ". Registration failed with the following error: " + infoError : glytoucanHash ? 
+              "Glycan is submitted to Glytoucan on " + date + 
+              ". Glytoucan assigned temporary hash value: " + glytoucanHash : ""} </Modal.Body>
             <Modal.Footer></Modal.Footer>
-          </Modal>
-                
+          </Modal>  
               
           <Card>
             <Card.Body>
@@ -278,11 +282,11 @@ const Glycans = (props) => {
               <Nav className={ "gg-dropdown-nav"} style={{display:"inline-block", borderRadius:".5rem"}} >
                   <div
                     type="button"
-                    className="gg-btn-blue gg-dropdown-btn"
+                    className="gg-btn-blue-sm gg-dropdown-btn"
                     style={{
                       marginLeft: "10px"
                     }}>
-                      <span  style={{display:"inline-block"}}>
+                      <span style={{display:"inline-block"}}>
                         <NavDropdown
                           className={ "gg-dropdown-navbar gg-dropdown-navitem"}
                           style={{display:"inline-block", padding: "0px !important"}}
@@ -309,7 +313,7 @@ const Glycans = (props) => {
                 <Nav className={ "gg-dropdown-nav"} style={{display:"inline-block", borderRadius:".5rem"}} >
                   <div
                     type="button"
-                    className="gg-btn-blue gg-dropdown-btn"
+                    className="gg-btn-blue-sm gg-dropdown-btn"
                     style={{
                       marginLeft: "10px"
                     }}>

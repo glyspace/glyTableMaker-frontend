@@ -444,6 +444,14 @@ input[type]:not(:-ms-input-placeholder) + label {
   width: 270px;
 }
 
+.gg-btn-blue-sm {
+  color: #ffffff !important;
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important;
+  -webkit-transition: all 0.5s !important;
+  transition: ease-in-out 0.5s !important;
+}
+
 .gg-btn-blue:hover,
 .gg-btn-blue-reg:hover {
   background-color: var(--gg-dark-blue) !important;
@@ -619,7 +627,7 @@ body > :not(.card) {
 }
 
 .gg-dropdown-nav {
-  color: var(--gg-blue) !important;
+  color: var(--white) !important;
   padding: 0px  !important;
 }
 
