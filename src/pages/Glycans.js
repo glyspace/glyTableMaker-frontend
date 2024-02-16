@@ -97,6 +97,7 @@ const Glycans = (props) => {
     sorting,
   ]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(props.authCheckAgent, []);
 
   const columns = useMemo(
@@ -110,6 +111,7 @@ const Glycans = (props) => {
         accessorKey: 'status',
         header: 'Status',
         size: 100,
+        enableColumnFilter: false,
       },
       {
         accessorKey: 'cartoon',
@@ -128,6 +130,7 @@ const Glycans = (props) => {
         accessorKey: 'glycanCollections.length',
         header: '# Collections',
         size: 30,
+        enableColumnFilter: false,
       },
       {
         id: 'information',
