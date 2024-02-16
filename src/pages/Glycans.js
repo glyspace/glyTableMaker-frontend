@@ -20,6 +20,7 @@ import { deleteJson, getAuthorizationHeader, getJson } from '../utils/api';
 import { axiosError } from '../utils/axiosError';
 import DialogAlert from '../components/DialogAlert';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import { StatusMessage } from '../components/StatusMessage';
 
 const Glycans = (props) => {
 
@@ -50,6 +51,8 @@ const Glycans = (props) => {
     (state, newState) => ({ ...state, ...newState }),
     { show: false, id: "" }
   );
+
+  const [batchUpload, setBatchUpload] = useState(false);
 
   const fetchData = async () => {
     if (!data.length) {
@@ -281,6 +284,10 @@ const Glycans = (props) => {
               
           <Card>
             <Card.Body>
+              <StatusMessage
+                setBatchUpload={setBatchUpload}
+                setAlertDialogInput={setAlertDialogInput}
+              />
               <div className="text-center mb-4">
               <Nav className={ "gg-dropdown-nav"} style={{display:"inline-block", borderRadius:".5rem"}} >
                   <div
@@ -313,7 +320,9 @@ const Glycans = (props) => {
                   </div>
                 </Nav>
 
-                <Nav className={ "gg-dropdown-nav"} style={{display:"inline-block", borderRadius:".5rem"}} >
+                <Nav className={ "gg-dropdown-nav"} 
+                  style={{display:"inline-block", borderRadius:".5rem"}} 
+                  disabled={batchUpload}>
                   <div
                     type="button"
                     className="gg-btn-blue-sm gg-dropdown-btn"
