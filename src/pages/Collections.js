@@ -22,7 +22,6 @@ const Collections = (props) => {
   const [rowCount, setRowCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState(-1);
-  const [infoError, setInfoError] = useState("");
   //table state
   const [columnFilters, setColumnFilters] = useState([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -53,7 +52,7 @@ const Collections = (props) => {
     searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
 
     getJson ("api/data/getcollections?" + searchParams, getAuthorizationHeader()).then ( (json) => {
-      setData(json.data.data.glycans);
+      setData(json.data.data.collections);
       setRowCount(json.data.data.totalItems);
       setIsError(false);
       setIsLoading(false);
@@ -96,19 +95,15 @@ const Collections = (props) => {
         size: 50,
       },
       {
-        accessorKey: 'description',
-        header: 'Description',
-        size: 100,
-      },
-      {
         accessorKey: 'glycans.length',
         header: '# Glycans',
         size: 30,
         enableColumnFilter: false,
       },
       {
-        accessorKey: 'metadata.length',
+        accessorFn: (row) => row.metadata ? row.metadata.length : 0,
         header: '# Metadata Columns',
+        id: 'metadata',
         size: 30,
         enableColumnFilter: false,
       },
@@ -117,7 +112,7 @@ const Collections = (props) => {
   );
 
   const openDeleteConfirmModal = (row) => {
-    setSelectedId(row.original.glycanId);
+    setSelectedId(row.original.collectionId);
     setShowDeleteModal(true);
   };
 
@@ -136,6 +131,7 @@ const Collections = (props) => {
         setIsLoading(false);
         setIsError(false);
         setIsDeleteError(false);
+        setShowDeleteModal(false);
         fetchData();
       }).catch (function(error) {
         if (error && error.response && error.response.data) {
@@ -170,6 +166,8 @@ const Collections = (props) => {
         </Tooltip>
       </Box>
     ),
+    renderDetailPanel: ({ row }) =>
+        row.original.description ? <div><span>{row.original.description}</span> </div> : null,
     getRowId: (row) => row.collectionId,
     initialState: {showColumnFilters: false},
     manualFiltering: true,

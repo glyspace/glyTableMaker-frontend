@@ -180,6 +180,7 @@ const Glycans = (props) => {
         setIsLoading(false);
         setIsError(false);
         setIsDeleteError(false);
+        setShowDeleteModal(false);
         fetchData();
       }).catch (function(error) {
         if (error && error.response && error.response.data) {

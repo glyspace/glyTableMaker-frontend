@@ -69,6 +69,7 @@ const Glycan = (props) => {
     };
 
     const handleSubmit = e => {
+        props.authCheckAgent();
         setValidate(false);
         if (type === "sequence") {
             if (userSelection.sequence === "" || userSelection.sequence.trim().length < 1) {
