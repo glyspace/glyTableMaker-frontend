@@ -14,7 +14,8 @@
         "collectioncollection": "/coc/",
         "tablemaker" : "/table/",
         "addglycan" : "/glycans/addglycan",
-        "addglycanfromfile": "/glycans/addglycanfromfile"
+        "addglycanfromfile": "/glycans/addglycanfromfile",
+        "addcollection": "/collections/addcollection"
     },
     "api": {
         "statistics" : "api/data/statistics",

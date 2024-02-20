@@ -176,7 +176,7 @@ const Glycans = (props) => {
     setIsError(false);
     props.authCheckAgent();
 
-    deleteJson ("api/data/delete/" + id, getAuthorizationHeader()).then ( (data) => {
+    deleteJson ("api/data/deleteglycan/" + id, getAuthorizationHeader()).then ( (data) => {
         setIsLoading(false);
         setIsError(false);
         setIsDeleteError(false);
