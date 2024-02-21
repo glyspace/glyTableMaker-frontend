@@ -22,8 +22,6 @@ const Glycan = (props) => {
 
     useEffect(props.authCheckAgent, []);
 
-    
-
     const [glycoGlyphDialog, setGlycoGlyphDialog] = useState(type ? type === "draw" : false);
     const [compositionDialog, setCompositionDialog] = useState(type ? type === "composition" : false);
     const [validate, setValidate] = useState(false);
@@ -57,7 +55,7 @@ const Glycan = (props) => {
         const newValue = e.target.value;
         setTextAlertInput({"show": false, id: ""});
     
-        if ((name === "sequence" || name === "glytoucan") && newValue.trim().length > 1) {
+        if ((name === "sequence" || name === "glytoucanId") && newValue.trim().length > 1) {
             setValidate(false);
         }
         setUserSelection({ [name]: newValue });
@@ -185,7 +183,7 @@ const Glycan = (props) => {
                   className="gg-align-center mb-3"
                 >
                   <Col xs={12} lg={9}>
-                    <FormLabel label="GlyTouCan ID" />
+                    <FormLabel label="GlyTouCan ID" className="required-asterik"/>
                     <Form.Control
                       type="text"
                       name="glytoucanId"
@@ -194,7 +192,10 @@ const Glycan = (props) => {
                       onChange={handleChange}
                       minLength={8}
                       maxLength={10}
+                      required={true}
+                      isInvalid={validate}
                     />
+                    <Feedback message="Please enter a valid Glytoucan ID" />
                     </Col>
                 </Form.Group>) }
                 {/* Sequence Type */}
