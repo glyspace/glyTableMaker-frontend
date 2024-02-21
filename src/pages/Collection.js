@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
@@ -8,6 +8,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
+import Table from "../components/Table";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -34,6 +35,8 @@ const Collection = (props) => {
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [userSelection, setUserSelection] = useReducer(reducer, collection);
+
+    const [showGlycanTable, setShowGlycanTable] = useState(false);
 
     useEffect(props.authCheckAgent, []);
 
@@ -107,6 +110,36 @@ const Collection = (props) => {
         e.preventDefault();
     }
 
+    const columns = useMemo(
+        () => [
+          {
+            accessorKey: 'glytoucanID', 
+            header: 'GlyTouCan ID',
+            size: 50,
+          },
+          {
+            accessorKey: 'status',
+            header: 'Status',
+            size: 100,
+            enableColumnFilter: false,
+          },
+          {
+            accessorKey: 'cartoon',
+            header: 'Image',
+            size: 150,
+            columnDefType: 'display',
+            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+          },
+          {
+            accessorKey: 'mass', 
+            header: 'Mass',
+            size: 80,
+            Cell: ({ cell }) => cell.getValue() ? Number(cell.getValue().toFixed(2)).toLocaleString('en-US') : null,
+          }
+        ],
+        [],
+      );
+
     return (
         <>
         <Container maxWidth="xl">
@@ -176,11 +209,23 @@ const Collection = (props) => {
                     disabled={error} onClick={handleSubmit}>
                     Save
                 </Button> 
-                {/**<Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                    onClick={showGlycans}>
+                { <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                    disabled={error} onClick={()=> setShowGlycanTable(true)}>
                     Add Glycan
-            </Button> **/}
+                </Button>}
             </div>
+            </Card.Body>
+          </Card>
+          <Card>
+            <Card.Body>
+            {showGlycanTable && 
+                <Table 
+                    authCheckAgent={props.authCheckAgent}
+                    ws="api/data/getglycans"
+                    columns={columns}
+                    enableRowActions={false}
+                    setAlertDialogInput={setAlertDialogInput}
+                />}
             </Card.Body>
           </Card>
         </div>

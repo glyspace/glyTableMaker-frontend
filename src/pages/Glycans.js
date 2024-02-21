@@ -68,7 +68,7 @@ const Glycans = (props) => {
     searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
 
     getJson ("api/data/getglycans?" + searchParams, getAuthorizationHeader()).then ( (json) => {
-      setData(json.data.data.glycans);
+      setData(json.data.data.objects);
       setRowCount(json.data.data.totalItems);
       setIsError(false);
       setIsLoading(false);

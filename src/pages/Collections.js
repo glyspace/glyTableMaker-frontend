@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import stringConstants from '../data/stringConstants.json';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import Table from "../components/Table";
 
 const Collections = (props) => {
     //data and fetching state
@@ -52,7 +53,7 @@ const Collections = (props) => {
     searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
 
     getJson ("api/data/getcollections?" + searchParams, getAuthorizationHeader()).then ( (json) => {
-      setData(json.data.data.collections);
+      setData(json.data.data.objects);
       setRowCount(json.data.data.totalItems);
       setIsError(false);
       setIsLoading(false);
@@ -228,7 +229,19 @@ const Collections = (props) => {
                 Add Metadata
                 </Button>
               </div>
-              <MaterialReactTable table={table} />
+              {/**<Table 
+                  authCheckAgent={props.authCheckAgent}
+                  ws="api/data/getcollections"
+                  columns={columns}
+                  enableRowActions={true}
+                  setAlertDialogInput={setAlertDialogInput}
+                  showEdit={true}
+                  editws={stringConstants.routes.addcollection + "?collectionId="}
+                  deletews="api/data/deletecollection/"
+                  renderDetailPanel="renderDetailPanel: ({ row }) => row.original.description ? <div><span>{row.original.description}</span> </div> : null,"
+                  initialSortColumn="name"
+            />**/}
+            <MaterialReactTable table={table} />
             </Card.Body>
           </Card>
        </div>
