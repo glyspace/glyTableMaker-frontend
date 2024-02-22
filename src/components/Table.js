@@ -120,6 +120,7 @@ const Table = (props) => {
         columns,
         data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
+        enableRowSelection: props.rowSelection,
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
@@ -162,6 +163,55 @@ const Table = (props) => {
         },
       });
 
+      const tableDetail = useMaterialReactTable({
+        columns,
+        data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+        enableRowActions: props.enableRowActions,
+        enableRowSelection: props.rowSelection,
+        positionActionsColumn: 'last',
+        renderRowActions: ({ row }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip title="Delete">
+              <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            {props.showEdit && (<Tooltip title="Edit">
+              <IconButton onClick={() => navigate(props.editws + row.original.collectionId)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>)}
+          </Box>
+        ),
+        renderDetailPanel: ({ row }) =>
+            row.original.description ? <div><span>{row.original.description}</span> </div> : null,
+        getRowId: (row) => row.glycanId,
+        initialState: {showColumnFilters: false},
+        manualFiltering: true,
+        manualPagination: true,
+        manualSorting: true,
+        muiToolbarAlertBannerProps: isError
+          ? {
+              color: 'error',
+              children: isDeleteError ? 'Error deleting' : 'Error loading data',
+            }
+          : undefined,
+        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
+        onPaginationChange: setPagination,
+        onSortingChange: setSorting,
+        rowCount,
+        state: {
+          columnFilters,
+          globalFilter,
+          isLoading,
+          pagination,
+          showAlertBanner: isError,
+          showProgressBars: isRefetching,
+          sorting,
+        },
+      });
+
     return (
     <>
         <ConfirmationModal
@@ -172,7 +222,7 @@ const Table = (props) => {
             body="Are you sure you want to delete?"
         />
 
-        <MaterialReactTable table={table}/>
+        <MaterialReactTable table={props.detailPanel ? tableDetail: table}/>
     </>
     );
 }
@@ -187,7 +237,8 @@ Table.propTypes = {
     deletews: PropTypes.string,
     editws: PropTypes.string,
     showEdit: PropTypes.bool,
-    initialSortColumn: PropTypes.string
+    initialSortColumn: PropTypes.string,
+    rowSelection: PropTypes.bool
   };
 
 export default Table;

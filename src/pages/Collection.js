@@ -225,6 +225,8 @@ const Collection = (props) => {
                     columns={columns}
                     enableRowActions={false}
                     setAlertDialogInput={setAlertDialogInput}
+                    rowSelection={true}
+                    initialSortColumn="dateCreated"
                 />}
             </Card.Body>
           </Card>
