@@ -4,7 +4,7 @@ import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Container } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
@@ -37,6 +37,8 @@ const Collection = (props) => {
     const [userSelection, setUserSelection] = useReducer(reducer, collection);
 
     const [showGlycanTable, setShowGlycanTable] = useState(false);
+    const [selectedGlycans, setSelectedGlycans] = useState([]);
+    const [initialSelection, setInitialSelection] = useState({});
 
     useEffect(props.authCheckAgent, []);
 
@@ -51,6 +53,14 @@ const Collection = (props) => {
         getJson ("api/data/getcollection/" + collectionId, getAuthorizationHeader())
             .then ((json) => {
                 setUserSelection (json.data.data);
+                if (json.data.data.glycans) {
+                    setSelectedGlycans (json.data.data.glycans);
+                    let initialIds = {};
+                    json.data.data.glycans.forEach ((glycan) => {
+                        initialIds [glycan.glycanId] = true;
+                    });
+                    setInitialSelection(initialIds);
+                }
                 setShowLoading(false);
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -140,11 +150,58 @@ const Collection = (props) => {
         [],
       );
 
+    const listGlycans = () => {
+        return (
+          <>
+            <Table
+                authCheckAgent={props.authCheckAgent}
+                ws="api/data/getglycans"
+                columns={columns}
+                enableRowActions={false}
+                setAlertDialogInput={setAlertDialogInput}
+                initialSortColumn="dateCreated"
+                rowSelection={true}
+                rowSelectionChange={handleGlycanSelectionChange}
+                rowId="glycanId"
+                selected = {initialSelection}
+            />
+            </>
+        );
+    };
+
+    const handleGlycanSelect = () => {
+        console.log("selected glycans" + selectedGlycans);
+        setUserSelection({"glycans": selectedGlycans});
+        let initialIds = {};
+        selectedGlycans.forEach ((glycan) => {
+            initialIds [glycan.glycanId] = true;
+        });
+        setInitialSelection(initialIds);
+        setShowGlycanTable(false);
+    }
+
+    const handleGlycanSelectionChange = (selected) => {
+        /*let glycans = [];
+        let alreadySelectedGlycans = selectedGlycans;
+        if (alreadySelectedGlycans !== null && alreadySelectedGlycans.length > 0) {
+            alreadySelectedGlycans.forEach ((glycan) => {
+                glycans.push(glycan);
+            });
+        }
+        if (selected !== null && selected.length > 0) {
+            selected.forEach ((glycan) => {
+                glycans.push(glycan);
+            });
+        }
+        setSelectedGlycans(glycans);*/
+        setSelectedGlycans(selected);
+    }
+
     return (
         <>
         <Container maxWidth="xl">
             <div className="page-container">
-             <PageHeading title="Add Collection" subTitle="Please provide the information for the new collection." />
+             <PageHeading title={collectionId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
             <Card>
             <Card.Body>
             <div className="mt-4 mb-4">
@@ -155,13 +212,35 @@ const Collection = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+            {showGlycanTable && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={showGlycanTable}
+                    onHide={() => setShowGlycanTable(false)}
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Select Glycans:
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{listGlycans()}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowGlycanTable(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handleGlycanSelect}>Add Selected Glycans</Button>
+                     </Modal.Footer>
+                </Modal>
+            )}
             <Form>
                 <Form.Group
                   as={Row}
                   controlId="name"
                   className="gg-align-center mb-3"
                 >
-                  <Col xs={12} lg={9}>
+                  <Col xs={12} lg={9} style={{ textAlign: "left" }}>
                     <FormLabel label="Name" className="required-asterik" />
                     <Form.Control
                       type="text"
@@ -182,7 +261,7 @@ const Collection = (props) => {
                   controlId="description"
                   className="gg-align-center mb-3"
                 >
-                  <Col xs={12} lg={9}>
+                  <Col xs={12} lg={9} style={{ textAlign: "left" }}>
                     <FormLabel label="Description" />
                     <Form.Control
                       as="textarea"
@@ -209,25 +288,34 @@ const Collection = (props) => {
                     disabled={error} onClick={handleSubmit}>
                     Save
                 </Button> 
-                { <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                    disabled={error} onClick={()=> setShowGlycanTable(true)}>
-                    Add Glycan
-                </Button>}
             </div>
             </Card.Body>
           </Card>
+          
           <Card>
             <Card.Body>
-            {showGlycanTable && 
+            <h5 class="gg-blue" style={{textAlign: "left"}}>
+                Glycans in the Collection</h5>
+                <Row>
+                    <Col md={12} style={{ textAlign: "right" }}>
+                    <div className="text-right mb-3">
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                         disabled={error} onClick={()=> setShowGlycanTable(true)}>
+                         Add/Remove Glycan
+                        </Button>
+                        </div>
+                    </Col>
+                    </Row>
+                
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    ws="api/data/getglycans"
+                    rowId = "glycanId"
+                    data = {userSelection.glycans}
                     columns={columns}
                     enableRowActions={false}
                     setAlertDialogInput={setAlertDialogInput}
-                    rowSelection={true}
                     initialSortColumn="dateCreated"
-                />}
+                />
             </Card.Body>
           </Card>
         </div>

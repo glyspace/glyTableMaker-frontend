@@ -197,6 +197,7 @@ const Glycans = (props) => {
                   setAlertDialogInput={setAlertDialogInput}
                   deletews="api/data/deleteglycan/"
                   initialSortColumn="dateCreated"
+                  rowId="glycanId"
             />
             </Card.Body>
           </Card>

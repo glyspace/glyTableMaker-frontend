@@ -79,6 +79,7 @@ const Collections = (props) => {
                   editws={stringConstants.routes.addcollection + "?collectionId="}
                   deletews="api/data/deletecollection/"
                   initialSortColumn="name"
+                  rowId="collectionId"
                   detailPanel={true}
             />
             </Card.Body>

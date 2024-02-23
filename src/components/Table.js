@@ -9,6 +9,7 @@ import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
 
+// server side table
 const Table = (props) => {
     //data and fetching state
     const [data, setData] = useState([]);
@@ -27,6 +28,7 @@ const Table = (props) => {
         pageIndex: 0,
         pageSize: 10,
     });
+    const [rowSelection, setRowSelection] = useState(props.selected ? props.selected : {});
 
     let navigate = useNavigate();
 
@@ -65,10 +67,9 @@ const Table = (props) => {
       };
     
       useEffect(() => {
-        if (!props.data)
+        if (!props.data) {
             fetchData();
-        else 
-            setData(props.data);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [
         columnFilters,
@@ -116,9 +117,43 @@ const Table = (props) => {
 
       const columns = props.columns;
 
+      useEffect(() => {
+        if(props.rowSelectionChange) {
+            console.info({ rowSelection }); //read your managed row selection state
+            let selected = [];
+            for (const rowId in rowSelection) {
+                if (rowSelection[rowId]) { // selected
+                    var found = data.filter(function(item) { 
+                        if (typeof item[props.rowId] === "number") {
+                            return item[props.rowId].toString() === rowId;
+                        } else
+                            return item[props.rowId] === rowId; 
+                    });
+                    found && found.length > 0 && selected.push (found[0]);
+                }
+            };
+            props.rowSelectionChange (selected);
+        }
+        // console.info(table.getState().rowSelection); //alternate way to get the row selection state
+      }, [rowSelection]);
+
+      /*const handleSelection = (updater) => {
+        setRowSelection ((prev) =>
+            updater (prev));
+        const rows = table.getState().rowSelection;
+        let selected = [];
+        for (const rowId in rows) {
+            if (rows[rowId]) { // selected
+                var found = data.filter(function(item) { return item[props.rowId] === rowId; });
+                found && found.length > 0 && selected.push (found[0]);
+            }
+        };
+        props.rowSelectionChange (selected);
+      }*/
+
       const table = useMaterialReactTable({
         columns,
-        data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+        data : props.data ? props.data : data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
         positionActionsColumn: 'last',
@@ -130,17 +165,19 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.editws + row.original.collectionId)}>
+              <IconButton onClick={() => navigate(props.editws + row.original[props.rowId])}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
           </Box>
         ),
-        getRowId: (row) => row.glycanId,
-        initialState: {showColumnFilters: false},
-        manualFiltering: true,
-        manualPagination: true,
-        manualSorting: true,
+        getRowId: (row) => row[props.rowId],
+        manualFiltering: props.data ? false: true,
+        manualPagination: props.data ? false: true,
+        manualSorting: props.data ? false: true,
+        initialState: {
+            showColumnFilters: false,
+        },
         muiToolbarAlertBannerProps: isError
           ? {
               color: 'error',
@@ -151,6 +188,7 @@ const Table = (props) => {
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
+        onRowSelectionChange: setRowSelection,
         rowCount,
         state: {
           columnFilters,
@@ -160,12 +198,13 @@ const Table = (props) => {
           showAlertBanner: isError,
           showProgressBars: isRefetching,
           sorting,
+          rowSelection,
         },
       });
 
       const tableDetail = useMaterialReactTable({
         columns,
-        data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+        data: props.data ? props.data : data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
         positionActionsColumn: 'last',
@@ -177,7 +216,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.editws + row.original.collectionId)}>
+              <IconButton onClick={() => navigate(props.editws + row.original[props.rowId])}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
@@ -185,11 +224,13 @@ const Table = (props) => {
         ),
         renderDetailPanel: ({ row }) =>
             row.original.description ? <div><span>{row.original.description}</span> </div> : null,
-        getRowId: (row) => row.glycanId,
-        initialState: {showColumnFilters: false},
-        manualFiltering: true,
-        manualPagination: true,
-        manualSorting: true,
+        getRowId: (row) => row[props.rowId],
+        initialState: {
+            showColumnFilters: false,
+        },
+        manualFiltering: props.data ? false: true,
+        manualPagination: props.data ? false: true,
+        manualSorting: props.data ? false: true,
         muiToolbarAlertBannerProps: isError
           ? {
               color: 'error',
@@ -200,6 +241,7 @@ const Table = (props) => {
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
+        onRowSelectionChange: setRowSelection,
         rowCount,
         state: {
           columnFilters,
@@ -209,6 +251,7 @@ const Table = (props) => {
           showAlertBanner: isError,
           showProgressBars: isRefetching,
           sorting,
+          rowSelection,
         },
       });
 
@@ -222,23 +265,26 @@ const Table = (props) => {
             body="Are you sure you want to delete?"
         />
 
-        <MaterialReactTable table={props.detailPanel ? tableDetail: table}/>
+        <MaterialReactTable table={props.detailPanel ? tableDetail: table} />
     </>
     );
 }
 
 Table.propTypes = {
-    authCheckAgent: PropTypes.func,
-    setAlertDialogInput: PropTypes.func,
-    data: PropTypes.array,
-    columns: PropTypes.array,
-    enableRowActions: PropTypes.bool,
-    ws: PropTypes.string,
-    deletews: PropTypes.string,
-    editws: PropTypes.string,
-    showEdit: PropTypes.bool,
-    initialSortColumn: PropTypes.string,
-    rowSelection: PropTypes.bool
+    authCheckAgent: PropTypes.func,  // required, token check
+    setAlertDialogInput: PropTypes.func,   // required, error dialog 
+    data: PropTypes.array,  // optional, if data is not retrieved from the web service
+    columns: PropTypes.array,  // required, columns to show
+    enableRowActions: PropTypes.bool,  // whether to show actions column (with delete action by default)
+    ws: PropTypes.string,  // get api
+    deletews: PropTypes.string,   // delete api
+    editws: PropTypes.string,   // edit api
+    showEdit: PropTypes.bool,   // whether to add edit icon to actions
+    initialSortColumn: PropTypes.string,   // required, name of the column to sort initially
+    rowSelection: PropTypes.bool,  // whether to show row selection checkboxes
+    setSelectedRows: PropTypes.func,
+    rowId: PropTypes.string, // required, which field to use as the row identifier
+    selected: PropTypes.array // optional, already selected rows
   };
 
 export default Table;
