@@ -80,7 +80,7 @@ const Table = (props) => {
       ]);
 
       const openDeleteConfirmModal = (row) => {
-        setSelectedId(row.original.glycanId);
+        setSelectedId(row.original[props.rowId]);
         setShowDeleteModal(true);
       };
 
@@ -111,6 +111,7 @@ const Table = (props) => {
                 setIsLoading(false);
                 axiosError(error, null, props.setAlertDialogInput);
             }
+            setShowDeleteModal(false);
           }
         );
       }
@@ -165,7 +166,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.editws + row.original[props.rowId])}>
+              <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
@@ -216,7 +217,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.editws + row.original[props.rowId])}>
+              <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
@@ -278,7 +279,7 @@ Table.propTypes = {
     enableRowActions: PropTypes.bool,  // whether to show actions column (with delete action by default)
     ws: PropTypes.string,  // get api
     deletews: PropTypes.string,   // delete api
-    editws: PropTypes.string,   // edit api
+    edit: PropTypes.string,   // edit page
     showEdit: PropTypes.bool,   // whether to add edit icon to actions
     initialSortColumn: PropTypes.string,   // required, name of the column to sort initially
     rowSelection: PropTypes.bool,  // whether to show row selection checkboxes

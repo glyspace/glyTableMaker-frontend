@@ -76,7 +76,7 @@ const Collections = (props) => {
                   enableRowActions={true}
                   setAlertDialogInput={setAlertDialogInput}
                   showEdit={true}
-                  editws={stringConstants.routes.addcollection + "?collectionId="}
+                  edit={stringConstants.routes.addcollection + "?collectionId="}
                   deletews="api/data/deletecollection/"
                   initialSortColumn="name"
                   rowId="collectionId"

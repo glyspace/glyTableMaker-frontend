@@ -96,15 +96,19 @@ const Collection = (props) => {
         }
 
         const collection = { 
+            collectionId: collectionId ? collectionId : null,
             name: userSelection.name,
-            description: userSelection.description
+            description: userSelection.description,
+            glycans: userSelection.glycans
         }
         
         setShowLoading(true);
         setError(false);
         props.authCheckAgent();
 
-        postJson ("api/data/addcollection", collection, getAuthorizationHeader()).then ( (data) => {
+        let apiURL = collectionId ? "api/data/updatecollection" : "api/data/addcollection";
+
+        postJson (apiURL, collection, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             navigate("/collections");
           }).catch (function(error) {
