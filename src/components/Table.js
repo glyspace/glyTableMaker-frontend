@@ -28,7 +28,8 @@ const Table = (props) => {
         pageIndex: 0,
         pageSize: 10,
     });
-    const [rowSelection, setRowSelection] = useState(props.selected ? props.selected : {});
+    const [rowSelection, setRowSelection] = useState(props.selected ?? {});
+    const [selectedData, setSelectedData] = useState(props.selectedRows ?? []);
 
     let navigate = useNavigate();
 
@@ -119,20 +120,36 @@ const Table = (props) => {
       const columns = props.columns;
 
       useEffect(() => {
-        if(props.rowSelectionChange) {
-            console.info({ rowSelection }); //read your managed row selection state
-            let selected = [];
+        if(props.rowSelectionChange && data && data.length) {
+            console.info( rowSelection ); //read your managed row selection state
+            let selected = [...selectedData];
             for (const rowId in rowSelection) {
                 if (rowSelection[rowId]) { // selected
-                    var found = data.filter(function(item) { 
-                        if (typeof item[props.rowId] === "number") {
-                            return item[props.rowId].toString() === rowId;
-                        } else
-                            return item[props.rowId] === rowId; 
-                    });
-                    found && found.length > 0 && selected.push (found[0]);
-                }
+                    // check if it already exists in selected
+                    var exists = selected.find (item => 
+                        typeof item[props.rowId] === "number" ? 
+                        item[props.rowId].toString() === rowId
+                        : item[props.rowId] === rowId);
+                    if (!exists) {
+                        var found = data.find(item => 
+                            typeof item[props.rowId] === "number" ? 
+                            item[props.rowId].toString() === rowId
+                            : item[props.rowId] === rowId);
+                        found && selected.push (found);
+                    }
+                } 
             };
+            // remove from selected if it is not in rowSelection anymore
+            selected.map ((row, index) => {
+                // if it does not exist in selected, remove it
+                var found = typeof row[props.rowId] === "number" ? 
+                    rowSelection[row[props.rowId].toString()] 
+                    : rowSelection[row[props.rowId]];
+                if (!found) {
+                    selected.splice (index, 1);
+                }
+            });
+            setSelectedData(selected);
             props.rowSelectionChange (selected);
         }
         // console.info(table.getState().rowSelection); //alternate way to get the row selection state
@@ -285,7 +302,8 @@ Table.propTypes = {
     rowSelection: PropTypes.bool,  // whether to show row selection checkboxes
     setSelectedRows: PropTypes.func,
     rowId: PropTypes.string, // required, which field to use as the row identifier
-    selected: PropTypes.array // optional, already selected rows
+    selected: PropTypes.object, // optional, already selected row id map
+    selectedRows: PropTypes.array // optional, already selected rows
   };
 
 export default Table;

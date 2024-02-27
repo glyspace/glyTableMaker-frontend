@@ -168,6 +168,7 @@ const Collection = (props) => {
                 rowSelectionChange={handleGlycanSelectionChange}
                 rowId="glycanId"
                 selected = {initialSelection}
+                selectedRows = {selectedGlycans}
             />
             </>
         );
