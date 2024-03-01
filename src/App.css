@@ -420,6 +420,14 @@ input[type]:not(:-ms-input-placeholder) + label {
   cursor: pointer;
   z-index: 1;
 }
+.scroll-to-top-save {
+  position: fixed;
+  bottom: 5rem;
+  right: 0.5rem;
+  animation: fadeIn 700ms ease-in-out 1s both;
+  cursor: pointer;
+  z-index: 1;
+}
 .goToTop {
   float: right;
   padding-right: 5%;

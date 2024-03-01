@@ -30,12 +30,14 @@ import Tablemaker from "./pages/Tablemaker";
 import Glycan from "./pages/Glycan";
 import { GlycanFromFile } from "./pages/GlycanFromFile";
 import Collection from "./pages/Collection";
+import Metadata from "./pages/Metadata";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
   { label: stringConstants.sidebar.glycan, id: "Glycan", route: stringConstants.routes.glycans},  
   { label: stringConstants.sidebar.collection, id: "Col", route: stringConstants.routes.collection},
   { label: stringConstants.sidebar.collectioncollection, id: "ColCol", route: stringConstants.routes.collectioncollection },
+  { label: stringConstants.sidebar.metadata, id: "Metadata", route: stringConstants.routes.metadata},
   { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker},
 ];  
 
@@ -129,6 +131,11 @@ function App() {
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {
+      path: stringConstants.routes.metadata,
+      main: () => <Metadata authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
       path: stringConstants.routes.tablemaker,
       main: () => <Tablemaker authCheckAgent={checkAuthorization}/>,
       sidebar: () => <Sidebar items={sideBarData} />,
@@ -166,58 +173,6 @@ function App() {
         })}
         </Route>
       </Routes>
-
-/*
-
-          <Route path="/" element={!loggedIn ? <Home/> : 
-            <Row>
-              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
-              <Col sm={12} md={12} lg={12} xl={10}><Dashboard authCheckAgent={checkAuthorization}/></Col>
-            </Row>}/>
-          <Route path="/login" element={<Container  className="d-flex align-items-center justify-content-center"
-        style={{ minHeight: "100vh" }}><div className="w-100" style={{ maxWidth: "400px" }}><Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/></div></Container>} />
-          <Route path="/profile" element={<Profile authCheckAgent={checkAuthorization} />} />
-          <Route path='/oauth2/redirect/' element={<OAuth2Redirect updateLogin={loginUpdater} authCheckAgent={checkAuthorization} />} />
-          <Route path="/register" element={<Signup/>} />
-          <Route path="/emailConfirmation">
-            <Route path=":token" element={<EmailConfirmation/>} />
-          </Route>
-          <Route path="/verifyToken" element={<VerifyToken/>} />
-          <Route path="/forgotPassword" element={<ForgotPassword/>} />
-          <Route path="/forgotUsername" element={<ForgotUsername/>} />
-          <Route path="/changePassword" element={<ChangePassword/>} />
-          <Route path={stringConstants.routes.dashboard} element={
-            <Row>
-              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
-              <Col sm={12} md={12} lg={12} xl={10}><Dashboard authCheckAgent={checkAuthorization}/></Col>
-            </Row>
-          }/>
-          <Route path={stringConstants.routes.glycans} element={
-            <Row>
-              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
-              <Col sm={12} md={12} lg={12} xl={10}><Glycans authCheckAgent={checkAuthorization}/></Col>
-            </Row>
-          }/>
-          <Route path={stringConstants.routes.collection} element={
-            <Row>
-              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
-              <Col sm={12} md={12} lg={12} xl={10}><Collections authCheckAgent={checkAuthorization}/></Col>
-            </Row>
-          }/>
-          <Route path={stringConstants.routes.collectioncollection} element={
-            <Row>
-              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
-              <Col sm={12} md={12} lg={12} xl={10}><CoC authCheckAgent={checkAuthorization}/></Col>
-            </Row>
-          }/>
-          <Route path={stringConstants.routes.tablemaker} element={
-            <Row>
-              <Col sm={12} md={12} lg={12} xl={2}><Sidebar items={sideBarData} /></Col>
-              <Col sm={12} md={12} lg={12} xl={10}><Tablemaker authCheckAgent={checkAuthorization}/></Col>
-            </Row>
-          }/>
-        </Route>
-      </Routes>*/
   );
 
   function Layout() {

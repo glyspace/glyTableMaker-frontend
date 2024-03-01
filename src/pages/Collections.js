@@ -65,9 +65,6 @@ const Collections = (props) => {
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.addcollection)}>
                 Add Collection
                 </Button>
-                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" >
-                Add Metadata
-                </Button>
               </div>
               <Table 
                   authCheckAgent={props.authCheckAgent}

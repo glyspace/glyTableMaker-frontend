@@ -68,7 +68,7 @@ const Table = (props) => {
       };
     
       useEffect(() => {
-        if (!props.data) {
+        if (props.ws) {
             fetchData();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,29 +92,36 @@ const Table = (props) => {
       }
     
       const deleteRow = (id) => {
-        setIsLoading(true);
-        setIsError(false);
-        props.authCheckAgent();
-    
-        deleteJson (props.deletews + id, getAuthorizationHeader()).then ( (data) => {
-            setIsLoading(false);
+        if (props.deletews) {
+            setIsLoading(true);
             setIsError(false);
-            setIsDeleteError(false);
-            setShowDeleteModal(false);
-            fetchData();
-          }).catch (function(error) {
-            if (error && error.response && error.response.data) {
-                setIsError(true);
-                setIsDeleteError(true);
+            props.authCheckAgent();
+        
+            deleteJson (props.deletews + id, getAuthorizationHeader()).then ( (data) => {
                 setIsLoading(false);
-                return;
-            } else {
-                setIsLoading(false);
-                axiosError(error, null, props.setAlertDialogInput);
+                setIsError(false);
+                setIsDeleteError(false);
+                setShowDeleteModal(false);
+                fetchData();
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setIsError(true);
+                    setIsDeleteError(true);
+                    setIsLoading(false);
+                    return;
+                } else {
+                    setIsLoading(false);
+                    axiosError(error, null, props.setAlertDialogInput);
+                }
+                setShowDeleteModal(false);
             }
+            );
+        } else {
+            // only remove from the data
+            props.delete && props.delete(id);
             setShowDeleteModal(false);
-          }
-        );
+
+        }
       }
 
       const columns = props.columns;
@@ -152,22 +159,7 @@ const Table = (props) => {
             setSelectedData(selected);
             props.rowSelectionChange (selected);
         }
-        // console.info(table.getState().rowSelection); //alternate way to get the row selection state
       }, [rowSelection]);
-
-      /*const handleSelection = (updater) => {
-        setRowSelection ((prev) =>
-            updater (prev));
-        const rows = table.getState().rowSelection;
-        let selected = [];
-        for (const rowId in rows) {
-            if (rows[rowId]) { // selected
-                var found = data.filter(function(item) { return item[props.rowId] === rowId; });
-                found && found.length > 0 && selected.push (found[0]);
-            }
-        };
-        props.rowSelectionChange (selected);
-      }*/
 
       const table = useMaterialReactTable({
         columns,
@@ -178,7 +170,8 @@ const Table = (props) => {
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
             <Tooltip title="Delete">
-              <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+              <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
+              : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -229,7 +222,8 @@ const Table = (props) => {
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
             <Tooltip title="Delete">
-              <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+              <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
+              : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -296,6 +290,7 @@ Table.propTypes = {
     enableRowActions: PropTypes.bool,  // whether to show actions column (with delete action by default)
     ws: PropTypes.string,  // get api
     deletews: PropTypes.string,   // delete api
+    delete: PropTypes.func, // delete function for client side tables
     edit: PropTypes.string,   // edit page
     showEdit: PropTypes.bool,   // whether to add edit icon to actions
     initialSortColumn: PropTypes.string,   // required, name of the column to sort initially

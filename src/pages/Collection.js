@@ -30,7 +30,8 @@ const Collection = (props) => {
     const collection = {
         name: "",
         description: "",
-        glycans: []
+        glycans: [],
+        metadata: [],
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
@@ -40,7 +41,21 @@ const Collection = (props) => {
     const [selectedGlycans, setSelectedGlycans] = useState([]);
     const [initialSelection, setInitialSelection] = useState({});
 
-    useEffect(props.authCheckAgent, []);
+    const [isVisible, setIsVisible] = useState(false);
+
+    // Show button when page is scrolled upto given distance
+    const toggleSaveVisibility = () => {
+        if (window.scrollY > 300) {
+            setIsVisible(true);
+        } else {
+            setIsVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        props.authCheckAgent();
+        window.addEventListener("scroll", toggleSaveVisibility);
+    }, []);
 
     useEffect(() => {
         if (collectionId) 
@@ -99,7 +114,8 @@ const Collection = (props) => {
             collectionId: collectionId ? collectionId : null,
             name: userSelection.name,
             description: userSelection.description,
-            glycans: userSelection.glycans
+            glycans: userSelection.glycans,
+            metadata: userSelection.metadata,
         }
         
         setShowLoading(true);
@@ -132,12 +148,6 @@ const Collection = (props) => {
             size: 50,
           },
           {
-            accessorKey: 'status',
-            header: 'Status',
-            size: 100,
-            enableColumnFilter: false,
-          },
-          {
             accessorKey: 'cartoon',
             header: 'Image',
             size: 150,
@@ -153,6 +163,27 @@ const Collection = (props) => {
         ],
         [],
       );
+    
+    const metadatacolumns = useMemo(
+    () => [
+        {
+        accessorKey: 'type.name', 
+        header: 'Name',
+        size: 50,
+        },
+        {
+        accessorKey: 'type.description',
+        header: 'Description',
+        size: 100,
+        },
+        {
+        accessorKey: 'value',
+        header: 'Value',
+        size: 150,
+        },
+    ],
+    [],
+    );
 
     const listGlycans = () => {
         return (
@@ -185,20 +216,23 @@ const Collection = (props) => {
         setShowGlycanTable(false);
     }
 
+    const deleteFromTable = (id) => {
+        var glycans = userSelection.glycans;
+        const index = glycans.findIndex ((item) => item["glycanId"] == id);
+        var updated = [
+            ...glycans.slice(0, index),
+            ...glycans.slice(index + 1)
+        ];
+        setUserSelection ({"glycans": updated});
+        setSelectedGlycans(updated);
+        let initialIds = {};
+        updated.forEach ((glycan) => {
+            initialIds [glycan.glycanId] = true;
+        });
+        setInitialSelection(initialIds);
+    }
+
     const handleGlycanSelectionChange = (selected) => {
-        /*let glycans = [];
-        let alreadySelectedGlycans = selectedGlycans;
-        if (alreadySelectedGlycans !== null && alreadySelectedGlycans.length > 0) {
-            alreadySelectedGlycans.forEach ((glycan) => {
-                glycans.push(glycan);
-            });
-        }
-        if (selected !== null && selected.length > 0) {
-            selected.forEach ((glycan) => {
-                glycans.push(glycan);
-            });
-        }
-        setSelectedGlycans(glycans);*/
         setSelectedGlycans(selected);
     }
 
@@ -206,6 +240,16 @@ const Collection = (props) => {
         <>
         <Container maxWidth="xl">
             <div className="page-container">
+            <div className="scroll-to-top-save">
+        {isVisible && (
+            <div>
+                <Button variant="contained" className="gg-btn-blue-sm" 
+                    disabled={error} onClick={handleSubmit}>
+                    Submit
+                </Button>
+            </div>
+        )}
+        </div>
              <PageHeading title={collectionId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
             <Card>
             <Card.Body>
@@ -291,13 +335,12 @@ const Collection = (props) => {
                 </Link>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     disabled={error} onClick={handleSubmit}>
-                    Save
+                    Submit
                 </Button> 
             </div>
             </Card.Body>
           </Card>
-          
-          <Card>
+          <Card style={{marginTop: "15px"}}>
             <Card.Body>
             <h5 class="gg-blue" style={{textAlign: "left"}}>
                 Glycans in the Collection</h5>
@@ -317,9 +360,36 @@ const Collection = (props) => {
                     rowId = "glycanId"
                     data = {userSelection.glycans}
                     columns={columns}
-                    enableRowActions={false}
+                    enableRowActions={true}
+                    delete={deleteFromTable}
                     setAlertDialogInput={setAlertDialogInput}
                     initialSortColumn="dateCreated"
+                />
+            </Card.Body>
+          </Card>
+          <Card style={{marginTop: "15px"}}>
+            <Card.Body>
+            <h5 class="gg-blue" style={{textAlign: "left"}}>
+                Metadata</h5>
+                <Row>
+                    <Col md={12} style={{ textAlign: "right" }}>
+                    <div className="text-right mb-3">
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                         disabled={error} onClick={()=> console.log("add metadata")}>
+                         Add Metadata
+                        </Button>
+                        </div>
+                    </Col>
+                    </Row>
+                
+                <Table 
+                    authCheckAgent={props.authCheckAgent}
+                    rowId = "metadatId"
+                    data = {userSelection.metadata}
+                    columns={metadatacolumns}
+                    enableRowActions={true}
+                    setAlertDialogInput={setAlertDialogInput}
+                    initialSortColumn="metadatId"
                 />
             </Card.Body>
           </Card>

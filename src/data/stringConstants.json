@@ -4,6 +4,7 @@
         "glycan": "Glycans",
         "collection": "Collections",
         "collectioncollection": "Collections of Collections",
+        "metadata" : "Metadata",
         "tablemaker" : "Table Maker"
     },
 
@@ -13,6 +14,7 @@
         "collection": "/collections/",
         "collectioncollection": "/coc/",
         "tablemaker" : "/table/",
+        "metadata" : "/metadata/",
         "addglycan" : "/glycans/addglycan",
         "addglycanfromfile": "/glycans/addglycanfromfile",
         "addcollection": "/collections/addcollection"
