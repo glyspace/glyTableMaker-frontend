@@ -10,9 +10,9 @@ import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
 
-const Collection = (props) => {
+const AddCoC = (props) => {
     const [searchParams] = useSearchParams();
-    let collectionId = searchParams.get("collectionId");
+    let cocId = searchParams.get("cocId");
     const navigate = useNavigate();
     const [error, setError] = useState(false);
     const [validate, setValidate] = useState(false);
@@ -27,18 +27,17 @@ const Collection = (props) => {
     { show: false, id: "" }
     );
 
-    const collection = {
+    const coc = {
         name: "",
         description: "",
-        glycans: [],
-        metadata: [],
+        collections: [],
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
-    const [userSelection, setUserSelection] = useReducer(reducer, collection);
+    const [userSelection, setUserSelection] = useReducer(reducer, coc);
 
-    const [showGlycanTable, setShowGlycanTable] = useState(false);
-    const [selectedGlycans, setSelectedGlycans] = useState([]);
+    const [showCollectionTable, setShowCollectionTable] = useState(false);
+    const [selectedCollections, setSelectedCollections] = useState([]);
     const [initialSelection, setInitialSelection] = useState({});
 
     const [isVisible, setIsVisible] = useState(false);
@@ -58,21 +57,21 @@ const Collection = (props) => {
     }, []);
 
     useEffect(() => {
-        if (collectionId) 
+        if (cocId) 
             fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [collectionId]);
+    }, [cocId]);
 
     const fetchData = async () => {
         setShowLoading(true);
-        getJson ("api/data/getcollection/" + collectionId, getAuthorizationHeader())
+        getJson ("api/data/getcoc/" + cocId, getAuthorizationHeader())
             .then ((json) => {
                 setUserSelection (json.data.data);
-                if (json.data.data.glycans) {
-                    setSelectedGlycans (json.data.data.glycans);
+                if (json.data.data.collections) {
+                    setSelectedCollections (json.data.data.collections);
                     let initialIds = {};
-                    json.data.data.glycans.forEach ((glycan) => {
-                        initialIds[glycan.glycanId] = true;
+                    json.data.data.collections.forEach ((collection) => {
+                        initialIds[collection.collectionId] = true;
                     });
                     setInitialSelection(initialIds);
                 }
@@ -110,23 +109,22 @@ const Collection = (props) => {
             return;
         }
 
-        const collection = { 
-            collectionId: collectionId ? collectionId : null,
+        const coc = { 
+            collectionId: cocId ? cocId : null,
             name: userSelection.name,
             description: userSelection.description,
-            glycans: userSelection.glycans,
-            metadata: userSelection.metadata,
+            children: userSelection.collections,
         }
         
         setShowLoading(true);
         setError(false);
         props.authCheckAgent();
 
-        let apiURL = collectionId ? "api/data/updatecollection" : "api/data/addcollection";
+        let apiURL = cocId ? "api/data/updatecoc" : "api/data/addcoc";
 
-        postJson (apiURL, collection, getAuthorizationHeader()).then ( (data) => {
+        postJson (apiURL, coc, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
-            navigate("/collections");
+            navigate("/coc");
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 setError(true);
@@ -143,97 +141,62 @@ const Collection = (props) => {
     const columns = useMemo(
         () => [
           {
-            accessorKey: 'glytoucanID', 
-            header: 'GlyTouCan ID',
+            accessorKey: 'name', 
+            header: 'Name',
             size: 50,
           },
-          {
-            accessorKey: 'cartoon',
-            header: 'Image',
-            size: 150,
-            columnDefType: 'display',
-            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
-          },
-          {
-            accessorKey: 'mass', 
-            header: 'Mass',
-            size: 80,
-            Cell: ({ cell }) => cell.getValue() ? Number(cell.getValue().toFixed(2)).toLocaleString('en-US') : null,
-          }
         ],
         [],
       );
-    
-    const metadatacolumns = useMemo(
-    () => [
-        {
-        accessorKey: 'type.name', 
-        header: 'Name',
-        size: 50,
-        },
-        {
-        accessorKey: 'type.description',
-        header: 'Description',
-        size: 100,
-        },
-        {
-        accessorKey: 'value',
-        header: 'Value',
-        size: 150,
-        },
-    ],
-    [],
-    );
 
-    const listGlycans = () => {
+    const listCollections = () => {
         return (
           <>
             <Table
                 authCheckAgent={props.authCheckAgent}
-                ws="api/data/getglycans"
+                ws="api/data/getcollections"
                 columns={columns}
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
-                initialSortColumn="dateCreated"
+                initialSortColumn="name"
                 rowSelection={true}
-                rowSelectionChange={handleGlycanSelectionChange}
-                rowId="glycanId"
+                rowSelectionChange={handleCollectionSelectionChange}
+                rowId="collectionId"
                 selected = {initialSelection}
-                selectedRows = {selectedGlycans}
+                selectedRows = {selectedCollections}
             />
             </>
         );
     };
 
-    const handleGlycanSelect = () => {
-        console.log("selected glycans" + selectedGlycans);
-        setUserSelection({"glycans": selectedGlycans});
+    const handleCollectionSelect = () => {
+        setUserSelection({"collections": selectedCollections});
         let initialIds = {};
-        selectedGlycans.forEach ((glycan) => {
-            initialIds[glycan.glycanId] = true;
+        selectedCollections.forEach ((collection) => {
+            initialIds[collection.collectionId] = true;
         });
         setInitialSelection(initialIds);
-        setShowGlycanTable(false);
+        setShowCollectionTable(false);
     }
 
     const deleteFromTable = (id) => {
-        var glycans = userSelection.glycans;
-        const index = glycans.findIndex ((item) => item["glycanId"] === id);
+        var collections = userSelection.collections;
+        const index = collections.findIndex ((item) => item["collectionId"] === id);
         var updated = [
-            ...glycans.slice(0, index),
-            ...glycans.slice(index + 1)
+            ...collections.slice(0, index),
+            ...collections.slice(index + 1)
         ];
-        setUserSelection ({"glycans": updated});
-        setSelectedGlycans(updated);
+        setUserSelection ({"collections": updated});
+        setSelectedCollections(updated);
         let initialIds = {};
-        updated.forEach ((glycan) => {
-            initialIds[glycan.glycanId] = true;
+        updated.forEach ((collection) => {
+            initialIds[collection.collectionId] = true;
         });
         setInitialSelection(initialIds);
     }
 
-    const handleGlycanSelectionChange = (selected) => {
-        setSelectedGlycans(selected);
+    const handleCollectionSelectionChange = (selected) => {
+        setSelectedCollections(selected);
     }
 
     return (
@@ -250,7 +213,7 @@ const Collection = (props) => {
             </div>
         )}
         </div>
-             <PageHeading title={collectionId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
+             <PageHeading title={cocId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
             <Card>
             <Card.Body>
             <div className="mt-4 mb-4">
@@ -261,25 +224,25 @@ const Collection = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
-            {showGlycanTable && (
+            {showCollectionTable && (
                 <Modal
                     size="xl"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
-                    show={showGlycanTable}
-                    onHide={() => setShowGlycanTable(false)}
+                    show={showCollectionTable}
+                    onHide={() => setShowCollectionTable(false)}
                 >
                     <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
-                        Select Glycans:
+                        Select Collections:
                     </Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>{listGlycans()}</Modal.Body>
+                    <Modal.Body>{listCollections()}</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" className="mt-2 gg-ml-20"
-                            onClick={(()=> setShowGlycanTable(false))}>Close</Button>
+                            onClick={(()=> setShowCollectionTable(false))}>Close</Button>
                         <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
-                            onClick={handleGlycanSelect}>Add Selected Glycans</Button>
+                            onClick={handleCollectionSelect}>Add Selected Collections</Button>
                      </Modal.Footer>
                 </Modal>
             )}
@@ -330,8 +293,8 @@ const Collection = (props) => {
             </div>
 
             <div className="text-center mb-2">
-                <Link to="/collections">
-                    <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections</Button>
+                <Link to="/coc">
+                    <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections of Collections</Button>
                 </Link>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     disabled={error} onClick={handleSubmit}>
@@ -343,13 +306,13 @@ const Collection = (props) => {
           <Card style={{marginTop: "15px"}}>
             <Card.Body>
             <h5 class="gg-blue" style={{textAlign: "left"}}>
-                Glycans in the Collection</h5>
+                Collections in the Collection</h5>
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                         disabled={error} onClick={()=> setShowGlycanTable(true)}>
-                         Add/Remove Glycan
+                         disabled={error} onClick={()=> setShowCollectionTable(true)}>
+                         Add/Remove Collection
                         </Button>
                         </div>
                     </Col>
@@ -357,39 +320,13 @@ const Collection = (props) => {
                 
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "glycanId"
-                    data = {userSelection.glycans}
+                    rowId = "collectionId"
+                    data = {userSelection.collections}
                     columns={columns}
                     enableRowActions={true}
                     delete={deleteFromTable}
                     setAlertDialogInput={setAlertDialogInput}
-                    initialSortColumn="dateCreated"
-                />
-            </Card.Body>
-          </Card>
-          <Card style={{marginTop: "15px"}}>
-            <Card.Body>
-            <h5 class="gg-blue" style={{textAlign: "left"}}>
-                Metadata</h5>
-                <Row>
-                    <Col md={12} style={{ textAlign: "right" }}>
-                    <div className="text-right mb-3">
-                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                         disabled={error} onClick={()=> console.log("add metadata")}>
-                         Add Metadata
-                        </Button>
-                        </div>
-                    </Col>
-                    </Row>
-                
-                <Table 
-                    authCheckAgent={props.authCheckAgent}
-                    rowId = "metadatId"
-                    data = {userSelection.metadata}
-                    columns={metadatacolumns}
-                    enableRowActions={true}
-                    setAlertDialogInput={setAlertDialogInput}
-                    initialSortColumn="metadatId"
+                    initialSortColumn="name"
                 />
             </Card.Body>
           </Card>
@@ -399,4 +336,4 @@ const Collection = (props) => {
     );
 };
 
-export default Collection;
+export default AddCoC;

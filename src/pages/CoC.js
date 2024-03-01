@@ -37,17 +37,11 @@ const CoC = (props) => {
         size: 50,
       },
       {
-        accessorKey: 'collections.length',
+        accessorKey: 'children.length',
         header: '# Collections',
         size: 30,
         enableColumnFilter: false,
       },
-      {
-        accessorFn: (row) => getGlycanCount(row.collections),
-        header: "# Glycans",
-        size: 30,
-        enableColumnFilter: false,
-      }
     ],
     [],
   );
@@ -83,7 +77,7 @@ const CoC = (props) => {
                   enableRowActions={true}
                   setAlertDialogInput={setAlertDialogInput}
                   showEdit={true}
-                  edit={stringConstants.routes.addcoc + "?collectionId="}
+                  edit={stringConstants.routes.addcoc + "?cocId="}
                   deletews="api/data/deletecoc/"
                   initialSortColumn="name"
                   rowId="collectionId"

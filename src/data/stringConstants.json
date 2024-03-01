@@ -17,7 +17,8 @@
         "metadata" : "/metadata/",
         "addglycan" : "/glycans/addglycan",
         "addglycanfromfile": "/glycans/addglycanfromfile",
-        "addcollection": "/collections/addcollection"
+        "addcollection": "/collections/addcollection",
+        "addcoc": "/collections/addcoc"
     },
     "api": {
         "statistics" : "api/data/statistics",
