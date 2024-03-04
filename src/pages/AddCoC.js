@@ -66,14 +66,22 @@ const AddCoC = (props) => {
         setShowLoading(true);
         getJson ("api/data/getcoc/" + cocId, getAuthorizationHeader())
             .then ((json) => {
-                setUserSelection (json.data.data);
-                if (json.data.data.collections) {
-                    setSelectedCollections (json.data.data.collections);
-                    let initialIds = {};
-                    json.data.data.collections.forEach ((collection) => {
-                        initialIds[collection.collectionId] = true;
-                    });
-                    setInitialSelection(initialIds);
+                if (json.data.data) {
+                    const coc = { 
+                        collectionId: json.data.data.collectionId,
+                        name: json.data.data.name,
+                        description: json.data.data.description,
+                        collections: json.data.data.children,
+                    }
+                    setUserSelection (coc);
+                    if (json.data.data.children) {
+                        setSelectedCollections (json.data.data.children);
+                        let initialIds = {};
+                        json.data.data.children.forEach ((collection) => {
+                            initialIds[collection.collectionId] = true;
+                        });
+                        setInitialSelection(initialIds);
+                    }
                 }
                 setShowLoading(false);
         }).catch (function(error) {
@@ -145,6 +153,11 @@ const AddCoC = (props) => {
             header: 'Name',
             size: 50,
           },
+          {
+            accessorKey: 'description', 
+            header: 'Description',
+            size: 200,
+          },
         ],
         [],
       );
@@ -162,8 +175,6 @@ const AddCoC = (props) => {
                 rowSelection={true}
                 rowSelectionChange={handleCollectionSelectionChange}
                 rowId="collectionId"
-                selected = {initialSelection}
-                selectedRows = {selectedCollections}
             />
             </>
         );
@@ -196,7 +207,15 @@ const AddCoC = (props) => {
     }
 
     const handleCollectionSelectionChange = (selected) => {
-        setSelectedCollections(selected);
+        // append new selections
+        const previous = [...selectedCollections];
+        selected.forEach ((collection) => {
+            const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
+            if (!found) {
+                previous.push (collection);
+            }
+        })
+        setSelectedCollections(previous);
     }
 
     return (
@@ -312,7 +331,7 @@ const AddCoC = (props) => {
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowCollectionTable(true)}>
-                         Add/Remove Collection
+                         Add Collection
                         </Button>
                         </div>
                     </Col>

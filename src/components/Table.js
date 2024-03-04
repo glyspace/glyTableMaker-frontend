@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
+import { Row } from "react-bootstrap";
 
 // server side table
 const Table = (props) => {
@@ -15,6 +16,7 @@ const Table = (props) => {
     const [data, setData] = useState([]);
     const [isError, setIsError] = useState(false);
     const [isDeleteError, setIsDeleteError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isRefetching, setIsRefetching] = useState(false);
     const [rowCount, setRowCount] = useState(0);
@@ -55,6 +57,7 @@ const Table = (props) => {
         }).catch (function(error) {
           if (error && error.response && error.response.data) {
               setIsError(true);
+              setErrorMessage(error.response.data.message);
               setIsLoading(false);
               setIsRefetching(false);
               return;
@@ -107,8 +110,8 @@ const Table = (props) => {
                 if (error && error.response && error.response.data) {
                     setIsError(true);
                     setIsDeleteError(true);
+                    setErrorMessage(error.response.data.message);
                     setIsLoading(false);
-                    return;
                 } else {
                     setIsLoading(false);
                     axiosError(error, null, props.setAlertDialogInput);
@@ -192,7 +195,15 @@ const Table = (props) => {
         muiToolbarAlertBannerProps: isError
           ? {
               color: 'error',
-              children: isDeleteError ? 'Error deleting' : 'Error loading data',
+              children: isDeleteError ? 
+                <div>
+                  <Row>Error deleting</Row>
+                  <Row>{errorMessage}</Row>
+                </div> : 
+                <div>
+                <Row>Error loading data</Row>
+                <Row>{errorMessage}</Row>
+              </div>,
             }
           : undefined,
         onColumnFiltersChange: setColumnFilters,
@@ -246,7 +257,15 @@ const Table = (props) => {
         muiToolbarAlertBannerProps: isError
           ? {
               color: 'error',
-              children: isDeleteError ? 'Error deleting' : 'Error loading data',
+              children: isDeleteError ? 
+                <div>
+                  <Row>Error deleting</Row>
+                  <Row>{errorMessage}</Row>
+                </div> : 
+                <div>
+                <Row>Error loading data</Row>
+                <Row>{errorMessage}</Row>
+              </div>,
             }
           : undefined,
         onColumnFiltersChange: setColumnFilters,

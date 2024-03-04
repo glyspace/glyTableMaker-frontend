@@ -233,7 +233,15 @@ const Collection = (props) => {
     }
 
     const handleGlycanSelectionChange = (selected) => {
-        setSelectedGlycans(selected);
+        // append new selections
+        const previous = [...selectedGlycans];
+        selected.forEach ((glycan) => {
+            const found = selectedGlycans.find ((item) => item.glycanId === glycan.glycanId);
+            if (!found) {
+                previous.push (glycan);
+            }
+        })
+        setSelectedGlycans(previous);
     }
 
     return (
@@ -349,7 +357,7 @@ const Collection = (props) => {
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowGlycanTable(true)}>
-                         Add/Remove Glycan
+                         Add Glycan
                         </Button>
                         </div>
                     </Col>
