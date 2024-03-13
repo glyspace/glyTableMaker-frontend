@@ -7,8 +7,10 @@ width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
 >
 <text x="20" y="100" id="mod-text">
   <tspan id="mod" font-size="65px" font-family="Arial">S</tspan>
+  <title>Sulfate</title>
 </text>
 <text x="95" y="100" id="counter-text">
   <tspan id="counter" font-size="65px" font-family="Arial">0</tspan>
+  <title>Sulfate</title>
 </text>
 </svg>

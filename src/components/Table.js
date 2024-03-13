@@ -23,7 +23,7 @@ const Table = (props) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(-1);
     //table state
-    const [columnFilters, setColumnFilters] = useState([]);
+    const [columnFilters, setColumnFilters] = useState(props.columnFilters ?? []);
     const [globalFilter, setGlobalFilter] = useState('');
     const [sorting, setSorting] = useState([{"id":props.initialSortColumn,"desc":true}]);
     const [pagination, setPagination] = useState({
@@ -317,7 +317,8 @@ Table.propTypes = {
     setSelectedRows: PropTypes.func,
     rowId: PropTypes.string, // required, which field to use as the row identifier
     selected: PropTypes.object, // optional, already selected row id map
-    selectedRows: PropTypes.array // optional, already selected rows
+    selectedRows: PropTypes.array, // optional, already selected rows
+    columnFilters: PropTypes.array  //optional, initial column filters on the table
   };
 
 export default Table;

@@ -192,14 +192,13 @@ const Collection = (props) => {
                 authCheckAgent={props.authCheckAgent}
                 ws="api/data/getglycans"
                 columns={columns}
+                columnFilters={[{"id":"glytoucanID","value":"G"}]}
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
                 initialSortColumn="dateCreated"
                 rowSelection={true}
                 rowSelectionChange={handleGlycanSelectionChange}
                 rowId="glycanId"
-                selected = {initialSelection}
-                selectedRows = {selectedGlycans}
             />
             </>
         );

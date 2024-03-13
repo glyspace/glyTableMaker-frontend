@@ -30,5 +30,6 @@ width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
   ></g
 ><text x="52" y="110">
   <tspan id="counter" font-size="75px" font-family="Arial">0</tspan>
+  <title>HexN</title>
 </text></svg
 >

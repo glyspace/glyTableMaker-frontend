@@ -80,10 +80,11 @@ const Composition = (props) => {
                         data={window.location.origin + 
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/' + monoWithCount.mono.image}
                         type="image/svg+xml"
-                        alt={monoWithCount.mono.title} 
+                        alt={monoWithCount.mono.name} 
                         id={monoWithCount.mono.id}
                         className="comp-image"> 
-                        monoWithCount.mono.id </object> : 
+                        monoWithCount.mono.id</object>
+                         : 
                     <span className="comp-text">{monoWithCount.mono.id}</span>}
                     <Image
                         src={window.location.origin + 
@@ -91,6 +92,7 @@ const Composition = (props) => {
                         alt="incrementing"
                         className="counter-image"
                         onClick={() => changeCount (monoWithCount, true)}/>
+                        <span class="tooltip-text top">{monoWithCount.mono.id}</span>
                 </Col>
                     {monoListSecondCol[index] ? 
                     <Col> 
@@ -106,7 +108,7 @@ const Composition = (props) => {
                     <object
                         data={window.location.origin + 
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/' + monoListSecondCol[index].mono.image}
-                        alt={monoListSecondCol[index].mono.title} 
+                        alt={monoListSecondCol[index].mono.name} 
                         id={monoListSecondCol[index].mono.id}
                         className="comp-image"> 
                         monoListSecondCol[index].mono.id</object>
@@ -160,6 +162,22 @@ const Composition = (props) => {
         } 
     }
 
+    const getCompositionDisplay = () => {
+        let compo = [];
+        compo.push (<span> </span>)
+        monoList.forEach ((element) => {
+            if (element.count > 0) {
+                compo.push (<span>{element.mono.id}<sub>{element.count}</sub> </span>);
+            }
+        })
+        monoListSecondCol.forEach ((element) => {
+            if (element.count > 0) {
+                compo.push (<span>{element.mono.id}<sub>{element.count}</sub> </span>);
+            }
+        })
+        return compo;
+    }
+
     return (
         <Dialog
             open={props.show}
@@ -176,7 +194,8 @@ const Composition = (props) => {
             }}
         >
             <div style={{ overflow: 'hidden' }}>
-                <h5 className="sups-dialog-title">{props.title}: {compositionString}</h5>
+                <h5 className="sups-dialog-title">{props.title}:
+                    {getCompositionDisplay()}</h5>
                 <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '73vh' }}>
                     <TextAlert alertInput={textAlertInput}/>
                     { monoList.length > 0 && getCompositionSelections() }

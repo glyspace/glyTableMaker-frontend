@@ -1,15 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
+import { MRT_Table, useMaterialReactTable } from "material-react-table";
 
 const StatusMessage = props => {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [enableErrorView, setEnableErrorView] = useState(false);
   const [batchUploadResponse, setBatchUploadResponse] = useState();
+
+  const columns = useMemo ( 
+    () => [
+      {
+        accessorKey: 'position', 
+        header: 'Position',
+        size: 50,
+      },
+      {
+        accessorKey: 'message',
+        header: 'Message',
+        size: 100,
+      },
+      {
+        accessorKey: 'sequence',
+        header: 'Glycan sequence',
+        size: 10,
+      },
+    ],
+    [],
+  );
+
+  const tableDetail = useMaterialReactTable({
+    columns,
+    data: errorMessage,
+    enableFilters: false
+  });
 
   const errorMessageTable = (setBatchUpload) => {
     return (
@@ -25,7 +53,7 @@ const StatusMessage = props => {
           <Modal.Title id="contained-modal-title-vcenter">Errors</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-           <span>{errorMessage}</span>
+           <MRT_Table table={tableDetail}/>
         </Modal.Body>
         <Modal.Footer>
           <Button className="gg-btn-blue-reg" onClick={() => {
@@ -88,14 +116,14 @@ const StatusMessage = props => {
           <span>
             {batchUploadResponse.status &&
             batchUploadResponse.status === "ERROR" &&
-            batchUploadResponse.error &&
-            batchUploadResponse.error.errors.length > 0 ? (
+            batchUploadResponse.errors &&
+            batchUploadResponse.errors.length > 0 ? (
               <span>
                 <strong>Status:</strong>&nbsp;{"Batch upload errors"}
                   &nbsp;&nbsp;
                   <span
                     onClick={() => {
-                      setErrorMessage(batchUploadResponse.error);
+                      setErrorMessage(batchUploadResponse.errors);
                       setEnableErrorView(true);
                     }}
                   >

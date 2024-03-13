@@ -16,6 +16,25 @@ footerUnivLogo {
   padding: "20px 10px 0 10px";
 }
 
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  width: 100px;
+  color: rgb(10, 8, 8);
+  background-color: #a3b0ba;
+  padding: 5px;
+}
+
+.hover-text:hover .tooltip-text {
+  visibility: visible;
+}
+
+.top {
+  top: -40px;
+  left: -50%;
+}
+
 
 :root {
   /* --gg-blue: #2f78b4; */
