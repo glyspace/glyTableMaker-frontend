@@ -129,10 +129,6 @@ const Glycans = (props) => {
               
           <Card>
             <Card.Body>
-              <StatusMessage
-                setBatchUpload={setBatchUpload}
-                setAlertDialogInput={setAlertDialogInput}
-              />
               <div className="text-center mb-4">
               <Nav className={ "gg-dropdown-nav"} style={{display:"inline-block", borderRadius:".5rem"}} >
                   <div
@@ -188,6 +184,9 @@ const Glycans = (props) => {
                       </span>
                   </div>
                 </Nav>
+                <StatusMessage
+                  setBatchUpload={setBatchUpload}
+                  setAlertDialogInput={setAlertDialogInput}/>
               </div>
               <Table 
                   authCheckAgent={props.authCheckAgent}

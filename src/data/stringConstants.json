@@ -18,7 +18,8 @@
         "addglycan" : "/glycans/addglycan",
         "addglycanfromfile": "/glycans/addglycanfromfile",
         "addcollection": "/collections/addcollection",
-        "addcoc": "/collections/addcoc"
+        "addcoc": "/collections/addcoc",
+        "upload": "/glycans/fileupload"
     },
     "api": {
         "statistics" : "api/data/statistics",
