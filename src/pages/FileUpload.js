@@ -1,12 +1,12 @@
 import { Box, IconButton, Tooltip } from "@mui/material";
-import { MRT_Table, MaterialReactTable, useMaterialReactTable } from "material-react-table";
+import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
-import { Button, Container, Modal } from "react-bootstrap";
+import { Button, Card, Container, Modal } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
@@ -42,7 +42,10 @@ const FileUpload = (props) => {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         show={enableErrorView}
-        onHide={() => setEnableErrorView(false)}
+        onHide={() => {
+            updateBatchUpload();
+            setEnableErrorView(false)
+        }}
         >
         <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter">Errors</Modal.Title>
@@ -53,15 +56,6 @@ const FileUpload = (props) => {
             "No Errors"
             }
         </Modal.Body>
-        <Modal.Footer>
-            <Button className="gg-btn-blue-reg" onClick={() => {
-                updateBatchUpload();
-                setEnableErrorView(false);
-            }
-            }>
-            Mark Read
-            </Button>
-        </Modal.Footer>
         </Modal>
     </>
     );
@@ -123,19 +117,9 @@ const FileUpload = (props) => {
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex'}}>
-            <Tooltip title="Delete">
-              <IconButton color="error">
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Add Tag">
-              <IconButton>
-                <NoteAddIcon />
-              </IconButton>
-            </Tooltip>
             {row.original.errors && row.original.errors.length > 0 && 
             <Tooltip title="Display Errors">
-                <IconButton>
+                <IconButton color="error">
                     <ErrorIcon onClick={()=> {
                         setErrorMessage(row.original.errors);
                         setUploadId(row.original.id);
@@ -144,6 +128,17 @@ const FileUpload = (props) => {
                 </IconButton>
             </Tooltip>
             }
+            <Tooltip title="Add Tag">
+              <IconButton>
+                <NoteAddIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton color="error">
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            
           </Box>
         ),
         getRowId: (row) => row[props.rowId],
@@ -170,7 +165,16 @@ const FileUpload = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+            <Card>
+            <Card.Body>
             <MaterialReactTable table={table}/>
+            <div className="text-center mb-2" style={{marginTop:"5px"}}>
+                <Link to="/glycans">
+                <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycans</Button>
+                </Link>
+            </div>
+            </Card.Body>
+            </Card>
             </div>
         </Container>
         </>

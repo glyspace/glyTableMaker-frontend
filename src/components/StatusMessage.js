@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Badge, Button, Modal } from "react-bootstrap";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { Badge, Button } from "react-bootstrap";
+import { getAuthorizationHeader, getJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { useNavigate } from "react-router-dom";
 
