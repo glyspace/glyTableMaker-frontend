@@ -4,12 +4,14 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import { Button, Card, Container, Modal } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
 import { Link, useLocation } from "react-router-dom";
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
+import { ConfirmationModal } from "../components/ConfirmationModal";
 
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
@@ -19,6 +21,7 @@ const FileUpload = (props) => {
 
     const [errorMessage, setErrorMessage] = useState("");
     const [enableErrorView, setEnableErrorView] = useState(false);
+    const [enableTagDialog, setEnableTagDialog] = useState(false);
     const [uploadId, setUploadId] = useState(-1);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
@@ -60,6 +63,31 @@ const FileUpload = (props) => {
     </>
     );
     };
+
+    const handleAddTag = () => {
+      // validate
+      setEnableTagDialog(false);
+    }
+
+    const openAddTagDialog = () => {
+      return (
+        <>
+        <ConfirmationModal
+          showModal={enableTagDialog}
+          onCancel={() => {
+            setEnableTagDialog(false);
+          }}
+          onConfirm={() => handleAddTag()}
+          title="Add Tag"
+          body={
+            <>
+              adding a tag
+            </>
+          }
+        />
+        </>
+      )
+    }
     
 
     const columns = useMemo ( 
@@ -68,6 +96,19 @@ const FileUpload = (props) => {
             accessorKey: 'startDate', 
             header: 'File upload date',
             size: 50,
+            Cell: ({ renderedCellValue, row }) => (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                }}
+              >
+                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
+                <span>{renderedCellValue}</span>
+                {row.original.status==="PROCESSING" && <HourglassTopIcon color="primary"/>}
+              </Box>
+            ),
           },
           {
             accessorKey: 'filename',
@@ -111,7 +152,7 @@ const FileUpload = (props) => {
 
     const table = useMaterialReactTable({
         columns,
-        data: batchUploads,
+        data: batchUploads ?? [],
         enableFilters: false,
         enableRowActions: true,
         positionActionsColumn: 'last',
@@ -130,7 +171,10 @@ const FileUpload = (props) => {
             }
             <Tooltip title="Add Tag">
               <IconButton>
-                <NoteAddIcon />
+                <NoteAddIcon color="primary" onClick={() => {
+                  setEnableTagDialog (true);
+                  setUploadId(row.original.id);
+                }}/>
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
@@ -153,6 +197,7 @@ const FileUpload = (props) => {
     return (
         <>
         {enableErrorView && errorMessageTable()}
+        {enableTagDialog && openAddTagDialog()}
         <Container maxWidth="xl">
             <div className="page-container">
             <PageHeading

@@ -46,7 +46,7 @@ const StatusMessage = props => {
         }}
         className="gg-btn-blue-sm" 
         style={{marginTop: "-2px", marginLeft: "10px"}}>
-        Upload Status&nbsp;
+        File Upload&nbsp;
         {unread > 0 ? <Badge bg="danger">
           {unread}</Badge> : ""}
         <span className="visually-hidden">errors</span>
