@@ -5,8 +5,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
-import { Button, Card, Container, Modal } from "react-bootstrap";
-import { PageHeading } from "../components/FormControls";
+import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Link, useLocation } from "react-router-dom";
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
@@ -27,6 +28,8 @@ const FileUpload = (props) => {
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+    const [tag, setTag] = useState("");
+    const [validate, setValidate] = useState(false);
 
     const updateBatchUpload = () => {
         postJson ("api/data/updatebatchupload/"+ uploadId, null, getAuthorizationHeader()).then ( (data) => {
@@ -64,9 +67,40 @@ const FileUpload = (props) => {
     );
     };
 
+    const handleChange = e => {
+      const newValue = e.target.value;  
+      if (newValue.trim().length > 1) {
+          setValidate(false);
+      }
+      setTag(newValue);
+  };
+
     const handleAddTag = () => {
       // validate
-      setEnableTagDialog(false);
+      props.authCheckAgent();
+      setValidate(false);
+      if (tag.length < 1) {
+        setValidate(true);
+        return;
+      }
+      postJson ("api/data/addtagforfileupload/" + uploadId, tag, getAuthorizationHeader()).then ( (data) => {
+          setEnableTagDialog(false);
+      }).catch (function(error) {
+          axiosError(error, null, setAlertDialogInput);
+          setEnableTagDialog(false);
+        }
+      );
+    }
+
+    const sendEmail = (errorId) => {
+      props.authCheckAgent();
+      postJson ("api/data/senderrorreport/" + errorId, null, getAuthorizationHeader()).then ( (data) => {
+          console.log ("reported the errors");
+      }).catch (function(error) {
+          axiosError(error, null, setAlertDialogInput);
+          setEnableTagDialog(false);
+      }
+    );
     }
 
     const openAddTagDialog = () => {
@@ -81,7 +115,27 @@ const FileUpload = (props) => {
           title="Add Tag"
           body={
             <>
-              adding a tag
+              <Form>
+                <Form.Group
+                  as={Row}
+                  controlId="tag"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={9}>
+                    <FormLabel label="Tag" className="required-asterik"/>
+                    <Form.Control
+                      type="text"
+                      name="tag"
+                      placeholder="Enter tag for all the glycans from this file"
+                      value={tag}
+                      required={true}
+                      isInvalid={validate}
+                      onChange={handleChange}
+                    />
+                    <Feedback message="Please enter a valid tag" />
+                    </Col>
+                </Form.Group>
+                </Form>
             </>
           }
         />
@@ -185,13 +239,27 @@ const FileUpload = (props) => {
             
           </Box>
         ),
-        getRowId: (row) => row[props.rowId],
+        getRowId: (row) => row.id,
     });
 
     const tableDetail= useMaterialReactTable({
         columns: errorColumns,
         data: errorMessage ?? [],
         enableFilters: false,
+        enableRowActions: true,
+        positionActionsColumn: 'last',
+        renderRowActions: ({ row }) => (
+          <Box sx={{ display: 'flex'}}>
+            <Tooltip title="Report error to developers">
+              <IconButton>
+                <ForwardToInboxIcon color="primary" onClick={() => {
+                  sendEmail(row.original.id);
+                }}/>
+              </IconButton>
+            </Tooltip>
+          </Box>
+        ),
+        getRowId: (row) => row.id
     });
 
     return (
