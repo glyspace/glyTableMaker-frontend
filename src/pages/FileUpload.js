@@ -8,8 +8,8 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
-import { Link, useLocation } from "react-router-dom";
-import { getAuthorizationHeader, postJson } from "../utils/api";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { deleteJson, getAuthorizationHeader, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
 import { ConfirmationModal } from "../components/ConfirmationModal";
@@ -17,8 +17,10 @@ import { ConfirmationModal } from "../components/ConfirmationModal";
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
 
-    const {state} = useLocation();
-    const batchUploads = state;
+    const { state} = useLocation();
+    const { data, fetch} = state;
+    const batchUploads = data;
+    const navigate = useNavigate();
 
     const [errorMessage, setErrorMessage] = useState("");
     const [enableErrorView, setEnableErrorView] = useState(false);
@@ -103,6 +105,17 @@ const FileUpload = (props) => {
     );
     }
 
+    const deleteUpload = (uploadId) => {
+        props.authCheckAgent();
+        deleteJson ("api/data/deletefileupload/" + uploadId, getAuthorizationHeader()).then ( (data) => {
+           navigate ("/glycans");
+        }).catch (function(error) {
+            axiosError(error, null, setAlertDialogInput);
+            setEnableTagDialog(false);
+        }
+      );
+      }
+
     const openAddTagDialog = () => {
       return (
         <>
@@ -170,8 +183,13 @@ const FileUpload = (props) => {
             size: 100,
           },
           {
-            accessorKey: 'glycans.length',
-            header: '# of Glycans',
+            accessorFn: (row) => row.glycans.length - (row.existingCount ?? 0),
+            header: '# of New Glycans',
+            size: 10,
+          },
+          {
+            accessorKey: 'existingCount',
+            header: '# of Existing Glycans',
             size: 10,
           },
           {
@@ -233,7 +251,9 @@ const FileUpload = (props) => {
             </Tooltip>
             <Tooltip title="Delete">
               <IconButton color="error">
-                <DeleteIcon />
+                <DeleteIcon onClick={()=> {
+                    deleteUpload(row.original.id);
+                }}/>
               </IconButton>
             </Tooltip>
             

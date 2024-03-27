@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Badge, Button } from "react-bootstrap";
 import { getAuthorizationHeader, getJson } from "../utils/api";
@@ -11,6 +11,10 @@ const StatusMessage = props => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
     getJson ("api/data/checkbatchupload", getAuthorizationHeader()).then ( (json) => {
       props.setBatchUpload && props.setBatchUpload(true);
       setBatchUploadResponse(json.data.data);
@@ -26,7 +30,7 @@ const StatusMessage = props => {
         axiosError(error, null, props.setAlertDialogInput);
       }
     });
-  }, []);
+  }
 
   const countUnreadErrors = (uploads) => {
     let count = 0;
@@ -42,11 +46,11 @@ const StatusMessage = props => {
     <>
       <Button variant="primary" 
         onClick={()=> {
-          navigate("/glycans/fileupload", { state: batchUploadResponse});
+          navigate("/glycans/fileupload", { state: {data: batchUploadResponse, fetch: "something"}});
         }}
         className="gg-btn-blue-sm" 
         style={{marginTop: "-2px", marginLeft: "10px"}}>
-        File Upload&nbsp;
+        Upload Status&nbsp;
         {unread > 0 ? <Badge bg="danger">
           {unread}</Badge> : ""}
         <span className="visually-hidden">errors</span>
