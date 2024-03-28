@@ -8,8 +8,8 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { deleteJson, getAuthorizationHeader, postJson } from "../utils/api";
+import { Link } from "react-router-dom";
+import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
 import { ConfirmationModal } from "../components/ConfirmationModal";
@@ -17,11 +17,8 @@ import { ConfirmationModal } from "../components/ConfirmationModal";
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
 
-    const { state} = useLocation();
-    const { data, fetch} = state;
-    const batchUploads = data;
-    const navigate = useNavigate();
-
+    const [batchUploads, setBatchUploads] = useState([]);
+    const [error, setError] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [enableErrorView, setEnableErrorView] = useState(false);
     const [enableTagDialog, setEnableTagDialog] = useState(false);
@@ -33,6 +30,26 @@ const FileUpload = (props) => {
     const [tag, setTag] = useState("");
     const [validate, setValidate] = useState(false);
 
+    useEffect(() => {
+      fetchData();
+    }, []);
+  
+    const fetchData = async () => {
+      getJson ("api/data/checkbatchupload", getAuthorizationHeader()).then ( (json) => {
+        setBatchUploads(json.data.data);
+      }).catch (function(error) {
+        if (error && error.response && error.response.data) {
+          if  (error.response.data["code"] === 404 || error.response.status === 404) {
+            console.log ("no active batch upload");
+          } else {
+            setError("Failed to get most recent batch upload");
+          }
+        } else {
+          axiosError(error, null, props.setAlertDialogInput);
+        }
+      });
+    }
+    
     const updateBatchUpload = () => {
         postJson ("api/data/updatebatchupload/"+ uploadId, null, getAuthorizationHeader()).then ( (data) => {
           console.log ("marked the batch upload results as read");
@@ -94,9 +111,9 @@ const FileUpload = (props) => {
       );
     }
 
-    const sendEmail = (errorId) => {
+    const sendEmail = (errorId, isError) => {
       props.authCheckAgent();
-      postJson ("api/data/senderrorreport/" + errorId, null, getAuthorizationHeader()).then ( (data) => {
+      postJson ("api/data/senderrorreport/" + errorId + "?isUpload=" + !isError, null, getAuthorizationHeader()).then ( (data) => {
           console.log ("reported the errors");
       }).catch (function(error) {
           axiosError(error, null, setAlertDialogInput);
@@ -108,7 +125,7 @@ const FileUpload = (props) => {
     const deleteUpload = (uploadId) => {
         props.authCheckAgent();
         deleteJson ("api/data/deletefileupload/" + uploadId, getAuthorizationHeader()).then ( (data) => {
-           navigate ("/glycans");
+           fetchData();
         }).catch (function(error) {
             axiosError(error, null, setAlertDialogInput);
             setEnableTagDialog(false);
@@ -242,24 +259,45 @@ const FileUpload = (props) => {
             </Tooltip>
             }
             <Tooltip title="Add Tag">
-              <IconButton>
-                <NoteAddIcon color="primary" onClick={() => {
+              <IconButton color="primary" disabled={row.original.status==="PROCESSING"}>
+                <NoteAddIcon
+                onClick={() => {
                   setEnableTagDialog (true);
                   setUploadId(row.original.id);
                 }}/>
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
-              <IconButton color="error">
-                <DeleteIcon onClick={()=> {
+              <IconButton color="error" disabled={row.original.status==="PROCESSING"}>
+                <DeleteIcon 
+                onClick={()=> {
                     deleteUpload(row.original.id);
                 }}/>
               </IconButton>
             </Tooltip>
+            {row.original.status==="PROCESSING" && 
+            <Tooltip title="Report error to developers">
+            <IconButton color="primary">
+              <ForwardToInboxIcon  onClick={() => {
+                sendEmail(row.original.id, false);
+              }}/>
+            </IconButton>
+          </Tooltip>
+            }
             
           </Box>
         ),
         getRowId: (row) => row.id,
+        muiToolbarAlertBannerProps: error
+          ? {
+              color: 'error',
+              children: 
+                <div>
+                <Row>Error loading data</Row>
+                <Row>{errorMessage}</Row>
+              </div>,
+            }
+          : undefined,
     });
 
     const tableDetail= useMaterialReactTable({
@@ -273,7 +311,7 @@ const FileUpload = (props) => {
             <Tooltip title="Report error to developers">
               <IconButton>
                 <ForwardToInboxIcon color="primary" onClick={() => {
-                  sendEmail(row.original.id);
+                  sendEmail(row.original.id, true);
                 }}/>
               </IconButton>
             </Tooltip>

@@ -479,6 +479,16 @@ input[type]:not(:-ms-input-placeholder) + label {
   transition: ease-in-out 0.5s !important;
 }
 
+.gg-btn-blue-rightalign {
+  color: #ffffff !important;
+  background-color: var(--gg-blue) !important;
+  border-color: var(--gg-blue) !important;
+  -webkit-transition: all 0.5s !important;
+  transition: ease-in-out 0.5s !important;
+  position: absolute;
+  right: 0;
+}
+
 .gg-btn-blue:hover,
 .gg-btn-blue-reg:hover {
   background-color: var(--gg-dark-blue) !important;
