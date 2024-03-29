@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { deleteJson, getAuthorizationHeader, getJson } from "../utils/api";
+import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { ConfirmationModal } from "./ConfirmationModal";
 import DeleteIcon from '@mui/icons-material/Delete';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
+import Tag from "./Tag";
 
 // server side table
 const Table = (props) => {
@@ -21,6 +23,7 @@ const Table = (props) => {
     const [isRefetching, setIsRefetching] = useState(false);
     const [rowCount, setRowCount] = useState(0);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [enableTagDialog, setEnableTagDialog] = useState(false);
     const [selectedId, setSelectedId] = useState(-1);
     //table state
     const [columnFilters, setColumnFilters] = useState(props.columnFilters ?? []);
@@ -32,6 +35,8 @@ const Table = (props) => {
     });
     const [rowSelection, setRowSelection] = useState(props.selected ?? {});
     const [selectedData, setSelectedData] = useState(props.selectedRows ?? []);
+    const [tag, setTag] = useState("");
+    const [validate, setValidate] = useState(false);
 
     let navigate = useNavigate();
 
@@ -88,6 +93,11 @@ const Table = (props) => {
         setShowDeleteModal(true);
       };
 
+      const openAddTagModal = (row) => {
+        setSelectedId(row.original[props.rowId]);
+        setEnableTagDialog(true);
+      };
+
       const confirmDelete = () => {
         if (selectedId !== -1) {
           deleteRow(selectedId);
@@ -124,6 +134,24 @@ const Table = (props) => {
             props.delete && props.delete(id);
             setShowDeleteModal(false);
 
+        }
+      }
+
+      const handleAddTag = () => {
+        if (props.addtagws) {
+          props.authCheckAgent();
+          setValidate(false);
+          if (tag.length < 1) {
+            setValidate(true);
+            return;
+          }
+          postJson ("api/data/addglycantag/" + selectedId, tag, getAuthorizationHeader()).then ( (data) => {
+            setEnableTagDialog(false);
+          }).catch (function(error) {
+              axiosError(error, null, props.setAlertDialogInput);
+              setEnableTagDialog(false);
+            }
+          );
         }
       }
 
@@ -183,6 +211,15 @@ const Table = (props) => {
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
+            {props.addtagws && (
+              <Tooltip title="Add Tag">
+              <IconButton color="primary">
+                <NoteAddIcon
+                onClick={() => { openAddTagModal (row);
+                }}/>
+              </IconButton>
+            </Tooltip>
+            )}
           </Box>
         ),
         getRowId: (row) => row[props.rowId],
@@ -243,6 +280,15 @@ const Table = (props) => {
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
+            {props.addtagws && (
+              <Tooltip title="Add Tag">
+              <IconButton color="primary">
+                <NoteAddIcon
+                onClick={() => { openAddTagModal (row);
+                }}/>
+              </IconButton>
+            </Tooltip>
+            )}
           </Box>
         ),
         renderDetailPanel: ({ row }) =>
@@ -294,6 +340,23 @@ const Table = (props) => {
             onConfirm={confirmDelete}
             title="Confirm Delete"
             body="Are you sure you want to delete?"
+        />
+
+        <ConfirmationModal
+          showModal={enableTagDialog}
+          onCancel={() => {
+            setEnableTagDialog(false);
+          }}
+          onConfirm={() => handleAddTag()}
+          title="Add Tag"
+          body={
+            <>
+              <Tag validate={validate} setValidate={setValidate}
+                setTag={setTag}
+                setAlertDialogInput={props.setAlertDialogInput}
+              />
+            </>
+          }
         />
 
         <MaterialReactTable table={props.detailPanel ? tableDetail: table} />

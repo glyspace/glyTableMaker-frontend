@@ -6,13 +6,14 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
-import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
-import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
+import { Button, Card, Container, Modal, Row } from "react-bootstrap";
+import { PageHeading } from "../components/FormControls";
 import { Link } from "react-router-dom";
 import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
 import { ConfirmationModal } from "../components/ConfirmationModal";
+import Tag from "../components/Tag";
 
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
@@ -86,14 +87,6 @@ const FileUpload = (props) => {
     );
     };
 
-    const handleChange = e => {
-      const newValue = e.target.value;  
-      if (newValue.trim().length > 1) {
-          setValidate(false);
-      }
-      setTag(newValue);
-  };
-
     const handleAddTag = () => {
       // validate
       props.authCheckAgent();
@@ -145,27 +138,10 @@ const FileUpload = (props) => {
           title="Add Tag"
           body={
             <>
-              <Form>
-                <Form.Group
-                  as={Row}
-                  controlId="tag"
-                  className="gg-align-center mb-3"
-                >
-                  <Col xs={12} lg={9}>
-                    <FormLabel label="Tag" className="required-asterik"/>
-                    <Form.Control
-                      type="text"
-                      name="tag"
-                      placeholder="Enter tag for all the glycans from this file"
-                      value={tag}
-                      required={true}
-                      isInvalid={validate}
-                      onChange={handleChange}
-                    />
-                    <Feedback message="Please enter a valid tag" />
-                    </Col>
-                </Form.Group>
-                </Form>
+              <Tag validate={validate}
+                setTag={setTag}
+                setAlertDialogInput={setAlertDialogInput}
+              />
             </>
           }
         />

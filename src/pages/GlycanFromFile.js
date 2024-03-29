@@ -10,19 +10,20 @@ import stringConstants from "../data/stringConstants.json";
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import TextAlert from "../components/TextAlert";
 import { axiosError } from "../utils/axiosError";
+import Tag from "../components/Tag";
 
 const GlycanFromFile = props => {
 
-    const [searchParams] = useSearchParams();
-    let type = searchParams ? searchParams.get("type") : "gws";
+  const [searchParams] = useSearchParams();
+  let type = searchParams ? searchParams.get("type") : "gws";
 
-    useEffect(() => {
-        props.authCheckAgent();
+  useEffect(() => {
+      props.authCheckAgent();
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const [uploadedGlycanFile, setUploadedGlycanFile] = useState();
   const [alertDialogInput, setAlertDialogInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -34,6 +35,8 @@ const GlycanFromFile = props => {
     );
 
   const [title, setTitle] = useState("Add Glycans From File");
+  const [tag, setTag] = useState("");
+  const [validate, setValidate] = useState(false);
   const navigate = useNavigate();
 
   const defaultFileType = "*/*";
@@ -41,6 +44,14 @@ const GlycanFromFile = props => {
 
   const fileDetails = {
     fileType: defaultFileType
+  };
+
+  const handleChange = e => {
+    const newValue = e.target.value;  
+    if (newValue.trim().length > 1) {
+        setValidate(false);
+    }
+    setTag(newValue);
   };
 
   function handleSubmit(e) {
@@ -54,7 +65,7 @@ const GlycanFromFile = props => {
         fileFormat: uploadedGlycanFile.fileFormat
       }
 
-    postJson (stringConstants.api.addglycanfromfile + "?filetype=" + type.toUpperCase(), 
+    postJson (stringConstants.api.addglycanfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag, 
         file, getAuthorizationHeader()).then ( (data) => {
         glycanUploadSucess(data);
       }).catch (function(error) {
@@ -105,6 +116,13 @@ const GlycanFromFile = props => {
                       maxFiles={1}
                       setUploadedFile={setUploadedGlycanFile}
                       required={true}
+                    />
+                  </Col>
+                  <Col xs={12} lg={9}>
+                  <FormLabel label="Add Tag"/>
+                    <Tag validate={validate} setValidate={setValidate}
+                        setTag={setTag}
+                        setAlertDialogInput={setAlertDialogInput}
                     />
                   </Col>
                 </Form.Group>

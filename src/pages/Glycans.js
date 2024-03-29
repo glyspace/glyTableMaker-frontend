@@ -195,6 +195,7 @@ const Glycans = (props) => {
                   enableRowActions={true}
                   setAlertDialogInput={setAlertDialogInput}
                   deletews="api/data/deleteglycan/"
+                  addtagws="api/data/addglycantag"
                   initialSortColumn="dateCreated"
                   rowId="glycanId"
             />
