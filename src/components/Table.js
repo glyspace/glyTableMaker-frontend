@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
-import Tag from "./Tag";
+import TagEdit from "./TagEdit";
 
 // server side table
 const Table = (props) => {
@@ -25,6 +25,8 @@ const Table = (props) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [enableTagDialog, setEnableTagDialog] = useState(false);
     const [selectedId, setSelectedId] = useState(-1);
+    const [tags, setTags] = useState("");
+    const [validate, setValidate] = useState(false);
     //table state
     const [columnFilters, setColumnFilters] = useState(props.columnFilters ?? []);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -35,8 +37,7 @@ const Table = (props) => {
     });
     const [rowSelection, setRowSelection] = useState(props.selected ?? {});
     const [selectedData, setSelectedData] = useState(props.selectedRows ?? []);
-    const [tag, setTag] = useState("");
-    const [validate, setValidate] = useState(false);
+    
 
     let navigate = useNavigate();
 
@@ -95,8 +96,25 @@ const Table = (props) => {
 
       const openAddTagModal = (row) => {
         setSelectedId(row.original[props.rowId]);
+        setTags(row.original.tags.map(tag => tag.label));
         setEnableTagDialog(true);
       };
+
+      const updateTags = (tags) => {
+        setTags(tags);
+        var row = data.find(item => 
+          item[props.rowId] === selectedId);
+        if (row) {
+          let tagJson = [];
+          tags.map ((tag) => {
+            var json = {
+              "label": tag
+            };
+            tagJson.push(json);
+          })
+          row["tags"] = tagJson;
+        }
+      }
 
       const confirmDelete = () => {
         if (selectedId !== -1) {
@@ -141,11 +159,11 @@ const Table = (props) => {
         if (props.addtagws) {
           props.authCheckAgent();
           setValidate(false);
-          if (tag.length < 1) {
+          if (tags.length < 1) {
             setValidate(true);
             return;
           }
-          postJson ("api/data/addglycantag/" + selectedId, tag, getAuthorizationHeader()).then ( (data) => {
+          postJson (props.addtagws + selectedId, tags, getAuthorizationHeader()).then ( (data) => {
             setEnableTagDialog(false);
           }).catch (function(error) {
               axiosError(error, null, props.setAlertDialogInput);
@@ -348,12 +366,14 @@ const Table = (props) => {
             setEnableTagDialog(false);
           }}
           onConfirm={() => handleAddTag()}
-          title="Add Tag"
+          title="Tag"
           body={
             <>
-              <Tag validate={validate} setValidate={setValidate}
-                setTag={setTag}
+              <TagEdit validate={validate} setValidate={setValidate}
+                setTags={updateTags}
                 setAlertDialogInput={props.setAlertDialogInput}
+                gettagws={props.gettagws}
+                data={tags}
               />
             </>
           }
@@ -381,7 +401,9 @@ Table.propTypes = {
     rowId: PropTypes.string, // required, which field to use as the row identifier
     selected: PropTypes.object, // optional, already selected row id map
     selectedRows: PropTypes.array, // optional, already selected rows
-    columnFilters: PropTypes.array  //optional, initial column filters on the table
+    columnFilters: PropTypes.array, //optional, initial column filters on the table
+    addtagws: PropTypes.string,  //optional, addtag api
+    gettagws: PropTypes.string, // optional, gettag api
   };
 
 export default Table;

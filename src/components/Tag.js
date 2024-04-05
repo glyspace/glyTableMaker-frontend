@@ -11,7 +11,7 @@ const Tag = (props) => {
 
     useEffect(() => {
         // load existing tags
-        getJson ("api/data/getglycantags", getAuthorizationHeader()).then ( (json) => {
+        getJson (props.gettagws, getAuthorizationHeader()).then ( (json) => {
             setTagList(json.data.data);
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -114,6 +114,7 @@ Tag.propTypes = {
     setAlertDialogInput: PropTypes.func,
     validate: PropTypes.bool,
     setValidate: PropTypes.func,
+    gettagws: PropTypes.string,
   };
 
 export default Tag;

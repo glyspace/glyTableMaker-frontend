@@ -123,6 +123,7 @@ const GlycanFromFile = props => {
                     <Tag validate={validate} setValidate={setValidate}
                         setTag={setTag}
                         setAlertDialogInput={setAlertDialogInput}
+                        gettagws="api/data/getglycantags"
                     />
                   </Col>
                 </Form.Group>
