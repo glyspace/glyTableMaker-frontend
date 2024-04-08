@@ -246,6 +246,7 @@ const Table = (props) => {
         manualSorting: props.data ? false: true,
         initialState: {
             showColumnFilters: false,
+            columnVisibility: { tags: false }
         },
         muiToolbarAlertBannerProps: isError
           ? {

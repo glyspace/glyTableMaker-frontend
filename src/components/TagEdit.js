@@ -8,21 +8,6 @@ const TagEdit = (props) => {
     const [tagList, setTagList] = useState(props.data);
     const [tag, setTag] = useState("");
 
-    /*useEffect(() => {
-        // load existing tags
-        getJson (props.gettagws + "/" + props.rowId, getAuthorizationHeader()).then ( (json) => {
-            setTagList(json.data.data);
-          }).catch (function(error) {
-            if (error && error.response && error.response.data) {
-                console.log("Failed to get list of existing glycan tags");
-            } else {
-              axiosError(error, null, props.setAlertDialogInput);
-            }
-          });
-  
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);*/
-
     const removeTags = index => {
         props.setTags([...tagList.filter(tag => tagList.indexOf(tag) !== index)]);
         setTagList([...tagList.filter(tag => tagList.indexOf(tag) !== index)]);
@@ -30,14 +15,15 @@ const TagEdit = (props) => {
 
     const addTags = () => {
         if ( tag !== '') {
-           props.setTags([...tagList, tag])
-           setTagList([...tagList, tag])
+            if (!tagList.includes(tag)) {
+                props.setTags([...tagList, tag]);
+                setTagList([...tagList, tag]);
+            }
         }
     };
        
     return (
         <>
-
         <div className="tags-input">
             <ul id="tags">
                 {tagList && tagList.length > 0 && tagList.map((tag, index) => (

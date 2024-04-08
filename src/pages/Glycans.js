@@ -84,9 +84,31 @@ const Glycans = (props) => {
           </Box>
         ),
       },
+      {
+        accessorFn: (row) => row.tags.map(tag => tag.label),
+        header: 'Tags',
+        id: "tags",
+        size: 50,
+        Cell: ({ cell }) => (
+          <ul id="tags">
+                {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((tag, index) => (
+                <li key={index} className="tag">
+                    <span className='tag-title'>{tag}</span>
+                </li>
+                ))}
+            </ul>
+        ),
+      },
     ],
     [],
   );
+
+  const writeTags = (tags) => {
+    var tagString = "";
+    if (tags && tags.size > 0) {
+
+    }
+  }
 
   return (
     <>
