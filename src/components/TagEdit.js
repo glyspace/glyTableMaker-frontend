@@ -14,7 +14,7 @@ const TagEdit = (props) => {
     };
 
     const addTags = () => {
-        if ( tag !== '') {
+        if ( tag !== '' && tag.trim().length > 0) {
             if (!tagList.includes(tag)) {
                 props.setTags([...tagList, tag]);
                 setTagList([...tagList, tag]);

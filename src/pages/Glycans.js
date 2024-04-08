@@ -88,7 +88,7 @@ const Glycans = (props) => {
         accessorFn: (row) => row.tags.map(tag => tag.label),
         header: 'Tags',
         id: "tags",
-        size: 50,
+        size: 100,
         Cell: ({ cell }) => (
           <ul id="tags">
                 {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((tag, index) => (
@@ -102,13 +102,6 @@ const Glycans = (props) => {
     ],
     [],
   );
-
-  const writeTags = (tags) => {
-    var tagString = "";
-    if (tags && tags.size > 0) {
-
-    }
-  }
 
   return (
     <>

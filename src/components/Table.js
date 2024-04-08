@@ -158,13 +158,14 @@ const Table = (props) => {
       const handleAddTag = () => {
         if (props.addtagws) {
           props.authCheckAgent();
-          setValidate(false);
+          /*setValidate(false);
           if (tags.length < 1) {
             setValidate(true);
             return;
-          }
+          }*/
           postJson (props.addtagws + selectedId, tags, getAuthorizationHeader()).then ( (data) => {
             setEnableTagDialog(false);
+            fetchData();
           }).catch (function(error) {
               axiosError(error, null, props.setAlertDialogInput);
               setEnableTagDialog(false);
@@ -230,7 +231,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>)}
             {props.addtagws && (
-              <Tooltip title="Add Tag">
+              <Tooltip title="View/Add/Delete Tag">
               <IconButton color="primary">
                 <NoteAddIcon
                 onClick={() => { openAddTagModal (row);
