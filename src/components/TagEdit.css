@@ -36,13 +36,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: black;
     padding: 0 8px;
     font-size: 14px;
     list-style: none;
     border-radius: 6px;
     margin: 0 8px 8px 0;
-    background: #2f78b7;
+    border: 2px solid #2f78b7;
     .tag-title {
       margin-top: 3px;
     }
@@ -54,12 +54,28 @@
       text-align: center;
       font-size: 14px;
       margin-left: 8px;
-      color: #2f78b7;
+      color: black;
       border-radius: 50%;
-      background: #fff;
       cursor: pointer;
     }
   }
+
+    .tag_in_table {
+      width: auto;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black;
+      padding: 0 8px;
+      font-size: 14px;
+      list-style: none;
+      border-radius: 6px;
+      margin: 0 8px 8px 0;
+      .tag-title {
+        margin-top: 3px;
+      }
+    }
   
   @media screen and (max-width: 567px) {
     .tags-input {

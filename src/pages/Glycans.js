@@ -92,7 +92,7 @@ const Glycans = (props) => {
         Cell: ({ cell }) => (
           <ul id="tags">
                 {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((tag, index) => (
-                <li key={index} className="tag">
+                <li key={index} className="tag_in_table">
                     <span className='tag-title'>{tag}</span>
                 </li>
                 ))}
