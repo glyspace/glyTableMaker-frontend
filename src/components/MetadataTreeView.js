@@ -13,7 +13,7 @@ const MetadataTreeView = (props) => {
         {Array.isArray(nodes) ?
             nodes.map ((node) => {
                 return (
-                    <TreeItem key={node.categoryId} nodeId={node.categoryId} label={node.name}>
+                    <TreeItem itemId={'category'+node.categoryId} label={node.name}>
                     {Array.isArray(node.dataTypes)
                         ? node.dataTypes.map ((datatype) => renderDatatypes(datatype))
                         : null}
@@ -31,7 +31,7 @@ const MetadataTreeView = (props) => {
         }
 
         return (
-            <TreeItem key={node.datatypeId} nodeId={node.datatypeId} label={node.name}>
+            <TreeItem itemId={node.datatypeId} label={node.name}>
             </TreeItem>
         );
     };

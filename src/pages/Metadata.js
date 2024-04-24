@@ -36,8 +36,15 @@ const Metadata = (props) => {
         multiple: false,
     };
 
+    const categoryInitialState = {
+        name: "",
+        description: ""
+    }
+
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [datatype, setDatatype] = useReducer(reducer, datatypeInitialState);
+    const [category, setCategory] = useReducer(reducer, categoryInitialState);
+
 
     useEffect(props.authCheckAgent, []);
 
@@ -83,6 +90,17 @@ const Metadata = (props) => {
         }
     };
 
+    const handleCategoryChange = e => {
+        const name = e.target.name;
+        const newValue = e.target.value;
+        setTextAlertInput({"show": false, id: ""});
+    
+        if (name === "name" && newValue.trim().length > 1) {
+            setValidate(false);
+        }
+        setCategory({ [name]: newValue });
+    }
+
     const handleNamespaceSelect = e => {
         //const select = e.target.options[e.target.selectedIndex];
         //setDatatype({ namespace: select });
@@ -111,11 +129,159 @@ const Metadata = (props) => {
           }).catch (function(error) {
             axiosError(error, null, setAlertDialogInput);
             setShowLoading(false);
-            setEnableCategoryAdd(false);
+            setEnableDatatypeAdd(false);
           }
         );
     }
-         
+
+    const handleAddCategory = e => {
+        props.authCheckAgent();
+        setValidate(false);
+        
+        if (category.name === "" || category.name.trim().length < 1) {
+            setValidate(true);
+            return;
+        }
+        
+        setShowLoading(true);
+        postJson ("api/metadata/addcategory", category, getAuthorizationHeader()).then ( (data) => {
+            setShowLoading(false);
+            setEnableCategoryAdd(false);
+             //TODO refresh table
+          }).catch (function(error) {
+            axiosError(error, null, setAlertDialogInput);
+            setShowLoading(false);
+            setEnableCategoryAdd(false);
+          }
+        );
+
+       
+    }
+
+    const addCategoryForm = () => {
+        return (<>
+        <Form>
+          <Form.Group
+            as={Row}
+            controlId="name"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Name" className="required-asterik"/>
+              <Form.Control
+                type="text"
+                name="name"
+                placeholder="Enter name for the datatype category"
+                onChange={handleCategoryChange}
+                maxLength={255}
+                required={true}
+                isInvalid={validate}
+              />
+              <Feedback message="Name is required"></Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group
+            as={Row}
+            controlId="description"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Description"/>
+              <Form.Control
+                type="text"
+                name="description"
+                placeholder="Enter description for the datatype category"
+                maxLength={4000}
+                onChange={handleCategoryChange}
+              />
+            </Col>
+          </Form.Group>
+          </Form>
+          </>
+        );
+    }
+
+    const addDataTypeForm = () => {
+    return (
+        <>
+        <Form>
+          <Form.Group
+            as={Row}
+            controlId="name"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Name" className="required-asterik"/>
+              <Form.Control
+                type="text"
+                name="name"
+                placeholder="Enter name for the datatype"
+                onChange={handleChange}
+                maxLength={255}
+                required={true}
+                isInvalid={validate}
+              />
+              <Feedback message="Name is required"></Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group
+            as={Row}
+            controlId="description"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Description"/>
+              <Form.Control
+                type="text"
+                name="description"
+                placeholder="Enter description for the datatype"
+                maxLength={4000}
+                onChange={handleChange}
+              />
+            </Col>
+          </Form.Group>
+          <Form.Group
+            as={Row}
+            controlId="namespace"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Namespace" className="required-asterik" />
+              <Form.Control
+                as="select"
+                name="namespace"
+                onChange={handleNamespaceSelect}
+                required={true}
+              >
+                {namespaceList && namespaceList.map((n , index) =>
+                      <option
+                      key={index}
+                      value={n.namespaceId}>
+                      {n.name}
+                      </option>
+                  )}
+                
+              </Form.Control>
+              <Feedback message="Namespace is required"></Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group
+              as={Row}
+              controlId="multiple"
+              className="gg-align-center mb-3"
+              >
+              <Col xs={12} lg={9}>
+                  <FormLabel label="Multiple" />
+                  <Form.Check
+                      type="checkbox"
+                      name="multiple"
+                      defaultChecked={false}
+                      onChange={handleChange}/>
+              </Col>
+          </Form.Group>
+        </Form>
+        <Loading show={showLoading}></Loading> </>);
+    }
 
     return (
     <>
@@ -141,87 +307,17 @@ const Metadata = (props) => {
           }}
           onConfirm={() => handleAddDatatype()}
           title="Add Datatype"
-          body={
-            <>
-              <Form>
-                <Form.Group
-                  as={Row}
-                  controlId="name"
-                  className="gg-align-center mb-3"
-                >
-                  <Col xs={12} lg={9}>
-                    <FormLabel label="Name" className="required-asterik"/>
-                    <Form.Control
-                      type="text"
-                      name="name"
-                      placeholder="Enter name for the datatype"
-                      onChange={handleChange}
-                      maxLength={255}
-                      required={true}
-                      isInvalid={validate}
-                    />
-                    <Feedback message="Name is required"></Feedback>
-                  </Col>
-                </Form.Group>
-                <Form.Group
-                  as={Row}
-                  controlId="description"
-                  className="gg-align-center mb-3"
-                >
-                  <Col xs={12} lg={9}>
-                    <FormLabel label="Description"/>
-                    <Form.Control
-                      type="text"
-                      name="description"
-                      placeholder="Enter description for the datatype"
-                      maxLength={4000}
-                      onChange={handleChange}
-                    />
-                  </Col>
-                </Form.Group>
-                <Form.Group
-                  as={Row}
-                  controlId="namespace"
-                  className="gg-align-center mb-3"
-                >
-                  <Col xs={12} lg={9}>
-                    <FormLabel label="Namespace" className="required-asterik" />
-                    <Form.Control
-                      as="select"
-                      name="namespace"
-                      onChange={handleNamespaceSelect}
-                      required={true}
-                    >
-                      {namespaceList && namespaceList.map((n , index) =>
-                            <option
-                            key={index}
-                            value={n.namespaceId}>
-                            {n.name}
-                            </option>
-                        )}
-                      
-                    </Form.Control>
-                    <Feedback message="Namespace is required"></Feedback>
-                  </Col>
-                </Form.Group>
-                <Form.Group
-                    as={Row}
-                    controlId="multiple"
-                    className="gg-align-center mb-3"
-                    >
-                    <Col xs={12} lg={9}>
-                        <FormLabel label="Multiple" />
-                        <Form.Check
-                            type="checkbox"
-                            name="multiple"
-                            defaultChecked={false}
-                            onChange={handleChange}/>
-                    </Col>
-                </Form.Group>
-              </Form>
-              <Loading show={showLoading}></Loading>
-            </>
-          }
+          body={addDataTypeForm()}
+        />
+
+        <ConfirmationModal
+          showModal={enableCategoryAdd}
+          onCancel={() => {
+            setEnableCategoryAdd(false);
+          }}
+          onConfirm={() => handleAddCategory()}
+          title="Add Datatype Category"
+          body={addCategoryForm()}
         />
         <Card>
             <Card.Body>
