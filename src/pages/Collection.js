@@ -2,13 +2,15 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Container } from "@mui/material";
+import { Autocomplete, Container, TextField } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
+import MetadataTreeView from "../components/MetadataTreeView";
+import { ConfirmationModal } from "../components/ConfirmationModal";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -40,6 +42,11 @@ const Collection = (props) => {
     const [showGlycanTable, setShowGlycanTable] = useState(false);
     const [selectedGlycans, setSelectedGlycans] = useState([]);
     const [initialSelection, setInitialSelection] = useState({});
+    const [enableAddMetadata, setEnableAddMetadata] = useState(false);
+
+    const[categories, setCategories] = useState([]);
+    const [options, setOptions] = useState([]);
+    const [namespace, setNamespace] = useState(null);
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -54,6 +61,7 @@ const Collection = (props) => {
 
     useEffect(() => {
         props.authCheckAgent();
+        getCategories();
         window.addEventListener("scroll", toggleSaveVisibility);
     }, []);
 
@@ -62,6 +70,47 @@ const Collection = (props) => {
             fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
+
+    function getCategories() {
+        getJson ("api/metadata/getcategories", getAuthorizationHeader()).then (({ data }) => {
+            setCategories(data.data);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
+
+    const onInputChange = (event, value, reason) => {
+        if (value) {
+          getTypeAhead(value);
+        } else {
+          setOptions([]);
+        }
+    };
+
+    const handleDatatypeSelection = (event, itemId, isSelected) => {
+        if (isSelected && typeof itemId === 'number') {  // datatype selected
+            // find namespace of the datatype and display appropriate value field
+            // locate the datatype
+            categories.map ((element) => {
+                if (element.dataTypes) {
+                    var datatype = element.dataTypes.find ((item) => item.datatypeId == itemId);
+                    if (datatype) {
+                        setNamespace (datatype.namespace.name);
+                        return;
+                    }
+                }
+            });
+        }
+    }
+
+    const getTypeAhead =  (searchTerm) => {
+        getJson ("api/util/gettypeahead?namespace=" + namespace + "&limit=10&value=" + searchTerm, 
+                getAuthorizationHeader()).then (({ data }) => {
+            setOptions(data.data);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
 
     const fetchData = async () => {
         setShowLoading(true);
@@ -204,6 +253,31 @@ const Collection = (props) => {
         );
     };
 
+    const addMetadataForm = () => {
+        return (
+            <>
+                <Row>
+                    <MetadataTreeView data={categories}
+                        onItemSelectionToggle={handleDatatypeSelection}/>
+                </Row>
+                <Row>
+                    <div style={{marginTop: '30px'}}>
+                        <Autocomplete
+                            id="typeahead"
+                            options={options}
+                            onInputChange={onInputChange}
+                            getOptionLabel={(option) => option.label}
+                            style={{ width: 300 }}
+                            renderInput={(params) => (
+                            <TextField {...params} label="Value" variant="outlined" />
+                            )}
+                        />
+                </div>
+                </Row>
+            </>
+        )
+    }
+
     const handleGlycanSelect = () => {
         console.log("selected glycans" + selectedGlycans);
         setUserSelection({"glycans": selectedGlycans});
@@ -241,6 +315,10 @@ const Collection = (props) => {
             }
         })
         setSelectedGlycans(previous);
+    }
+
+    const handleAddMetadata = () => {
+        console.log("adding metadata");
     }
 
     return (
@@ -290,6 +368,16 @@ const Collection = (props) => {
                      </Modal.Footer>
                 </Modal>
             )}
+            
+            <ConfirmationModal
+                showModal={enableAddMetadata}
+                onCancel={() => {
+                    setEnableAddMetadata(false);
+                }}
+                onConfirm={() => handleAddMetadata()}
+                title={"Add Metadata"}
+                body={addMetadataForm()}
+            />
             <Form>
                 <Form.Group
                   as={Row}
@@ -382,7 +470,7 @@ const Collection = (props) => {
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                         disabled={error} onClick={()=> console.log("add metadata")}>
+                         disabled={error} onClick={()=> setEnableAddMetadata(true)}>
                          Add Metadata
                         </Button>
                         </div>

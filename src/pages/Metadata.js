@@ -28,6 +28,17 @@ const Metadata = (props) => {
 
     const [enableCategoryAdd, setEnableCategoryAdd] = useState(false);
     const [enableDatatypeAdd, setEnableDatatypeAdd] = useState(false);
+    const [enableCategoryEdit, setEnableCategoryEdit] = useState(false);
+    const [lastSelectedItem, setLastSelectedItem] = useState(null);
+
+    const handleItemSelectionToggle = (event, itemId, isSelected) => {
+        if (isSelected && typeof itemId !== "number" && itemId.includes ("category")) {
+            itemId = itemId.substring(8);
+            var item = Number(itemId);
+            var cat = data.find ((element) => element.categoryId === item);
+            setLastSelectedItem(cat);
+        }
+    };
 
     const datatypeInitialState = {
         name: "",
@@ -65,6 +76,7 @@ const Metadata = (props) => {
     function getNamespaces() {
         getJson ("api/util/namespaces").then (({ data }) => {
             setNamespaceList(data.data);
+            setDatatype({ namespace: data.data[0] });
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
         });
@@ -123,9 +135,14 @@ const Metadata = (props) => {
         }
         
         setShowLoading(true);
-        postJson ("api/metadata/adddatatype", datatype, getAuthorizationHeader()).then ( (data) => {
-            setShowLoading(false);
+        let url = "api/metadata/adddatatype";
+        if (lastSelectedItem && lastSelectedItem.categoryId) {
+            url += "?categoryid=" + lastSelectedItem.categoryId;
+        }
+        postJson (url, datatype, getAuthorizationHeader()).then ( (data) => {
             setEnableDatatypeAdd(false);
+            getCategories();
+            setShowLoading(false);
           }).catch (function(error) {
             axiosError(error, null, setAlertDialogInput);
             setShowLoading(false);
@@ -147,15 +164,35 @@ const Metadata = (props) => {
         postJson ("api/metadata/addcategory", category, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             setEnableCategoryAdd(false);
-             //TODO refresh table
+            getCategories();
           }).catch (function(error) {
             axiosError(error, null, setAlertDialogInput);
             setShowLoading(false);
             setEnableCategoryAdd(false);
           }
         );
+    }
 
-       
+    const handleEditCategory = e => {
+        props.authCheckAgent();
+        setValidate(false);
+        
+        if (category.name === "" || category.name.trim().length < 1) {
+            setValidate(true);
+            return;
+        }
+        
+        setShowLoading(true);
+        postJson ("api/metadata/updatecategory", category, getAuthorizationHeader()).then ( (data) => {
+            setShowLoading(false);
+            setEnableCategoryEdit(false);
+            getCategories();
+          }).catch (function(error) {
+            axiosError(error, null, setAlertDialogInput);
+            setShowLoading(false);
+            setEnableCategoryEdit(false);
+          }
+        );
     }
 
     const addCategoryForm = () => {
@@ -188,8 +225,55 @@ const Metadata = (props) => {
             <Col xs={12} lg={9}>
               <FormLabel label="Description"/>
               <Form.Control
-                type="text"
+                as="textarea"
+                rows="5"
                 name="description"
+                placeholder="Enter description for the datatype category"
+                maxLength={4000}
+                onChange={handleCategoryChange}
+              />
+            </Col>
+          </Form.Group>
+          </Form>
+          </>
+        );
+    }
+
+    const editCategoryForm = () => {
+        return (<>
+        <Form>
+          <Form.Group
+            as={Row}
+            controlId="name"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Name" className="required-asterik"/>
+              <Form.Control
+                type="text"
+                name="name"
+                value={category.name}
+                placeholder="Enter name for the datatype category"
+                onChange={handleCategoryChange}
+                maxLength={255}
+                required={true}
+                isInvalid={validate}
+              />
+              <Feedback message="Name is required"></Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group
+            as={Row}
+            controlId="description"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="Description"/>
+              <Form.Control
+                as="textarea"
+                rows="5"
+                name="description"
+                value={category.description}
                 placeholder="Enter description for the datatype category"
                 maxLength={4000}
                 onChange={handleCategoryChange}
@@ -232,7 +316,8 @@ const Metadata = (props) => {
             <Col xs={12} lg={9}>
               <FormLabel label="Description"/>
               <Form.Control
-                type="text"
+                as="textarea"
+                rows="5"
                 name="description"
                 placeholder="Enter description for the datatype"
                 maxLength={4000}
@@ -306,7 +391,12 @@ const Metadata = (props) => {
             setEnableDatatypeAdd(false);
           }}
           onConfirm={() => handleAddDatatype()}
-          title="Add Datatype"
+          title={<Typography>
+            Add Datatype - 
+            {lastSelectedItem == null
+              ? ' No category selected'
+              : ` Category: ${lastSelectedItem.name}`}
+          </Typography>}
           body={addDataTypeForm()}
         />
 
@@ -316,8 +406,18 @@ const Metadata = (props) => {
             setEnableCategoryAdd(false);
           }}
           onConfirm={() => handleAddCategory()}
-          title="Add Datatype Category"
+          title={"Add Datatype Category"}
           body={addCategoryForm()}
+        />
+
+        <ConfirmationModal
+          showModal={enableCategoryEdit}
+          onCancel={() => {
+            setEnableCategoryEdit(false);
+          }}
+          onConfirm={() => handleEditCategory()}
+          title={"Edit Datatype Category"}
+          body={editCategoryForm()}
         />
         <Card>
             <Card.Body>
@@ -332,7 +432,11 @@ const Metadata = (props) => {
                 <Typography variant="h6" style={{ display: "inline" }}>
                     Categories
                 </Typography>
-                <MetadataTreeView data={data}/>
+                <MetadataTreeView data={data} onItemSelectionToggle={handleItemSelectionToggle}
+                    edit={(node) => {
+                        setCategory(node);
+                        setEnableCategoryEdit(true)
+                    }}/>
             </Card.Body>
         </Card>
     </div>

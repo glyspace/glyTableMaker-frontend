@@ -96,6 +96,12 @@ hr {
   line-height: 45px;
   text-transform: capitalize;
 }
+
+.tree-item-label {
+  display: flex;
+  align-items: center;
+  padding: 10px; 
+}
 /* =========================================
                 Content Boxes
 ============================================ */

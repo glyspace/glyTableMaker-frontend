@@ -232,10 +232,8 @@ const Table = (props) => {
             </Tooltip>)}
             {props.addtagws && (
               <Tooltip title="View/Add/Delete Tag">
-              <IconButton color="primary">
-                <NoteAddIcon
-                onClick={() => { openAddTagModal (row);
-                }}/>
+              <IconButton color="primary" onClick={() => { openAddTagModal (row);}}>
+                <NoteAddIcon/>
               </IconButton>
             </Tooltip>
             )}
