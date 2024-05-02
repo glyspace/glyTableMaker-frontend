@@ -47,6 +47,10 @@ const Collection = (props) => {
     const[categories, setCategories] = useState([]);
     const [options, setOptions] = useState([]);
     const [namespace, setNamespace] = useState(null);
+    const [selectedMetadataValue, setSelectedMetadataValue] = useState("");
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [selectedDatatype, setSelectedDatatype]  = useState(null);
+    const [resetInputField, setResetInputField] = useState(false);
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -82,7 +86,8 @@ const Collection = (props) => {
     const onInputChange = (event, value, reason) => {
         if (value) {
           getTypeAhead(value);
-        } else {
+          setSelectedMetadataValue(value);
+        } else { 
           setOptions([]);
         }
     };
@@ -95,11 +100,16 @@ const Collection = (props) => {
                 if (element.dataTypes) {
                     var datatype = element.dataTypes.find ((item) => item.datatypeId == itemId);
                     if (datatype) {
+                        setSelectedDatatype(datatype);
                         setNamespace (datatype.namespace.name);
                         return;
                     }
                 }
             });
+            // clear input value
+            setSelectedMetadataValue("");
+            setResetInputField((prev) => !prev);
+            setOptions([]);
         }
     }
 
@@ -263,13 +273,16 @@ const Collection = (props) => {
                 <Row>
                     <div style={{marginTop: '30px'}}>
                         <Autocomplete
+                            freeSolo
+                            disabled={!namespace}
                             id="typeahead"
                             options={options}
+                            onChange={(e, value) => {setSelectedOption(value);}}
                             onInputChange={onInputChange}
                             getOptionLabel={(option) => option.label}
                             style={{ width: 300 }}
                             renderInput={(params) => (
-                            <TextField {...params} label="Value" variant="outlined" />
+                            <TextField {...params} disabled={!namespace} label="Value" variant="outlined" />
                             )}
                         />
                 </div>
@@ -305,6 +318,16 @@ const Collection = (props) => {
         setInitialSelection(initialIds);
     }
 
+    const deleteMetadataFromTable = (id) => {
+        var metadata = userSelection.metadata;
+        const index = metadata.findIndex ((item) => item["metadataId"] === id);
+        var updated = [
+            ...metadata.slice(0, index),
+            ...metadata.slice(index + 1)
+        ];
+        setUserSelection ({"metadata": updated});
+    }
+
     const handleGlycanSelectionChange = (selected) => {
         // append new selections
         const previous = [...selectedGlycans];
@@ -318,7 +341,21 @@ const Collection = (props) => {
     }
 
     const handleAddMetadata = () => {
-        console.log("adding metadata");
+        console.log("adding metadata" + selectedMetadataValue);
+        const m = {
+            type: selectedDatatype,
+            value: selectedOption ? selectedOption.label : selectedMetadataValue,
+            valueUri: selectedOption ? selectedOption.uri: null,
+        }
+        var metadata = userSelection.metadata;
+        if (metadata === null) 
+            metadata = [];
+        metadata.push(m);
+        setUserSelection ({"metadata": metadata});
+
+        // TODO update the collection to reflect metadata changes
+        // validate the values
+        setEnableAddMetadata(false);
     }
 
     return (
@@ -483,6 +520,7 @@ const Collection = (props) => {
                     data = {userSelection.metadata}
                     columns={metadatacolumns}
                     enableRowActions={true}
+                    delete={deleteMetadataFromTable}
                     setAlertDialogInput={setAlertDialogInput}
                     initialSortColumn="metadatId"
                 />
