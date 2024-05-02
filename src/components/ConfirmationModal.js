@@ -23,7 +23,10 @@ const ConfirmationModal = props => {
       <Modal.Header closeButton>
         <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>{props.body}</Modal.Body>
+      <Modal.Body style={{
+        maxHeight: 'calc(100vh - 250px)',
+        overflowY: 'auto'
+      }}>{props.body}</Modal.Body>
       <Modal.Footer>
         <Button className="gg-btn-outline-reg" onClick={handleCancel}>
           Cancel

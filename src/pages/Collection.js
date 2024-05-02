@@ -107,7 +107,7 @@ const Collection = (props) => {
                 }
             });
             // clear input value
-            setSelectedMetadataValue("");
+            //setSelectedMetadataValue("");
             setResetInputField((prev) => !prev);
             setOptions([]);
         }
@@ -280,7 +280,7 @@ const Collection = (props) => {
                             onChange={(e, value) => {setSelectedOption(value);}}
                             onInputChange={onInputChange}
                             getOptionLabel={(option) => option.label}
-                            style={{ width: 300 }}
+                            style={{ width: 800 }}
                             renderInput={(params) => (
                             <TextField {...params} disabled={!namespace} label="Value" variant="outlined" />
                             )}
