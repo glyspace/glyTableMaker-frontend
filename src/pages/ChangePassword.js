@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Feedback, Title } from "../components/FormControls";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Container from "@mui/material/Container";
@@ -18,7 +18,7 @@ const ChangePassword = () => {
     confirmPassword: "",
   });
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -109,11 +109,17 @@ const ChangePassword = () => {
                   name="newPassword"
                   value={userInput.newPassword}
                   onChange={handleChange}
+                  pattern="^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{5,30}$"
                   required
                   className={"custom-text-fields"}
                 />
                 <Form.Label className={"label required-asterik"}>New Password</Form.Label>
-                <Feedback className={"feedback"} message="Please enter new password." />
+                <Feedback className={"feedback"} message="Password must contain at least:" />
+                <Feedback className="feedback ml-2" message={`* 5 - 30 characters in length,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 uppercase character,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 lowercase character,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 numeric value,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 special character (!@#$%^&).`} />
 
                 {showEye2 &&
                 <FontAwesomeIcon
@@ -155,7 +161,8 @@ const ChangePassword = () => {
 
             <Row className="mt-2">
               <Col md={6}>
-                <Button onClick={()=> navigate("/profile")} className="link-button-outline mt-3">Cancel</Button>
+                  <Button onClick={()=> navigate("/profile")}
+                  className="link-button-outline mt-3">Cancel</Button>
               </Col>
               <Col md={6}>
                 <Button type="submit" className="link-button mt-3" disabled={showError}>
