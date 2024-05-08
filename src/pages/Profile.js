@@ -89,10 +89,10 @@ const Profile = (props) => {
                     value={userProfile.firstName}
                     required
                     maxLength={100}
-                    className="custom-text-fields"
+                    className={"custom-text-fields"}
                   />
                   <Form.Label className={isUpdate ? "label required-asterik" : "label"}>First Name</Form.Label>
-                  <Feedback message="First name is required" />
+                  <Feedback className="feedback" message="First name is required" />
                 </Form.Group>
               </Col>
               <Col md={6}>
@@ -105,23 +105,25 @@ const Profile = (props) => {
                     value={userProfile.lastName}
                     required
                     maxLength={100}
-                    className="custom-text-fields"
+                    className={"custom-text-fields"}
                   />
                   <Form.Label className={isUpdate ? "label required-asterik" : "label"}>Last Name</Form.Label>
-                  <Feedback message="Last name is required" />
+                  <Feedback className="feedback" message="Last name is required" />
                 </Form.Group>
               </Col>
             </Row>
             <Row>
               <Col md={6}>
                 <Form.Group controlId="username">
-                  <Form.Control type="text" name="userName" disabled value={userProfile.userName} className="custom-text-fields"/>
+                  <Form.Control type="text" name="userName" disabled value={userProfile.userName} 
+                        className={"custom-text-fields"}/>
                   <Form.Label className={"label"}>Username</Form.Label>
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="email">
-                  <Form.Control type="text" name="email" disabled value={userProfile.email} className="custom-text-fields"/>
+                  <Form.Control type="text" name="email" disabled value={userProfile.email} 
+                       className={"custom-text-fields"}/>
                   <Form.Label className={"label"}>Email</Form.Label>
                 </Form.Group>
               </Col>
@@ -189,6 +191,7 @@ const Profile = (props) => {
                     className="custom-text-fields"
                   />
                   <Form.Label className={"label"}>Website</Form.Label>
+                  <Feedback className={"feedback"} message="Please enter a valid affiliation website." />
                 </Form.Group>
               </Col>
             </Row>

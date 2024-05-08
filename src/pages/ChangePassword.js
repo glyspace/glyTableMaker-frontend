@@ -109,11 +109,17 @@ const ChangePassword = () => {
                   name="newPassword"
                   value={userInput.newPassword}
                   onChange={handleChange}
+                  pattern="^(?=.*[\d])(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])[\w!@#$%^&*]{5,30}$"
                   required
                   className={"custom-text-fields"}
                 />
                 <Form.Label className={"label required-asterik"}>New Password</Form.Label>
-                <Feedback className={"feedback"} message="Please enter new password." />
+                <Feedback className={"feedback"} message="Password must contain at least:" />
+                <Feedback className="feedback ml-2" message={`* 5 - 30 characters in length,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 uppercase character,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 lowercase character,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 numeric value,`} />
+                <Feedback className="feedback ml-2" message={`* at least 1 special character (!@#$%^&).`} />
 
                 {showEye2 &&
                 <FontAwesomeIcon
