@@ -11,6 +11,9 @@ import { Loading } from "../components/Loading";
 import Table from "../components/Table";
 import MetadataTreeView from "../components/MetadataTreeView";
 import { ConfirmationModal } from "../components/ConfirmationModal";
+import { ScrollToTop } from "../components/ScrollToTop";
+
+let idCounter = 1000;
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -18,6 +21,8 @@ const Collection = (props) => {
     const navigate = useNavigate();
     const [error, setError] = useState(false);
     const [validate, setValidate] = useState(false);
+    const [validMetadata, setValidMetadata] = useState(false);
+    const [validationMessage, setValidationMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
@@ -50,7 +55,6 @@ const Collection = (props) => {
     const [selectedMetadataValue, setSelectedMetadataValue] = useState("");
     const [selectedOption, setSelectedOption] = useState(null);
     const [selectedDatatype, setSelectedDatatype]  = useState(null);
-    const [resetInputField, setResetInputField] = useState(false);
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -108,8 +112,9 @@ const Collection = (props) => {
             });
             // clear input value
             //setSelectedMetadataValue("");
-            setResetInputField((prev) => !prev);
             setOptions([]);
+            setSelectedOption(null);
+            setValidMetadata(false);
         }
     }
 
@@ -169,12 +174,20 @@ const Collection = (props) => {
             return;
         }
 
+        const metadata = [];
+        userSelection.metadata.map ((m) => {
+            if (m.new) {
+                m.metadataId = null;
+            }
+            metadata.push(m);
+        });
+
         const collection = { 
             collectionId: collectionId ? collectionId : null,
             name: userSelection.name,
             description: userSelection.description,
             glycans: userSelection.glycans,
-            metadata: userSelection.metadata,
+            metadata: metadata,
         }
         
         setShowLoading(true);
@@ -282,9 +295,13 @@ const Collection = (props) => {
                             getOptionLabel={(option) => option.label}
                             style={{ width: 800 }}
                             renderInput={(params) => (
-                            <TextField {...params} disabled={!namespace} label="Value" variant="outlined" />
+                            <TextField {...params} 
+                                error={validMetadata} 
+                                helperText={validMetadata ? validationMessage : ""}
+                                disabled={!namespace} label="Value" variant="outlined" />
                             )}
                         />
+                        
                 </div>
                 </Row>
             </>
@@ -341,21 +358,58 @@ const Collection = (props) => {
     }
 
     const handleAddMetadata = () => {
-        console.log("adding metadata" + selectedMetadataValue);
+        console.log("adding metadata " + selectedMetadataValue);
+        setTextAlertInput({"show": false, id: ""});
         const m = {
+            metadataId: idCounter,
+            new: true,
             type: selectedDatatype,
             value: selectedOption ? selectedOption.label : selectedMetadataValue,
             valueUri: selectedOption ? selectedOption.uri: null,
         }
+        idCounter++;
         var metadata = userSelection.metadata;
         if (metadata === null) 
             metadata = [];
-        metadata.push(m);
-        setUserSelection ({"metadata": metadata});
+        
+        // check if the metadata already exists, if so, we need to check if it is allowed to be multiple
+        if (!selectedDatatype.multiple) {
+            const existing = metadata.find ((meta) => meta.type.name === selectedDatatype.name);
+            if (existing) {
+                setTextAlertInput ({"show": true, "message": "Multiple copies are not allowed for " + selectedDatatype.name});
+                ScrollToTop();
+                setEnableAddMetadata(false);
+                return;
+            }
+        }
 
-        // TODO update the collection to reflect metadata changes
+        setShowLoading(true);
         // validate the values
-        setEnableAddMetadata(false);
+        postJson("api/util/ismetadatavalid", m).then ( (data) => {
+            setShowLoading(false);
+            // check if valid
+            if (data.data.data) {
+                metadata.push(m);
+                var updated = [...metadata];
+                setUserSelection ({"metadata": updated});
+                setValidMetadata(false);
+                setEnableAddMetadata(false);
+            } else {
+                // invalid
+                setValidMetadata(true);
+                setValidationMessage(data.data.message);
+            }
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                ScrollToTop();
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+            setShowLoading(false);
+            setEnableAddMetadata(false);
+          }
+        );
     }
 
     return (
@@ -516,13 +570,13 @@ const Collection = (props) => {
                 
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "metadatId"
+                    rowId = "metadataId"
                     data = {userSelection.metadata}
                     columns={metadatacolumns}
                     enableRowActions={true}
                     delete={deleteMetadataFromTable}
                     setAlertDialogInput={setAlertDialogInput}
-                    initialSortColumn="metadatId"
+                    initialSortColumn="metadataId"
                 />
             </Card.Body>
           </Card>
