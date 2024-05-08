@@ -312,9 +312,8 @@ const AddCoC = (props) => {
             </div>
 
             <div className="text-center mb-2">
-                <Link to="/coc">
-                    <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections of Collections</Button>
-                </Link>
+                <Button onClick={()=> navigate("/coc")}
+                    className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections of Collections</Button>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     disabled={error} onClick={handleSubmit}>
                     Submit

@@ -2,11 +2,12 @@ import React, { useEffect, useReducer, useState } from "react";
 import { Row, Col, Button, Form } from "react-bootstrap";
 import { Feedback, Title } from "../components/FormControls";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from "../components/DialogAlert";
+
 
 const Profile = (props) => {
   const profile = {
@@ -19,6 +20,8 @@ const Profile = (props) => {
     groupName: "",
     department: "",
   };
+
+  const navigate = useNavigate();
 
   const [userProfile, setUserProfile] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
@@ -193,9 +196,10 @@ const Profile = (props) => {
                 <Button className="gg-btn-blue mt-3 gg-mr-20" onClick={() => editUser()}>
                   Edit
                 </Button>
-                <Link to="/changePassword">
-                  <Button className="gg-btn-blue mt-3 gg-ml-20">Change Password</Button>
-                </Link>
+               
+                <Button onClick={()=> navigate("/changePassword")} 
+                  className="gg-btn-blue mt-3 gg-ml-20">Change Password</Button>
+               
              </div>
 
             <div className={isUpdate ? "text-center mt-2" : "hide-content"}>

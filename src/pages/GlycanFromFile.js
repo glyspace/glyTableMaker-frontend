@@ -129,9 +129,8 @@ const GlycanFromFile = props => {
                 </Form.Group>
 
                 <div className="text-center">
-                  <Link to="/glycans">
-                    <Button className="gg-btn-blue5 gg-btn-outline mt-2 gg-mr-20"> Back to Glycans</Button>
-                  </Link>
+                  <Button onClick={()=> navigate("/glycans")} 
+                    className="gg-btn-blue5 gg-btn-outline mt-2 gg-mr-20"> Back to Glycans</Button>
 
                   <Button
                     type="submit"

@@ -285,9 +285,8 @@ const Glycan = (props) => {
             </div>
 
             <div className="text-center mb-2">
-                <Link to="/glycans">
-                <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycans</Button>
-                </Link>
+                <Button onClick={()=> navigate("/glycans")}
+                    className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycans</Button>
                 { (type !== "draw" || !error) &&
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={handleSubmit}>
                 Submit

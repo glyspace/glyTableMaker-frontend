@@ -8,7 +8,7 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import { Button, Card, Container, Modal, Row } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
@@ -17,6 +17,8 @@ import Tag from "../components/Tag";
 
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
+
+    const navigate = useNavigate();
 
     const [batchUploads, setBatchUploads] = useState([]);
     const [error, setError] = useState("");
@@ -317,9 +319,8 @@ const FileUpload = (props) => {
             <Card.Body>
             <MaterialReactTable table={table}/>
             <div className="text-center mb-2" style={{marginTop:"5px"}}>
-                <Link to="/glycans">
-                <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycans</Button>
-                </Link>
+                <Button onClick={()=> navigate("/glycans")} 
+                  className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycans</Button>
             </div>
             </Card.Body>
             </Card>

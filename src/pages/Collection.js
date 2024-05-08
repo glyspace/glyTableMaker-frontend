@@ -516,9 +516,8 @@ const Collection = (props) => {
             </div>
 
             <div className="text-center mb-2">
-                <Link to="/collections">
-                    <Button className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections</Button>
-                </Link>
+                <Button onClick={()=> navigate("/collections")}
+                    className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections</Button>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     disabled={error} onClick={handleSubmit}>
                     Submit
