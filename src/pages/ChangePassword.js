@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Feedback, Title } from "../components/FormControls";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Container from "@mui/material/Container";
@@ -17,6 +17,8 @@ const ChangePassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const navigate=useNavigate();
 
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -153,9 +155,7 @@ const ChangePassword = () => {
 
             <Row className="mt-2">
               <Col md={6}>
-                <Link to="/profile">
-                  <Button className="link-button-outline mt-3">Cancel</Button>
-                </Link>
+                <Button onClick={()=> navigate("/profile")} className="link-button-outline mt-3">Cancel</Button>
               </Col>
               <Col md={6}>
                 <Button type="submit" className="link-button mt-3" disabled={showError}>
