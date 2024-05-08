@@ -50,12 +50,13 @@ const Profile = (props) => {
     var name = e.currentTarget.name;
     var value = e.currentTarget.value;
 
-    if ((!value && value === "") || value === " ") {
-      setValidate(true);
-    } else {
-      setValidate(false);
-    }
-
+    if (name === "firstName" || name === "lastName") {
+      if ((!value && value === "") || value === " ") {
+        setValidate(true);
+      } else {
+        setValidate(false);
+      }
+    } 
     setUserProfile({ [name]: value });
   };
 
