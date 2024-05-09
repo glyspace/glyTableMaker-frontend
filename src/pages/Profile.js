@@ -4,7 +4,7 @@ import { Feedback, Title } from "../components/FormControls";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import Container from "@mui/material/Container";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, isValidURL, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from "../components/DialogAlert";
 
@@ -38,6 +38,7 @@ const Profile = (props) => {
   const [validated, setValidate] = useState(false);
   const [isUpdate, setIsupdate] = useState(false);
   const [title, setTitle] = useState("User Profile");
+  const [validURL, setValidURL] = useState(true);
 
   useEffect(props.authCheckAgent, []);
 
@@ -57,6 +58,9 @@ const Profile = (props) => {
         setValidate(false);
       }
     } 
+    if (value && value.trim().length > 0 && name === "affiliationWebsite") {
+      setValidURL(isValidURL(value));
+    }
     setUserProfile({ [name]: value });
   };
 
@@ -182,13 +186,13 @@ const Profile = (props) => {
               <Col md={12}>
                 <Form.Group controlId="affiliationWebsite">
                   <Form.Control
-                    type="url"
+                    type="text"
                     name="affiliationWebsite"
                     onChange={handleChange}
                     disabled={!isUpdate}
                     value={userProfile.affiliationWebsite}
                     maxLength={250}
-                    pattern="(\b(https?)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]"
+                    isInvalid={!validURL}
                     className="custom-text-fields"
                   />
                   <Form.Label className={"label"}>Website</Form.Label>

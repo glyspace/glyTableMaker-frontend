@@ -5,7 +5,7 @@ import { Feedback, Title } from "../components/FormControls";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Container from "@mui/material/Container";
-import { getJson, postJson } from "../utils/api";
+import { getJson, isValidURL, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from "../components/DialogAlert";
 import TextAlert from "../components/TextAlert";
@@ -24,6 +24,7 @@ const Signup = () => {
     department: ""
   });
 
+  const [validURL, setValidURL] = useState(true);
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
   const [showEye, setShowEye] = useState(false);
@@ -45,6 +46,7 @@ const Signup = () => {
   const handleChange = e => {
     const name = e.target.name;
     const newValue = e.target.value;
+    setValidURL(true);
     if (newValue) {
       if (name === "password") setShowEye(true);
       if (name === "confirmPassword") setShowEye2(true);
@@ -54,6 +56,9 @@ const Signup = () => {
     if (!e.currentTarget.checkValidity()) {
       if (name === "password") setShowEye(false);
       if (name === "confirmPassword") setShowEye2(false);
+    }
+    if (newValue && newValue.trim().length > 0 && name === "affiliationWebsite") {
+      setValidURL(isValidURL(newValue));
     }
   };
 
@@ -270,13 +275,13 @@ const Signup = () => {
                 <Form.Group as={Row} controlId="formAffiliationWebsite">
                   <Col>
                     <Form.Control
-                      type="url"
+                      type="text"
                       placeholder=" "
                       name="affiliationWebsite"
                       value={userInput.affiliationWebsite}
                       onChange={handleChange}
                       maxLength={250}
-                      pattern="(\b(https?)://)?[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]"
+                      isInvalid={!validURL}
                       className={"custom-text-fields"}
                     />
                     <Form.Label className={"label"}>Website</Form.Label>

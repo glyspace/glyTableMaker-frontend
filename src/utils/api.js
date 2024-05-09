@@ -5,6 +5,8 @@ const base = process.env.REACT_APP_BASENAME;
 //const OAUTH2_REDIRECT_URI = "http://localhost:3000/oauth2/redirect";
 const OAUTH2_REDIRECT_URI = process.env.REACT_APP_OAUTH2_REDIRECT_URI;
 
+const urlRegex = /http[s]?:\/\/.(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/gi;
+
 /**
  * Gets JSON from REST api call.
  * @param {string} url - url for REST api call.
@@ -159,4 +161,8 @@ export function parseJwt(token) {
       .join("")
   );
   return JSON.parse(base64);
+}
+
+export function isValidURL (url) {
+  return urlRegex.exec(url);
 }
