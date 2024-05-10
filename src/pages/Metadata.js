@@ -33,6 +33,7 @@ const Metadata = (props) => {
     const [showDeleteDatatypeModal, setShowDeleteDatatypeModal] = useState(false);
     const [categoryTobeDeleted, setCategoryTobeDeleted] = useState(null);
     const [datatypeTobeDeleted, setDatatypeTobeDeleted] = useState(null);
+    const [datatypeCollections, setDatatypeCollections] = useState([]);
 
 
     const datatypeInitialState = {
@@ -247,7 +248,12 @@ const Metadata = (props) => {
     }
 
     const getCollections = (dtype) => {
-        //TODO get collections that use this dtype
+        getJson ("api/metadata/getcollectionsfordatatype?datatypeId=" + dtype.datatypeId, 
+                getAuthorizationHeader()).then (({ data }) => {
+            setDatatypeCollections(data.data);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
     }
 
     const addCategoryForm = () => {
@@ -510,7 +516,12 @@ const Metadata = (props) => {
             onCancel={() => setShowDeleteDatatypeModal(false)}
             onConfirm={handleDeleteDatatype}
             title="Confirm Delete"
-            body="Are you sure you want to delete this datatype?"
+            body={<div> 
+                    <span>Are you sure you want to delete this datatype?</span>
+                    {datatypeCollections.length > 0 && 
+                    <span> This datatype is being used in the following collections:</span>}
+                </div>
+                }
         />
         <Card>
             <Card.Body>
