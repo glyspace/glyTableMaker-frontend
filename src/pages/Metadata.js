@@ -244,7 +244,25 @@ const Metadata = (props) => {
     }
 
     const handleDeleteDatatype = () => {
-
+        setShowLoading(true);
+        props.authCheckAgent();
+        if (datatypeTobeDeleted) {
+            deleteJson ("api/metadata/deletedatatype/" + datatypeTobeDeleted.datatypeId, getAuthorizationHeader()).then ( (data) => {
+                setShowLoading(false);
+                setDatatypeTobeDeleted(null);
+                getCategories();
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setTextAlertInput ({"show": true, "message": error.response.data.message });
+                    setShowLoading(false);
+                } else {
+                    setShowLoading(false);
+                    axiosError(error, null, props.setAlertDialogInput);
+                }
+            }
+        );
+        }
+        setShowDeleteDatatypeModal(false);
     }
 
     const getCollections = (dtype) => {
@@ -517,9 +535,16 @@ const Metadata = (props) => {
             onConfirm={handleDeleteDatatype}
             title="Confirm Delete"
             body={<div> 
-                    <span>Are you sure you want to delete this datatype?</span>
                     {datatypeCollections.length > 0 && 
                     <span> This datatype is being used in the following collections:</span>}
+                    {datatypeCollections.map((collection) => {
+                        return (
+                            <li>{collection.name}</li>
+                        );
+                    })}
+                    {datatypeCollections.length > 0 &&  
+                        <span>The metadata from the listed collections will be removed as well.</span>}
+                    <br/><span>Are you sure you want to delete this datatype?</span>
                 </div>
                 }
         />
