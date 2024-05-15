@@ -28,6 +28,7 @@ const Metadata = (props) => {
 
     const [enableCategoryAdd, setEnableCategoryAdd] = useState(false);
     const [enableDatatypeAdd, setEnableDatatypeAdd] = useState(false);
+    const [enableDatatypeEdit, setEnableDatatypeEdit] = useState(false);
     const [enableCategoryEdit, setEnableCategoryEdit] = useState(false);
     const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
     const [showDeleteDatatypeModal, setShowDeleteDatatypeModal] = useState(false);
@@ -35,6 +36,7 @@ const Metadata = (props) => {
     const [datatypeTobeDeleted, setDatatypeTobeDeleted] = useState(null);
     const [datatypeCollections, setDatatypeCollections] = useState([]);
 
+    const [readOnly, setReadOnly] = useState(false);
 
     const datatypeInitialState = {
         name: "",
@@ -151,6 +153,7 @@ const Metadata = (props) => {
             getCategories();
             setShowLoading(false);
             setDatatype ({
+                datatypeId: null,
                 name: "",
                 description: "",
                 namespace: namespaceList[0],
@@ -165,6 +168,51 @@ const Metadata = (props) => {
             }
             setShowLoading(false);
             setEnableDatatypeAdd(false);
+          }
+        );
+    }
+
+    const handleEditDatatype = e => {
+        props.authCheckAgent();
+        setValidate(false);
+        
+        if (datatype.name === "" || datatype.name.trim().length < 1) {
+            setValidate(true);
+            return;
+        }
+
+        let categoryId = datatype.category;
+        if (!datatype.category) {
+            if (category) {
+                categoryId = category.categoryId;
+            } else {
+                setValidate(true);
+                return;
+            }
+        }
+        
+        setShowLoading(true);
+        let url = "api/metadata/updatedatatype?categoryid=" + categoryId;
+        postJson (url, datatype, getAuthorizationHeader()).then ( (data) => {
+            setEnableDatatypeEdit(false);
+            getCategories();
+            setShowLoading(false);
+            setDatatype ({
+                datatypeId: null,
+                name: "",
+                description: "",
+                namespace: namespaceList[0],
+                multiple: false,
+                category: null,
+            })
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+            setShowLoading(false);
+            setEnableDatatypeEdit(false);
           }
         );
     }
@@ -472,6 +520,120 @@ const Metadata = (props) => {
         <Loading show={showLoading}></Loading> </>);
     }
 
+    const editDatatypeForm = () => {
+        return (
+            <>
+            <Form>
+              <Form.Group
+                as={Row}
+                controlId="name"
+                className="gg-align-center mb-3"
+              >
+                <Col xs={12} lg={9}>
+                  <FormLabel label="Name" className="required-asterik"/>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={datatype.name}
+                    placeholder="Enter name for the datatype"
+                    onChange={handleChange}
+                    maxLength={255}
+                    required={true}
+                    isInvalid={validate}
+                    disabled={readOnly}
+                  />
+                  <Feedback message="Name is required"></Feedback>
+                </Col>
+              </Form.Group>
+              <Form.Group
+                as={Row}
+                controlId="category"
+                className="gg-align-center mb-3"
+              >
+                <Col xs={12} lg={9}>
+                  <FormLabel label="Category" className="required-asterik" />
+                  <Form.Select
+                    as="select"
+                    name="category" 
+                    disabled={readOnly}
+                    onChange={handleCategorySelect}
+                  >
+                    {data && data.map((n , index) =>
+                        ((!readOnly && !n.name.includes ("GlyGen Glycomics Data")) || (readOnly)) && 
+                          <option
+                          selected={n.categoryId === datatype.category}
+                          key={index}
+                          value={n.categoryId}>
+                          {n.name}
+                          </option>
+                      )}
+                  </Form.Select>
+                  <Feedback message="Category is required"></Feedback>
+                </Col>
+              </Form.Group>
+              <Form.Group
+                as={Row}
+                controlId="description"
+                className="gg-align-center mb-3"
+              >
+                <Col xs={12} lg={9}>
+                  <FormLabel label="Description"/>
+                  <Form.Control
+                    as="textarea"
+                    rows="5"
+                    value={datatype.description}
+                    name="description"
+                    placeholder="Enter description for the datatype"
+                    maxLength={4000}
+                    onChange={handleChange}
+                    disabled={readOnly}
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group
+                as={Row}
+                controlId="namespace"
+                className="gg-align-center mb-3"
+              >
+                <Col xs={12} lg={9}>
+                  <FormLabel label="Namespace" className="required-asterik" />
+                  <Form.Select
+                    as="select"
+                    name="namespace"
+                    disabled
+                    required={true}
+                >
+                    {namespaceList && namespaceList.map((n , index) =>
+                        <option
+                        selected={datatype.namespace && n.name === datatype.namespace.name}
+                        key={index}
+                        value={n.namespaceId}>
+                        {n.name}
+                        </option>
+                    )}
+                </Form.Select>
+                 <Feedback message="Namespace is required"></Feedback>
+                </Col>
+              </Form.Group>
+              <Form.Group
+                  as={Row}
+                  controlId="multiple"
+                  className="gg-align-center mb-3"
+                  >
+                  <Col xs={12} lg={9}>
+                      <FormLabel label="Multiple" />
+                      <Form.Check
+                          type="checkbox"
+                          name="multiple"
+                          defaultChecked={datatype.multiple}
+                          disabled={readOnly}
+                          onChange={handleChange}/>
+                  </Col>
+              </Form.Group>
+            </Form>
+            <Loading show={showLoading}></Loading> </>);
+        }
+
     return (
     <>
         <Container maxWidth="xl">
@@ -499,6 +661,16 @@ const Metadata = (props) => {
             Add Datatype
           </Typography>}
           body={addDataTypeForm()}
+        />
+
+        <ConfirmationModal
+          showModal={enableDatatypeEdit}
+          onCancel={() => {
+            setEnableDatatypeEdit(false);
+          }}
+          onConfirm={() => handleEditDatatype()}
+          title={readOnly ? "View Datatype" : "Edit Datatype"}
+          body={editDatatypeForm()}
         />
 
         <ConfirmationModal
@@ -564,6 +736,15 @@ const Metadata = (props) => {
                         setEnableCategoryEdit(true)
                     }}
                     add={(node)=> {
+                        // reset the datatype
+                        setDatatype ({
+                            datatypeId: null,
+                            name: "",
+                            description: "",
+                            namespace: null,
+                            multiple: false,
+                            category: null,
+                        })
                         setCategory(node);
                         setEnableDatatypeAdd(true);
                     }}
@@ -575,6 +756,12 @@ const Metadata = (props) => {
                         setDatatypeTobeDeleted(datatype);
                         getCollections(datatype);
                         setShowDeleteDatatypeModal(true);
+                    }}
+                    editDatatype={(datatype, cat, readOnly) => {
+                        setDatatype(datatype);
+                        setDatatype ({category: cat.categoryId});
+                        setReadOnly(readOnly)
+                        setEnableDatatypeEdit(true);
                     }}
                 />
             </Card.Body>

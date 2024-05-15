@@ -2,6 +2,7 @@ import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { Col, Row } from 'react-bootstrap';
 import { AddCircleOutline } from '@mui/icons-material';
@@ -28,6 +29,11 @@ const MetadataTreeView = (props) => {
         e.stopPropagation();
         props.add && props.add(node);
     }
+
+    const editDatatype = (e, node, parent, readOnly) => {
+      e.stopPropagation();
+      props.editDatatype && props.editDatatype(node, parent, readOnly);
+  }
   
     const renderTree = (nodes) => {
       if (!nodes || nodes.length === 0) {
@@ -69,7 +75,7 @@ const MetadataTreeView = (props) => {
                           }
                     >
                     {Array.isArray(node.dataTypes)
-                        ? node.dataTypes.map ((datatype) => renderDatatypes(datatype, node.name.includes ("GlyGen Glycomics Data")))
+                        ? node.dataTypes.map ((datatype) => renderDatatypes(datatype, node, node.name.includes ("GlyGen Glycomics Data")))
                         : null}
                     </TreeItem>
                 )
@@ -79,7 +85,7 @@ const MetadataTreeView = (props) => {
       );
     };
 
-    const renderDatatypes = (node, readOnly) => {
+    const renderDatatypes = (node, parent, readOnly) => {
         if (!node || node.length === 0) {
             return null;
         }
@@ -98,6 +104,16 @@ const MetadataTreeView = (props) => {
                         <Tooltip title="Delete datatype">
                     <IconButton color="error" onClick={(event) => deleteDatatype(event, node)}>
                         <DeleteIcon />
+                    </IconButton></Tooltip>)}
+                    {props.editDatatype && !readOnly && (
+                        <Tooltip title="Edit datatype">
+                    <IconButton color="primary" onClick={(event) => editDatatype(event, node, parent, false)}>
+                        <EditIcon />
+                    </IconButton></Tooltip>)}
+                    {props.editDatatype && readOnly && (
+                        <Tooltip title="View datatype">
+                    <IconButton color="primary" onClick={(event) => editDatatype(event, node, parent, true)}>
+                        <VisibilityOutlinedIcon />
                     </IconButton></Tooltip>)}
                     </Col>
                 </Row>
