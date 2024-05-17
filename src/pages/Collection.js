@@ -312,10 +312,10 @@ const Collection = (props) => {
         console.log("selected glycans" + selectedGlycans);
         const selected=[];
         selectedGlycans.forEach ((glycan) => {
-            if (!glycan.glytoucanId || glycan.glytoucanId.length == 0) {
+            if (!glycan.glytoucanID || glycan.glytoucanID.length == 0) {
                 // error, not allowed to select this for the collection
                 setTextAlertInput ({"show": true, 
-                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any!"
+                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycanId + " is not added."
                 });
             } else {
                 selected.push (glycan);
@@ -363,14 +363,7 @@ const Collection = (props) => {
         selected.forEach ((glycan) => {
             const found = selectedGlycans.find ((item) => item.glycanId === glycan.glycanId);
             if (!found) {
-                if (!glycan.glytoucanId || glycan.glytoucanId.length == 0) {
-                    // error, not allowed to select this for the collection
-                    setTextAlertInput ({"show": true, 
-                        "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any!"
-                    });
-                } else {
-                    previous.push (glycan);
-                }
+                previous.push (glycan);
             }
         })
         setSelectedGlycans(previous);
