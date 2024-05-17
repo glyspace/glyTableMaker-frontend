@@ -353,7 +353,9 @@ const Collection = (props) => {
             if (!found) {
                 if (!glycan.glytoucanId || glycan.glytoucanId.length == 0) {
                     // error, not allowed to select this for the collection
-                    alert ("You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any!");
+                    setTextAlertInput ({"show": true, 
+                        "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any!"
+                    });
                 } else {
                     previous.push (glycan);
                 }
