@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useState, useReducer } from 'react';
 import Container from "@mui/material/Container";
-import { Card, Modal } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
 import { Link } from "react-router-dom";
 import { NavDropdown, Nav } from "react-bootstrap";
@@ -139,7 +139,11 @@ const Glycans = (props) => {
               ". Registration failed with the following error: " + infoError : glytoucanHash ? 
               "Glycan is submitted to Glytoucan on " + date + 
               ". Glytoucan assigned temporary hash value: " + glytoucanHash : ""} </Modal.Body>
-            <Modal.Footer></Modal.Footer>
+            <Modal.Footer>
+            <Button className="gg-btn-blue-reg" onClick={() => setShowInfoModal(false)}>
+              OK
+            </Button>
+            </Modal.Footer>
           </Modal>  
               
           <Card>

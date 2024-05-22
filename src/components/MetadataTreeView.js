@@ -33,7 +33,7 @@ const MetadataTreeView = (props) => {
     const editDatatype = (e, node, parent, readOnly) => {
       e.stopPropagation();
       props.editDatatype && props.editDatatype(node, parent, readOnly);
-  }
+    }
   
     const renderTree = (nodes) => {
       if (!nodes || nodes.length === 0) {

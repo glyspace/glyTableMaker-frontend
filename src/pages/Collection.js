@@ -310,6 +310,7 @@ const Collection = (props) => {
 
     const handleGlycanSelect = () => {
         console.log("selected glycans" + selectedGlycans);
+        setTextAlertInput({"show": false, id: ""});
         const selected=[];
         selectedGlycans.forEach ((glycan) => {
             if (!glycan.glytoucanID || glycan.glytoucanID.length == 0) {
@@ -317,6 +318,7 @@ const Collection = (props) => {
                 setTextAlertInput ({"show": true, 
                     "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycanId + " is not added."
                 });
+                ScrollToTop();
             } else {
                 selected.push (glycan);
             }
