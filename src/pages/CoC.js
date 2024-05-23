@@ -72,7 +72,7 @@ const CoC = (props) => {
               </div>
               <Table 
                   authCheckAgent={props.authCheckAgent}
-                  ws="api/data/getcoss"
+                  ws="api/data/getcocs"
                   columns={columns}
                   enableRowActions={true}
                   setAlertDialogInput={setAlertDialogInput}
