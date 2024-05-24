@@ -32,7 +32,7 @@ const ConfirmationModal = props => {
           Cancel
         </Button>
         <Button className="gg-btn-blue-reg" onClick={handleConfirm}>
-          OK
+          {props.okButton ? props.okButton : "OK"}
         </Button>
       </Modal.Footer>
     </Modal>

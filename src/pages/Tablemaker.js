@@ -8,13 +8,15 @@ import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import MetadataTreeView from "../components/MetadataTreeView";
-import { getAuthorizationHeader, getJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import Table from "../components/Table";
+import { Loading } from "../components/Loading";
 
 const Tablemaker = (props) => {
 
+    const [showLoading, setShowLoading] = useState(false);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -26,7 +28,8 @@ const Tablemaker = (props) => {
     );
 
     const [data, setData] = useState([]);
-
+    const [fileFormat, setFileFormat] = useState("excel");
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [metadata, setMetadata] = useState([]);
     const [metadataSelect, setMetadataSelect] = useState("");
 
@@ -36,25 +39,35 @@ const Tablemaker = (props) => {
 
     const columnInitialState = {
         name: "",         // required
-        metadata: null,  // datatype object, optional
+        datatype: null,  // datatype object, optional
         type: null,  // value, uri, id, or null (no selection)
         defaultValue: "",  // optional
     };
 
+    const templateInitialState = {
+        name: "",
+        description: "",
+        columns: [],
+    }
+
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [column, setColumn] = useReducer(reducer, columnInitialState);
+    const [template, setTemplate] = useReducer(reducer, templateInitialState);
 
     const [templates, setTemplates] = useState([]);
 
     const [enableColumnAdd, setEnableColumnAdd] = useState(false);
     const [enableCollectionAdd, setEnableCollectionAdd] = useState(false);
     const [enableCoCAdd, setEnableCoCAdd] = useState(false);
+    const [enableTemplateSave, setEnableTemplateSave] = useState(false);
     const [validate, setValidate] = useState(false);
+    const [valueTypeDisable, setValueTypeDisable] = useState(false);
 
     useEffect(props.authCheckAgent, []);
 
     useEffect (() => {
         getCategories();
+        getTemplates();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -67,9 +80,18 @@ const Tablemaker = (props) => {
         });
     }
 
+    function getTemplates() {
+        getJson ("api/table/gettemplates", getAuthorizationHeader()).then (({ data }) => {
+            setTemplates(data.data);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
+
     function getGlycanMetadata(previous) {
         getJson ("api/util/getglycanmetadata", getAuthorizationHeader()).then (({ data }) => {
             const glycanCategory = { "id" : -1, "name": "Glycan columns", "dataTypes" : data.data};
+            // glycan columns will have id < 0, name is the displayed label, description is the enum value
             setMetadata ([...previous, glycanCategory]);
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
@@ -85,7 +107,7 @@ const Tablemaker = (props) => {
             enableColumnFilter: false,
           },
           {
-            accessorFn: (row) => row.metadata ? row.metadata.name : "",
+            accessorFn: (row) => row.datatype ? row.datatype.name : "",
             header: 'Metadata',
             size: 100,
             enableColumnFilter: false,
@@ -140,7 +162,8 @@ const Tablemaker = (props) => {
                 setEnableColumnAdd(true);
             };
 
-            const handleSave = () => {    
+            const handleSave = () => {   
+                setEnableTemplateSave (true); 
             };
       
             return (
@@ -172,6 +195,97 @@ const Tablemaker = (props) => {
             );
         },
     });
+
+    const saveTemplate = () => {
+        setShowLoading(true);
+        // create template model from the selections
+        var t = createTemplate();
+        setTemplate (t);
+        // save template web service call
+        let url = "api/table/addtemplate";
+        postJson (url, t, getAuthorizationHeader()).then ( (data) => {
+            setEnableTemplateSave(false);
+            getTemplates();
+            setShowLoading(false);
+            setTemplate ({
+                name: "",
+                description: "",
+                columns: null,
+            })
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+            setShowLoading(false);
+            setEnableTemplateSave(false);
+          }
+        );
+    }
+
+    function createTemplate () {
+        // create template model from the selections
+        var t = template;
+        var columnArray = [];
+        // add columns
+        data.map ((item, index) => {
+            const tableColumn = {};
+            tableColumn ["name"] = item.name;
+            if (item.type) {
+                if (item.type === "value") {
+                    tableColumn["type"] = "VALUE";
+                } else if (item.type === "uri") {
+                    tableColumn["type"] = "URI";
+                } else if (item.type === "id") {
+                    tableColumn["type"] = "ID";
+                }
+            }
+            if (item.datatype) {
+                // check if it is a glycan column
+                if (item.datatype.datatypeId < 0) {
+                    tableColumn["glycanColumn"] = item.datatype.description;
+                } else {
+                    tableColumn["datatype"] = item.datatype;
+                }
+            }
+            if (item.defaultValue && item.defaultValue.trim().length > 0) {
+                tableColumn["defaultValue"] = item.defaultValue;
+            }
+            tableColumn["order"] = index;
+            columnArray.push (tableColumn);
+        });
+        t ["columns"] = columnArray;
+        return t;
+    }
+
+    const useTemplate = () => {
+        if (selectedTemplate) {
+            const columnArray = [];
+            let id = -1;
+            selectedTemplate.columns.map ((column, index) => {
+                let datatype;
+                if (column.glycanColumn) {
+                    datatype = {
+                        name: column.glycanColumn,
+                        datatypeId : id,
+                        description : column.glycanColumn,
+                    };
+                    id --;
+                } else {
+                    datatype = column.datatype;     
+                }
+                let col = {
+                    name: column.name,
+                    datatype: datatype,
+                    type: column.type,
+                    defaultValue: column.defaultValue,
+                };
+                columnArray.push (col);
+            }) ;
+            setData (columnArray);
+        }
+    };
 
     const deleteFromTable = (name) => {
         const index = data.findIndex ((item) => item["name"] === name);
@@ -242,6 +356,17 @@ const Tablemaker = (props) => {
         setColumn({ [name]: newValue });
     };
 
+    const handleTemplateChange = e => {
+        const name = e.target.name;
+        const newValue = e.target.value;
+        setTextAlertInput({"show": false, id: ""});
+    
+        if (name === "name" && newValue.trim().length > 1) {
+            setValidate(false);
+        }
+        setTemplate({ [name]: newValue });
+    };
+
     const handleDatatypeSelection = (event, itemId, isSelected) => {
         if (isSelected && typeof itemId === 'number') {  // datatype selected
             metadata.map ((element) => {
@@ -249,7 +374,13 @@ const Tablemaker = (props) => {
                     var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
                     if (datatype) {
                         setMetadataSelect(datatype.name);
-                        setColumn ({metadata: datatype});
+                        setColumn ({datatype: datatype});
+                        if (datatype.datatypeId < 0) {
+                            // glycan columns
+                            setValueTypeDisable (true);
+                        } else {
+                            setValueTypeDisable(false);
+                        }
                     }
                 }
             });
@@ -262,12 +393,18 @@ const Tablemaker = (props) => {
             return;
         } 
         // add the column to the table
+        // check if the column (with the same name) exists
+        var existing = data.find ((item) => item.name === column.name);
+        if (existing) {
+            setTextAlertInput ({"show": true, "message": "There is already a column with this name"});
+            return;
+        }
         setEnableColumnAdd(false);
         setData([...data, column]);
         // clear column
         setColumn( {
             name: "",         // required
-            metadata: null,  // datatype object, optional
+            datatype: null,  // datatype object, optional
             type: null,  // value, uri, id, or null (no selection)
             defaultValue: "",
         });
@@ -277,6 +414,7 @@ const Tablemaker = (props) => {
     const addColumnForm = () => {
         return (
             <>
+            <TextAlert alertInput={textAlertInput}/>
             <Form>
             <Form.Group
                 as={Row}
@@ -318,7 +456,7 @@ const Tablemaker = (props) => {
                         <Col>
                             <Button variant="contained" className="gg-btn-blue-sm gg-ml-20"
                                 onClick ={ () => {
-                                    setColumn ({metadata: null});
+                                    setColumn ({datatype: null});
                                     setMetadataSelect("");
                                 } }>
                                 Clear Selection
@@ -343,6 +481,7 @@ const Tablemaker = (props) => {
                 as="select"
                 name="type"
                 onChange={handleChange}
+                disabled={valueTypeDisable}
               >
                 <option key={0} value="">
                       Select
@@ -378,7 +517,55 @@ const Tablemaker = (props) => {
             </>
         );
     };
-
+    
+    const templateCreateForm = () => {
+        return (
+            <>
+            <Form>
+            <Form.Group
+                as={Row}
+                controlId="name"
+                className="gg-align-center mb-3"
+            >
+                <Col xs={12} lg={9}>
+                <FormLabel label="Name" className="required-asterik"/>
+                <Form.Control
+                    type="text"
+                    name="name"
+                    placeholder="Enter name for the template"
+                    onChange={handleTemplateChange}
+                    maxLength={255}
+                    required={true}
+                    isInvalid={validate}
+                />
+                <Feedback message="Name is required"></Feedback>
+                </Col>
+            </Form.Group>
+            {/* Description */}
+            <Form.Group
+                  as={Row}
+                  controlId="description"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={9} style={{ textAlign: "left" }}>
+                    <FormLabel label="Description" />
+                    <Form.Control
+                      as="textarea"
+                      rows="5"
+                      name="description"
+                      placeholder="Enter description"
+                      onChange={handleTemplateChange}
+                      required={false}
+                      isInvalid={validate}
+                      maxLength={5000}
+                    />
+                </Col>
+                </Form.Group>
+            </Form>
+            <Loading show={showLoading}></Loading>
+            </>
+        )
+    }
     const listCollections = () => {
         return (
           <>
@@ -437,6 +624,22 @@ const Tablemaker = (props) => {
         }
     };
 
+    const handleFileFormatSelect = e => {
+        setTextAlertInput({"show": false, id: ""});
+        const file = e.target.value;
+        if (file === "csv") {
+            // check if the column selections include "Cartoon" column
+            // error
+        }
+        setFileFormat (file);
+    }
+
+    const handleTemplateSelect = e => {
+        const tid = e.target.value;
+        var t = templates.find ((item) => item.templateId.toString() === tid);
+        setSelectedTemplate (t);
+    };
+
     return (
         <>
         <Container maxWidth="xl">
@@ -456,10 +659,20 @@ const Tablemaker = (props) => {
                 showModal={enableColumnAdd}
                 onCancel={() => {
                     setEnableColumnAdd(false);
+                    setTextAlertInput({"show": false, id: ""});
                 }}
                 onConfirm={() => handleAddColumn()}
                 title={"Add Column"}
                 body={addColumnForm()}
+              />
+              <ConfirmationModal
+                showModal={enableTemplateSave}
+                onCancel={() => {
+                    setEnableTemplateSave(false);
+                }}
+                onConfirm={() => saveTemplate()}
+                title={"Add Template"}
+                body={templateCreateForm()}
               />
               {enableCollectionAdd && (
                 <Modal
@@ -549,11 +762,15 @@ const Tablemaker = (props) => {
                                     <Col xs={8} md={8} lg={8}>
                                         <Form.Select
                                             as="select"
-                                            name="template">
+                                            name="template"
+                                            onChange={handleTemplateSelect}>
+                                                <option key="select" value="">
+                                                    Select
+                                                </option>
                                                 {templates && templates.map((n , index) =>
                                                     <option
                                                     key={index}
-                                                    value={n.id}>
+                                                    value={n.templateId}>
                                                     {n.name}
                                                     </option>
                                                 )}
@@ -562,7 +779,9 @@ const Tablemaker = (props) => {
                                 </Row>
                              </Col>
                             <Col xs={2} md={2} lg={2}>
-                                <Button variant="contained" className="gg-btn-blue-sm gg-ml-20">
+                                <Button variant="contained" className="gg-btn-blue-sm gg-ml-20"
+                                    disabled={!selectedTemplate}
+                                    onClick={useTemplate}>
                                     Apply
                                 </Button>
                             </Col>
@@ -586,9 +805,9 @@ const Tablemaker = (props) => {
                     as="select"
                     name="fileformat"
                     required={true}
-                >
+                    onChange={handleFileFormatSelect}>
                    <option selected={true} key="excel" value="excel">
-                        Excel
+                        XLSX
                     </option>
                     <option key="csv" value="csv">
                         CSV
