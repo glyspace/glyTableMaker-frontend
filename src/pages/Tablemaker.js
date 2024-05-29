@@ -8,7 +8,7 @@ import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import MetadataTreeView from "../components/MetadataTreeView";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson, postToAndGetBlob } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import Table from "../components/Table";
@@ -28,7 +28,7 @@ const Tablemaker = (props) => {
     );
 
     const [data, setData] = useState([]);
-    const [fileFormat, setFileFormat] = useState("excel");
+    const [fileFormat, setFileFormat] = useState("EXCEL");
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [metadata, setMetadata] = useState([]);
     const [metadataSelect, setMetadataSelect] = useState("");
@@ -55,6 +55,7 @@ const Tablemaker = (props) => {
     const [template, setTemplate] = useReducer(reducer, templateInitialState);
 
     const [templates, setTemplates] = useState([]);
+    const [downloadReport, setDownloadReport] = useState(null);
 
     const [enableColumnAdd, setEnableColumnAdd] = useState(false);
     const [enableCollectionAdd, setEnableCollectionAdd] = useState(false);
@@ -198,6 +199,7 @@ const Tablemaker = (props) => {
 
     const saveTemplate = () => {
         setShowLoading(true);
+        setTextAlertInput({"show": false, id: ""});
         // create template model from the selections
         var t = createTemplate();
         setTemplate (t);
@@ -215,6 +217,8 @@ const Tablemaker = (props) => {
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 setTextAlertInput ({"show": true, "message": error.response.data.message });
+                setShowLoading(false);
+                return;
             } else {
                 axiosError(error, null, setAlertDialogInput);
             }
@@ -231,15 +235,9 @@ const Tablemaker = (props) => {
         // add columns
         data.map ((item, index) => {
             const tableColumn = {};
-            tableColumn ["name"] = item.name;
+            tableColumn["name"] = item.name;
             if (item.type) {
-                if (item.type === "value") {
-                    tableColumn["type"] = "VALUE";
-                } else if (item.type === "uri") {
-                    tableColumn["type"] = "URI";
-                } else if (item.type === "id") {
-                    tableColumn["type"] = "ID";
-                }
+                tableColumn["type"] = item.type;
             }
             if (item.datatype) {
                 // check if it is a glycan column
@@ -255,7 +253,7 @@ const Tablemaker = (props) => {
             tableColumn["order"] = index;
             columnArray.push (tableColumn);
         });
-        t ["columns"] = columnArray;
+        t["columns"] = columnArray;
         return t;
     }
 
@@ -486,13 +484,13 @@ const Tablemaker = (props) => {
                 <option key={0} value="">
                       Select
                 </option>
-                <option key={1} value="value">
+                <option key={1} value="VALUE">
                       Value
                 </option>
-                <option key={2} value="uri">
+                <option key={2} value="URI">
                       Value URI
                 </option>
-                <option key={3} value="id">
+                <option key={3} value="ID">
                       Value ID
                 </option>
               </Form.Select>
@@ -521,6 +519,7 @@ const Tablemaker = (props) => {
     const templateCreateForm = () => {
         return (
             <>
+            <TextAlert alertInput={textAlertInput}/>
             <Form>
             <Form.Group
                 as={Row}
@@ -625,13 +624,7 @@ const Tablemaker = (props) => {
     };
 
     const handleFileFormatSelect = e => {
-        setTextAlertInput({"show": false, id: ""});
-        const file = e.target.value;
-        if (file === "csv") {
-            // check if the column selections include "Cartoon" column
-            // error
-        }
-        setFileFormat (file);
+        setFileFormat (e.target.value);
     }
 
     const handleTemplateSelect = e => {
@@ -639,6 +632,88 @@ const Tablemaker = (props) => {
         var t = templates.find ((item) => item.templateId.toString() === tid);
         setSelectedTemplate (t);
     };
+
+    const download = () => {
+        var t = createTemplate();
+        const tableDef = {
+            "collections" : collections,
+            "columns": t.columns,
+            "fileFormat": fileFormat,
+        };
+
+        setShowLoading(true);
+        // save template web service call
+        let url = "api/table/downloadtable";
+        postToAndGetBlob (url, tableDef, getAuthorizationHeader()).then ( (data) => {
+            const contentDisposition = data.headers.get("content-disposition");
+            const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
+            const fileNameEndIndex = contentDisposition.indexOf(":");
+            const fileName = contentDisposition.substring(fileNameIndex, fileNameEndIndex);
+            const reportId = contentDisposition.substring(fileNameEndIndex+1, contentDisposition.length - 1);
+
+            //   window.location.href = fileUrl;
+            var fileUrl = URL.createObjectURL(data.data);
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            a.href = fileUrl;
+            a.download = fileName;
+            a.click();
+
+            window.URL.revokeObjectURL(fileUrl);
+            getDownloadReport(reportId);
+            setShowLoading(false);
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                //setTextAlertInput ({"show": true, "message": error.response.data.message });
+                // read blob as json
+                error.response.data.text().then( (resp) => {
+                    const { message } = JSON.parse (resp);
+                    getDownloadReport(message);
+                });
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+            setShowLoading(false);
+          }
+        );
+
+        
+    }
+
+    const getDownloadReport = (reportId) => {
+        //get the report with reportId
+        getJson ("api/table/getreport/" + reportId, getAuthorizationHeader()).then ((data) => {
+            setDownloadReport (data.data.data);
+        }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }  
+        });
+    }
+
+    const displayDownloadReport = () => {
+        return (
+            <>
+            <div style={{ marginTop: "15px"}}/>
+            <Typography variant="h6" color={downloadReport.success ? "": "red"}>{downloadReport.message}</Typography>
+            <div>
+            {downloadReport.warnings && "Warnings:"}  
+            {downloadReport.warnings && downloadReport.warnings.map ((warning) => {
+                        return <li>{warning}</li>
+                    })
+            }
+            {downloadReport.errors && "Errors:"}  
+            {downloadReport.errors && downloadReport.errors.map ((error) => {
+                        return <li>{error}</li>
+                    })
+            }
+            </div>
+            </>
+        )
+    }
 
     return (
         <>
@@ -669,6 +744,7 @@ const Tablemaker = (props) => {
                 showModal={enableTemplateSave}
                 onCancel={() => {
                     setEnableTemplateSave(false);
+                    setTextAlertInput({"show": false, id: ""});
                 }}
                 onConfirm={() => saveTemplate()}
                 title={"Add Template"}
@@ -806,10 +882,10 @@ const Tablemaker = (props) => {
                     name="fileformat"
                     required={true}
                     onChange={handleFileFormatSelect}>
-                   <option selected={true} key="excel" value="excel">
+                   <option selected={true} key="excel" value="EXCEL">
                         XLSX
                     </option>
-                    <option key="csv" value="csv">
+                    <option key="csv" value="CSV">
                         CSV
                     </option>
                 </Form.Select>
@@ -820,12 +896,16 @@ const Tablemaker = (props) => {
             <br/>
             <Card> 
                 <Card.Body>
-                    <Button variant="contained" className="gg-btn-blue mt-2">
+                    <Button variant="contained" className="gg-btn-blue mt-2"
+                    onClick={download} disabled={collections.length===0 || data.length === 0}> 
                         Download
                     </Button>
-                    <div>Report:</div>
+                    {downloadReport &&
+                       displayDownloadReport()
+                    }
                 </Card.Body>
             </Card>
+            <Loading show={showLoading}></Loading>
             </div>
         </Container>
         </>
