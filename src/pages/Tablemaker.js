@@ -128,6 +128,31 @@ const Tablemaker = (props) => {
         ]
     );
 
+    const collectioncolumns = useMemo(
+        () => [
+          {
+            accessorKey: 'name', 
+            header: 'Name',
+            size: 50,
+          },
+          {
+            accessorKey: 'glycans.length',
+            header: '# Glycans',
+            size: 30,
+            enableColumnFilter: false,
+          },
+          {
+            accessorFn: (row) => row.metadata ? row.metadata.length : 0,
+            header: '# Metadata Columns',
+            id: 'metadata',
+            size: 30,
+            enableColumnFilter: false,
+          },
+        ],
+        [],
+      );
+    
+
     const table = useMaterialReactTable({
         autoResetPageIndex: false,
         columns,
@@ -242,7 +267,7 @@ const Tablemaker = (props) => {
             if (item.datatype) {
                 // check if it is a glycan column
                 if (item.datatype.datatypeId < 0) {
-                    tableColumn["glycanColumn"] = item.datatype.description;
+                    tableColumn["glycanColumn"] = item.datatype.description ? item.datatype.description.toUpperCase() : null;
                 } else {
                     tableColumn["datatype"] = item.datatype;
                 }
@@ -267,7 +292,7 @@ const Tablemaker = (props) => {
                     datatype = {
                         name: column.glycanColumn,
                         datatypeId : id,
-                        description : column.glycanColumn,
+                        description : column.glycanColumn.toUpperCase(),
                     };
                     id --;
                 } else {
@@ -571,7 +596,7 @@ const Tablemaker = (props) => {
             <Table
                 authCheckAgent={props.authCheckAgent}
                 ws="api/data/getcollections"
-                columns={columns}
+                columns={collectioncolumns}
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
                 initialSortColumn="name"
@@ -589,7 +614,7 @@ const Tablemaker = (props) => {
             <Table
                 authCheckAgent={props.authCheckAgent}
                 ws="api/data/getcocs"
-                columns={columns}
+                columns={collectioncolumns}
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
                 initialSortColumn="name"
@@ -642,6 +667,7 @@ const Tablemaker = (props) => {
         };
 
         setShowLoading(true);
+        setTextAlertInput({"show": false, id: ""});
         // save template web service call
         let url = "api/table/downloadtable";
         postToAndGetBlob (url, tableDef, getAuthorizationHeader()).then ( (data) => {
@@ -700,14 +726,14 @@ const Tablemaker = (props) => {
             <div style={{ marginTop: "15px"}}/>
             <Typography variant="h6" color={downloadReport.success ? "": "red"}>{downloadReport.message}</Typography>
             <div>
-            {downloadReport.warnings && "Warnings:"}  
-            {downloadReport.warnings && downloadReport.warnings.map ((warning) => {
-                        return <li>{warning}</li>
-                    })
-            }
             {downloadReport.errors && "Errors:"}  
             {downloadReport.errors && downloadReport.errors.map ((error) => {
                         return <li>{error}</li>
+                    })
+            }
+            {downloadReport.warnings && "Warnings:"}  
+            {downloadReport.warnings && downloadReport.warnings.map ((warning) => {
+                        return <li>{warning}</li>
                     })
             }
             </div>

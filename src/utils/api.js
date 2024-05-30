@@ -120,11 +120,12 @@ export const postFormDataTo1 = (url, formData = {}, headers = {}) => {
   return axios(options);
 };
 
-export const postToAndGetBlob = (url, headers = {}) => {
+export const postToAndGetBlob = (url,  data = {}, headers = {}) => {
   const options = {
     method: "POST",
     headers: headers,
     url: TABLEMAKER_API + url,
+    data: data,
     responseType: "blob"
   };
 
