@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
@@ -30,7 +30,7 @@ const Table = (props) => {
     //table state
     const [columnFilters, setColumnFilters] = useState(props.columnFilters ?? []);
     const [globalFilter, setGlobalFilter] = useState('');
-    const [sorting, setSorting] = useState([{"id":props.initialSortColumn,"desc":true}]);
+    const [sorting, setSorting] = useState(props.initialSortColumn ? [{"id":props.initialSortColumn,"desc":true}] : []);
     const [pagination, setPagination] = useState({
         pageIndex: 0,
         pageSize: 10,
@@ -350,6 +350,42 @@ const Table = (props) => {
         },
       });
 
+      const clientTable = useMaterialReactTable({
+        columns,
+        data: props.data ? props.data : [], //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+        enableRowActions: props.enableRowActions,
+        enableRowSelection: props.rowSelection,
+        positionActionsColumn: 'last',
+        renderRowActions: ({ row }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip title="Delete">
+              <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
+              : deleteRow(row.original[props.rowId])}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            {props.showEdit && (<Tooltip title="Edit">
+              <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>)}
+            {props.addtagws && (
+              <Tooltip title="Add Tag">
+              <IconButton color="primary">
+                <NoteAddIcon
+                onClick={() => { openAddTagModal (row);
+                }}/>
+              </IconButton>
+            </Tooltip>
+            )}
+          </Box>
+        ),
+        getRowId: (row) => row[props.rowId],
+        initialState: {
+            showColumnFilters: false,
+        },
+      });
+
     return (
     <>
         <ConfirmationModal
@@ -379,7 +415,7 @@ const Table = (props) => {
           }
         />
 
-        <MaterialReactTable table={props.detailPanel ? tableDetail: table} />
+        <MaterialReactTable table={props.data ? clientTable: props.detailPanel ? tableDetail: table} />
     </>
     );
 }

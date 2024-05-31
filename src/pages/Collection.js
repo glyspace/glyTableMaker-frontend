@@ -242,6 +242,7 @@ const Collection = (props) => {
         accessorKey: 'type.name', 
         header: 'Name',
         size: 50,
+        id: 'name',
         },
         {
         accessorKey: 'type.description',
@@ -556,13 +557,12 @@ const Collection = (props) => {
                 
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "glycanId"
+                    rowId = "glytoucanID"
                     data = {userSelection.glycans}
                     columns={columns}
                     enableRowActions={true}
                     delete={deleteFromTable}
                     setAlertDialogInput={setAlertDialogInput}
-                    initialSortColumn="dateCreated"
                 />
             </Card.Body>
           </Card>
@@ -583,13 +583,12 @@ const Collection = (props) => {
                 
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "metadataId"
+                    rowId = "name"
                     data = {userSelection.metadata}
                     columns={metadatacolumns}
                     enableRowActions={true}
                     delete={deleteMetadataFromTable}
                     setAlertDialogInput={setAlertDialogInput}
-                    initialSortColumn="metadataId"
                 />
             </Card.Body>
           </Card>
