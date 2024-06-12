@@ -18,6 +18,16 @@ export const getJson = (url, headers = {}) => {
   });
 };
 
+export const getBlob = (url, headers = {}) => {
+  const options = {
+    method: "GET",
+    headers: headers,
+    url: TABLEMAKER_API + url,
+    responseType: "blob"
+  };
+  return axios(options);
+};
+
 export const postTo = (url, headers = {}) => {
   const options = {
     method: "POST",

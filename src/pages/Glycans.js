@@ -8,12 +8,16 @@ import {
   Box,
   IconButton,
   Tooltip,
+  Typography,
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import stringConstants from '../data/stringConstants.json';
 import DialogAlert from '../components/DialogAlert';
 import { StatusMessage } from '../components/StatusMessage';
 import Table from '../components/Table';
+import { getAuthorizationHeader, getBlob, getJson } from '../utils/api';
+import { axiosError } from '../utils/axiosError';
+import { Loading } from '../components/Loading';
 
 const Glycans = (props) => {
   const [infoError, setInfoError] = useState("");
@@ -26,7 +30,15 @@ const Glycans = (props) => {
     { show: false, id: "" }
   );
 
+  const [showLoading, setShowLoading] = useState(false);
+
+  const [textAlertInput, setTextAlertInput] = useReducer(
+      (state, newState) => ({ ...state, ...newState }),
+      { show: false, id: "" }
+  );
+
   const [batchUpload, setBatchUpload] = useState(false);
+  const [downloadReport, setDownloadReport] = useState(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(props.authCheckAgent, []);
@@ -102,6 +114,84 @@ const Glycans = (props) => {
     ],
     [],
   );
+
+  const download = () => {
+    setShowLoading(true);
+    setTextAlertInput({"show": false, id: ""});
+
+    let url = "api/data/downloadglycans?filetype=GWS";
+    getBlob (url, getAuthorizationHeader()).then ( (data) => {
+        const contentDisposition = data.headers.get("content-disposition");
+        const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
+        const fileNameEndIndex = contentDisposition.indexOf(":");
+        const fileName = contentDisposition.substring(fileNameIndex, fileNameEndIndex);
+        const reportId = contentDisposition.substring(fileNameEndIndex+1, contentDisposition.length - 1);
+
+        //   window.location.href = fileUrl;
+        var fileUrl = URL.createObjectURL(data.data);
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        a.href = fileUrl;
+        a.download = fileName;
+        a.click();
+
+        window.URL.revokeObjectURL(fileUrl);
+        getDownloadReport(reportId);
+        setShowLoading(false);
+      }).catch (function(error) {
+        if (error && error.response && error.response.data) {
+            //setTextAlertInput ({"show": true, "message": error.response.data.message });
+            // read blob as json
+            error.response.data.text().then( (resp) => {
+                const { message } = JSON.parse (resp);
+                getDownloadReport(message);
+            });
+        } else {
+            axiosError(error, null, setAlertDialogInput);
+        }
+        setShowLoading(false);
+      }
+    );
+
+    
+}
+
+const getDownloadReport = (reportId) => {
+    //get the report with reportId
+    getJson ("api/table/getreport/" + reportId, getAuthorizationHeader()).then ((data) => {
+        setDownloadReport (data.data.data);
+    }).catch (function(error) {
+        if (error && error.response && error.response.data) {
+            setTextAlertInput ({"show": true, "message": error.response.data.message });
+        } else {
+            axiosError(error, null, setAlertDialogInput);
+        }  
+    });
+}
+
+  const displayDownloadReport = () => {
+    return (
+        <>
+        <div style={{ marginTop: "15px"}}/>
+        <Typography variant="h6" color={downloadReport.success ? "": "red"}>{downloadReport.message}</Typography>
+        <div>
+        {downloadReport.errors && "Errors:"}  
+        {downloadReport.errors && downloadReport.errors.map ((error) => {
+                    return <li>{error}</li>
+                })
+        }
+        {downloadReport.warnings && "Warnings:"}  
+        {downloadReport.warnings && downloadReport.warnings.map ((warning) => {
+                    return <li>{warning}</li>
+                })
+        }
+        </div>
+        </>
+    )
+  }
+
+
 
   return (
     <>
@@ -203,6 +293,13 @@ const Glycans = (props) => {
                       </span>
                   </div>
                 </Nav>
+                <Button variant="contained" className="gg-btn-blue-sm ml-10"
+                    onClick={download}> 
+                        Download
+                </Button>
+                {downloadReport &&
+                    displayDownloadReport()
+                }
                 <StatusMessage
                   setBatchUpload={setBatchUpload}
                   setAlertDialogInput={setAlertDialogInput}/>
@@ -222,6 +319,7 @@ const Glycans = (props) => {
             </Card.Body>
           </Card>
        </div>
+       <Loading show={showLoading}></Loading>
      </Container>
     </>
   )
