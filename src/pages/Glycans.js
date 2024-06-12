@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState, useReducer } from 'react';
 import Container from "@mui/material/Container";
-import { Button, Card, Modal } from "react-bootstrap";
-import { PageHeading } from "../components/FormControls";
+import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { FormLabel, PageHeading } from "../components/FormControls";
 import { Link } from "react-router-dom";
 import { NavDropdown, Nav } from "react-bootstrap";
 import {
@@ -18,6 +18,7 @@ import Table from '../components/Table';
 import { getAuthorizationHeader, getBlob, getJson } from '../utils/api';
 import { axiosError } from '../utils/axiosError';
 import { Loading } from '../components/Loading';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 
 const Glycans = (props) => {
   const [infoError, setInfoError] = useState("");
@@ -39,9 +40,26 @@ const Glycans = (props) => {
 
   const [batchUpload, setBatchUpload] = useState(false);
   const [downloadReport, setDownloadReport] = useState(null);
+  const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+  const [fileFormat, setFileFormat] = useState("GWS");
+  const [glycanStatus, setGlycanStatus] = useState(null);
+  const [glycanStatusList, setGlycanStatusList] = useState([]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps 
   useEffect(props.authCheckAgent, []);
+
+  useEffect (() => {
+    getStatusList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function getStatusList() {
+    getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
+        setGlycanStatusList(data.data);
+    }).catch(function(error) {
+        axiosError(error, null, setAlertDialogInput);
+    });
+}
 
   const columns = useMemo(
     () => [
@@ -115,11 +133,25 @@ const Glycans = (props) => {
     [],
   );
 
+  const handleChange = e => {
+    const name = e.target.name;
+    const newValue = e.target.value;
+    setTextAlertInput({"show": false, id: ""});
+
+    if (name === "type") {
+      setFileFormat(newValue);
+    } else if (name === "status") {
+      if (newValue && newValue.length > 0)
+        setGlycanStatus(newValue);
+    }
+};
+
   const download = () => {
     setShowLoading(true);
     setTextAlertInput({"show": false, id: ""});
 
-    let url = "api/data/downloadglycans?filetype=GWS";
+    let url = "api/data/downloadglycans?filetype=" + fileFormat;
+    if (glycanStatus) url += "&status=" + glycanStatus;
     getBlob (url, getAuthorizationHeader()).then ( (data) => {
         const contentDisposition = data.headers.get("content-disposition");
         const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
@@ -153,8 +185,7 @@ const Glycans = (props) => {
         setShowLoading(false);
       }
     );
-
-    
+    setOpenDownloadDialog(false);    
 }
 
 const getDownloadReport = (reportId) => {
@@ -189,9 +220,61 @@ const getDownloadReport = (reportId) => {
         </div>
         </>
     )
-  }
+  };
 
-
+  const downloadForm = () => {
+    return (
+    <>
+      <Form>
+        <Form.Group
+          as={Row}
+          controlId="fileType"
+          className="gg-align-center mb-3"
+        >
+          <Col xs={12} lg={9}>
+            <FormLabel label="File Type" className="required-asterik"/>
+            <Form.Select
+                as="select"
+                name="type"
+                onChange={handleChange}
+              >
+                <option key={0} value="GWS">
+                      Glycoworkbench
+                </option>
+                <option key={1} value="EXCEL">
+                      EXCEL
+                </option>
+              </Form.Select>
+          </Col>
+        </Form.Group>
+        <Form.Group
+          as={Row}
+          controlId="status"
+          className="gg-align-center mb-3"
+        >
+          <Col xs={12} lg={9}>
+            <FormLabel label="Status"/>
+            <Form.Select
+              as="select"
+              name="status"
+              onChange={handleChange}>
+                  <option key="select" value="">
+                      Select
+                  </option>
+                  {glycanStatusList && glycanStatusList.map((n , index) =>
+                      <option
+                      key={index}
+                      value={n}>
+                      {n}
+                      </option>
+                  )}
+          </Form.Select>
+          </Col>
+        </Form.Group>
+        </Form>
+        </>
+      );
+  };
 
   return (
     <>
@@ -208,6 +291,15 @@ const getDownloadReport = (reportId) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+          <ConfirmationModal
+            showModal={openDownloadDialog}
+            onCancel={() => {
+              setOpenDownloadDialog(false);
+            }}
+            onConfirm={() => download()}
+            title={"Download Glycans"}
+            body={downloadForm()}
+          />
           <Modal
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
@@ -235,7 +327,9 @@ const getDownloadReport = (reportId) => {
             </Button>
             </Modal.Footer>
           </Modal>  
-              
+          {downloadReport &&
+              displayDownloadReport()
+          }
           <Card>
             <Card.Body>
               <div className="text-center mb-4">
@@ -244,7 +338,7 @@ const getDownloadReport = (reportId) => {
                     type="button"
                     className="gg-btn-blue-sm gg-dropdown-btn"
                     style={{
-                      marginLeft: "10px"
+                      marginLeft: "0px"
                     }}>
                       <span style={{display:"inline-block"}}>
                         <NavDropdown
@@ -277,7 +371,7 @@ const getDownloadReport = (reportId) => {
                     type="button"
                     className="gg-btn-blue-sm gg-dropdown-btn"
                     style={{
-                      marginLeft: "10px"
+                      marginLeft: "5px"
                     }}>
                       <span  style={{display:"inline-block"}}>
                         <NavDropdown
@@ -293,13 +387,10 @@ const getDownloadReport = (reportId) => {
                       </span>
                   </div>
                 </Nav>
-                <Button variant="contained" className="gg-btn-blue-sm ml-10"
-                    onClick={download}> 
+                <Button variant="contained" className="gg-btn-blue-sm" style={{marginLeft:"5px", marginTop:"-1px"}}
+                    onClick={()=>setOpenDownloadDialog(true)}> 
                         Download
                 </Button>
-                {downloadReport &&
-                    displayDownloadReport()
-                }
                 <StatusMessage
                   setBatchUpload={setBatchUpload}
                   setAlertDialogInput={setAlertDialogInput}/>
