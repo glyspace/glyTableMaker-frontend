@@ -178,4 +178,11 @@
     "image" : "sulfate.svg",
     "url" : "https://en.wikipedia.org/wiki/Sulfate",
     "pubChemCompound" : 1117
+  }, {
+    "name" : "O-acetyl",
+    "id" : "Ac",
+    "ignore" : false,
+    "image" : "acetyl.svg",
+    "url" : "https://en.wikipedia.org/wiki/Acetyl_group",
+    "pubChemCompound" : 137849
   } ]

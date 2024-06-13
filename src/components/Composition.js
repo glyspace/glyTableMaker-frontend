@@ -16,22 +16,27 @@ const Composition = (props) => {
 
     const [monoList, setMonoList] = useState([]);
     const [monoListSecondCol, setMonoListSecondCol] = useState([]);
+    const [monoListThirdCol, setMonoListThirdCol] = useState([]);
 
     useEffect (() => {
         let mono1 = [];
         let mono2 = [];
+        let mono3 = [];
         compositionList.map (mono => {
             let monoWithCount = {};
             monoWithCount.mono = mono;
             monoWithCount.count = 0;
-            if (mono1.length > 12) {
-                mono2.push(monoWithCount);
+            if (mono2.length > 8) {
+                mono3.push(monoWithCount);
+            } else if (mono1.length > 8){
+                mono2.push (monoWithCount);
             } else {
                 mono1.push (monoWithCount);
             }
         });
         setMonoList(mono1);
         setMonoListSecondCol(mono2);
+        setMonoListThirdCol(mono3);
     }, []);
 
     const changeCount = (element, increment) => {
@@ -122,6 +127,34 @@ const Composition = (props) => {
                         onClick={() => changeCount (monoListSecondCol[index], true)}/>
                     </Col> 
                     : <span></span>}
+                    {monoListThirdCol[index] ? 
+                    <Col> 
+                    <Image
+                        src={window.location.origin + 
+                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
+                            + (monoListThirdCol[index].count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
+                        alt="decrementing" 
+                        className="counter-image"
+                        id={monoListThirdCol[index].mono.id+ "decrement"}
+                        onClick={() => changeCount (monoListThirdCol[index], false)}/>
+                    {monoListThirdCol[index].mono.image ?   
+                    <object
+                        data={window.location.origin + 
+                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/' + monoListThirdCol[index].mono.image}
+                        alt={monoListThirdCol[index].mono.name} 
+                        id={monoListThirdCol[index].mono.id}
+                        className="comp-image"> 
+                        monoListThirdCol[index].mono.id</object>
+                    : 
+                    <span className="comp-text">{monoListThirdCol[index].mono.id}</span> }
+                    <Image
+                        src={window.location.origin + 
+                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
+                        alt="incrementing"
+                        className="counter-image"
+                        onClick={() => changeCount (monoListThirdCol[index], true)}/>
+                    </Col> 
+                    : <Col></Col>}
                 </Row>);
         });
 
@@ -136,12 +169,17 @@ const Composition = (props) => {
             if (element.count > 0) {
                 composition += element.mono.id + ":" + element.count + "|";
             }
-        })
+        });
         monoListSecondCol.forEach ((element) => {
             if (element.count > 0) {
                 composition += element.mono.id + ":" + element.count + "|";
             }
-        })
+        });
+        monoListThirdCol.forEach ((element) => {
+            if (element.count > 0) {
+                composition += element.mono.id + ":" + element.count + "|";
+            }
+        });
         if (commit && composition === "") {
             // error
             setTextAlertInput ({"show": true, "message": "No selection has been made!"});
@@ -169,12 +207,17 @@ const Composition = (props) => {
             if (element.count > 0) {
                 compo.push (<span>{element.mono.id}<sub>{element.count}</sub> </span>);
             }
-        })
+        });
         monoListSecondCol.forEach ((element) => {
             if (element.count > 0) {
                 compo.push (<span>{element.mono.id}<sub>{element.count}</sub> </span>);
             }
-        })
+        });
+        monoListThirdCol.forEach ((element) => {
+            if (element.count > 0) {
+                compo.push (<span>{element.mono.id}<sub>{element.count}</sub> </span>);
+            }
+        });
         return compo;
     }
 
