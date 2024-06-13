@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Autocomplete, Container, TextField } from "@mui/material";
+import { Autocomplete, Container, TextField, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
@@ -58,6 +58,12 @@ const Collection = (props) => {
 
     const [isVisible, setIsVisible] = useState(false);
 
+    const [downloadReport, setDownloadReport] = useState(null);
+    const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+    const [fileFormat, setFileFormat] = useState("GWS");
+    const [glycanStatus, setGlycanStatus] = useState(null);
+    const [glycanStatusList, setGlycanStatusList] = useState([]);
+
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
         if (window.scrollY > 300) {
@@ -70,14 +76,24 @@ const Collection = (props) => {
     useEffect(() => {
         props.authCheckAgent();
         getCategories();
+        getStatusList();
         window.addEventListener("scroll", toggleSaveVisibility);
     }, []);
 
     useEffect(() => {
-        if (collectionId) 
+        if (collectionId) {
             fetchData();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
+
+    function getStatusList() {
+        getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
+            setGlycanStatusList(data.data);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+      }
 
     function getCategories() {
         getJson ("api/metadata/getcategories", getAuthorizationHeader()).then (({ data }) => {
@@ -102,7 +118,7 @@ const Collection = (props) => {
             // locate the datatype
             categories.map ((element) => {
                 if (element.dataTypes) {
-                    var datatype = element.dataTypes.find ((item) => item.datatypeId == itemId);
+                    var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
                     if (datatype) {
                         setSelectedDatatype(datatype);
                         setNamespace (datatype.namespace.name);
@@ -314,7 +330,7 @@ const Collection = (props) => {
         setTextAlertInput({"show": false, id: ""});
         const selected=[];
         selectedGlycans.forEach ((glycan) => {
-            if (!glycan.glytoucanID || glycan.glytoucanID.length == 0) {
+            if (!glycan.glytoucanID || glycan.glytoucanID.length === 0) {
                 // error, not allowed to select this for the collection
                 setTextAlertInput ({"show": true, 
                     "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycanId + " is not added."
@@ -427,6 +443,150 @@ const Collection = (props) => {
         );
     }
 
+    const handleChangeDownloadForm = e => {
+        const name = e.target.name;
+        const newValue = e.target.value;
+        setTextAlertInput({"show": false, id: ""});
+    
+        if (name === "type") {
+          setFileFormat(newValue);
+        } else if (name === "status") {
+          if (newValue && newValue.length > 0)
+            setGlycanStatus(newValue);
+        }
+    };
+    
+      const download = () => {
+        setShowLoading(true);
+        setTextAlertInput({"show": false, id: ""});
+    
+        let url = "api/data/downloadcollectionglycans?filetype=" + fileFormat;
+        if (glycanStatus) url += "&status=" + glycanStatus;
+        url += "&collectionid=" + collectionId;
+        getBlob (url, getAuthorizationHeader()).then ( (data) => {
+            const contentDisposition = data.headers.get("content-disposition");
+            const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
+            const fileNameEndIndex = contentDisposition.indexOf(":");
+            const fileName = contentDisposition.substring(fileNameIndex, fileNameEndIndex);
+            const reportId = contentDisposition.substring(fileNameEndIndex+1, contentDisposition.length - 1);
+    
+            //   window.location.href = fileUrl;
+            var fileUrl = URL.createObjectURL(data.data);
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            a.href = fileUrl;
+            a.download = fileName;
+            a.click();
+    
+            window.URL.revokeObjectURL(fileUrl);
+            getDownloadReport(reportId);
+            setShowLoading(false);
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                //setTextAlertInput ({"show": true, "message": error.response.data.message });
+                // read blob as json
+                error.response.data.text().then( (resp) => {
+                    const { message } = JSON.parse (resp);
+                    getDownloadReport(message);
+                });
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+            setShowLoading(false);
+          }
+        );
+        setOpenDownloadDialog(false);    
+    }
+    
+    const getDownloadReport = (reportId) => {
+        //get the report with reportId
+        getJson ("api/table/getreport/" + reportId, getAuthorizationHeader()).then ((data) => {
+            setDownloadReport (data.data.data);
+        }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }  
+        });
+    }
+    
+      const displayDownloadReport = () => {
+        return (
+            <>
+            <div style={{ marginTop: "15px"}}/>
+            <Typography variant="h6" color={downloadReport.success ? "": "red"}>{downloadReport.message}</Typography>
+            <div>
+            {downloadReport.errors && "Errors:"}  
+            {downloadReport.errors && downloadReport.errors.map ((error) => {
+                        return <li>{error}</li>
+                    })
+            }
+            {downloadReport.warnings && "Warnings:"}  
+            {downloadReport.warnings && downloadReport.warnings.map ((warning) => {
+                        return <li>{warning}</li>
+                    })
+            }
+            </div>
+            </>
+        )
+      };
+    
+      const downloadForm = () => {
+        return (
+        <>
+          <Form>
+            <Form.Group
+              as={Row}
+              controlId="fileType"
+              className="gg-align-center mb-3"
+            >
+              <Col xs={12} lg={9}>
+                <FormLabel label="File Type" className="required-asterik"/>
+                <Form.Select
+                    as="select"
+                    name="type"
+                    onChange={handleChangeDownloadForm}
+                  >
+                    <option key={0} value="GWS">
+                          Glycoworkbench
+                    </option>
+                    <option key={1} value="EXCEL">
+                          EXCEL
+                    </option>
+                  </Form.Select>
+              </Col>
+            </Form.Group>
+            <Form.Group
+              as={Row}
+              controlId="status"
+              className="gg-align-center mb-3"
+            >
+              <Col xs={12} lg={9}>
+                <FormLabel label="Status"/>
+                <Form.Select
+                  as="select"
+                  name="status"
+                  onChange={handleChangeDownloadForm}>
+                      <option key="select" value="">
+                          Select
+                      </option>
+                      {glycanStatusList && glycanStatusList.map((n , index) =>
+                          <option
+                          key={index}
+                          value={n}>
+                          {n}
+                          </option>
+                      )}
+              </Form.Select>
+              </Col>
+            </Form.Group>
+            </Form>
+            </>
+          );
+      };
+
     return (
         <>
         <Container maxWidth="xl">
@@ -442,6 +602,9 @@ const Collection = (props) => {
         )}
         </div>
              <PageHeading title={collectionId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
+             {downloadReport &&
+              displayDownloadReport()
+            }
             <Card>
             <Card.Body>
             <div className="mt-4 mb-4">
@@ -452,6 +615,15 @@ const Collection = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+            <ConfirmationModal
+                showModal={openDownloadDialog}
+                onCancel={() => {
+                setOpenDownloadDialog(false);
+                }} 
+                onConfirm={() => download()}
+                title={"Download Glycans"}
+                body={downloadForm()}
+            />
             {showGlycanTable && (
                 <Modal
                     size="xl"
@@ -551,6 +723,10 @@ const Collection = (props) => {
                          disabled={error} onClick={()=> setShowGlycanTable(true)}>
                          Add Glycan
                         </Button>
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20"
+                           disabled={error || !collectionId} onClick={()=>setOpenDownloadDialog(true)}> 
+                        Download
+                </Button>
                         </div>
                     </Col>
                     </Row>

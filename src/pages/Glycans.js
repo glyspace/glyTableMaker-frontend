@@ -59,7 +59,7 @@ const Glycans = (props) => {
     }).catch(function(error) {
         axiosError(error, null, setAlertDialogInput);
     });
-}
+  }
 
   const columns = useMemo(
     () => [
