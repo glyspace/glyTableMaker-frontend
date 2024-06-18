@@ -43,19 +43,30 @@ const Glycans = (props) => {
   const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
   const [fileFormat, setFileFormat] = useState("GWS");
   const [glycanStatus, setGlycanStatus] = useState(null);
+  const [tag, setTag] = useState(null);
   const [glycanStatusList, setGlycanStatusList] = useState([]);
+  const [glycanTags, setGlycanTags] = useState([]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps 
   useEffect(props.authCheckAgent, []);
 
   useEffect (() => {
     getStatusList();
+    getGlycanTags();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function getStatusList() {
     getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
         setGlycanStatusList(data.data);
+    }).catch(function(error) {
+        axiosError(error, null, setAlertDialogInput);
+    });
+  }
+
+  function getGlycanTags() {
+    getJson ("api/data/getglycantags", getAuthorizationHeader()).then (({ data }) => {
+        setGlycanTags(data.data);
     }).catch(function(error) {
         axiosError(error, null, setAlertDialogInput);
     });
@@ -143,6 +154,9 @@ const Glycans = (props) => {
     } else if (name === "status") {
       if (newValue && newValue.length > 0)
         setGlycanStatus(newValue);
+    } else if (name === "tag") {
+      if (newValue && newValue.length > 0)
+        setTag(newValue);
     }
 };
 
@@ -152,6 +166,7 @@ const Glycans = (props) => {
 
     let url = "api/data/downloadglycans?filetype=" + fileFormat;
     if (glycanStatus) url += "&status=" + glycanStatus;
+    if (tag) url += "&tag=" + tag;
     getBlob (url, getAuthorizationHeader()).then ( (data) => {
         const contentDisposition = data.headers.get("content-disposition");
         const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
@@ -271,6 +286,30 @@ const getDownloadReport = (reportId) => {
           </Form.Select>
           </Col>
         </Form.Group>
+        <Form.Group
+          as={Row}
+          controlId="tag"
+          className="gg-align-center mb-3"
+        >
+          <Col xs={12} lg={9}>
+            <FormLabel label="Tag"/>
+            <Form.Select
+              as="select"
+              name="tag"
+              onChange={handleChange}>
+                  <option key="select" value="">
+                      Select
+                  </option>
+                  {glycanTags && glycanTags.map((n , index) =>
+                      <option
+                      key={index}
+                      value={n.label}>
+                      {n.label}
+                      </option>
+                  )}
+          </Form.Select>
+          </Col>
+        </Form.Group>
         </Form>
         </>
       );
@@ -344,7 +383,7 @@ const getDownloadReport = (reportId) => {
                         <NavDropdown
                           className={ "gg-dropdown-navbar gg-dropdown-navitem"}
                           style={{display:"inline-block", padding: "0px !important"}}
-                          title="Add Glycan"
+                          title="Add a Glycan"
                           id="gg-dropdown-navbar1"
                         >
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=sequence`}>
@@ -377,7 +416,7 @@ const getDownloadReport = (reportId) => {
                         <NavDropdown
                           className={ "gg-dropdown-navbar gg-dropdown-navitem"}
                           style={{display:"inline-block", padding: "0px !important"}}
-                          title="Add Glycan from File"
+                          title="Add Glycan(s) from File"
                           id="gg-dropdown-navbar2"
                         >
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=gws`}>

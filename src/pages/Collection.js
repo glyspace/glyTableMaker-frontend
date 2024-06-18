@@ -62,7 +62,9 @@ const Collection = (props) => {
     const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
     const [fileFormat, setFileFormat] = useState("GWS");
     const [glycanStatus, setGlycanStatus] = useState(null);
+    const [tag, setTag] = useState(null);
     const [glycanStatusList, setGlycanStatusList] = useState([]);
+    const [glycanTags, setGlycanTags] = useState([]);
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -77,6 +79,7 @@ const Collection = (props) => {
         props.authCheckAgent();
         getCategories();
         getStatusList();
+        getGlycanTags();
         window.addEventListener("scroll", toggleSaveVisibility);
     }, []);
 
@@ -93,7 +96,15 @@ const Collection = (props) => {
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
         });
-      }
+    }
+
+    function getGlycanTags() {
+        getJson ("api/data/getglycantags", getAuthorizationHeader()).then (({ data }) => {
+            setGlycanTags(data.data);
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
 
     function getCategories() {
         getJson ("api/metadata/getcategories", getAuthorizationHeader()).then (({ data }) => {
@@ -241,6 +252,21 @@ const Collection = (props) => {
             size: 150,
             columnDefType: 'display',
             Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+          },
+          {
+            accessorFn: (row) => row.tags.map(tag => tag.label),
+            header: 'Tags',
+            id: "tags",
+            size: 100,
+            Cell: ({ cell }) => (
+              <ul id="tags">
+                    {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((tag, index) => (
+                    <li key={index} className="tag_in_table">
+                        <span className='tag-title'>{tag}</span>
+                    </li>
+                    ))}
+                </ul>
+            ),
           },
           {
             accessorKey: 'mass', 
@@ -453,6 +479,9 @@ const Collection = (props) => {
         } else if (name === "status") {
           if (newValue && newValue.length > 0)
             setGlycanStatus(newValue);
+        } else if (name === "tag") {
+            if (newValue && newValue.length > 0)
+              setTag(newValue);
         }
     };
     
@@ -462,6 +491,7 @@ const Collection = (props) => {
     
         let url = "api/data/downloadcollectionglycans?filetype=" + fileFormat;
         if (glycanStatus) url += "&status=" + glycanStatus;
+        if (tag) url += "&tag=" + tag;
         url += "&collectionid=" + collectionId;
         getBlob (url, getAuthorizationHeader()).then ( (data) => {
             const contentDisposition = data.headers.get("content-disposition");
@@ -581,6 +611,30 @@ const Collection = (props) => {
                       )}
               </Form.Select>
               </Col>
+            </Form.Group>
+            <Form.Group
+                as={Row}
+                controlId="tag"
+                className="gg-align-center mb-3"
+                >
+                <Col xs={12} lg={9}>
+                    <FormLabel label="Tag"/>
+                    <Form.Select
+                    as="select"
+                    name="tag"
+                    onChange={handleChange}>
+                        <option key="select" value="">
+                            Select
+                        </option>
+                        {glycanTags && glycanTags.map((n , index) =>
+                            <option
+                            key={index}
+                            value={n.label}>
+                            {n.label}
+                            </option>
+                        )}
+                </Form.Select>
+                </Col>
             </Form.Group>
             </Form>
             </>
