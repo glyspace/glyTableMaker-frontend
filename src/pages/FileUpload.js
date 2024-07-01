@@ -6,7 +6,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
-import { Button, Card, Container, Modal, Row } from "react-bootstrap";
+import { Alert, Button, Card, Container, Modal, Row } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
 import { useNavigate } from "react-router-dom";
 import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
@@ -32,6 +32,7 @@ const FileUpload = (props) => {
     );
     const [tag, setTag] = useState("");
     const [validate, setValidate] = useState(false);
+    const [enableReportSent, setEnableReportSent] = useState(false);
 
     useEffect(() => {
       fetchData();
@@ -108,11 +109,12 @@ const FileUpload = (props) => {
 
     const sendEmail = (errorId, isError) => {
       props.authCheckAgent();
+      setEnableReportSent(false);
       postJson ("api/data/senderrorreport/" + errorId + "?isUpload=" + !isError, null, getAuthorizationHeader()).then ( (data) => {
           console.log ("reported the errors");
+          setEnableReportSent(true);
       }).catch (function(error) {
           axiosError(error, null, setAlertDialogInput);
-          setEnableTagDialog(false);
       }
     );
     }
@@ -123,7 +125,6 @@ const FileUpload = (props) => {
            fetchData();
         }).catch (function(error) {
             axiosError(error, null, setAlertDialogInput);
-            setEnableTagDialog(false);
         }
       );
       }
@@ -315,6 +316,9 @@ const FileUpload = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+            <Alert variant="success" show={enableReportSent} className="alert-message line-break-1">
+                The report is sent successfully!
+            </Alert>
             <Card>
             <Card.Body>
             <MaterialReactTable table={table}/>

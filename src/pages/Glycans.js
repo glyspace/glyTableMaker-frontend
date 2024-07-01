@@ -101,19 +101,20 @@ const Glycans = (props) => {
       {
         accessorKey: 'glycanCollections.length',
         header: '# Collections',
+        id: "collectionNo",
         size: 30,
         enableColumnFilter: false,
       },
       {
         id: 'information',
-        header: 'Information',
+        header: 'Error',
         size: 150,
-        columnDefType: 'display',
+        enableColumnFilter: false,
         Cell: ({ row }) => (
-          (row.original.glytoucanHash || row.original.error) &&
+          (row.original.error) &&
 
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip title="Information">
+            <Tooltip title="Error">
               <IconButton onClick={() => {
                   setGlytoucanHash(row.original.glytoucanHash);
                   setDate(row.original.dateCreated);
@@ -445,6 +446,7 @@ const getDownloadReport = (reportId) => {
                   gettagws="api/data/getglycantags"
                   initialSortColumn="dateCreated"
                   rowId="glycanId"
+                  detailPanel={true}
             />
             </Card.Body>
           </Card>

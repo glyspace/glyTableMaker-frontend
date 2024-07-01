@@ -6,6 +6,8 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import { ConfirmationModal } from "./ConfirmationModal";
 import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InfoIcon from '@mui/icons-material/Info';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
@@ -245,7 +247,7 @@ const Table = (props) => {
         manualSorting: props.data ? false: true,
         initialState: {
             showColumnFilters: false,
-            columnVisibility: { tags: false }
+            columnVisibility: { information: false, collectionNo: false}
         },
         muiToolbarAlertBannerProps: isError
           ? {
@@ -310,10 +312,24 @@ const Table = (props) => {
           </Box>
         ),
         renderDetailPanel: ({ row }) =>
-            row.original.description ? <div><span>{row.original.description}</span> </div> : null,
+            row.original.description ? <div><span>{row.original.description}</span> </div> : 
+            row.original.error ?
+              <div><span>
+                Glycan is submitted to Glytoucan on {row.original.dateCreated}. 
+                Registration failed with the following error {row.original.error}
+              </span></div> : 
+              row.original.glytoucanHash ? 
+              <div>
+                <span>
+                Glycan is submitted to Glytoucan on {row.original.dateCreated}. 
+                Glytoucan assigned temporary hash value: {row.original.glytoucanHash}
+                </span>
+              </div>
+              : "No additional information",
         getRowId: (row) => row[props.rowId],
         initialState: {
             showColumnFilters: false,
+            columnVisibility: { information: false, collectionNo: false, }
         },
         manualFiltering: props.data ? false: true,
         manualPagination: props.data ? false: true,
@@ -332,6 +348,9 @@ const Table = (props) => {
               </div>,
             }
           : undefined,
+        muiExpandButtonProps: ({ row }) => ({
+            children: row.original.error || row.original.glytoucanHash ? <InfoIcon/> : <ExpandMoreIcon/>,
+        }),
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
