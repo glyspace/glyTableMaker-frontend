@@ -142,6 +142,7 @@ const FileUpload = (props) => {
           body={
             <>
               <Tag validate={validate}
+                setValidate={setValidate}
                 setTag={setTag}
                 setAlertDialogInput={setAlertDialogInput}
                 gettagws="api/data/getglycantags"

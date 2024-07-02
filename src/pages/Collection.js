@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
@@ -65,6 +65,12 @@ const Collection = (props) => {
     const [tag, setTag] = useState(null);
     const [glycanStatusList, setGlycanStatusList] = useState([]);
     const [glycanTags, setGlycanTags] = useState([]);
+
+    const glycanRef = useRef(null);
+    const metadataRef = useRef(null);
+    const handleClick = (ref) => {
+        ref.current?.scrollIntoView({behavior: 'smooth'});
+    };
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -323,11 +329,13 @@ const Collection = (props) => {
         return (
             <>
                 <Row>
+                    <Col md={6}>
                     <MetadataTreeView data={categories}
                         onItemSelectionToggle={handleDatatypeSelection}/>
-                </Row>
-                <Row>
-                    <div style={{marginTop: '30px'}}>
+                    </Col>
+                    <Col md={6}>
+
+                    
                         <Autocomplete
                             freeSolo
                             disabled={!namespace}
@@ -336,7 +344,7 @@ const Collection = (props) => {
                             onChange={(e, value) => {setSelectedOption(value);}}
                             onInputChange={onInputChange}
                             getOptionLabel={(option) => option.label}
-                            style={{ width: 800 }}
+                            style={{ width: 400 }}
                             renderInput={(params) => (
                             <TextField {...params} 
                                 error={validMetadata} 
@@ -345,7 +353,8 @@ const Collection = (props) => {
                             )}
                         />
                         
-                </div>
+                    
+                    </Col>
                 </Row>
             </>
         )
@@ -764,9 +773,17 @@ const Collection = (props) => {
                     Submit
                 </Button> 
             </div>
+            <div className="text-center mb-2">
+                <Button onClick={()=> handleClick(metadataRef)}
+                    className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Metadata</Button>
+                <Button className="gg-btn-outline mt-2 gg-ml-20" 
+                    onClick={()=> handleClick(glycanRef)}>
+                    Glycans
+                </Button> 
+            </div>
             </Card.Body>
           </Card>
-          <Card style={{marginTop: "15px"}}>
+          <Card ref={glycanRef} style={{marginTop: "15px"}}>
             <Card.Body>
             <h5 class="gg-blue" style={{textAlign: "left"}}>
                 Glycans in the Collection</h5>
@@ -796,7 +813,7 @@ const Collection = (props) => {
                 />
             </Card.Body>
           </Card>
-          <Card style={{marginTop: "15px"}}>
+          <Card ref={metadataRef} style={{marginTop: "15px"}}>
             <Card.Body>
             <h5 class="gg-blue" style={{textAlign: "left"}}>
                 Metadata</h5>
