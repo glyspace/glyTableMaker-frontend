@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextAlert from "./TextAlert";
 import { Button, Col, Image, Row } from "react-bootstrap";
-import { Dialog } from "@mui/material";
+import { Box, Dialog, Slider } from "@mui/material";
 import compositionList from '../data/composition.json';
 import "./Composition.css";
 
@@ -13,6 +13,8 @@ const Composition = (props) => {
         { show: false, id: "" }
     );
     const [compositionString, setCompositionString] = useState ("");
+    const [compositionType, setCompositionType] = useState("BASE");
+    const [compositionTypeDescription, setCompositionTypeDescription] = useState ("Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions.");
 
     const [monoList, setMonoList] = useState([]);
     const [monoListSecondCol, setMonoListSecondCol] = useState([]);
@@ -221,6 +223,29 @@ const Composition = (props) => {
         return compo;
     }
 
+    function valuetext(value) {
+       setCompositionType(value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED");
+       return value;
+    }
+
+    const marks = [
+        {
+          value: 0,
+          label: 'Base Composition',
+          description: 'Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions.',
+        },
+        {
+          value: 1,
+          label: 'Composition (Glygen)',
+          description: 'Monosaccharides are presented as closed ring but exact ring size is unknown. Anomer configuration is unknown as well. This version is used by GlyGen when curating papers with composition in which the ring size is not part of the composition string or explicitly mentioned.',
+        },
+        {
+          value: 2,
+          label: 'Composition (Defined ring)',
+          description: 'Monosaccharides are presented as closed ring with the default ring size for each monosaccharide (e.g. pyranose for Hexose). Exact anomer configuration is unknown.',
+        },
+      ];
+
     return (
         <Dialog
             open={props.show}
@@ -239,10 +264,31 @@ const Composition = (props) => {
             <div style={{ overflow: 'hidden' }}>
                 <h5 className="sups-dialog-title">{props.title}:
                     {getCompositionDisplay()}</h5>
-                <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '73vh' }}>
+                <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '53vh' }}>
                     <TextAlert alertInput={textAlertInput}/>
                     { monoList.length > 0 && getCompositionSelections() }
                 </div>
+                <h5 style={{marginLeft: "20px"}}>Composition Type</h5>
+                <Box sx={{ marginLeft: '77px', width: 400 }}>
+                <Slider
+                    aria-label="Composition Type"
+                    defaultValue={0}
+                    valueLabelDisplay="auto"
+                    getAriaValueText={valuetext}
+                    shiftStep={1}
+                    step={1}
+                    marks={marks}
+                    min={0}
+                    max={2}
+                    onChange={(event, newValue) => {
+                        setCompositionTypeDescription(marks[newValue].description);
+                      }}
+                    />
+                </Box>
+                {compositionTypeDescription && 
+                <div style={{marginLeft: "20px"}}>
+                    <h6>{compositionTypeDescription}</h6></div>
+                }
                 <div style={{ marginTop: "20px", marginRight: "50px" }}>
                     <Button
                         className='gg-btn-blue mb-5'

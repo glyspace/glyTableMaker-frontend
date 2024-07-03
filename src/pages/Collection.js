@@ -803,10 +803,10 @@ const Collection = (props) => {
             </div>
             <div className="text-center mb-2">
                 <Button onClick={()=> handleClick(metadataRef)}
-                    className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Metadata</Button>
+                    className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Go to Metadata</Button>
                 <Button className="gg-btn-outline mt-2 gg-ml-20" 
                     onClick={()=> handleClick(glycanRef)}>
-                    Glycans
+                    Go to Glycans
                 </Button> 
             </div>
             </Card.Body>
