@@ -343,7 +343,7 @@ const Collection = (props) => {
                             options={options}
                             onChange={(e, value) => {setSelectedOption(value);}}
                             onInputChange={onInputChange}
-                            getOptionLabel={(option) => option.label}
+                            getOptionLabel={(option) => option}
                             style={{ width: 400 }}
                             renderInput={(params) => (
                             <TextField {...params} 
@@ -426,13 +426,41 @@ const Collection = (props) => {
     const handleAddMetadata = () => {
         console.log("adding metadata " + selectedMetadataValue);
         setTextAlertInput({"show": false, id: ""});
-        const m = {
-            metadataId: idCounter,
-            new: true,
-            type: selectedDatatype,
-            value: selectedOption ? selectedOption.label : selectedMetadataValue,
-            valueUri: selectedOption ? selectedOption.uri: null,
+        if (selectedOption) {
+            // get the canonical form
+            getJson ("api/util/getcanonicalform?namespace=" + namespace + "&synonym=" + selectedMetadataValue,
+                getAuthorizationHeader()).then ((data) => {
+                if (data.data && data.data.data) {
+                    const m = {
+                        metadataId: idCounter,
+                        new: true,
+                        type: selectedDatatype,
+                        value: data.data.data.label,
+                        valueUri: data.data.data.uri,
+                    }
+                    addMetadata(m);
+                }
+            
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setTextAlertInput ({"show": true, "message": error.response.data.message });
+                } else {
+                    axiosError(error, null, setAlertDialogInput);
+                }  
+            });
+        } else {
+            const m = {
+                metadataId: idCounter,
+                new: true,
+                type: selectedDatatype,
+                value: selectedMetadataValue,
+                valueUri: null,
+            }
+            addMetadata(m);
         }
+    }
+
+    const addMetadata = (m) => {
         idCounter++;
         var metadata = userSelection.metadata;
         if (metadata === null) 
@@ -465,7 +493,7 @@ const Collection = (props) => {
                 setValidMetadata(true);
                 setValidationMessage(data.data.message);
             }
-          }).catch (function(error) {
+            }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 ScrollToTop();
                 setTextAlertInput ({"show": true, "message": error.response.data["message"]});
@@ -474,7 +502,7 @@ const Collection = (props) => {
             }
             setShowLoading(false);
             setEnableAddMetadata(false);
-          }
+            }
         );
     }
 
@@ -830,7 +858,7 @@ const Collection = (props) => {
                 
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "name"
+                    rowId = "metadataId"
                     data = {userSelection.metadata}
                     columns={metadatacolumns}
                     enableRowActions={true}
