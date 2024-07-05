@@ -29,6 +29,7 @@ const Tablemaker = (props) => {
 
     const [data, setData] = useState([]);
     const [fileFormat, setFileFormat] = useState("EXCEL");
+    const [fileName, setFileName] = useState(null);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [metadata, setMetadata] = useState([]);
     const [metadataSelect, setMetadataSelect] = useState("");
@@ -652,6 +653,10 @@ const Tablemaker = (props) => {
         setFileFormat (e.target.value);
     }
 
+    const handleFileNameChange = e => {
+        setFileName (e.target.value);
+    }
+
     const handleTemplateSelect = e => {
         const tid = e.target.value;
         var t = templates.find ((item) => item.templateId.toString() === tid);
@@ -664,6 +669,7 @@ const Tablemaker = (props) => {
             "collections" : collections,
             "columns": t.columns,
             "fileFormat": fileFormat,
+            "filename" : fileName,
         };
 
         setShowLoading(true);
@@ -915,6 +921,22 @@ const Tablemaker = (props) => {
                         CSV
                     </option>
                 </Form.Select>
+                </Col>
+                </Row>
+                <Row>
+                <Col>
+                <Typography variant="h6" style={{ display: "inline" }}>
+                    file name:
+                </Typography>
+                </Col>
+                <Col>
+                <Form.Control
+                      type="text"
+                      name="name"
+                      placeholder="Enter filename, if left empty, tablemakerexport is used by default"
+                      value={fileName}
+                      onChange={handleFileNameChange}
+                    />
                 </Col>
                 </Row>
                 </Card.Body>
