@@ -318,13 +318,19 @@ const Table = (props) => {
                 Glycan is submitted to Glytoucan on {row.original.dateCreated}. 
                 Registration failed with the following error {row.original.error}
               </span></div> : 
-              row.original.glytoucanHash ? 
-              <div>
-                <span>
-                Glycan is submitted to Glytoucan on {row.original.dateCreated}. 
-                Glytoucan assigned temporary hash value: {row.original.glytoucanHash}
-                </span>
-              </div>
+              row.original.glytoucanHash ? (
+                <div>
+                  {row.original.glytoucanID &&
+                  <span>
+                    Glycan is submitted to Glytoucan on {row.original.dateCreated}. 
+                  </span>} 
+                  {!row.original.glytoucanID &&
+                  <span>
+                    Glycan is submitted to Glytoucan on {row.original.dateCreated}. 
+                    Glytoucan assigned temporary hash value: {row.original.glytoucanHash}
+                  </span>}
+              </div> 
+              )
               : "No additional information",
         getRowId: (row) => row[props.rowId],
         initialState: {

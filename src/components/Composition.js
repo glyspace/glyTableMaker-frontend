@@ -198,7 +198,7 @@ const Composition = (props) => {
             const glycan = { 
                 composition: composition
             }
-            props.submit(glycan);
+            props.submit(glycan, compositionType);
         } 
     }
 

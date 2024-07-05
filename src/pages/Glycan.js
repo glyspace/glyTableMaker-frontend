@@ -110,12 +110,14 @@ const Glycan = (props) => {
         setUserSelection({ sequence: inputSequence, sequenceType: "GLYCOCT" });
     }
 
-    function addGlycan(glycan) {
+    function addGlycan(glycan, type=null) {
         setShowLoading(true);
         setError(false);
         props.authCheckAgent();
 
-        postJson ("api/data/addglycan", glycan, getAuthorizationHeader()).then ( (data) => {
+        let url = "api/data/addglycan";
+        if (type) url += "?compositionType="+type;
+        postJson (url, glycan, getAuthorizationHeader()).then ( (data) => {
             addGlycanSuccess(data);
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -160,7 +162,7 @@ const Glycan = (props) => {
             setOpen={(input) => {
                 setCompositionDialog(input)
             }}
-            submit={(input) => addGlycan(input)}
+            submit={(input, type) => addGlycan(input, type)}
         />
         <Container maxWidth="xl">
             <div className="page-container">
