@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextAlert from "./TextAlert";
 import { Button, Col, Image, Row } from "react-bootstrap";
-import { Box, Dialog, Slider } from "@mui/material";
+import { Box, Dialog, FormControlLabel, FormGroup, Slider, Switch } from "@mui/material";
 import compositionList from '../data/composition.json';
 import "./Composition.css";
 
@@ -19,6 +19,8 @@ const Composition = (props) => {
     const [monoList, setMonoList] = useState([]);
     const [monoListSecondCol, setMonoListSecondCol] = useState([]);
     const [monoListThirdCol, setMonoListThirdCol] = useState([]);
+
+    const [showName, setShowName] = useState(false);
 
     useEffect (() => {
         let mono1 = [];
@@ -79,6 +81,7 @@ const Composition = (props) => {
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
                             + (monoWithCount.count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
                         alt="decrementing" 
+                        title="decrement"
                         className="counter-image"
                         id={monoWithCount.mono.id + "decrement"}
                         onClick={() => changeCount (monoWithCount, false)}/>
@@ -90,13 +93,15 @@ const Composition = (props) => {
                         alt={monoWithCount.mono.name} 
                         id={monoWithCount.mono.id}
                         className="comp-image"> 
-                        monoWithCount.mono.id</object>
+                        {monoWithCount.mono.id}</object>
                          : 
                     <span className="comp-text">{monoWithCount.mono.id}</span>}
+                    {showName && <span className="comp-text">{monoWithCount.mono.id}</span>}
                     <Image
                         src={window.location.origin + 
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
                         alt="incrementing"
+                        title="increment"
                         className="counter-image"
                         onClick={() => changeCount (monoWithCount, true)}/>
                         <span class="tooltip-text top">{monoWithCount.mono.id}</span>
@@ -108,6 +113,7 @@ const Composition = (props) => {
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
                             + (monoListSecondCol[index].count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
                         alt="decrementing" 
+                        title="decrement"
                         className="counter-image"
                         id={monoListSecondCol[index].mono.id+ "decrement"}
                         onClick={() => changeCount (monoListSecondCol[index], false)}/>
@@ -118,13 +124,15 @@ const Composition = (props) => {
                         alt={monoListSecondCol[index].mono.name} 
                         id={monoListSecondCol[index].mono.id}
                         className="comp-image"> 
-                        monoListSecondCol[index].mono.id</object>
+                       {monoListSecondCol[index].mono.id}</object>
                     : 
                     <span className="comp-text">{monoListSecondCol[index].mono.id}</span> }
+                    {showName && <span className="comp-text">{monoListSecondCol[index].mono.id}</span>}
                     <Image
                         src={window.location.origin + 
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
                         alt="incrementing"
+                        title="increment"
                         className="counter-image"
                         onClick={() => changeCount (monoListSecondCol[index], true)}/>
                     </Col> 
@@ -136,6 +144,7 @@ const Composition = (props) => {
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
                             + (monoListThirdCol[index].count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
                         alt="decrementing" 
+                        title="decrement"
                         className="counter-image"
                         id={monoListThirdCol[index].mono.id+ "decrement"}
                         onClick={() => changeCount (monoListThirdCol[index], false)}/>
@@ -146,13 +155,15 @@ const Composition = (props) => {
                         alt={monoListThirdCol[index].mono.name} 
                         id={monoListThirdCol[index].mono.id}
                         className="comp-image"> 
-                        monoListThirdCol[index].mono.id</object>
+                        {monoListThirdCol[index].mono.id}</object>
                     : 
                     <span className="comp-text">{monoListThirdCol[index].mono.id}</span> }
+                    {showName && <span className="comp-text">{monoListThirdCol[index].mono.id}</span>}
                     <Image
                         src={window.location.origin + 
                             (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
                         alt="incrementing"
+                        title="increment"
                         className="counter-image"
                         onClick={() => changeCount (monoListThirdCol[index], true)}/>
                     </Col> 
@@ -228,6 +239,10 @@ const Composition = (props) => {
        return value;
     }
 
+    const showNames = e => {
+        setShowName (e.target.checked);
+    }
+
     const marks = [
         {
           value: 0,
@@ -262,8 +277,27 @@ const Composition = (props) => {
             }}
         >
             <div style={{ overflow: 'hidden' }}>
-                <h5 className="sups-dialog-title">{props.title}:
-                    {getCompositionDisplay()}</h5>
+                <Row className="sups-dialog-title">
+                <Col><h5 >{props.title}:
+                    {getCompositionDisplay()}</h5></Col>
+                <Col style={{display:'flex', justifyContent:'right'}}>
+                <FormGroup>
+                    <FormControlLabel 
+                        control={
+                            <Switch color='error' onChange={showNames}
+                            sx={{
+                                "&.MuiSwitch-root .MuiSwitch-switchBase": {
+                                  color: "white"
+                                },
+                              
+                                "&.MuiSwitch-root .Mui-checked": {
+                                 color: "#1c4e78"
+                                }
+                               }}/>
+                        } label="Show Names" />
+                </FormGroup>
+                </Col>
+                </Row>
                 <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '53vh' }}>
                     <TextAlert alertInput={textAlertInput}/>
                     { monoList.length > 0 && getCompositionSelections() }

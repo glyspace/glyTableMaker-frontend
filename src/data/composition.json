@@ -166,21 +166,21 @@
     "pubChemCompound" : 5779
   }, {
     "name" : "Phosphate",
-    "id" : "P",
+    "id" : "Phosphate",
     "ignore" : false,
     "image" : "phosphate.svg",
     "url" : "https://en.wikipedia.org/wiki/Phosphate",
     "pubChemCompound" : 1061
   }, {
     "name" : "Sulfate",
-    "id" : "S",
+    "id" : "Sulfate",
     "ignore" : false,
     "image" : "sulfate.svg",
     "url" : "https://en.wikipedia.org/wiki/Sulfate",
     "pubChemCompound" : 1117
   }, {
     "name" : "O-acetyl",
-    "id" : "Ac",
+    "id" : "Acetyl",
     "ignore" : false,
     "image" : "acetyl.svg",
     "url" : "https://en.wikipedia.org/wiki/Acetyl_group",
