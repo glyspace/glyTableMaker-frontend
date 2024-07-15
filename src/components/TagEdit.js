@@ -9,8 +9,10 @@ const TagEdit = (props) => {
     const [tag, setTag] = useState("");
 
     const removeTags = index => {
-        props.setTags([...tagList.filter(tag => tagList.indexOf(tag) !== index)]);
-        setTagList([...tagList.filter(tag => tagList.indexOf(tag) !== index)]);
+        let tags = [...tagList];
+        tags.splice (index, 1);
+        props.setTags(tags);
+        setTagList(tags);
     };
 
     const addTags = () => {

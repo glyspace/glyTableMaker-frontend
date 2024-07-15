@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import { Col, Row } from 'react-bootstrap';
-import { AddCircleOutline } from '@mui/icons-material';
+import { AddCircleOutline, PlusOne, TextIncrease } from '@mui/icons-material';
 
 const MetadataTreeView = (props) => {
     const { data, expanded } = props;
@@ -115,6 +115,11 @@ const MetadataTreeView = (props) => {
                     <IconButton color="primary" onClick={(event) => editDatatype(event, node, parent, true)}>
                         <VisibilityOutlinedIcon />
                     </IconButton></Tooltip>)}
+                    {props.checkboxSelection && node.multiple && (
+                      <IconButton color="primary" onClick={(event) => props.addItemToSelection(node)}>
+                      <PlusOne />
+                    </IconButton>
+                    )}
                     </Col>
                 </Row>
             }>
@@ -123,9 +128,13 @@ const MetadataTreeView = (props) => {
     };
   
     return (
-      <SimpleTreeView
+      
+      <SimpleTreeView multiSelect={props.checkboxSelection ? true: false} 
+        checkboxSelection={props.checkboxSelection ? true: false}
         expanded={expanded}
-        onItemSelectionToggle={props.onItemSelectionToggle}
+        onItemSelectionToggle={props.onItemSelectionToggle ? props.onItemSelectionToggle : ()=> {}}
+        onSelectedItemsChange={props.onSelectedItemsChange}
+        selectedItems={props.selectedItems}
       >
         {renderTree(data)}
       </SimpleTreeView>

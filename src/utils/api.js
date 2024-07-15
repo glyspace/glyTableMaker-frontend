@@ -177,3 +177,19 @@ export function parseJwt(token) {
 export function isValidURL (url) {
   return urlRegex.exec(url);
 }
+
+export const postJsonAsync = async (url, data = {}, headers = {}) => {
+  const myHeaders = {
+    "Content-Type": "application/json",
+    ...headers
+  };
+
+  const options = {
+    method: "POST",
+    headers: myHeaders,
+    data: data,
+    url: TABLEMAKER_API + url
+  };
+
+  return await axios(options);
+}

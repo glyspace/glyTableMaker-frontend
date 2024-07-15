@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { getAuthorizationHeader, getBlob, getJson, postJson } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Autocomplete, Container, TextField, Typography } from "@mui/material";
+import { Autocomplete, Container, Step, StepLabel, Stepper, TextField, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
@@ -21,8 +21,8 @@ const Collection = (props) => {
     const navigate = useNavigate();
     const [error, setError] = useState(false);
     const [validate, setValidate] = useState(false);
-    const [validMetadata, setValidMetadata] = useState(false);
-    const [validationMessage, setValidationMessage] = useState("");
+    const [validMetadata, setValidMetadata] = useState([]);
+    const [validationMessage, setValidationMessage] = useState([]);
     const [showLoading, setShowLoading] = useState(false);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
@@ -30,8 +30,13 @@ const Collection = (props) => {
     );
 
     const [textAlertInput, setTextAlertInput] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    { show: false, id: "" }
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
+    );
+
+    const [textAlertInputMetadata, setTextAlertInputMetadata] = useReducer(
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
     );
 
     const collection = {
@@ -49,12 +54,12 @@ const Collection = (props) => {
     const [initialSelection, setInitialSelection] = useState({});
     const [enableAddMetadata, setEnableAddMetadata] = useState(false);
 
-    const[categories, setCategories] = useState([]);
-    const [options, setOptions] = useState([]);
-    const [namespace, setNamespace] = useState(null);
-    const [selectedMetadataValue, setSelectedMetadataValue] = useState("");
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [selectedDatatype, setSelectedDatatype]  = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [options, setOptions] = useState([]);    // array (for each selected metadata) of options array
+    const [namespace, setNamespace] = useState([]);
+    const [selectedMetadataValue, setSelectedMetadataValue] = useState([]);
+    const [selectedOption, setSelectedOption] = useState([]);
+    const [selectedDatatype, setSelectedDatatype]  = useState([]);
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -65,6 +70,12 @@ const Collection = (props) => {
     const [tag, setTag] = useState(null);
     const [glycanStatusList, setGlycanStatusList] = useState([]);
     const [glycanTags, setGlycanTags] = useState([]);
+
+    const [activeStep, setActiveStep] = useState(0);
+
+    const steps = ["Select metadata", "Enter values"];
+
+    const [selectedMetadataItems, setSelectedMetadataItems] = useState([]);
 
     const glycanRef = useRef(null);
     const metadataRef = useRef(null);
@@ -120,41 +131,40 @@ const Collection = (props) => {
         });
     }
 
-    const onInputChange = (event, value, reason) => {
+    const onInputChange = (event, value, reason, index) => {
+        setTextAlertInputMetadata ({"show": false, "id":""});
         if (value) {
-          getTypeAhead(value);
-          setSelectedMetadataValue(value);
+          getTypeAhead(value, index);
+          const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
+            if (i === index) {
+              return value;
+            } else {
+              return v;
+            }
+          });
+
+          setSelectedMetadataValue(nextSelectedMetadataValue);
         } else { 
-          setOptions([]);
+            const nextOptions = options.map ((o, i) => {
+                if (i === index)
+                    return [];
+                else
+                    return o;
+            });
+            setOptions(nextOptions);
         }
     };
 
-    const handleDatatypeSelection = (event, itemId, isSelected) => {
-        if (isSelected && typeof itemId === 'number') {  // datatype selected
-            // find namespace of the datatype and display appropriate value field
-            // locate the datatype
-            categories.map ((element) => {
-                if (element.dataTypes) {
-                    var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
-                    if (datatype) {
-                        setSelectedDatatype(datatype);
-                        setNamespace (datatype.namespace.name);
-                        return;
-                    }
-                }
-            });
-            // clear input value
-            //setSelectedMetadataValue("");
-            setOptions([]);
-            setSelectedOption(null);
-            setValidMetadata(false);
-        }
-    }
-
-    const getTypeAhead =  (searchTerm) => {
-        getJson ("api/util/gettypeahead?namespace=" + namespace + "&limit=10&value=" + searchTerm, 
+    const getTypeAhead =  (searchTerm, index) => {
+        getJson ("api/util/gettypeahead?namespace=" + namespace[index] + "&limit=10&value=" + searchTerm, 
                 getAuthorizationHeader()).then (({ data }) => {
-            setOptions(data.data);
+                    const nextOptions = options.map ((o, i) => {
+                        if (i === index)
+                            return data.data;
+                        else
+                            return o;
+                    });
+                    setOptions(nextOptions);
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
         });
@@ -325,37 +335,195 @@ const Collection = (props) => {
         );
     };
 
+    const removeMetadataItems = index => {
+        let removed = [...selectedMetadataItems];
+        removed.splice(index, 1);
+        setSelectedMetadataItems(removed);
+    };
+
+    const addItemToSelection = (node) => {
+        setSelectedMetadataItems([...selectedMetadataItems, node.datatypeId]);
+    }
+
+    const handleSelectedItemsChange = (event, ids) => {
+        let filteredSelection = [];
+        ids.map ((item, index) => {
+            if (typeof item === 'number') {
+                filteredSelection.push(item);
+            }
+        });
+        setSelectedMetadataItems (filteredSelection);
+    }
+
+    const getDatatypeName = (datatypeId) => {
+        return categories.map ((element) => {
+            if (element.dataTypes) {
+                var datatype = element.dataTypes.find ((item) => item.datatypeId === datatypeId);
+                if (datatype) {
+                    return datatype.name;
+                }
+            }
+        });
+    }
+
+    function getStepContent (stepIndex) {
+        switch (stepIndex) {
+            case 0:
+                return (
+                    <>
+                    <h5 className="gg-blue" style={{textAlign: "left"}}>
+                        Selected Metadata</h5>
+                    <div className="tags-input">
+                        <ul id="tags">
+                            {selectedMetadataItems && selectedMetadataItems.length > 0 && 
+                            selectedMetadataItems.map((m, index) => (
+                            <li key={index} className="tag">
+                                <span className='tag-title'>{getDatatypeName(m)}</span>
+                                <span className='tag-close-icon'
+                                onClick={() => removeMetadataItems(index)}
+                                >
+                                x
+                                </span>
+                            </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <MetadataTreeView data={categories} checkboxSelection
+                        onSelectedItemsChange={handleSelectedItemsChange}
+                        selectedItems={selectedMetadataItems}
+                        addItemToSelection={addItemToSelection}/>
+                    </>
+                );
+            case 1:
+                return (
+                    <>
+                    {selectedMetadataItems.map ((datatypeId, index) => {
+                        return (
+                        <Row>
+                            <Col style={{marginTop: "15px"}} md="4">
+                            <span>{getDatatypeName(datatypeId)}</span>
+                            </Col>
+                            <Col style={{marginTop: "10px"}} md="8">
+                                <Autocomplete
+                                        freeSolo
+                                        disabled={!namespace[index]}
+                                        id={"typeahead" + {index}}
+                                        options={options[index]}
+                                        onChange={(e, value) => {
+                                            const nextSelectedOption = selectedOption.map ((item, i) => {
+                                                if (i === index) {
+                                                    return value;
+                                                } else {
+                                                    return item;
+                                                }
+                                            });
+                                            setSelectedOption(nextSelectedOption);
+                                        }}
+                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index)}
+                                        getOptionLabel={(option) => option}
+                                        style={{ width: 400 }}
+                                        renderInput={(params) => (
+                                        <TextField {...params} 
+                                            error={validMetadata[index]} 
+                                            helperText={validMetadata[index] ? validationMessage[index] : ""}
+                                            disabled={!namespace[index]} label="Value" variant="outlined" />
+                                        )}
+                                />
+                            </Col>
+                        </Row>
+                        );
+                    })}
+                    </>
+                );
+        }
+    }
+
+    function getNavigationButtons() {
+        return (
+          <div className="text-center mb-2">
+            <Button disabled={activeStep === 0} onClick={handleBack} className="gg-btn-blue mt-2 gg-ml-20 gg-mr-20">
+              Back
+            </Button>
+            {activeStep < steps.length - 1 &&
+            <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={handleNext}>
+               Next
+            </Button>}
+          </div>
+        );
+    }
+
+    const handleBack = () => {
+        setActiveStep(prevActiveStep => prevActiveStep - 1);
+    };
+
+    const handleNext = () => {
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+
+        const nextDatatype = [];
+        const nextNamespace = [];
+        const nextOptions = [];
+        const nextSelectedOption = [];
+        const nextValidMetadata = [];
+        const nextSelectedMetadataValue = [];
+
+        selectedMetadataItems.map ((itemId, index) => {
+            if (typeof itemId === 'number') {  // datatype selected
+                // find namespace of the datatype and display appropriate value field
+                // locate the datatype
+                categories.map ((element) => {
+                    if (element.dataTypes) {
+                        var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
+                        if (datatype) {
+                            nextDatatype.push(datatype);
+                            nextNamespace.push (datatype.namespace.name);
+                            
+                            return;
+                        }
+                    }
+                });
+                nextOptions.push ([]);
+                nextSelectedOption.push(null);
+                nextValidMetadata.push (false);
+                nextSelectedMetadataValue.push("");
+            }
+        });
+
+        setSelectedDatatype(nextDatatype);
+        setNamespace(nextNamespace);
+        setOptions(nextOptions);
+        setSelectedOption(nextSelectedOption);
+        setValidMetadata(nextValidMetadata);
+        setSelectedMetadataValue(nextSelectedMetadataValue);
+    }
+
+    function getStepLabel(stepIndex) {
+        switch (stepIndex) {
+          case 0:
+            return "Select metadata by using checkboxes and +1 button if the metadata has multiple values";
+          case 1:
+            return "Enter values for each metadata";
+          default:
+            return "Unknown stepIndex";
+        }
+      }
+
     const addMetadataForm = () => {
         return (
             <>
-                <Row>
-                    <Col md={6}>
-                    <MetadataTreeView data={categories}
-                        onItemSelectionToggle={handleDatatypeSelection}/>
-                    </Col>
-                    <Col md={6}>
-
-                    
-                        <Autocomplete
-                            freeSolo
-                            disabled={!namespace}
-                            id="typeahead"
-                            options={options}
-                            onChange={(e, value) => {setSelectedOption(value);}}
-                            onInputChange={onInputChange}
-                            getOptionLabel={(option) => option}
-                            style={{ width: 400 }}
-                            renderInput={(params) => (
-                            <TextField {...params} 
-                                error={validMetadata} 
-                                helperText={validMetadata ? validationMessage : ""}
-                                disabled={!namespace} label="Value" variant="outlined" />
-                            )}
-                        />
-                        
-                    
-                    </Col>
-                </Row>
+                <TextAlert alertInput={textAlertInputMetadata}/>
+                <Stepper className="steper-responsive5 text-center" activeStep={activeStep} alternativeLabel>
+                {steps.map(label => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+              <h5 className="text-center gg-blue mt-4">{getStepLabel(activeStep)}</h5>
+              {getNavigationButtons()}
+              <div className="mt-4 mb-4">
+                {getStepContent(activeStep, validate)}
+              </div>
+              {getNavigationButtons()}
             </>
         )
     }
@@ -423,87 +591,110 @@ const Collection = (props) => {
         setSelectedGlycans(previous);
     }
 
-    const handleAddMetadata = () => {
+    async function handleAddMetadata () {
+        setTextAlertInputMetadata ({"show": false, "id": ""});
         console.log("adding metadata " + selectedMetadataValue);
-        setTextAlertInput({"show": false, id: ""});
-        if (selectedOption) {
-            // get the canonical form
-            getJson ("api/util/getcanonicalform?namespace=" + namespace + "&synonym=" + selectedMetadataValue,
-                getAuthorizationHeader()).then ((data) => {
-                if (data.data && data.data.data) {
-                    const m = {
-                        metadataId: idCounter,
-                        new: true,
-                        type: selectedDatatype,
-                        value: data.data.data.label,
-                        valueUri: data.data.data.uri,
-                    }
-                    addMetadata(m);
-                }
-            
-            }).catch (function(error) {
-                if (error && error.response && error.response.data) {
-                    setTextAlertInput ({"show": true, "message": error.response.data.message });
-                } else {
-                    axiosError(error, null, setAlertDialogInput);
-                }  
-            });
-        } else {
-            const m = {
-                metadataId: idCounter,
-                new: true,
-                type: selectedDatatype,
-                value: selectedMetadataValue,
-                valueUri: null,
-            }
-            addMetadata(m);
+        if (selectedMetadataValue.length === 0) {
+            setTextAlertInputMetadata ({"show": true, "message": "Enter a value for all selected metadata"});
+            return;
         }
-    }
 
-    const addMetadata = (m) => {
-        idCounter++;
+        let valuesFilled = true;
+        selectedMetadataValue.map ((selected, index) => {
+            if (!selected || selected.length < 1) 
+                valuesFilled = false;
+        });
+
+        if (!valuesFilled) {
+            setTextAlertInputMetadata ({"show": true, "message": "Enter a value for all selected metadata"});
+            return;
+        }
+ 
+        setShowLoading(true);
         var metadata = userSelection.metadata;
         if (metadata === null) 
             metadata = [];
-        
-        // check if the metadata already exists, if so, we need to check if it is allowed to be multiple
-        if (!selectedDatatype.multiple) {
-            const existing = metadata.find ((meta) => meta.type.name === selectedDatatype.name);
-            if (existing) {
-                setTextAlertInput ({"show": true, "message": "Multiple copies are not allowed for " + selectedDatatype.name});
-                ScrollToTop();
-                setEnableAddMetadata(false);
-                return;
-            }
-        }
 
-        setShowLoading(true);
-        // validate the values
-        postJson("api/util/ismetadatavalid", m).then ( (data) => {
-            setShowLoading(false);
-            // check if valid
-            if (data.data.data) {
-                metadata.push(m);
-                var updated = [...metadata];
-                setUserSelection ({"metadata": updated});
-                setValidMetadata(false);
-                setEnableAddMetadata(false);
-            } else {
-                // invalid
-                setValidMetadata(true);
-                setValidationMessage(data.data.message);
+        let allMetadataToSubmit = [];
+        selectedMetadataValue.map ((selected, index) => {
+            // check if the metadata already exists, if so, we need to check if it is allowed to be multiple
+            if (!selectedDatatype[index].multiple) {
+                const existing = metadata.find ((meta) => meta.type.name === selectedDatatype[index].name);
+                if (existing) {
+                    setTextAlertInput({"show": true, "message": "Multiple copies are not allowed for " + selectedDatatype[index].name});
+                    ScrollToTop();
+                    setEnableAddMetadata(false);
+                    return;
+                }
             }
-            }).catch (function(error) {
+            if (selectedOption[index]) {
+                const m = {
+                    metadataId: idCounter,
+                    new: true,
+                    type: selectedDatatype[index],
+                    value: selected,
+                }
+                allMetadataToSubmit.push(m);
+            } else {
+                const m = {
+                    metadataId: idCounter,
+                    new: true,
+                    type: selectedDatatype[index],
+                    value: selectedMetadataValue[index],
+                }
+                allMetadataToSubmit.push(m);
+            }
+            idCounter++;
+        });
+
+        // get the canonical form
+        postJson ("api/util/getcanonicalform", allMetadataToSubmit,
+                getAuthorizationHeader()).then ((data) => {
+            if (data.data && data.data.data) {
+                allMetadataToSubmit = data.data.data;
+                // check for validity
+            }
+        }).catch (function(error) {
             if (error && error.response && error.response.data) {
-                ScrollToTop();
-                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+                setTextAlertInputMetadata ({"show": true, "message": error.response.data.message });
             } else {
                 axiosError(error, null, setAlertDialogInput);
+            }  
+        });
+
+        let allValid = true;
+        let mapPromises = [];
+        allMetadataToSubmit.map ((m, index) => {
+            mapPromises.push(postJsonAsync("api/util/ismetadatavalid", m));
+        });
+
+        const validity = await Promise.all (mapPromises);
+
+        const nextValidMetadata = [];
+        const nextValidationMessage = [];
+        validity.map ((data, index) => {
+            if (data.data && data.data.data) {
+                // valid
+                nextValidMetadata.push (false);
+                nextValidationMessage.push (null);
+            } else {
+                allValid = false;
+                nextValidMetadata.push (true);
+                nextValidationMessage.push (data.data.message);
             }
-            setShowLoading(false);
+        });
+
+        setValidMetadata (nextValidMetadata);
+        setValidationMessage (nextValidationMessage);
+
+        if (allValid) {
+            setTextAlertInputMetadata({"show": false, id: ""});
             setEnableAddMetadata(false);
-            }
-        );
+            const updated = [...metadata, ...allMetadataToSubmit];
+            setUserSelection ({"metadata": updated});
+        }
+
+        setShowLoading (false);
     }
 
     const handleChangeDownloadForm = e => {
@@ -741,11 +932,13 @@ const Collection = (props) => {
             <ConfirmationModal
                 showModal={enableAddMetadata}
                 onCancel={() => {
+                    setActiveStep(0);
                     setEnableAddMetadata(false);
                 }}
                 onConfirm={() => handleAddMetadata()}
                 title={"Add Metadata"}
                 body={addMetadataForm()}
+                okButton="Submit"
             />
             <Form>
                 <Form.Group
@@ -813,7 +1006,7 @@ const Collection = (props) => {
           </Card>
           <Card ref={glycanRef} style={{marginTop: "15px"}}>
             <Card.Body>
-            <h5 class="gg-blue" style={{textAlign: "left"}}>
+            <h5 className="gg-blue" style={{textAlign: "left"}}>
                 Glycans in the Collection</h5>
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
@@ -843,13 +1036,25 @@ const Collection = (props) => {
           </Card>
           <Card ref={metadataRef} style={{marginTop: "15px"}}>
             <Card.Body>
-            <h5 class="gg-blue" style={{textAlign: "left"}}>
+            <h5 className="gg-blue" style={{textAlign: "left"}}>
                 Metadata</h5>
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                         disabled={error} onClick={()=> setEnableAddMetadata(true)}>
+                         disabled={error} onClick={()=> {
+                            setSelectedMetadataValue([]);
+                            setSelectedMetadataItems([]);
+                            setNamespace([]);
+                            setSelectedDatatype([]);
+                            setOptions([]);
+                            setValidMetadata([]);
+                            setSelectedOption([]);
+                            setValidationMessage([]);
+                            setActiveStep(0);
+                            setEnableAddMetadata(true);
+                         }
+                        }>
                          Add Metadata
                         </Button>
                         </div>

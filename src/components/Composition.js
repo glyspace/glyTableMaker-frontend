@@ -264,7 +264,6 @@ const Composition = (props) => {
     return (
         <Dialog
             open={props.show}
-            fullScreen
             maxWidth={'lg'}
             classes={{
                 paper: "alert-dialog",
@@ -298,12 +297,13 @@ const Composition = (props) => {
                 </FormGroup>
                 </Col>
                 </Row>
-                <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '53vh' }}>
+                <div style={{ paddingTop: '2px', overflow: 'hidden', content: 'center', height: '64%' }}>
                     <TextAlert alertInput={textAlertInput}/>
                     { monoList.length > 0 && getCompositionSelections() }
                 </div>
-                <h5 style={{marginLeft: "20px"}}>Composition Type</h5>
-                <Box sx={{ marginLeft: '77px', width: 400 }}>
+                <div style={{height: '18%'}}>
+                <h5 style={{marginLeft: "20px", marginTop: '15px'}}>Composition Type</h5>
+                <Box sx={{ marginLeft: '77px', width: 400}}>
                 <Slider
                     aria-label="Composition Type"
                     defaultValue={0}
@@ -317,22 +317,30 @@ const Composition = (props) => {
                     onChange={(event, newValue) => {
                         setCompositionTypeDescription(marks[newValue].description);
                       }}
+                    sx={{
+                        "& .MuiSlider-mark": {
+                            width: 10,
+                            height: 10,
+                            backgroundColor: '#1976d2',
+                        },
+                    }}
                     />
                 </Box>
                 {compositionTypeDescription && 
                 <div style={{marginLeft: "20px"}}>
                     <h6>{compositionTypeDescription}</h6></div>
                 }
-                <div style={{ marginTop: "20px", marginRight: "50px" }}>
+                </div>
+                <div style={{ marginRight: "50px", height: '18%'}}>
                     <Button
-                        className='gg-btn-blue mb-5'
+                        className='gg-btn-blue mb-3 mt-3'
                         style={{ float: "right", marginLeft: "5px" }}
                         onClick={() => {createCompositionString(true)}}
                     >
                         Add Glycan
                     </Button>
                     <Button
-                        className='gg-btn-outline mr-3 mb-5'
+                        className='gg-btn-outline mr-3 mb-3 mt-3'
                         style={{ float: "right" }}
                         onClick={() => {
                             props.setOpen(false);
