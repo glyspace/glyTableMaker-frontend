@@ -14,6 +14,7 @@ RUN npm install
 RUN npx npm-force-resolutions
 RUN npm install --silent
 RUN npm install react-scripts@3.4.0 -g --silent
+RUN npm install --save-dev ajv
 COPY . /app
 RUN npm run build
 
