@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 const Tag = (props) => {
     const [existing, setExisting] = useState(true);
     const [tagList, setTagList] = useState([]);
+    const [newValue, setNewValue] = useState(null);
 
     useEffect(() => {
         // load existing tags
@@ -33,11 +34,12 @@ const Tag = (props) => {
     }
 
     const handleInputChange = e => {
-        const newValue = e.target.value;  
-        if (newValue.trim().length > 1) {
+        const val = e.target.value;  
+        if (val.trim().length > 1) {
             props.setValidate(false);
         }
-        props.setTag(newValue);
+        setNewValue(val);
+        props.setTag(val);
     };
 
     const handleChange = e => {
@@ -46,9 +48,12 @@ const Tag = (props) => {
         if (flag && id === "existingTag") {
             setExisting(true);
             props.setTag("");
+        } else if (flag) {  // text field is selected
+            if (newValue) props.setTag(newValue);
+            setExisting(false);
         } else {
             props.setTag("");
-            setExisting(false);
+            setExisting (false);
         }
     }
 
