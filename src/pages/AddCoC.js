@@ -9,6 +9,7 @@ import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const AddCoC = (props) => {
     const [searchParams] = useSearchParams();
@@ -220,6 +221,7 @@ const AddCoC = (props) => {
 
     return (
         <>
+        <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         <Container maxWidth="xl">
             <div className="page-container">
             <div className="scroll-to-top-save">

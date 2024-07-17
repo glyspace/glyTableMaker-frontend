@@ -12,6 +12,7 @@ import Table from "../components/Table";
 import MetadataTreeView from "../components/MetadataTreeView";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { ScrollToTop } from "../components/ScrollToTop";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 let idCounter = 1000;
 
@@ -871,6 +872,7 @@ const Collection = (props) => {
 
     return (
         <>
+        <FeedbackWidget setAlertDialogInput={setTextAlertInput}/>
         <Container maxWidth="xl">
             <div className="page-container">
             <div className="scroll-to-top-save">

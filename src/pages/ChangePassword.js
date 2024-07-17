@@ -8,6 +8,7 @@ import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { getAuthorizationHeader, putJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const ChangePassword = () => {
   const { state } = useLocation();
@@ -63,6 +64,7 @@ const ChangePassword = () => {
 
   return (
     <>
+      <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="sm" className="card-page-container">
         <div className="card-page-sm">
           <Title title={"Change Password"} />

@@ -11,6 +11,7 @@ import { getAuthorizationHeader, postJson } from "../utils/api";
 import TextAlert from "../components/TextAlert";
 import { axiosError } from "../utils/axiosError";
 import Tag from "../components/Tag";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const GlycanFromFile = props => {
 
@@ -88,6 +89,7 @@ const GlycanFromFile = props => {
 
   return (
     <>
+    <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="xl">
         <div className="page-container">
           <PageHeading

@@ -19,6 +19,8 @@ import { getAuthorizationHeader, getBlob, getJson } from '../utils/api';
 import { axiosError } from '../utils/axiosError';
 import { Loading } from '../components/Loading';
 import { ConfirmationModal } from '../components/ConfirmationModal';
+import FeedbackWidget from "../components/FeedbackWidget";
+import TextAlert from '../components/TextAlert';
 
 const Glycans = (props) => {
   const [infoError, setInfoError] = useState("");
@@ -318,6 +320,7 @@ const getDownloadReport = (reportId) => {
 
   return (
     <>
+    <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
     <Container maxWidth="xl">
         <div className="page-container">
           <PageHeading
@@ -325,6 +328,7 @@ const getDownloadReport = (reportId) => {
               subTitle="The table below displays a list of all glycans that have been uploaded. New glycans may be added, old glycans can be edited, and unused glycans can
               be removed."
           />
+          <TextAlert alertInput={textAlertInput}/>
           <DialogAlert
                 alertInput={alertDialogInput}
                 setOpen={input => {

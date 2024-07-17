@@ -17,6 +17,7 @@ import { getAuthorizationHeader, getJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 
 function Heading(props) {
@@ -149,6 +150,7 @@ const Dashboard = props => {
 
   return (
     <>
+    <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="xl">
         <div className="page-container">
           <PageHeading

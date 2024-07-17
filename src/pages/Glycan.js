@@ -14,6 +14,7 @@ import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { axiosError } from "../utils/axiosError";
 import Composition from "../components/Composition";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const Glycan = (props) => {
 
@@ -141,6 +142,7 @@ const Glycan = (props) => {
 
     return (
         <>
+        <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         <GlycoGlyph
             show={glycoGlyphDialog}
             glySequenceChange={handleSequenceChange}

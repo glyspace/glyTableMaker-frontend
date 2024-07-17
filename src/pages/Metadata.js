@@ -10,6 +10,7 @@ import { Typography } from "@mui/material";
 import TextAlert from "../components/TextAlert";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { Loading } from "../components/Loading";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const Metadata = (props) => {
 
@@ -636,6 +637,7 @@ const Metadata = (props) => {
 
     return (
     <>
+      <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         <Container maxWidth="xl">
         <div className="page-container">
         <PageHeading

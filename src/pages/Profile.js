@@ -7,6 +7,7 @@ import Container from "@mui/material/Container";
 import { getAuthorizationHeader, getJson, isValidURL, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from "../components/DialogAlert";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 
 const Profile = (props) => {
@@ -71,6 +72,7 @@ const Profile = (props) => {
 
   return (
     <>
+      <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="md" className="card-page-container">
         <div className="card-page-md">
           <Title title={title} />

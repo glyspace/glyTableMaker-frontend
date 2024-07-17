@@ -8,6 +8,7 @@ import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { getJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const ForgotUsername = () => {
   const [userInput, setUserInput] = useReducer((state, newState) => ({ ...state, ...newState }), {
@@ -35,6 +36,7 @@ const ForgotUsername = () => {
 
   return (
     <>
+      <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="sm" className="card-page-container">
         <div className="card-page-sm">
           <Title title={"Forgot Username"} />

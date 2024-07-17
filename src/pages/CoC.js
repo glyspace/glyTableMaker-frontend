@@ -6,6 +6,7 @@ import { Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import stringConstants from '../data/stringConstants.json';
 import Table from "../components/Table";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const CoC = (props) => {
 
@@ -48,6 +49,7 @@ const CoC = (props) => {
 
   return (
     <>
+    <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
     <Container maxWidth="xl">
         <div className="page-container">
           <PageHeading

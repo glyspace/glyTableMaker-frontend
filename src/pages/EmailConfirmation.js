@@ -5,6 +5,7 @@ import { Form } from "react-bootstrap";
 import { Title } from "../components/FormControls";
 import { getJson } from "../utils/api";
 import Container from "@mui/material/Container";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const EmailConfirmation = () => {
   const [variant, setVariant] = useState("success");
@@ -23,6 +24,7 @@ const EmailConfirmation = () => {
 
   return (
     <>
+    <FeedbackWidget />
       <Container maxWidth="sm" className="card-page-container">
         <div className="card-page-sm">
           <Title title={"Email Confirmation"} />

@@ -178,6 +178,13 @@ export function isValidURL (url) {
   return urlRegex.exec(url);
 }
 
+export function validateEmail(email) {
+  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+    return true;
+  }
+  return false;
+}
+
 export const postJsonAsync = async (url, data = {}, headers = {}) => {
   const myHeaders = {
     "Content-Type": "application/json",

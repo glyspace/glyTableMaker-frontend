@@ -13,6 +13,7 @@ import { axiosError } from "../utils/axiosError";
 import TextAlert from "../components/TextAlert";
 import Table from "../components/Table";
 import { Loading } from "../components/Loading";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const Tablemaker = (props) => {
 
@@ -749,6 +750,7 @@ const Tablemaker = (props) => {
 
     return (
         <>
+        <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         <Container maxWidth="xl">
             <div className="page-container">
               <PageHeading

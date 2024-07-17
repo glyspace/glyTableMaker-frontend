@@ -12,6 +12,7 @@ import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import googleLogo from "../images/google-login.svg";
 import stringConstants from '../data/stringConstants.json';
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const Login = props => {
   useEffect(() => {
@@ -50,6 +51,7 @@ const Login = props => {
 
   return (
     <>
+    <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="md" className="card-page-container">
         <div className="card-page-sm">
           <TextAlert alertInput={textAlertInput}/>

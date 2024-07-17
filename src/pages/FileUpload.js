@@ -14,6 +14,7 @@ import { axiosError } from "../utils/axiosError";
 import DialogAlert from '../components/DialogAlert';
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import Tag from "../components/Tag";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
@@ -303,6 +304,7 @@ const FileUpload = (props) => {
 
     return (
         <>
+        <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         {enableErrorView && errorMessageTable()}
         {enableTagDialog && openAddTagDialog()}
         <Container maxWidth="xl">

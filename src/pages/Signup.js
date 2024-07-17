@@ -9,6 +9,7 @@ import { getJson, isValidURL, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import DialogAlert from "../components/DialogAlert";
 import TextAlert from "../components/TextAlert";
+import FeedbackWidget from "../components/FeedbackWidget";
 
 const Signup = () => {
   const [userInput, setUserInput] = useReducer((state, newState) => ({ ...state, ...newState }), {
@@ -64,6 +65,7 @@ const Signup = () => {
 
   return (
     <>
+      <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="lg" className="card-page-container">
         <div className="card-page-md">
           <Title title={"Sign Up"} />
