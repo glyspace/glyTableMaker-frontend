@@ -451,6 +451,7 @@ const getDownloadReport = (reportId) => {
                   initialSortColumn="dateCreated"
                   rowId="glycanId"
                   detailPanel={true}
+                  columnVisibility = {{ "information": false, "collectionNo": false}}
             />
             </Card.Body>
           </Card>

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFiltersButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, MaterialReactTable, useMaterialReactTable } from "material-react-table";
+import { Box, IconButton, Switch, Tooltip } from "@mui/material";
 import { ConfirmationModal } from "./ConfirmationModal";
 import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
@@ -10,6 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/Info';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
+import PrintIcon from '@mui/icons-material/Print';
 import { useNavigate } from "react-router-dom";
 import { Row } from "react-bootstrap";
 import TagEdit from "./TagEdit";
@@ -37,9 +38,10 @@ const Table = (props) => {
         pageIndex: 0,
         pageSize: 10,
     });
+    const [columnVisibility, setColumnVisibility] = useState(props.columnVisibility ?? {});
     const [rowSelection, setRowSelection] = useState(props.selected ?? {});
     const [selectedData, setSelectedData] = useState(props.selectedRows ?? []);
-    
+    const [rememberSettings, setRememberSettings] = useState (false);
 
     let navigate = useNavigate();
 
@@ -176,6 +178,11 @@ const Table = (props) => {
         }
       }
 
+      const saveColumnVisibilityChanges = () => {
+        console.log ("saving changes");
+        props.saveColumnVisibilityChanges && props.saveColumnVisibilityChanges (columnVisibility);
+      }
+
       const columns = props.columns;
 
       useEffect(() => {
@@ -247,7 +254,7 @@ const Table = (props) => {
         manualSorting: props.data ? false: true,
         initialState: {
             showColumnFilters: false,
-            columnVisibility: { information: false, collectionNo: false}
+            columnVisibility: columnVisibility
         },
         muiToolbarAlertBannerProps: isError
           ? {
@@ -263,6 +270,23 @@ const Table = (props) => {
               </div>,
             }
           : undefined,
+        renderToolbarInternalActions: ({ table }) => (
+          <Box>
+            <MRT_ToggleGlobalFilterButton table={table} />
+            <MRT_ToggleFiltersButton table={table} />
+            <MRT_ShowHideColumnsButton table={table} />
+            <MRT_ToggleDensePaddingButton table={table} />
+            <MRT_ToggleFullScreenButton table={table} />
+            <Tooltip title="Remember show/hide column settings">
+            <Switch color='info' onChange={()=>{setRememberSettings(!rememberSettings)}}/>
+            </Tooltip>
+          </Box>
+        ),
+        onColumnVisibilityChange: (updater) => {
+          setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
+          // check if remember switch is "on", then update the user settings on the server
+          rememberSettings && saveColumnVisibilityChanges();
+        },
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
@@ -278,6 +302,7 @@ const Table = (props) => {
           showProgressBars: isRefetching,
           sorting,
           rowSelection,
+          columnVisibility,
         },
       });
 
@@ -335,7 +360,7 @@ const Table = (props) => {
         getRowId: (row) => row[props.rowId],
         initialState: {
             showColumnFilters: false,
-            columnVisibility: { information: false, collectionNo: false, }
+            columnVisibility: columnVisibility
         },
         manualFiltering: props.data ? false: true,
         manualPagination: props.data ? false: true,
@@ -357,6 +382,23 @@ const Table = (props) => {
         muiExpandButtonProps: ({ row }) => ({
             children: row.original.error || row.original.glytoucanHash ? <InfoIcon/> : <ExpandMoreIcon/>,
         }),
+        renderToolbarInternalActions: ({ table }) => (
+          <Box>
+            <MRT_ToggleGlobalFilterButton table={table} />
+            <MRT_ToggleFiltersButton table={table} />
+            <MRT_ShowHideColumnsButton table={table} />
+            <MRT_ToggleDensePaddingButton table={table} />
+            <MRT_ToggleFullScreenButton table={table} />
+            <Tooltip title="Remember show/hide column settings">
+            <Switch color='info' onChange={()=>{setRememberSettings(!rememberSettings)}}/>
+            </Tooltip>
+          </Box>
+        ),
+        onColumnVisibilityChange: (updater) => {
+          setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
+          // check if remember switch is "on", then update the user settings on the server
+          rememberSettings && saveColumnVisibilityChanges();
+        },
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
@@ -372,6 +414,7 @@ const Table = (props) => {
           showProgressBars: isRefetching,
           sorting,
           rowSelection,
+          columnVisibility,
         },
       });
 

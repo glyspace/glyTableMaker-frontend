@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextAlert from "./TextAlert";
 import { Button, Col, Image, Row } from "react-bootstrap";
-import { Box, Dialog, FormControlLabel, FormGroup, Slider, Switch } from "@mui/material";
+import { Box, Dialog, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
 import compositionList from '../data/composition.json';
 import "./Composition.css";
 
@@ -21,6 +21,7 @@ const Composition = (props) => {
     const [monoListThirdCol, setMonoListThirdCol] = useState([]);
 
     const [showName, setShowName] = useState(false);
+    const [rememberSettings, setRememberSettings] = useState(false);
 
     useEffect (() => {
         let mono1 = [];
@@ -41,6 +42,8 @@ const Composition = (props) => {
         setMonoList(mono1);
         setMonoListSecondCol(mono2);
         setMonoListThirdCol(mono3);
+
+        //TODO load user settings and set the compositionType
     }, []);
 
     const changeCount = (element, increment) => {
@@ -243,6 +246,11 @@ const Composition = (props) => {
         setShowName (e.target.checked);
     }
 
+    const saveSettings = (value) => {
+        console.log ("saving " + (value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED"));
+        //TODO send settings to the server
+    }
+
     const marks = [
         {
           value: 0,
@@ -268,7 +276,7 @@ const Composition = (props) => {
             classes={{
                 paper: "alert-dialog",
             }}
-            style={{ margin: 40 }}
+            style={{ margin: 30 }}
             onClose={() => {
                 props.setOpen(false);
             }}
@@ -303,7 +311,8 @@ const Composition = (props) => {
                 </div>
                 <div style={{height: '18%'}}>
                 <h5 style={{marginLeft: "20px", marginTop: '15px'}}>Composition Type</h5>
-                <Box sx={{ marginLeft: '77px', width: 400}}>
+                <Row style={{marginLeft: '77px', marginRight: '50px'}}>
+                <Col>
                 <Slider
                     aria-label="Composition Type"
                     defaultValue={0}
@@ -316,6 +325,7 @@ const Composition = (props) => {
                     max={2}
                     onChange={(event, newValue) => {
                         setCompositionTypeDescription(marks[newValue].description);
+                        rememberSettings && saveSettings (newValue);
                       }}
                     sx={{
                         "& .MuiSlider-mark": {
@@ -324,8 +334,19 @@ const Composition = (props) => {
                             backgroundColor: '#1976d2',
                         },
                     }}
-                    />
-                </Box>
+                    /></Col>
+                <Col style={{display:'flex', justifyContent:'right', marginTop: '-20px'}}>
+
+                <FormControlLabel 
+                        control={
+                            <Tooltip title="Remember show/hide column settings">
+                             <Switch color='info' onChange={()=>{setRememberSettings (!rememberSettings)}}/>
+                            </Tooltip>
+                        } label="Remember selection" />
+                
+                </Col>
+                </Row>
+                
                 {compositionTypeDescription && 
                 <div style={{marginLeft: "20px"}}>
                     <h6>{compositionTypeDescription}</h6></div>
