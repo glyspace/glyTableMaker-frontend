@@ -33,6 +33,7 @@ import Collection from "./pages/Collection";
 import Metadata from "./pages/Metadata";
 import AddCoC from "./pages/AddCoC";
 import { FileUpload } from "./pages/FileUpload";
+import Settings from "./pages/Settings";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -75,6 +76,11 @@ function App() {
     {
       path: "/profile",
       main: () => <Profile authCheckAgent={checkAuthorization} />,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: "/settings",
+      main: () => <Settings authCheckAgent={checkAuthorization} />,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {

@@ -5,6 +5,8 @@ import { Button, Col, Image, Row } from "react-bootstrap";
 import { Box, Dialog, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
 import compositionList from '../data/composition.json';
 import "./Composition.css";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { axiosError } from "../utils/axiosError";
 
 const Composition = (props) => {
     const navigate = useNavigate();
@@ -13,7 +15,7 @@ const Composition = (props) => {
         { show: false, id: "" }
     );
     const [compositionString, setCompositionString] = useState ("");
-    const [compositionType, setCompositionType] = useState("BASE");
+    const [compositionType, setCompositionType] = useState(null);
     const [compositionTypeDescription, setCompositionTypeDescription] = useState ("Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions.");
 
     const [monoList, setMonoList] = useState([]);
@@ -43,8 +45,25 @@ const Composition = (props) => {
         setMonoListSecondCol(mono2);
         setMonoListThirdCol(mono3);
 
-        //TODO load user settings and set the compositionType
+        //load user settings and set the compositionType
+        getCompositionTypeSetting();
     }, []);
+
+    function getCompositionTypeSetting () {
+        getJson("api/setting/getsettings", getAuthorizationHeader()).then (({ data }) => {
+            if (data.data && data.data.length > 0) {
+                data.data.forEach ((setting) => {
+                    if (setting.name && setting.name.toLowerCase() === "compositiontype") {
+                        setCompositionType(setting.value);
+                    }
+                });
+            } else {
+                setCompositionType ("BASE"); // default
+            }
+        }).catch(function(error) {
+            axiosError(error, null, props.setAlertDialogInput);
+        });
+    }
 
     const changeCount = (element, increment) => {
         if (increment) {
@@ -248,7 +267,15 @@ const Composition = (props) => {
 
     const saveSettings = (value) => {
         console.log ("saving " + (value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED"));
-        //TODO send settings to the server
+        var setting = {
+            "name" : "compositionType",
+            "value" : (value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED")
+        };
+        postJson ("api/setting/updatesetting", setting, getAuthorizationHeader()).then (({ data }) => {
+            console.log ("saved the setting ");
+        }).catch(function(error) {
+            axiosError(error, null, props.setAlertDialogInput);
+        });;
     }
 
     const marks = [
@@ -309,13 +336,14 @@ const Composition = (props) => {
                     <TextAlert alertInput={textAlertInput}/>
                     { monoList.length > 0 && getCompositionSelections() }
                 </div>
+                {compositionType && (
                 <div style={{height: '18%'}}>
                 <h5 style={{marginLeft: "20px", marginTop: '15px'}}>Composition Type</h5>
                 <Row style={{marginLeft: '77px', marginRight: '50px'}}>
                 <Col>
                 <Slider
                     aria-label="Composition Type"
-                    defaultValue={0}
+                    defaultValue={compositionType === "BASE" ? 0: compositionType==="GLYGEN" ? 1: 2}
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                     shiftStep={1}
@@ -351,7 +379,7 @@ const Composition = (props) => {
                 <div style={{marginLeft: "20px"}}>
                     <h6>{compositionTypeDescription}</h6></div>
                 }
-                </div>
+                </div>)}
                 <div style={{ marginRight: "50px", height: '18%'}}>
                     <Button
                         className='gg-btn-blue mb-3 mt-3'

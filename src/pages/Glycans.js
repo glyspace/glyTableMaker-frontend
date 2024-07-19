@@ -21,6 +21,7 @@ import { Loading } from '../components/Loading';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import FeedbackWidget from "../components/FeedbackWidget";
 import TextAlert from '../components/TextAlert';
+import { postJson } from '../utils/api';
 
 const Glycans = (props) => {
   const [infoError, setInfoError] = useState("");
@@ -57,6 +58,22 @@ const Glycans = (props) => {
     getGlycanTags();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const saveColumnVisibilityChanges = (columnVisibility) => {
+    var columnSettings = [];
+    for (var column in columnVisibility) {
+      columnSettings.push ({
+        "tableName": "GLYCAN",
+        "columnName": column,
+        "visible" :  columnVisibility[column] ? true: false,
+      });
+    }
+    postJson ("api/setting/updatecolumnsetting", columnSettings, getAuthorizationHeader()).then (({ data }) => {
+      console.log ("saved visibility settings");
+    }).catch(function(error) {
+      axiosError(error, null, setAlertDialogInput);
+    });
+  }
 
   function getStatusList() {
     getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
@@ -451,7 +468,8 @@ const getDownloadReport = (reportId) => {
                   initialSortColumn="dateCreated"
                   rowId="glycanId"
                   detailPanel={true}
-                  columnVisibility = {{ "information": false, "collectionNo": false}}
+                  columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCAN"
+                  saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />
             </Card.Body>
           </Card>

@@ -1,11 +1,12 @@
 import React from "react";
 import "./TopNavBar.css";
 import { Link } from "react-router-dom";
-import { Nav, Navbar, Col } from "react-bootstrap";
+import { Nav, Navbar, Col, NavDropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import logo from "../images/glygen-logoW-top.svg";
 import { BiLogOut } from "react-icons/bi";
 import { BiLogIn } from "react-icons/bi";
+import { FaUserGear } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
 
@@ -27,14 +28,21 @@ const TopNavBar = (props) => {
               {/* Top bar right side links when logged in */}
               {props.loggedInFlag && (
                 <>
-                  <LinkContainer to="/profile" className="gg-nav-link">
-                    <Nav.Link>
+                  <NavDropdown title="USER" id="basic-nav-dropdown" className="gg-nav-link gg-dropdown-navbar">
+                    <LinkContainer to="/profile">
+                      <NavDropdown.Item className="dropdown-item">
                       <span style={{ paddingRight: "10px" }}>
                         <FaUser key={"user"} size="16px" className="mb-1" title="user" />
+                      </span>PROFILE</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/settings">
+                      <NavDropdown.Item className="dropdown-item">
+                      <span style={{ paddingRight: "10px" }}>
+                        <FaUserGear key={"settings"} size="16px" className="mb-1" title="settings" />
                       </span>
-                      PROFILE
-                    </Nav.Link>
-                  </LinkContainer>
+                        SETTINGS</NavDropdown.Item>
+                    </LinkContainer>
+                  </NavDropdown>
                   <LinkContainer to="/dummy" className="gg-nav-link">
                     <Nav.Link onClick={props.logoutHandler}>
                       <span style={{ paddingRight: "10px" }}>

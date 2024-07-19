@@ -159,6 +159,7 @@ const Glycan = (props) => {
             show={compositionDialog}
             composition={userSelection.composition}
             setInputValue={setUserSelection}
+            setAlertDialogInput={setAlertDialogInput}
             inputValue={userSelection}
             title={"Glycan Composition"}
             setOpen={(input) => {

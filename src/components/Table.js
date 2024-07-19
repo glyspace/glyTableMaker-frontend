@@ -79,6 +79,26 @@ const Table = (props) => {
           }
         });
       };
+
+      useEffect(()=> {
+        // load settings
+        if (props.columnsettingsws) {
+          getJson(props.columnsettingsws, getAuthorizationHeader()).then (({ data }) => {
+            let visibilityList = {};
+            if (data.data && data.data.length > 0) {
+              data.data.map ((setting, index) => {
+                visibilityList[setting.columnName] = setting.visible;
+              });
+              setColumnVisibility(visibilityList);
+            } else {
+              // default setting
+              setColumnVisibility({ "information": false, "collectionNo": false});
+            }
+          }).catch(function(error) {
+            axiosError(error, null, props.setAlertDialogInput);
+          });
+        }
+      }, []);
     
       useEffect(() => {
         if (props.ws) {
@@ -91,6 +111,7 @@ const Table = (props) => {
         pagination.pageIndex,
         pagination.pageSize,
         sorting,
+        columnVisibility,
       ]);
 
       const openDeleteConfirmModal = (row) => {
@@ -178,9 +199,9 @@ const Table = (props) => {
         }
       }
 
-      const saveColumnVisibilityChanges = () => {
+      const saveColumnVisibilityChanges = (columns) => {
         console.log ("saving changes");
-        props.saveColumnVisibilityChanges && props.saveColumnVisibilityChanges (columnVisibility);
+        props.saveColumnVisibilityChanges && props.saveColumnVisibilityChanges (columns);
       }
 
       const columns = props.columns;
@@ -284,8 +305,10 @@ const Table = (props) => {
         ),
         onColumnVisibilityChange: (updater) => {
           setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
+          const updatedValues =
+                updater instanceof Function ? updater(columnVisibility) : updater;
           // check if remember switch is "on", then update the user settings on the server
-          rememberSettings && saveColumnVisibilityChanges();
+          rememberSettings && saveColumnVisibilityChanges(updatedValues);
         },
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
@@ -396,8 +419,10 @@ const Table = (props) => {
         ),
         onColumnVisibilityChange: (updater) => {
           setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
+          const updatedValues =
+                updater instanceof Function ? updater(columnVisibility) : updater;
           // check if remember switch is "on", then update the user settings on the server
-          rememberSettings && saveColumnVisibilityChanges();
+          rememberSettings && saveColumnVisibilityChanges(updatedValues);
         },
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,

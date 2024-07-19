@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import stringConstants from '../data/stringConstants.json';
 import Table from "../components/Table";
 import FeedbackWidget from "../components/FeedbackWidget";
+import { getAuthorizationHeader, postJson } from "../utils/api";
+import { axiosError } from "../utils/axiosError";
 
 const CoC = (props) => {
 
@@ -47,6 +49,22 @@ const CoC = (props) => {
     [],
   );
 
+  const saveColumnVisibilityChanges = (columnVisibility) => {
+    var columnSettings = [];
+    for (var column in columnVisibility) {
+      columnSettings.push ({
+        "tableName": "COC",
+        "columnName": column,
+        "visible" :  columnVisibility[column] ? true: false,
+      });
+    }
+    postJson ("api/setting/updatecolumnsetting", columnSettings, getAuthorizationHeader()).then (({ data }) => {
+      console.log ("saved visibility settings");
+    }).catch(function(error) {
+      axiosError(error, null, setAlertDialogInput);
+    });
+  }
+
   return (
     <>
     <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
@@ -84,6 +102,8 @@ const CoC = (props) => {
                   initialSortColumn="name"
                   rowId="collectionId"
                   detailPanel={true}
+                  columnsettingsws="api/setting/getcolumnsettings?tablename=COC"
+                  saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />
             </Card.Body>
           </Card>

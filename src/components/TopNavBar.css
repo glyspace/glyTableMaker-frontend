@@ -55,7 +55,6 @@
   
   .gg-dropdown-navbar .dropdown-menu {
     background-color: var(--gg-blue) !important;
-  
   }
   .gg-dropdown-navbar-active {
     color: var(--white) !important;
