@@ -317,6 +317,22 @@ const Collection = (props) => {
     [],
     );
 
+    const saveColumnVisibilityChanges = (columnVisibility) => {
+        var columnSettings = [];
+        for (var column in columnVisibility) {
+          columnSettings.push ({
+            "tableName": "GLYCANINCOLLECTION",
+            "columnName": column,
+            "visible" :  columnVisibility[column] ? true: false,
+          });
+        }
+        postJson ("api/setting/updatecolumnsetting", columnSettings, getAuthorizationHeader()).then (({ data }) => {
+          console.log ("saved visibility settings");
+        }).catch(function(error) {
+          axiosError(error, null, setAlertDialogInput);
+        });
+      }
+
     const listGlycans = () => {
         return (
           <>
@@ -331,6 +347,8 @@ const Collection = (props) => {
                 rowSelection={true}
                 rowSelectionChange={handleGlycanSelectionChange}
                 rowId="glycanId"
+                columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCANINCOLLECTION"
+                saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />
             </>
         );
@@ -1033,6 +1051,8 @@ const Collection = (props) => {
                     enableRowActions={true}
                     delete={deleteFromTable}
                     setAlertDialogInput={setAlertDialogInput}
+                    columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCANINCOLLECTION"
+                    saveColumnVisibilityChanges={saveColumnVisibilityChanges}
                 />
             </Card.Body>
           </Card>

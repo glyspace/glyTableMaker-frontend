@@ -23,7 +23,6 @@ const Composition = (props) => {
     const [monoListThirdCol, setMonoListThirdCol] = useState([]);
 
     const [showName, setShowName] = useState(false);
-    const [rememberSettings, setRememberSettings] = useState(false);
 
     useEffect (() => {
         let mono1 = [];
@@ -265,11 +264,10 @@ const Composition = (props) => {
         setShowName (e.target.checked);
     }
 
-    const saveSettings = (value) => {
-        console.log ("saving " + (value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED"));
+    const saveSettings = () => {
         var setting = {
             "name" : "compositionType",
-            "value" : (value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED")
+            "value" : compositionType
         };
         postJson ("api/setting/updatesetting", setting, getAuthorizationHeader()).then (({ data }) => {
             console.log ("saved the setting ");
@@ -353,7 +351,6 @@ const Composition = (props) => {
                     max={2}
                     onChange={(event, newValue) => {
                         setCompositionTypeDescription(marks[newValue].description);
-                        rememberSettings && saveSettings (newValue);
                       }}
                     sx={{
                         "& .MuiSlider-mark": {
@@ -363,15 +360,10 @@ const Composition = (props) => {
                         },
                     }}
                     /></Col>
-                <Col style={{display:'flex', justifyContent:'right', marginTop: '-20px'}}>
-
-                <FormControlLabel 
-                        control={
-                            <Tooltip title="Remember show/hide column settings">
-                             <Switch color='info' onChange={()=>{setRememberSettings (!rememberSettings)}}/>
-                            </Tooltip>
-                        } label="Remember selection" />
-                
+                <Col style={{display: 'flex', justifyContent:'right', marginTop: '-20px'}}>
+                    <Tooltip title="Save composition type selection as default">
+                        <Button className="gg-btn-outline-reg mb-3 mt-3" onClick={()=>saveSettings()}>Save as default </Button>
+                    </Tooltip>
                 </Col>
                 </Row>
                 

@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import PrintIcon from '@mui/icons-material/Print';
 import { useNavigate } from "react-router-dom";
-import { Row } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import TagEdit from "./TagEdit";
 
 // server side table
@@ -41,7 +41,6 @@ const Table = (props) => {
     const [columnVisibility, setColumnVisibility] = useState(props.columnVisibility ?? {});
     const [rowSelection, setRowSelection] = useState(props.selected ?? {});
     const [selectedData, setSelectedData] = useState(props.selectedRows ?? []);
-    const [rememberSettings, setRememberSettings] = useState (false);
 
     let navigate = useNavigate();
 
@@ -97,6 +96,9 @@ const Table = (props) => {
           }).catch(function(error) {
             axiosError(error, null, props.setAlertDialogInput);
           });
+        } else {
+          // default setting
+          setColumnVisibility({ "information": false, "collectionNo": false});
         }
       }, []);
     
@@ -298,9 +300,11 @@ const Table = (props) => {
             <MRT_ShowHideColumnsButton table={table} />
             <MRT_ToggleDensePaddingButton table={table} />
             <MRT_ToggleFullScreenButton table={table} />
-            <Tooltip title="Remember show/hide column settings">
-            <Switch color='info' onChange={()=>{setRememberSettings(!rememberSettings)}}/>
-            </Tooltip>
+            {props.saveColumnVisibilityChanges && (
+              <Tooltip title="Save column visibility settings">
+              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
+              </Tooltip>
+            )}
           </Box>
         ),
         onColumnVisibilityChange: (updater) => {
@@ -308,7 +312,7 @@ const Table = (props) => {
           const updatedValues =
                 updater instanceof Function ? updater(columnVisibility) : updater;
           // check if remember switch is "on", then update the user settings on the server
-          rememberSettings && saveColumnVisibilityChanges(updatedValues);
+          //rememberSettings && saveColumnVisibilityChanges(updatedValues);
         },
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
@@ -412,9 +416,11 @@ const Table = (props) => {
             <MRT_ShowHideColumnsButton table={table} />
             <MRT_ToggleDensePaddingButton table={table} />
             <MRT_ToggleFullScreenButton table={table} />
-            <Tooltip title="Remember show/hide column settings">
-            <Switch color='info' onChange={()=>{setRememberSettings(!rememberSettings)}}/>
-            </Tooltip>
+            {props.saveColumnVisibilityChanges && (
+              <Tooltip title="Save column visibility settings">
+              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
+              </Tooltip>
+            )}
           </Box>
         ),
         onColumnVisibilityChange: (updater) => {
@@ -422,7 +428,7 @@ const Table = (props) => {
           const updatedValues =
                 updater instanceof Function ? updater(columnVisibility) : updater;
           // check if remember switch is "on", then update the user settings on the server
-          rememberSettings && saveColumnVisibilityChanges(updatedValues);
+          //rememberSettings && saveColumnVisibilityChanges(updatedValues);
         },
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
@@ -473,10 +479,35 @@ const Table = (props) => {
             )}
           </Box>
         ),
+        renderToolbarInternalActions: ({ table }) => (
+          <Box>
+            <MRT_ToggleGlobalFilterButton table={table} />
+            <MRT_ToggleFiltersButton table={table} />
+            <MRT_ShowHideColumnsButton table={table} />
+            <MRT_ToggleDensePaddingButton table={table} />
+            <MRT_ToggleFullScreenButton table={table} />
+            {props.saveColumnVisibilityChanges && (
+              <Tooltip title="Save column visibility settings">
+              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
+              </Tooltip>
+            )}
+          </Box>
+        ),
+        onColumnVisibilityChange: (updater) => {
+          setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
+          const updatedValues =
+                updater instanceof Function ? updater(columnVisibility) : updater;
+          // check if remember switch is "on", then update the user settings on the server
+          //rememberSettings && saveColumnVisibilityChanges(updatedValues);
+        },
         getRowId: (row) => row[props.rowId],
         initialState: {
             showColumnFilters: false,
+            columnVisibility: columnVisibility,
         },
+        state: {
+          columnVisibility
+        }
       });
 
     return (
