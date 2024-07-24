@@ -485,6 +485,40 @@ const Collection = (props) => {
         const nextValidMetadata = [];
         const nextSelectedMetadataValue = [];
 
+        selectedMetadataItems.sort((a, b) => {
+            var first;
+            var second;
+            if (typeof a === 'number') {  // datatype selected
+                // find namespace of the datatype and display appropriate value field
+                // locate the datatype
+                first = categories.map ((element) => {
+                    if (element.dataTypes) {
+                        var datatype = element.dataTypes.find ((item) => item.datatypeId === a);
+                        if (datatype) {
+                            return datatype.name;
+                        }
+                    }
+                });
+            }
+            if (typeof b === 'number') {  // datatype selected
+                // find namespace of the datatype and display appropriate value field
+                // locate the datatype
+                second = categories.map ((element) => {
+                    if (element.dataTypes) {
+                        var datatype = element.dataTypes.find ((item) => item.datatypeId === b);
+                        if (datatype) {
+                            return datatype.name;
+                        }
+                    }
+                });
+            }
+
+            if (first && first > second)
+                return 1;
+            else
+                return -1;
+        });
+
         selectedMetadataItems.map ((itemId, index) => {
             if (typeof itemId === 'number') {  // datatype selected
                 // find namespace of the datatype and display appropriate value field
