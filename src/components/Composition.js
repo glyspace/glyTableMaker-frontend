@@ -4,6 +4,7 @@ import TextAlert from "./TextAlert";
 import { Button, Col, Image, Row } from "react-bootstrap";
 import { Box, Dialog, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
 import compositionList from '../data/composition.json';
+import compositionMarks from '../data/compositiontype.json';
 import "./Composition.css";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
@@ -276,24 +277,6 @@ const Composition = (props) => {
         });;
     }
 
-    const marks = [
-        {
-          value: 0,
-          label: 'Base Composition',
-          description: 'Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions.',
-        },
-        {
-          value: 1,
-          label: 'Composition (Glygen)',
-          description: 'Monosaccharides are presented as closed ring but exact ring size is unknown. Anomer configuration is unknown as well. This version is used by GlyGen when curating papers with composition in which the ring size is not part of the composition string or explicitly mentioned.',
-        },
-        {
-          value: 2,
-          label: 'Composition (Defined ring)',
-          description: 'Monosaccharides are presented as closed ring with the default ring size for each monosaccharide (e.g. pyranose for Hexose). Exact anomer configuration is unknown.',
-        },
-      ];
-
     return (
         <Dialog
             open={props.show}
@@ -346,11 +329,11 @@ const Composition = (props) => {
                     getAriaValueText={valuetext}
                     shiftStep={1}
                     step={1}
-                    marks={marks}
+                    marks={compositionMarks}
                     min={0}
                     max={2}
                     onChange={(event, newValue) => {
-                        setCompositionTypeDescription(marks[newValue].description);
+                        setCompositionTypeDescription(compositionMarks[newValue].description);
                       }}
                     sx={{
                         "& .MuiSlider-mark": {

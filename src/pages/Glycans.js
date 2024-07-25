@@ -123,6 +123,7 @@ const Glycans = (props) => {
         id: "collectionNo",
         size: 30,
         enableColumnFilter: false,
+        enableSorting: false,
       },
       {
         id: 'information',

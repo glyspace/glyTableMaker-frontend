@@ -1,0 +1,17 @@
+[
+    {
+      "value": 0,
+      "label": "Base Composition",
+      "description": "Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions."
+    },
+    {
+      "value": 1,
+      "label": "Composition (Glygen)",
+      "description": "Monosaccharides are presented as closed ring but exact ring size is unknown. Anomer configuration is unknown as well. This version is used by GlyGen when curating papers with composition in which the ring size is not part of the composition string or explicitly mentioned."
+    },
+    {
+      "value": 2,
+      "label": "Composition (Defined ring)",
+      "description": "Monosaccharides are presented as closed ring with the default ring size for each monosaccharide (e.g. pyranose for Hexose). Exact anomer configuration is unknown."
+    }
+]

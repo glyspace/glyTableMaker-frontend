@@ -31,6 +31,7 @@ const Collections = (props) => {
       },
       {
         accessorKey: 'glycans.length',
+        id: "glycanNo",
         header: '# Glycans',
         size: 30,
         enableColumnFilter: false,

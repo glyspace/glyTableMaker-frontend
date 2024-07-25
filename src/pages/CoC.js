@@ -42,6 +42,7 @@ const CoC = (props) => {
       {
         accessorKey: 'children.length',
         header: '# Collections',
+        id: 'children',
         size: 30,
         enableColumnFilter: false,
       },
