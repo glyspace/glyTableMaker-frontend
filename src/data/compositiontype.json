@@ -2,7 +2,7 @@
     {
       "value": 0,
       "label": "Base Composition",
-      "description": "Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions."
+      "description": "Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exist as closed ring versions."
     },
     {
       "value": 1,

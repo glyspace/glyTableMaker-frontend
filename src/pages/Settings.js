@@ -3,7 +3,7 @@ import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { Alert, Box, Container, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
+import { Alert, Container, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
 import { FormLabel, PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import compositionMarks from '../data/compositiontype.json';
@@ -97,7 +97,7 @@ const Settings = (props) => {
         },
     });   // map containing column visibility for each table type
     const [compositionType, setCompositionType] = useState (null); 
-    const [compositionTypeDescription, setCompositionTypeDescription] = useState ("Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions.");
+    const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
     const [showSuccessMessage, setShowSuccessMessage]  = useState(null);
 
     useEffect(()=> {
@@ -148,6 +148,8 @@ const Settings = (props) => {
                 data.data.forEach ((setting) => {
                     if (setting.name && setting.name.toLowerCase() === "compositiontype") {
                         setCompositionType(setting.value);
+                        const index = setting.value === "BASE" ? 0 : setting.value === "GLYGEN" ? 1 : 2;
+                        setCompositionTypeDescription(compositionMarks[index].description);
                     }
                 });
             } else {

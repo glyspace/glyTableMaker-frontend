@@ -17,7 +17,7 @@ const Composition = (props) => {
     );
     const [compositionString, setCompositionString] = useState ("");
     const [compositionType, setCompositionType] = useState(null);
-    const [compositionTypeDescription, setCompositionTypeDescription] = useState ("Monosaccharides can either be open ring or closed ring (unknown ring size, unknown anomer). Makes the least assumptions about monosaccharides but will not reflect the fact that most monosaccharides that are part of oligosaccharides exists as closed ring versions.");
+    const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
 
     const [monoList, setMonoList] = useState([]);
     const [monoListSecondCol, setMonoListSecondCol] = useState([]);
@@ -55,6 +55,8 @@ const Composition = (props) => {
                 data.data.forEach ((setting) => {
                     if (setting.name && setting.name.toLowerCase() === "compositiontype") {
                         setCompositionType(setting.value);
+                        const index = setting.value === "BASE" ? 0 : setting.value === "GLYGEN" ? 1 : 2;
+                        setCompositionTypeDescription(compositionMarks[index].description);
                     }
                 });
             } else {
