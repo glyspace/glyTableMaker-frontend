@@ -1,4 +1,4 @@
-import { Box, Container, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, Container, IconButton, Slider, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
@@ -38,6 +38,8 @@ const Tablemaker = (props) => {
     const [collections, setCollections] = useState([]);
 
     const [selectedCollections, setSelectedCollections] = useState([]);
+
+    const [imageScale, setImageScale] = useState(1.0);
 
     const columnInitialState = {
         name: "",         // required
@@ -671,6 +673,7 @@ const Tablemaker = (props) => {
             "columns": t.columns,
             "fileFormat": fileFormat,
             "filename" : fileName,
+            "imageScale": imageScale,
         };
 
         setShowLoading(true);
@@ -941,6 +944,20 @@ const Tablemaker = (props) => {
                     />
                 </Col>
                 </Row>
+                {data.find ((item) => item.datatype && item.datatype.datatypeId < 0 && item.datatype.description.toUpperCase() === "CARTOON") 
+                && fileFormat === "EXCEL" && 
+                <Row>
+                    <Col>
+                        <Typography variant="h6" style={{ display: "inline" }}>
+                        image scale:
+                        </Typography>
+                    </Col>
+                    <Col>
+                    <Slider defaultValue={50} aria-label="Default" onChange={(e, v) => {
+                        v > 0 ? setImageScale(v/50): setImageScale(0.1);}}/>
+                    </Col>
+                </Row>
+                }
                 </Card.Body>
             </Card>
             <br/>
