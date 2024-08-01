@@ -108,7 +108,8 @@ const Glycans = (props) => {
         accessorKey: 'cartoon',
         header: 'Image',
         size: 150,
-        columnDefType: 'display',
+        enableColumnFilter: false,
+        enableSorting: false,
         Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
       },
       {

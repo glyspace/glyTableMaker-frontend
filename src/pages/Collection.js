@@ -132,10 +132,10 @@ const Collection = (props) => {
         });
     }
 
-    const onInputChange = (event, value, reason, index) => {
+    const onInputChange = (event, value, reason, index, dropdown) => {
         setTextAlertInputMetadata ({"show": false, "id":""});
         if (value) {
-          getTypeAhead(value, index);
+          if (!dropdown) getTypeAhead(value, index);
           const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
             if (i === index) {
               return value;
@@ -147,8 +147,9 @@ const Collection = (props) => {
           setSelectedMetadataValue(nextSelectedMetadataValue);
         } else { 
             const nextOptions = options.map ((o, i) => {
-                if (i === index)
+                if (i === index && !dropdown) {
                     return [];
+                }
                 else
                     return o;
             });
@@ -385,6 +386,17 @@ const Collection = (props) => {
         });
     }
 
+    const isDropdown = (datatypeId) => {
+        return categories.map ((element) => {
+            if (element.dataTypes) {
+                var datatype = element.dataTypes.find ((item) => item.datatypeId === datatypeId);
+                if (datatype) {
+                    return datatype.namespace.fileIdentifier && datatype.namespace.hasUri === false && datatype.namespace.hasId === false;
+                }
+            }
+        });
+    }
+
     function getStepContent (stepIndex) {
         switch (stepIndex) {
             case 0:
@@ -417,6 +429,7 @@ const Collection = (props) => {
                 return (
                     <>
                     {selectedMetadataItems.map ((datatypeId, index) => {
+                        const dropdown = isDropdown(datatypeId);
                         return (
                         <Row>
                             <Col style={{marginTop: "15px"}} md="4">
@@ -424,7 +437,8 @@ const Collection = (props) => {
                             </Col>
                             <Col style={{marginTop: "10px"}} md="8">
                                 <Autocomplete
-                                        freeSolo
+                                        freeSolo={!dropdown[0]}
+                                        disablePortal={dropdown[0]}
                                         disabled={!namespace[index]}
                                         id={"typeahead" + {index}}
                                         options={options[index]}
@@ -438,7 +452,7 @@ const Collection = (props) => {
                                             });
                                             setSelectedOption(nextSelectedOption);
                                         }}
-                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index)}
+                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index, dropdown[0])}
                                         getOptionLabel={(option) => option}
                                         style={{ width: 400 }}
                                         renderInput={(params) => (
@@ -529,12 +543,16 @@ const Collection = (props) => {
                         if (datatype) {
                             nextDatatype.push(datatype);
                             nextNamespace.push (datatype.namespace.name);
-                            
+                            if (datatype.allowedValues) {
+                                nextOptions.push(datatype.allowedValues);
+                            } else {
+                                nextOptions.push([]);
+                            }
                             return;
                         }
                     }
                 });
-                nextOptions.push ([]);
+                //nextOptions.push ([]);
                 nextSelectedOption.push(null);
                 nextValidMetadata.push (false);
                 nextSelectedMetadataValue.push("");

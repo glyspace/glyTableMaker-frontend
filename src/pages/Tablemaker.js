@@ -953,8 +953,9 @@ const Tablemaker = (props) => {
                         </Typography>
                     </Col>
                     <Col>
-                    <Slider defaultValue={50} aria-label="Default" onChange={(e, v) => {
-                        v > 0 ? setImageScale(v/50): setImageScale(0.1);}}/>
+                    <Slider defaultValue={100} min={25} max={300} step={25} valueLabelDisplay="auto"
+                        valueLabelFormat={value => <div>{value} %</div>}
+                        onChange={(e, v) => {setImageScale(v/100);}}/>
                     </Col>
                 </Row>
                 }

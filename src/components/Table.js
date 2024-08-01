@@ -301,7 +301,7 @@ const Table = (props) => {
             <MRT_ToggleDensePaddingButton table={table} />
             <MRT_ToggleFullScreenButton table={table} />
             {props.saveColumnVisibilityChanges && (
-              <Tooltip title="Save column visibility settings">
+              <Tooltip title="Save current column visibility as default setting">
               <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
               </Tooltip>
             )}
