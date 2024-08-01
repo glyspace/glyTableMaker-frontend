@@ -473,12 +473,12 @@ const Collection = (props) => {
 
     function getNavigationButtons() {
         return (
-          <div className="text-center mb-2">
-            <Button disabled={activeStep === 0} onClick={handleBack} className="gg-btn-blue mt-2 gg-ml-20 gg-mr-20">
+          <div className="text-center">
+            <Button disabled={activeStep === 0} onClick={handleBack} className="gg-btn-blue gg-ml-20 gg-mr-20">
               Back
             </Button>
             {activeStep < steps.length - 1 &&
-            <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={handleNext}>
+            <Button variant="contained" className="gg-btn-blue gg-ml-20" onClick={handleNext}>
                Next
             </Button>}
           </div>
@@ -589,12 +589,12 @@ const Collection = (props) => {
                   </Step>
                 ))}
               </Stepper>
-              <h5 className="text-center gg-blue mt-4">{getStepLabel(activeStep)}</h5>
+              <h5 className="text-center gg-blue mt-4 mb-4">{getStepLabel(activeStep)}</h5>
               {getNavigationButtons()}
               <div className="mt-4 mb-4">
                 {getStepContent(activeStep, validate)}
               </div>
-              {getNavigationButtons()}
+              {/**getNavigationButtons()**/}
             </>
         )
     }
@@ -983,6 +983,7 @@ const Collection = (props) => {
                     size="xl"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
+                    backdrop="static"
                     show={showGlycanTable}
                     onHide={() => setShowGlycanTable(false)}
                 >
@@ -1000,18 +1001,42 @@ const Collection = (props) => {
                      </Modal.Footer>
                 </Modal>
             )}
-            
-            <ConfirmationModal
-                showModal={enableAddMetadata}
-                onCancel={() => {
-                    setActiveStep(0);
-                    setEnableAddMetadata(false);
-                }}
-                onConfirm={() => handleAddMetadata()}
-                title={"Add Metadata"}
-                body={addMetadataForm()}
-                okButton="Submit"
-            />
+
+            {enableAddMetadata && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={enableAddMetadata}
+                >
+                   <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Add Metadata
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{
+                        maxHeight: 'calc(100vh - 250px)',
+                        overflowY: 'auto'
+                    }}>{addMetadataForm()}</Modal.Body>
+                    <Modal.Footer>
+                        {getNavigationButtons()}
+                        {activeStep < steps.length - 1 && (
+                        <div style={{paddingRight: '38px', paddingLeft: '38px'}}></div>
+                        )}
+                        {activeStep >= steps.length - 1 && (
+                        <div style={{paddingRight: '110px', paddingLeft: '110px'}}></div>
+                        )}
+                        <Button className="gg-btn-outline-reg"
+                            onClick={()=> {
+                                setActiveStep(0);
+                                setEnableAddMetadata(false);
+                            }}>Cancel</Button>
+                        <Button className="gg-btn-blue-reg"
+                            onClick={()=>handleAddMetadata()}>Submit</Button>
+                     </Modal.Footer> 
+                </Modal>
+            )}
             <Form>
                 <Form.Group
                   as={Row}
