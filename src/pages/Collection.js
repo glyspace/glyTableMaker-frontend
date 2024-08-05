@@ -13,6 +13,7 @@ import MetadataTreeView from "../components/MetadataTreeView";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { ScrollToTop } from "../components/ScrollToTop";
 import FeedbackWidget from "../components/FeedbackWidget";
+import { AiFillMediumCircle } from "react-icons/ai";
 
 let idCounter = 1000;
 
@@ -718,21 +719,6 @@ const Collection = (props) => {
             idCounter++;
         });
 
-        // get the canonical form
-        postJson ("api/util/getcanonicalform", allMetadataToSubmit,
-                getAuthorizationHeader()).then ((data) => {
-            if (data.data && data.data.data) {
-                allMetadataToSubmit = data.data.data;
-                // check for validity
-            }
-        }).catch (function(error) {
-            if (error && error.response && error.response.data) {
-                setTextAlertInputMetadata ({"show": true, "message": error.response.data.message });
-            } else {
-                axiosError(error, null, setAlertDialogInput);
-            }  
-        });
-
         let allValid = true;
         let mapPromises = [];
         allMetadataToSubmit.map ((m, index) => {
@@ -761,8 +747,22 @@ const Collection = (props) => {
         if (allValid) {
             setTextAlertInputMetadata({"show": false, id: ""});
             setEnableAddMetadata(false);
-            const updated = [...metadata, ...allMetadataToSubmit];
-            setUserSelection ({"metadata": updated});
+
+            // get the canonical form
+            postJson ("api/util/getcanonicalform", allMetadataToSubmit,
+                getAuthorizationHeader()).then ((data) => {
+            if (data.data && data.data.data) {
+                allMetadataToSubmit = data.data.data;
+                const updated = [...metadata, ...allMetadataToSubmit];
+                setUserSelection ({"metadata": updated});
+            }
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setTextAlertInputMetadata ({"show": true, "message": error.response.data.message });
+                } else {
+                    axiosError(error, null, setAlertDialogInput);
+                }  
+            });
         }
 
         setShowLoading (false);
