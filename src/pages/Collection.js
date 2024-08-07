@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Autocomplete, Container, Step, StepLabel, Stepper, TextField, Typography } from "@mui/material";
+import { Autocomplete, Container, IconButton, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
@@ -13,7 +13,8 @@ import MetadataTreeView from "../components/MetadataTreeView";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { ScrollToTop } from "../components/ScrollToTop";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { AiFillMediumCircle } from "react-icons/ai";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { AddCircleOutline } from "@mui/icons-material";
 
 let idCounter = 1000;
 
@@ -62,6 +63,7 @@ const Collection = (props) => {
     const [selectedMetadataValue, setSelectedMetadataValue] = useState([]);
     const [selectedOption, setSelectedOption] = useState([]);
     const [selectedDatatype, setSelectedDatatype]  = useState([]);
+    const [metadataItemKey, setMetadataItemKey] = useState([]);
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -108,6 +110,12 @@ const Collection = (props) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
+
+    useEffect (() => {
+        console.log ("metadata values have been changed " + selectedMetadataValue);
+        console.log ("options list " + options);
+        console.log ("namespaces " + namespace );
+    }, [selectedMetadataValue]);
 
     function getStatusList() {
         getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
@@ -359,11 +367,48 @@ const Collection = (props) => {
     const removeMetadataItems = index => {
         let removed = [...selectedMetadataItems];
         removed.splice(index, 1);
+        let removedValue = [...selectedMetadataValue];
+        removedValue.splice(index, 1);
+        //handleMetadataSelectionChange(removed, false);
+        let nextDatatype = [...selectedDatatype];
+        nextDatatype.splice(index, 1);
+        let nextNamespace = [...namespace];
+        nextNamespace.splice(index, 1);
+        let nextSelectedOption = [...selectedOption];
+        nextSelectedOption.splice(index, 1);
+        let nextValidMetadata = [...validMetadata];
+        nextValidMetadata.splice(index, 1);
+        let nextOptions = [...options];
+        nextOptions.splice(index, 1);
+        let nextMetadataItemKey = [...metadataItemKey];
+        nextMetadataItemKey.splice(index, 1);
         setSelectedMetadataItems(removed);
+        setSelectedMetadataValue(removedValue);
+        setSelectedOption(nextSelectedOption);
+        setSelectedDatatype(nextDatatype);
+        setNamespace(nextNamespace);
+        setValidMetadata(nextValidMetadata);
+        setOptions(nextOptions);
+        setMetadataItemKey(nextMetadataItemKey);
     };
 
-    const addItemToSelection = (node) => {
-        setSelectedMetadataItems([...selectedMetadataItems, node.datatypeId]);
+    const addItemToSelection = (datatypeId) => {
+        const insert = getDatatypeName(datatypeId);
+        // insert into the sorted array at the correct index
+        let copy = [...selectedMetadataItems];
+        let copyValues = [...selectedMetadataValue];
+        let added = [];
+        let addedValues = [];
+        copy.map ((d, index) => {
+            const name = getDatatypeName(d);
+            if (insert && insert < name) {
+                added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)]
+                addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)]
+            }
+        });
+        handleMetadataSelectionChange (added, false);
+        setSelectedMetadataItems(added);
+        setSelectedMetadataValue(addedValues);
     }
 
     const handleSelectedItemsChange = (event, ids) => {
@@ -376,26 +421,37 @@ const Collection = (props) => {
         setSelectedMetadataItems (filteredSelection);
     }
 
-    const getDatatypeName = (datatypeId) => {
-        return categories.map ((element) => {
+    const getDatatype = (datatypeId) => {
+        for (let element of categories) {
             if (element.dataTypes) {
                 var datatype = element.dataTypes.find ((item) => item.datatypeId === datatypeId);
-                if (datatype) {
-                    return datatype.name;
-                }
+                return datatype;
             }
-        });
+        }
+        return null;
+    }
+
+    const getDatatypeName = (datatypeId) => {
+        var datatype = getDatatype(datatypeId);
+        if (datatype) {
+            return datatype.name;
+        }    
+        return null;
     }
 
     const isDropdown = (datatypeId) => {
-        return categories.map ((element) => {
-            if (element.dataTypes) {
-                var datatype = element.dataTypes.find ((item) => item.datatypeId === datatypeId);
-                if (datatype) {
-                    return datatype.namespace.fileIdentifier && datatype.namespace.hasUri === false && datatype.namespace.hasId === false;
-                }
-            }
-        });
+        var datatype = getDatatype(datatypeId);
+        if (datatype) {
+            return datatype.namespace.fileIdentifier && datatype.namespace.hasUri === false && datatype.namespace.hasId === false;
+        }
+        return false;
+    }
+
+    const isMultiple = (datatypeId) => {
+        const datatype = getDatatype(datatypeId);
+        if (datatype) 
+            return datatype.multiple;   
+        return false;
     }
 
     function getStepContent (stepIndex) {
@@ -422,8 +478,7 @@ const Collection = (props) => {
                     </div>
                     <MetadataTreeView data={categories} checkboxSelection
                         onSelectedItemsChange={handleSelectedItemsChange}
-                        selectedItems={selectedMetadataItems}
-                        addItemToSelection={addItemToSelection}/>
+                        selectedItems={selectedMetadataItems}/>
                     </>
                 );
             case 1:
@@ -436,12 +491,14 @@ const Collection = (props) => {
                             <Col style={{marginTop: "15px"}} md="4">
                             <span>{getDatatypeName(datatypeId)}</span>
                             </Col>
-                            <Col style={{marginTop: "10px"}} md="8">
+                            <Col style={{marginTop: "10px"}} md="5">
                                 <Autocomplete
-                                        freeSolo={!dropdown[0]}
-                                        disablePortal={dropdown[0]}
+                                        freeSolo={!dropdown}
+                                        disablePortal={dropdown}
                                         disabled={!namespace[index]}
-                                        id={"typeahead" + {index}}
+                                        id={`"typeahead"_ ${ index }}`}
+                                        key={metadataItemKey[index]}
+                                        value={selectedMetadataValue[index] ?? ""}
                                         options={options[index]}
                                         onChange={(e, value) => {
                                             const nextSelectedOption = selectedOption.map ((item, i) => {
@@ -453,7 +510,7 @@ const Collection = (props) => {
                                             });
                                             setSelectedOption(nextSelectedOption);
                                         }}
-                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index, dropdown[0])}
+                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index, dropdown)}
                                         getOptionLabel={(option) => option}
                                         style={{ width: 400 }}
                                         renderInput={(params) => (
@@ -463,6 +520,20 @@ const Collection = (props) => {
                                             disabled={!namespace[index]} label="Value" variant="outlined" />
                                         )}
                                 />
+                            </Col>
+                            <Col style={{marginTop: "10px", display: "flex", justifyContent:"left"}} md="3">
+                            
+                            <Tooltip title="Remove this metadata">
+                                <IconButton color="error" onClick={(event) => {removeMetadataItems(index)}}>
+                                <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                            {isMultiple (datatypeId) && (
+                              <Tooltip title="Add another copy of this metadata">
+                              <IconButton color="primary" onClick={(event) => {addItemToSelection(datatypeId)}}>
+                                <AddCircleOutline />
+                              </IconButton></Tooltip>
+                            )}
                             </Col>
                         </Row>
                         );
@@ -490,42 +561,15 @@ const Collection = (props) => {
         setActiveStep(prevActiveStep => prevActiveStep - 1);
     };
 
-    const handleNext = () => {
-        setActiveStep(prevActiveStep => prevActiveStep + 1);
-
-        const nextDatatype = [];
-        const nextNamespace = [];
-        const nextOptions = [];
-        const nextSelectedOption = [];
-        const nextValidMetadata = [];
-        const nextSelectedMetadataValue = [];
-
-        selectedMetadataItems.sort((a, b) => {
+    const sortMetadata = (metadataItems) => {
+        metadataItems.sort((a, b) => {
             var first;
             var second;
             if (typeof a === 'number') {  // datatype selected
-                // find namespace of the datatype and display appropriate value field
-                // locate the datatype
-                first = categories.map ((element) => {
-                    if (element.dataTypes) {
-                        var datatype = element.dataTypes.find ((item) => item.datatypeId === a);
-                        if (datatype) {
-                            return datatype.name;
-                        }
-                    }
-                });
+                first = getDatatypeName(a);
             }
             if (typeof b === 'number') {  // datatype selected
-                // find namespace of the datatype and display appropriate value field
-                // locate the datatype
-                second = categories.map ((element) => {
-                    if (element.dataTypes) {
-                        var datatype = element.dataTypes.find ((item) => item.datatypeId === b);
-                        if (datatype) {
-                            return datatype.name;
-                        }
-                    }
-                });
+                second = getDatatypeName(b);
             }
 
             if (first && first > second)
@@ -533,8 +577,20 @@ const Collection = (props) => {
             else
                 return -1;
         });
+    }
 
-        selectedMetadataItems.map ((itemId, index) => {
+    const handleMetadataSelectionChange = (metadataItems, isNew) => {
+        const nextDatatype = [];
+        const nextNamespace = [];
+        const nextOptions = [];
+        const nextSelectedOption = [];
+        const nextValidMetadata = [];
+        const nextSelectedMetadataValue = [];
+        const nextMetadataItemKey = [];
+
+        if (isNew) sortMetadata(metadataItems);
+
+        metadataItems.map ((itemId, index) => {
             if (typeof itemId === 'number') {  // datatype selected
                 // find namespace of the datatype and display appropriate value field
                 // locate the datatype
@@ -553,10 +609,10 @@ const Collection = (props) => {
                         }
                     }
                 });
-                //nextOptions.push ([]);
-                nextSelectedOption.push(null);
+                nextSelectedOption.push(selectedOption[index] ?? null);
                 nextValidMetadata.push (false);
-                nextSelectedMetadataValue.push("");
+                nextSelectedMetadataValue.push(selectedMetadataValue[index]);
+                nextMetadataItemKey.push(metadataItemKey[index] ?? idCounter++);
             }
         });
 
@@ -566,6 +622,12 @@ const Collection = (props) => {
         setSelectedOption(nextSelectedOption);
         setValidMetadata(nextValidMetadata);
         setSelectedMetadataValue(nextSelectedMetadataValue);
+        setMetadataItemKey(nextMetadataItemKey);
+    }
+
+    const handleNext = () => {
+        setActiveStep(prevActiveStep => prevActiveStep + 1);
+        handleMetadataSelectionChange (selectedMetadataItems, true);
     }
 
     function getStepLabel(stepIndex) {
@@ -701,7 +763,7 @@ const Collection = (props) => {
             }
             if (selectedOption[index]) {
                 const m = {
-                    metadataId: idCounter,
+                    metadataId: metadataItemKey[index],
                     new: true,
                     type: selectedDatatype[index],
                     value: selected,
@@ -709,14 +771,13 @@ const Collection = (props) => {
                 allMetadataToSubmit.push(m);
             } else {
                 const m = {
-                    metadataId: idCounter,
+                    metadataId: metadataItemKey[index],
                     new: true,
                     type: selectedDatatype[index],
                     value: selectedMetadataValue[index],
                 }
                 allMetadataToSubmit.push(m);
             }
-            idCounter++;
         });
 
         let allValid = true;
@@ -1009,6 +1070,7 @@ const Collection = (props) => {
                     centered
                     backdrop="static"
                     show={enableAddMetadata}
+                    onHide={() => setEnableAddMetadata(false)}
                 >
                    <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">

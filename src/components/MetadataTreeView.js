@@ -115,11 +115,11 @@ const MetadataTreeView = (props) => {
                     <IconButton color="primary" onClick={(event) => editDatatype(event, node, parent, true)}>
                         <VisibilityOutlinedIcon />
                     </IconButton></Tooltip>)}
-                    {props.checkboxSelection && node.multiple && (
+                    {/**  props.checkboxSelection && node.multiple && (
                       <IconButton color="primary" onClick={(event) => props.addItemToSelection(node)}>
                       <PlusOne />
                     </IconButton>
-                    )}
+                    )*/}
                     </Col>
                 </Row>
             }>
