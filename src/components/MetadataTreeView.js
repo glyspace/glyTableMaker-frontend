@@ -3,7 +3,7 @@ import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { Col, Row } from 'react-bootstrap';
 import { AddCircleOutline, PlusOne, TextIncrease } from '@mui/icons-material';
 
@@ -96,7 +96,7 @@ const MetadataTreeView = (props) => {
                 <Row>
                     <Col style={{display:'flex', marginTop:'7px'}}>
                     <Typography variant="body2">
-                    {node.name}
+                    {node.mandatory ? <Box component="span" fontWeight='fontWeightBold'>{node.name}</Box> : node.name}
                     </Typography>
                     </Col>
                     <Col style={{display:'flex', justifyContent:'right', marginRight: '50px'}}>

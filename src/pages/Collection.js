@@ -111,12 +111,6 @@ const Collection = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
 
-    useEffect (() => {
-        console.log ("metadata values have been changed " + selectedMetadataValue);
-        console.log ("options list " + options);
-        console.log ("namespaces " + namespace );
-    }, [selectedMetadataValue]);
-
     function getStatusList() {
         getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
             setGlycanStatusList(data.data);
@@ -425,7 +419,8 @@ const Collection = (props) => {
         for (let element of categories) {
             if (element.dataTypes) {
                 var datatype = element.dataTypes.find ((item) => item.datatypeId === datatypeId);
-                return datatype;
+                if (datatype) 
+                    return datatype;
             }
         }
         return null;

@@ -45,6 +45,7 @@ const Metadata = (props) => {
         namespace: null,
         multiple: false,
         category: null,
+        mandatory: false,
     };
 
     const categoryInitialState = {
@@ -55,7 +56,6 @@ const Metadata = (props) => {
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [datatype, setDatatype] = useReducer(reducer, datatypeInitialState);
     const [category, setCategory] = useReducer(reducer, categoryInitialState);
-
 
     useEffect(props.authCheckAgent, []);
 
@@ -90,13 +90,11 @@ const Metadata = (props) => {
         if (name === "name" && newValue.trim().length > 1) {
             setValidate(false);
         }
-        if (name === "namespace" && newValue) {
-            setValidate(false);
-        }
-        if (name === "multiple" && newValue === "on") {
-            setDatatype ({multiple: true});
-        } else if (name === "multiple") {
-            setDatatype ({multiple: false});
+    
+        if ((name === "multiple" || name === "mandatory") && newValue === "on") {
+            setDatatype ({[name]: true});
+        } else if (name === "multiple" || name === "mandatory") {
+            setDatatype ({[name]: false});
         } else {
             setDatatype({ [name]: newValue });
         }
@@ -127,14 +125,24 @@ const Metadata = (props) => {
     const handleAddDatatype = e => {
         props.authCheckAgent();
         setValidate(false);
-        
+
         if (datatype.name === "" || datatype.name.trim().length < 1) {
             setValidate(true);
             return;
         }
+
+        const datatypeView = {
+          name: datatype.name,
+          description: datatype.description,
+          namespace: datatype.namespace ?? namespaceList[0],
+          multiple: datatype.multiple,
+          category: datatype.category,
+          mandatory: datatype.mandatory,
+        }
+        
         if (!datatype.namespace) {
-            setValidate(true);
-            return;
+            // default namespace
+            setDatatype({ namespace: namespaceList[0] });
         }
 
         let categoryId = datatype.category;
@@ -148,8 +156,8 @@ const Metadata = (props) => {
         }
         
         setShowLoading(true);
-        let url = "api/metadata/adddatatype?categoryid=" + categoryId;
-        postJson (url, datatype, getAuthorizationHeader()).then ( (data) => {
+        let url = "api/metadata/adddatatype?categoryid=" + categoryId + "&mandatory=" + datatype.mandatory;
+        postJson (url, datatypeView, getAuthorizationHeader()).then ( (data) => {
             setEnableDatatypeAdd(false);
             getCategories();
             setShowLoading(false);
@@ -159,6 +167,7 @@ const Metadata = (props) => {
                 description: "",
                 namespace: namespaceList[0],
                 multiple: false,
+                mandatory: false,
                 category: null,
             })
           }).catch (function(error) {
@@ -204,6 +213,7 @@ const Metadata = (props) => {
                 description: "",
                 namespace: namespaceList[0],
                 multiple: false,
+                mandatory: false,
                 category: null,
             })
           }).catch (function(error) {
@@ -517,6 +527,20 @@ const Metadata = (props) => {
                       onChange={handleChange}/>
               </Col>
           </Form.Group>
+          <Form.Group
+              as={Row}
+              controlId="mandatory"
+              className="gg-align-center mb-3"
+              >
+              <Col xs={12} lg={9}>
+                  <FormLabel label="Mandatory" />
+                  <Form.Check
+                      type="checkbox"
+                      name="mandatory"
+                      defaultChecked={false}
+                      onChange={handleChange}/>
+              </Col>
+          </Form.Group>
         </Form>
         <Loading show={showLoading}></Loading> </>);
     }
@@ -631,6 +655,21 @@ const Metadata = (props) => {
                           onChange={handleChange}/>
                   </Col>
               </Form.Group>
+              <Form.Group
+                as={Row}
+                controlId="mandatory"
+                className="gg-align-center mb-3"
+                >
+                <Col xs={12} lg={9}>
+                    <FormLabel label="Mandatory" />
+                    <Form.Check
+                        type="checkbox"
+                        name="mandatory"
+                        defaultChecked={datatype.mandatory}
+                        disabled={readOnly}
+                        onChange={handleChange}/>
+                </Col>
+            </Form.Group>
             </Form>
             <Loading show={showLoading}></Loading> </>);
         }
@@ -745,6 +784,7 @@ const Metadata = (props) => {
                             description: "",
                             namespace: null,
                             multiple: false,
+                            mandatory: false,
                             category: null,
                         })
                         setCategory(node);
