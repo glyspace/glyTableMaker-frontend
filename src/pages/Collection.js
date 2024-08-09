@@ -76,6 +76,7 @@ const Collection = (props) => {
     const [glycanTags, setGlycanTags] = useState([]);
 
     const [activeStep, setActiveStep] = useState(0);
+    const [glygen, setGlygen] = useState(false);
 
     const steps = ["Select metadata", "Enter values"];
 
@@ -250,7 +251,7 @@ const Collection = (props) => {
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 setError(true);
-                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+                setTextAlertInputMetadata ({"show": true, "message": error.response.data["message"]});
             } else {
                 axiosError(error, null, setAlertDialogInput);
             }
@@ -311,21 +312,36 @@ const Collection = (props) => {
         accessorKey: 'type.description',
         header: 'Description',
         size: 100,
+        id: 'typeDescr',
         },
         {
         accessorKey: 'value',
         header: 'Value',
         size: 150,
         },
+        {
+            accessorKey: 'valueId',
+            header: 'Value ID',
+            size: 150,
+        },
+        {
+            accessorKey: 'valueUri',
+            header: 'Value URI',
+            size: 150,
+        },
     ],
     [],
     );
 
     const saveColumnVisibilityChanges = (columnVisibility) => {
+        saveColumnVisibility (columnVisibility, "GLYCANINCOLLECTION");
+    }
+
+    const saveColumnVisibility = (columnVisibility, tableName) => {
         var columnSettings = [];
         for (var column in columnVisibility) {
           columnSettings.push ({
-            "tableName": "GLYCANINCOLLECTION",
+            "tableName": tableName,
             "columnName": column,
             "visible" :  columnVisibility[column] ? true: false,
           });
@@ -335,7 +351,11 @@ const Collection = (props) => {
         }).catch(function(error) {
           axiosError(error, null, setAlertDialogInput);
         });
-      }
+    }
+
+    const saveMetadataColumnVisibilityChanges = (columnVisibility) => {
+        saveColumnVisibility(columnVisibility, "METADATA");
+    }
 
     const listGlycans = () => {
         return (
@@ -393,13 +413,16 @@ const Collection = (props) => {
         let copyValues = [...selectedMetadataValue];
         let added = [];
         let addedValues = [];
-        copy.map ((d, index) => {
+        let index = 0;
+        for (let d of copy) {
             const name = getDatatypeName(d);
-            if (insert && insert < name) {
-                added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)]
-                addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)]
+            if (insert && insert.toLowerCase() <= name.toLowerCase()) {
+                added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
+                addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)];
+                break;
             }
-        });
+            index++;
+        };
         handleMetadataSelectionChange (added, false);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
@@ -449,6 +472,24 @@ const Collection = (props) => {
         return false;
     }
 
+    const isMandatory = (datatypeId) => {
+        const datatype = getDatatype(datatypeId);
+        if (datatype) 
+            return datatype.mandatory;   
+        return false;
+    }
+
+    const isSecondCopy = (datatypeId, index) => {
+        if (index > 0) {
+            for (let i = 0; i < index; i++) {
+                if (selectedMetadataItems[i] === datatypeId) {
+                    return true; // this is the second or later copy
+                }
+            }
+        }
+        return false;
+    }
+
     function getStepContent (stepIndex) {
         switch (stepIndex) {
             case 0:
@@ -481,10 +522,14 @@ const Collection = (props) => {
                     <>
                     {selectedMetadataItems.map ((datatypeId, index) => {
                         const dropdown = isDropdown(datatypeId);
+                        const mandatory = isMandatory(datatypeId);
+                        const secondCopy = isSecondCopy (datatypeId, index);
                         return (
                         <Row>
                             <Col style={{marginTop: "15px"}} md="4">
-                            <span>{getDatatypeName(datatypeId)}</span>
+                            {mandatory ? 
+                            <FormLabel label={getDatatypeName(datatypeId)} className="required-asterik"/> :
+                            <FormLabel label={getDatatypeName(datatypeId)}/> }
                             </Col>
                             <Col style={{marginTop: "10px"}} md="5">
                                 <Autocomplete
@@ -517,12 +562,12 @@ const Collection = (props) => {
                                 />
                             </Col>
                             <Col style={{marginTop: "10px", display: "flex", justifyContent:"left"}} md="3">
-                            
+                            {(!mandatory || (mandatory && secondCopy)) && (
                             <Tooltip title="Remove this metadata">
                                 <IconButton color="error" onClick={(event) => {removeMetadataItems(index)}}>
                                 <DeleteIcon />
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>)}
                             {isMultiple (datatypeId) && (
                               <Tooltip title="Add another copy of this metadata">
                               <IconButton color="primary" onClick={(event) => {addItemToSelection(datatypeId)}}>
@@ -541,9 +586,11 @@ const Collection = (props) => {
     function getNavigationButtons() {
         return (
           <div className="text-center">
+            {!glygen &&
             <Button disabled={activeStep === 0} onClick={handleBack} className="gg-btn-blue gg-ml-20 gg-mr-20">
               Back
             </Button>
+            }
             {activeStep < steps.length - 1 &&
             <Button variant="contained" className="gg-btn-blue gg-ml-20" onClick={handleNext}>
                Next
@@ -567,7 +614,7 @@ const Collection = (props) => {
                 second = getDatatypeName(b);
             }
 
-            if (first && first > second)
+            if (first && first.toLowerCase() > second.toLowerCase())
                 return 1;
             else
                 return -1;
@@ -745,15 +792,16 @@ const Collection = (props) => {
             metadata = [];
 
         let allMetadataToSubmit = [];
+        let error = false;
         selectedMetadataValue.map ((selected, index) => {
             // check if the metadata already exists, if so, we need to check if it is allowed to be multiple
             if (!selectedDatatype[index].multiple) {
                 const existing = metadata.find ((meta) => meta.type.name === selectedDatatype[index].name);
                 if (existing) {
-                    setTextAlertInput({"show": true, "message": "Multiple copies are not allowed for " + selectedDatatype[index].name});
-                    ScrollToTop();
-                    setEnableAddMetadata(false);
-                    return;
+                    setTextAlertInputMetadata({"show": true, "message": "Multiple copies are not allowed for " + selectedDatatype[index].name});
+                    error = true;
+                    //setEnableAddMetadata(false);
+                    //return;
                 }
             }
             if (selectedOption[index]) {
@@ -774,6 +822,9 @@ const Collection = (props) => {
                 allMetadataToSubmit.push(m);
             }
         });
+
+        if (error) 
+            return;
 
         let allValid = true;
         let mapPromises = [];
@@ -802,8 +853,7 @@ const Collection = (props) => {
 
         if (allValid) {
             setTextAlertInputMetadata({"show": false, id: ""});
-            setEnableAddMetadata(false);
-
+            
             // get the canonical form
             postJson ("api/util/getcanonicalform", allMetadataToSubmit,
                 getAuthorizationHeader()).then ((data) => {
@@ -811,6 +861,7 @@ const Collection = (props) => {
                 allMetadataToSubmit = data.data.data;
                 const updated = [...metadata, ...allMetadataToSubmit];
                 setUserSelection ({"metadata": updated});
+                setEnableAddMetadata(false);
             }
             }).catch (function(error) {
                 if (error && error.response && error.response.data) {
@@ -822,6 +873,21 @@ const Collection = (props) => {
         }
 
         setShowLoading (false);
+    }
+
+    const setGlygenMandatoryMetadata = () => {
+        let added = [];
+        categories.map ((category, index) => {
+            if (category.categoryId === 1) {   // GlyGen Glycomics Data
+                if (category.dataTypes) {
+                    category.dataTypes.map ((d, index) => {
+                        added.push (d.datatypeId);
+                    });
+                }
+            }
+        });
+        handleMetadataSelectionChange(added, true);
+        setSelectedMetadataItems(added);
     }
 
     const handleChangeDownloadForm = e => {
@@ -1208,10 +1274,21 @@ const Collection = (props) => {
                             setSelectedOption([]);
                             setValidationMessage([]);
                             setActiveStep(0);
+                            setGlygen(false);
                             setEnableAddMetadata(true);
                          }
                         }>
                          Add Metadata
+                        </Button>
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                         disabled={error} onClick={()=> {
+                            setGlygenMandatoryMetadata();
+                            setGlygen(true);
+                            setActiveStep(1);
+                            setEnableAddMetadata(true);
+                         }
+                        }>
+                         Add GlyGen Metadata
                         </Button>
                         </div>
                     </Col>
@@ -1225,6 +1302,8 @@ const Collection = (props) => {
                     enableRowActions={true}
                     delete={deleteMetadataFromTable}
                     setAlertDialogInput={setAlertDialogInput}
+                    columnsettingsws="api/setting/getcolumnsettings?tablename=METADATA"
+                    saveColumnVisibilityChanges={saveMetadataColumnVisibilityChanges}
                 />
             </Card.Body>
           </Card>

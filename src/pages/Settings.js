@@ -20,6 +20,7 @@ const Settings = (props) => {
         "COLLECTION": "Collections",
         "COC": "Collections of Collections",
         "GLYCANINCOLLECTION": "Glycans (in Collection)",
+        "METADATA" : "Metadata",
     }
 
     const [columnVisibility, setColumnVisibility] = useState({
@@ -95,6 +96,29 @@ const Settings = (props) => {
                 "visible": true,
             },
         },
+        "METADATA" : {
+            "name" : {
+                "label" : "Name",
+                "visible" : true,
+            },
+            "typeDescr" : {
+                "label" : "Description",
+                "visible": true,
+            },
+            
+            "value": {
+                "label": 'Value',
+                "visible": true,
+            },
+            "valueId": {
+                "label": 'Value ID',
+                "visible": false,
+            },
+            "valueUri": {
+                "label": 'Value URI',
+                "visible": false,
+            },   
+        },
     });   // map containing column visibility for each table type
     const [compositionType, setCompositionType] = useState (null); 
     const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
@@ -130,6 +154,14 @@ const Settings = (props) => {
                 visibilityList = columnVisibility["GLYCANINCOLLECTION"];
                 data.data["GLYCANINCOLLECTION"] && 
                     data.data["GLYCANINCOLLECTION"].map ((setting, index) => {
+                        if (visibilityList[setting.columnName]) {
+                            visibilityList[setting.columnName]["visible"] = setting.visible;
+                        }
+                });
+
+                visibilityList = columnVisibility["METADATA"];
+                data.data["METADATA"] && 
+                    data.data["METADATA"].map ((setting, index) => {
                         if (visibilityList[setting.columnName]) {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
