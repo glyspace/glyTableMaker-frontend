@@ -85,7 +85,7 @@ const Collection = (props) => {
     const [activeStep, setActiveStep] = useState(0);
     const [glygen, setGlygen] = useState(false);
 
-    const [contributor, setContributor] = useState();
+    const [contributor, setContributor] = useState(null);
     const [userProfile, setUserProfile] = useState({});
 
     const tableMakerSoftware = {
@@ -583,8 +583,7 @@ const Collection = (props) => {
                             <Col style={{marginTop: "10px"}} md="5">
                                  {dType && dType.name === "Contributor" && (
                                     <>
-                                    <TextField style={{marginRight:"10px", width: '80%'}} disabled value={contributor} variant="outlined"/>
-                                    <ContributorTable setContributor={setContributor} user={userProfile} software={tableMakerSoftware}/>
+                                    <ContributorTable setContributor={setContributor} user={userProfile} software={tableMakerSoftware} contributor={contributor}/>
                                     { /** <Button className="gg-btn-blue-sm mt-2" onClick={(e)=> {setEnableContributorDialog(true);}}>Edit</Button> **/}
                                     </>)}
                                  {dType && dType.name !== "Contributor" && (

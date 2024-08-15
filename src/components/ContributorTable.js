@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -32,7 +33,8 @@ const ContributorTable = (props) => {
   const [editedSoftwareData, setEditedSoftwareData] = useState({});
   const [data, setData] = useState(props.user ? [props.user] : []);
   const [softwareData, setSoftwareData] = useState(props.software ? [props.software] : []);
-  const [contributorOpen, setContributorOpen] = React.useState(false);
+  const [contributorOpen, setContributorOpen] = useState(false);
+  const [contributor, setContributor] = useState(props.contributor ?? null);
 
   const roles = [ "createdBy", "contributedBy", "authoredBy", "curatedBy"];
   const softwareRoles = ["importedFrom","retrievedFrom", "createdWith"];
@@ -438,31 +440,37 @@ const getContributorForm = () => {
 }
 
 const handleContributorChange = (values, softwareValues) => {
-  var contributor= "";
+  var contrib= "";
   values && values.map ((value) => {
-    if (contributor.length != 0) { // not the first one
-      contributor += "|";
+    if (contrib.length != 0) { // not the first one
+      contrib += "|";
     }
-    contributor += value.role + ":" + value.name;
-    contributor += value.email || value.organization ? " (" : "";
-    contributor += value.email ? value.email: "";
-    contributor += value.organization ? (value.email ? ", " + value.organization : value.organization) : "";
-    contributor += value.email || value.organization ? " )" : "";
+    contrib += value.role + ":" + value.name;
+    contrib += value.email || value.organization ? " (" : "";
+    contrib += value.email ? value.email: "";
+    contrib += value.organization ? (value.email ? ", " + value.organization : value.organization) : "";
+    contrib += value.email || value.organization ? ")" : "";
   });
   softwareValues && softwareValues.map ((value) => {
-    if (contributor.length != 0) { // not the first one
-      contributor += "|";
+    if (contrib.length != 0) { // not the first one
+      contrib += "|";
     }
-    contributor += value.role + ":" + value.name;
-    contributor += value.url ? " (" + value.url + ")" : "";
+    contrib += value.role + ":" + value.name;
+    contrib += value.url ? " (" + value.url + ")" : "";
   });
 
-  props.setContributor && props.setContributor(contributor);
+  setContributor(contrib);
+  props.setContributor && props.setContributor(contrib);
   setContributorOpen(false);
 }
 
 return (
   <React.Fragment>
+    <TextField 
+         style={{marginRight:"10px", width: '80%'}} 
+         onClick={handleOpen} 
+         inputProps={{ readOnly: true }}
+         value={contributor} variant="outlined"/>
     <Button className="gg-btn-blue-reg mt-2" onClick={handleOpen}>Edit</Button>
     <Dialog
       maxWidth="lg"
