@@ -1,0 +1,10 @@
+{
+    "peopleRole" : {
+        "text" : "createdBy: This could be someone who created the dataset or entry. contributedBy: This could be someone who provided the data and may not be the one who generated the data. The person could have have made modifications to the data. authoredBy: This could be someone who authored and generated the data. curatedBy: This is someone who curates data from the publication or raw data.",
+        "url" : "https://wiki.glygen.org"
+    },
+    "softwareRole" : {
+        "text" : "Software roles etc",
+        "url" : "https://wiki.glygen.org"
+    }
+}

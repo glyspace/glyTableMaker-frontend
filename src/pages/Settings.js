@@ -210,7 +210,7 @@ const Settings = (props) => {
       }
     
       function valuetext(value) {
-        setCompositionType(value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED");
+        setCompositionType(value === 0 ? "BASE" : value === 1 ? "GLYGEN" : "DEFINED");
         return value;
      }
 

@@ -34,6 +34,7 @@ const FileUpload = (props) => {
     const [tag, setTag] = useState("");
     const [validate, setValidate] = useState(false);
     const [enableReportSent, setEnableReportSent] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
       fetchData();
@@ -253,7 +254,9 @@ const FileUpload = (props) => {
               <IconButton color="error" disabled={row.original.status==="PROCESSING"}>
                 <DeleteIcon 
                 onClick={()=> {
-                    deleteUpload(row.original.id);
+                    setUploadId (row.original.id);
+                    //deleteUpload(row.original.id);
+                    setShowDeleteModal(true);
                 }}/>
               </IconButton>
             </Tooltip>
@@ -307,6 +310,17 @@ const FileUpload = (props) => {
         <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         {enableErrorView && errorMessageTable()}
         {enableTagDialog && openAddTagDialog()}
+
+        <ConfirmationModal
+            showModal={showDeleteModal}
+            onCancel={() => setShowDeleteModal(false)}
+            onConfirm={() => {
+              deleteUpload (uploadId);
+              setShowDeleteModal (false);
+            }}
+            title="Confirm Delete"
+            body="Are you sure you want to delete this file upload? You will loose the ability to tag the glycans (as a group) uploaded from this file!"
+        />
         <Container maxWidth="xl">
             <div className="page-container">
             <PageHeading

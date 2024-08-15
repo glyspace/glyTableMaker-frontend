@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Autocomplete, Container, IconButton, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
-import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row, Modal} from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
@@ -15,6 +15,9 @@ import { ScrollToTop } from "../components/ScrollToTop";
 import FeedbackWidget from "../components/FeedbackWidget";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AddCircleOutline } from "@mui/icons-material";
+import HelpTooltip from "../components/HelpTooltip";
+import CloseIcon from '@mui/icons-material/Close';
+import ContributorTable from "../components/ContributorTable";
 
 let idCounter = 1000;
 
@@ -22,6 +25,10 @@ const Collection = (props) => {
     const [searchParams] = useSearchParams();
     let collectionId = searchParams.get("collectionId");
     const navigate = useNavigate();
+
+    var base = process.env.REACT_APP_BASENAME;
+    const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
+
     const [error, setError] = useState(false);
     const [validate, setValidate] = useState(false);
     const [validMetadata, setValidMetadata] = useState([]);
@@ -78,6 +85,16 @@ const Collection = (props) => {
     const [activeStep, setActiveStep] = useState(0);
     const [glygen, setGlygen] = useState(false);
 
+    const [contributor, setContributor] = useState();
+    const [userProfile, setUserProfile] = useState({});
+
+    const tableMakerSoftware = {
+        id: 1,
+        name: "GlyTableMaker",
+        url: "https://glygen.ccrc.uga.edu/tablemaker",
+        role: "createdWith",
+    };
+
     const steps = ["Select metadata", "Enter values"];
 
     const [selectedMetadataItems, setSelectedMetadataItems] = useState([]);
@@ -102,6 +119,7 @@ const Collection = (props) => {
         getCategories();
         getStatusList();
         getGlycanTags();
+        getProfile();
         window.addEventListener("scroll", toggleSaveVisibility);
     }, []);
 
@@ -111,6 +129,29 @@ const Collection = (props) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
+
+    function getProfile() {
+        getJson ("api/account/user/" + username, getAuthorizationHeader()).then (({ data }) => {
+            if (data.data) {
+               const user = {
+                id: 1,
+                name: data.data.firstName + " " + (data.data.lastName && data.data.lastName !== null ? data.data.lastName : ""),
+                email: data.data.email,
+                organization: data.data.affiliation ?? "",
+                role: "createdBy",
+               } 
+               setUserProfile(user);
+               // set default contributor string
+               // fill in the defaults
+               let c = user.role + ":" + user.name + " (" + user.email + (user.organization && user.organization.length !== 0? ", " + userProfile.organization : "") + ")";
+               c += "|" + tableMakerSoftware.role + ":" + tableMakerSoftware.name + " (" + tableMakerSoftware.url + ")";
+               setContributor(c);
+            }
+            
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+          });
+    }
 
     function getStatusList() {
         getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
@@ -139,7 +180,7 @@ const Collection = (props) => {
     const onInputChange = (event, value, reason, index, dropdown) => {
         setTextAlertInputMetadata ({"show": false, "id":""});
         if (value) {
-          if (!dropdown) getTypeAhead(value, index);
+          if (!dropdown && reason === "input") getTypeAhead(value, index);
           const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
             if (i === index) {
               return value;
@@ -524,14 +565,29 @@ const Collection = (props) => {
                         const dropdown = isDropdown(datatypeId);
                         const mandatory = isMandatory(datatypeId);
                         const secondCopy = isSecondCopy (datatypeId, index);
+                        const dType = getDatatype(datatypeId);
                         return (
                         <Row>
                             <Col style={{marginTop: "15px"}} md="4">
                             {mandatory ? 
                             <FormLabel label={getDatatypeName(datatypeId)} className="required-asterik"/> :
                             <FormLabel label={getDatatypeName(datatypeId)}/> }
+                            <HelpTooltip
+                                title={dType ? dType.name: ""}
+                                text={dType && dType && dType.description ? dType.description : undefined}
+                                example={dType && dType.example ? dType.example : undefined}
+                                url={dType && dType.wikiUrl  ? dType.wikiUrl : undefined}
+                                urlText="Read more..."
+                            />
                             </Col>
                             <Col style={{marginTop: "10px"}} md="5">
+                                 {dType && dType.name === "Contributor" && (
+                                    <>
+                                    <TextField style={{marginRight:"10px", width: '80%'}} disabled value={contributor} variant="outlined"/>
+                                    <ContributorTable setContributor={setContributor} user={userProfile} software={tableMakerSoftware}/>
+                                    { /** <Button className="gg-btn-blue-sm mt-2" onClick={(e)=> {setEnableContributorDialog(true);}}>Edit</Button> **/}
+                                    </>)}
+                                 {dType && dType.name !== "Contributor" && (
                                 <Autocomplete
                                         freeSolo={!dropdown}
                                         disablePortal={dropdown}
@@ -552,14 +608,14 @@ const Collection = (props) => {
                                         }}
                                         onInputChange={(e, value, reason) => onInputChange(e, value, reason, index, dropdown)}
                                         getOptionLabel={(option) => option}
-                                        style={{ width: 400 }}
+                                        style={{ width: '100%' }}
                                         renderInput={(params) => (
                                         <TextField {...params} 
                                             error={validMetadata[index]} 
                                             helperText={validMetadata[index] ? validationMessage[index] : ""}
                                             disabled={!namespace[index]} label="Value" variant="outlined" />
                                         )}
-                                />
+                                />)}
                             </Col>
                             <Col style={{marginTop: "10px", display: "flex", justifyContent:"left"}} md="3">
                             {(!mandatory || (mandatory && secondCopy)) && (
@@ -767,9 +823,27 @@ const Collection = (props) => {
         setSelectedGlycans(previous);
     }
 
+    const fillInContributor = () => {
+        // fill in the contributor
+        for (let element of categories) {
+            if (element.dataTypes) {
+                const datatype = element.dataTypes.find ((item) => item.name === "Contributor");
+                if (datatype) {
+                    const index = selectedMetadataItems.findIndex ((item) => item === datatype.datatypeId);
+                    if (index != -1) {
+                        selectedMetadataValue[index] = contributor;
+                    }
+                }
+            }
+        }
+    }
+
     async function handleAddMetadata () {
         setTextAlertInputMetadata ({"show": false, "id": ""});
         console.log("adding metadata " + selectedMetadataValue);
+
+        fillInContributor();
+
         if (selectedMetadataValue.length === 0) {
             setTextAlertInputMetadata ({"show": true, "message": "Enter a value for all selected metadata"});
             return;
@@ -1100,6 +1174,7 @@ const Collection = (props) => {
                 title={"Download Glycans"}
                 body={downloadForm()}
             />
+            
             {showGlycanTable && (
                 <Modal
                     size="xl"
@@ -1125,31 +1200,50 @@ const Collection = (props) => {
             )}
 
             {enableAddMetadata && (
-                <Modal
-                    size="xl"
-                    aria-labelledby="contained-modal-title-vcenter"
+                <Dialog
+                    maxWidth="xl"
+                    fullWidth="true"
+                    aria-labelledby="parent-modal-title"
+                    aria-describedby="parent-modal-description"
+                    scroll="paper"
                     centered
-                    backdrop="static"
-                    show={enableAddMetadata}
-                    onHide={() => setEnableAddMetadata(false)}
+                    open={enableAddMetadata}
+                    onClose={(event, reason) => {
+                        if (reason && reason === "backdropClick")
+                            return;
+                        setEnableAddMetadata(false)
+                    }}
                 >
-                   <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                    <DialogTitle id="parent-modal-title">
+                        <Typography id="parent-modal-title" variant="h6" component="h2">
                         Add Metadata
-                    </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{
-                        maxHeight: 'calc(100vh - 250px)',
-                        overflowY: 'auto'
-                    }}>{addMetadataForm()}</Modal.Body>
-                    <Modal.Footer>
+                        </Typography>
+                    </DialogTitle>
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setEnableAddMetadata(false)}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        >
+                    <CloseIcon />
+                    </IconButton>
+                    <DialogContent dividers>
+                        <Typography id="parent-modal-description" sx={{ mt: 2 }}>
+                        {addMetadataForm()}
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
                         {getNavigationButtons()}
-                        {activeStep < steps.length - 1 && (
-                        <div style={{paddingRight: '38px', paddingLeft: '38px'}}></div>
+                        {/**activeStep < steps.length - 1 && (
+                        <div style={{paddingRight: '3%', paddingLeft: '3%'}}></div>
                         )}
                         {activeStep >= steps.length - 1 && (
-                        <div style={{paddingRight: '110px', paddingLeft: '110px'}}></div>
-                        )}
+                        <div style={{paddingRight: '8%', paddingLeft: '8%'}}></div>
+                        )**/}
                         <Button className="gg-btn-outline-reg"
                             onClick={()=> {
                                 setActiveStep(0);
@@ -1157,8 +1251,9 @@ const Collection = (props) => {
                             }}>Cancel</Button>
                         <Button className="gg-btn-blue-reg"
                             onClick={()=>handleAddMetadata()}>Submit</Button>
-                     </Modal.Footer> 
-                </Modal>
+                    </DialogActions>
+                     
+                </Dialog>
             )}
             <Form>
                 <Form.Group
@@ -1265,6 +1360,7 @@ const Collection = (props) => {
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
+                            setMetadataItemKey([]);
                             setSelectedMetadataValue([]);
                             setSelectedMetadataItems([]);
                             setNamespace([]);
@@ -1282,6 +1378,9 @@ const Collection = (props) => {
                         </Button>
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
+                            setOptions([]);
+                            setMetadataItemKey([]);
+                            setSelectedMetadataValue([]);
                             setGlygenMandatoryMetadata();
                             setGlygen(true);
                             setActiveStep(1);
