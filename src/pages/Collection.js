@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Autocomplete, Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row, Modal} from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
@@ -87,6 +87,11 @@ const Collection = (props) => {
 
     const [contributor, setContributor] = useState(null);
     const [userProfile, setUserProfile] = useState({});
+
+    const [canonicalForm, setCanonicalForm] = useState([]);
+    const [enableMultiValueSelect, setEnableMultiValueSelect] = useState(false);
+    const [multiValueSelectIndex, setMultiValueSelectIndex] = useState(-1);
+    const [selectedCanonical, setSelectedCanonical] = useState(null);
 
     const tableMakerSoftware = {
         id: 1,
@@ -177,19 +182,51 @@ const Collection = (props) => {
         });
     }
 
+    function getCanonicalForm (namespace, value, index) {
+        // get the canonical form
+        return postJson ("api/util/getcanonicalform?namespace=" + namespace + "&value=" + value,
+            null, getAuthorizationHeader()).then ((data) => {
+                if (data.data && data.data.data) {
+                    if (data.data.data.length > 1) {
+                        setCanonicalForm (data.data.data);
+                        setMultiValueSelectIndex(index);
+                        setEnableMultiValueSelect (true);
+                    } else {
+                        const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
+                            if (i === index) {
+                                return data.data.data[0].label;
+                            } else {
+                                return v;
+                            }
+                        });
+            
+                        setSelectedMetadataValue(nextSelectedMetadataValue);
+                    }
+                }
+            }).catch(function(error) {
+                axiosError(error, null, setAlertDialogInput);
+            });
+    }
+ 
     const onInputChange = (event, value, reason, index, dropdown) => {
+        if (!event) return;
         setTextAlertInputMetadata ({"show": false, "id":""});
         if (value) {
           if (!dropdown && reason === "input") getTypeAhead(value, index);
-          const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
-            if (i === index) {
-              return value;
-            } else {
-              return v;
-            }
-          });
+          if (!dropdown && reason === "reset") {
+             event && event.preventDefault();
+             getCanonicalForm (namespace[index], value, index);
+          } else {
+            const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
+                if (i === index) {
+                return value;
+                } else {
+                return v;
+                }
+            });
 
-          setSelectedMetadataValue(nextSelectedMetadataValue);
+            setSelectedMetadataValue(nextSelectedMetadataValue);
+          }
         } else { 
             const nextOptions = options.map ((o, i) => {
                 if (i === index && !dropdown) {
@@ -587,7 +624,9 @@ const Collection = (props) => {
                                     { /** <Button className="gg-btn-blue-sm mt-2" onClick={(e)=> {setEnableContributorDialog(true);}}>Edit</Button> **/}
                                     </>)}
                                  {dType && dType.name !== "Contributor" && (
-                                <Autocomplete
+                                    <>     
+                                    {enableMultiValueSelect && multiValueSelectIndex !== -1 && multiValueDialog()}                           
+                                    <Autocomplete
                                         freeSolo={!dropdown}
                                         disablePortal={dropdown}
                                         disabled={!namespace[index]}
@@ -614,7 +653,8 @@ const Collection = (props) => {
                                             helperText={validMetadata[index] ? validationMessage[index] : ""}
                                             disabled={!namespace[index]} label="Value" variant="outlined" />
                                         )}
-                                />)}
+                                />
+                                </>)}
                             </Col>
                             <Col style={{marginTop: "10px", display: "flex", justifyContent:"left"}} md="3">
                             {(!mandatory || (mandatory && secondCopy)) && (
@@ -636,6 +676,68 @@ const Collection = (props) => {
                     </>
                 );
         }
+    }
+
+    function multiValueDialog () {
+        return (
+            <Dialog
+                    maxWidth="sm"
+                    fullWidth="true"
+                    aria-labelledby="multivalue-modal-title"
+                    aria-describedby="multivaluee-modal-description"
+                    scroll="paper"
+                    centered
+                    open={enableMultiValueSelect}
+                    onClose={(event, reason) => {
+                        if (reason && reason === "backdropClick")
+                            return;
+                        setEnableMultiValueSelect(false);
+                        setMultiValueSelectIndex(-1);
+                    }}
+                >
+                    <DialogTitle id="multivalue-modal-title">
+                        <Typography id="multivalue-modal-title" variant="h6" component="h2">
+                        There are multiple matches for this selection. Select one: 
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                        {canonicalForm && 
+                        <FormControl>
+                        <RadioGroup
+                          aria-labelledby="demo-radio-buttons-group-label"
+                          name="radio-buttons-group"
+                        >
+                        {canonicalForm.map ((val, i) => {
+                            return <FormControlLabel 
+                                value={val.label} 
+                                control={<Radio />} 
+                                label={val.label}
+                                onChange={(event) => {
+                                    setSelectedCanonical (event.target.value);
+                                }} />
+                        })}
+                        </RadioGroup>
+                      </FormControl>}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button className="gg-btn-blue-reg"
+                            onClick={()=> {
+                                // set the selected metadatavalue
+                                const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
+                                    if (i === multiValueSelectIndex) {
+                                        return selectedCanonical;
+                                    } else {
+                                        return v;
+                                    }
+                                });
+                    
+                                setSelectedMetadataValue(nextSelectedMetadataValue);
+                                setEnableMultiValueSelect (false);
+                                setMultiValueSelectIndex(-1);
+                            }}>Select</Button>
+                    </DialogActions>
+            </Dialog>
+        )
     }
 
     function getNavigationButtons() {
@@ -736,7 +838,7 @@ const Collection = (props) => {
           default:
             return "Unknown stepIndex";
         }
-      }
+    }
 
     const addMetadataForm = () => {
         return (
@@ -926,9 +1028,13 @@ const Collection = (props) => {
 
         if (allValid) {
             setTextAlertInputMetadata({"show": false, id: ""});
+
+            const updated = [...metadata, ...allMetadataToSubmit];
+            setUserSelection ({"metadata": updated});
+            setEnableAddMetadata(false);
             
             // get the canonical form
-            postJson ("api/util/getcanonicalform", allMetadataToSubmit,
+         /*   postJson ("api/util/getcanonicalform", allMetadataToSubmit,
                 getAuthorizationHeader()).then ((data) => {
             if (data.data && data.data.data) {
                 allMetadataToSubmit = data.data.data;
@@ -942,7 +1048,7 @@ const Collection = (props) => {
                 } else {
                     axiosError(error, null, setAlertDialogInput);
                 }  
-            });
+            });*/
         }
 
         setShowLoading (false);
