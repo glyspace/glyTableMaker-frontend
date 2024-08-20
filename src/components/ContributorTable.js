@@ -445,7 +445,7 @@ const handleContributorChange = (values, softwareValues) => {
     if (contrib.length != 0) { // not the first one
       contrib += "|";
     }
-    contrib += value.role + ":" + value.name;
+    contrib += value.role + ":" + value.name.trim();
     contrib += value.email || value.organization ? " (" : "";
     contrib += value.email ? value.email: "";
     contrib += value.organization ? (value.email ? ", " + value.organization : value.organization) : "";
@@ -470,6 +470,8 @@ return (
          style={{marginRight:"10px", width: '80%'}} 
          onClick={handleOpen} 
          inputProps={{ readOnly: true }}
+         error={props.error} 
+         helperText={props.validationMessage}
          value={contributor} variant="outlined"/>
     <Button className="gg-btn-blue-reg mt-2" onClick={handleOpen}>Edit</Button>
     <Dialog

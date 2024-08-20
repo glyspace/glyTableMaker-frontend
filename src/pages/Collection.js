@@ -183,6 +183,7 @@ const Collection = (props) => {
     }
 
     function getCanonicalForm (namespace, value, index) {
+        if (!value || value.length === 0) return;
         // get the canonical form
         return postJson ("api/util/getcanonicalform?namespace=" + namespace + "&value=" + value,
             null, getAuthorizationHeader()).then ((data) => {
@@ -486,6 +487,7 @@ const Collection = (props) => {
 
     const addItemToSelection = (datatypeId) => {
         const insert = getDatatypeName(datatypeId);
+        const mandatory = isMandatory(datatypeId);
         // insert into the sorted array at the correct index
         let copy = [...selectedMetadataItems];
         let copyValues = [...selectedMetadataValue];
@@ -494,10 +496,13 @@ const Collection = (props) => {
         let index = 0;
         for (let d of copy) {
             const name = getDatatypeName(d);
-            if (insert && insert.toLowerCase() <= name.toLowerCase()) {
-                added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
-                addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)];
-                break;
+            const mandatory2 = isMandatory (d);
+            if (mandatory === mandatory2) {
+                if (insert && insert.toLowerCase() <= name.toLowerCase()) {
+                    added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
+                    addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)];
+                    break;
+                }
             }
             index++;
         };
@@ -620,7 +625,13 @@ const Collection = (props) => {
                             <Col style={{marginTop: "10px"}} md="5">
                                  {dType && dType.name === "Contributor" && (
                                     <>
-                                    <ContributorTable setContributor={setContributor} user={userProfile} software={tableMakerSoftware} contributor={contributor}/>
+                                    <ContributorTable 
+                                        setContributor={setContributor} 
+                                        user={userProfile} 
+                                        software={tableMakerSoftware} 
+                                        contributor={contributor}
+                                        error={validMetadata[index]}
+                                        validationMessage={validMetadata[index] ? validationMessage[index] : ""}/>
                                     { /** <Button className="gg-btn-blue-sm mt-2" onClick={(e)=> {setEnableContributorDialog(true);}}>Edit</Button> **/}
                                     </>)}
                                  {dType && dType.name !== "Contributor" && (
@@ -633,6 +644,16 @@ const Collection = (props) => {
                                         id={`"typeahead"_ ${ index }}`}
                                         key={metadataItemKey[index]}
                                         value={selectedMetadataValue[index] ?? ""}
+                                        onClose={(event, reason) => {
+                                            if (options[index].length === 0) return;
+                                            console.log("closing reason " + reason );
+                                            if (!dropdown && (reason === "selectOption" || reason === "blur")) {
+                                                getCanonicalForm (namespace[index], 
+                                                    reason === "selectOption" ? event.target.textContent : event.target.value, 
+                                                    index);
+                                            }
+                                        }}
+                                        isOptionEqualToValue={(option, value) => (dropdown || option === value)}
                                         options={options[index]}
                                         onChange={(e, value) => {
                                             const nextSelectedOption = selectedOption.map ((item, i) => {
@@ -686,13 +707,19 @@ const Collection = (props) => {
                     aria-labelledby="multivalue-modal-title"
                     aria-describedby="multivaluee-modal-description"
                     scroll="paper"
-                    centered
+                    
+                    sx={{ //You can copy the code below in your theme
+                        '& .MuiBackdrop-root': {
+                          backgroundColor: 'transparent' // Try to remove this to see the result
+                        }
+                      }}
                     open={enableMultiValueSelect}
                     onClose={(event, reason) => {
                         if (reason && reason === "backdropClick")
                             return;
                         setEnableMultiValueSelect(false);
                         setMultiValueSelectIndex(-1);
+                        setSelectedCanonical(null);
                     }}
                 >
                     <DialogTitle id="multivalue-modal-title">
@@ -706,6 +733,7 @@ const Collection = (props) => {
                         <RadioGroup
                           aria-labelledby="demo-radio-buttons-group-label"
                           name="radio-buttons-group"
+                          defaultValue={canonicalForm[0] && canonicalForm[0].label}
                         >
                         {canonicalForm.map ((val, i) => {
                             return <FormControlLabel 
@@ -725,7 +753,10 @@ const Collection = (props) => {
                                 // set the selected metadatavalue
                                 const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
                                     if (i === multiValueSelectIndex) {
-                                        return selectedCanonical;
+                                        if (selectedCanonical)
+                                            return selectedCanonical;
+                                        else 
+                                            return canonicalForm[0].label;
                                     } else {
                                         return v;
                                     }
@@ -734,6 +765,7 @@ const Collection = (props) => {
                                 setSelectedMetadataValue(nextSelectedMetadataValue);
                                 setEnableMultiValueSelect (false);
                                 setMultiValueSelectIndex(-1);
+                                setSelectedCanonical(null);
                             }}>Select</Button>
                     </DialogActions>
             </Dialog>
@@ -764,11 +796,22 @@ const Collection = (props) => {
         metadataItems.sort((a, b) => {
             var first;
             var second;
+            var firstMandatory;
+            var secondMandatory;
             if (typeof a === 'number') {  // datatype selected
                 first = getDatatypeName(a);
+                firstMandatory = isMandatory(a);
             }
             if (typeof b === 'number') {  // datatype selected
                 second = getDatatypeName(b);
+                secondMandatory = isMandatory(b);
+            }
+
+            if (firstMandatory < secondMandatory) {
+                return 1;
+            } 
+            if (secondMandatory < firstMandatory) {
+                return -1;
             }
 
             if (first && first.toLowerCase() > second.toLowerCase())
