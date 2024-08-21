@@ -603,6 +603,7 @@ const Collection = (props) => {
             case 1:
                 return (
                     <>
+                    {enableMultiValueSelect && multiValueSelectIndex !== -1 && multiValueDialog()} 
                     {selectedMetadataItems.map ((datatypeId, index) => {
                         const dropdown = isDropdown(datatypeId);
                         const mandatory = isMandatory(datatypeId);
@@ -635,8 +636,7 @@ const Collection = (props) => {
                                     { /** <Button className="gg-btn-blue-sm mt-2" onClick={(e)=> {setEnableContributorDialog(true);}}>Edit</Button> **/}
                                     </>)}
                                  {dType && dType.name !== "Contributor" && (
-                                    <>     
-                                    {enableMultiValueSelect && multiValueSelectIndex !== -1 && multiValueDialog()}                           
+                                    <>                           
                                     <Autocomplete
                                         freeSolo={!dropdown}
                                         disablePortal={dropdown}
@@ -1072,12 +1072,12 @@ const Collection = (props) => {
         if (allValid) {
             setTextAlertInputMetadata({"show": false, id: ""});
 
-            const updated = [...metadata, ...allMetadataToSubmit];
+            /*const updated = [...metadata, ...allMetadataToSubmit];
             setUserSelection ({"metadata": updated});
-            setEnableAddMetadata(false);
+            setEnableAddMetadata(false);*/
             
             // get the canonical form
-         /*   postJson ("api/util/getcanonicalform", allMetadataToSubmit,
+            postJson ("api/util/getallcanonicalforms", allMetadataToSubmit,
                 getAuthorizationHeader()).then ((data) => {
             if (data.data && data.data.data) {
                 allMetadataToSubmit = data.data.data;
@@ -1091,7 +1091,7 @@ const Collection = (props) => {
                 } else {
                     axiosError(error, null, setAlertDialogInput);
                 }  
-            });*/
+            });
         }
 
         setShowLoading (false);

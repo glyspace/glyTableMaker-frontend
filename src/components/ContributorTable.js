@@ -87,15 +87,31 @@ const ContributorTable = (props) => {
         ),
         editVariant: 'select',
         editSelectOptions: roles,
-        muiEditTextFieldProps: ({ row }) => ({
+        muiEditTextFieldProps: ({ cell, row }) => ({
           select: true,
-          error: !!validationErrors?.role,
-          helperText: validationErrors?.role,
-          onChange: (event) =>
+          error: !!validationErrors?.[cell.id],
+          helperText: validationErrors?.[cell.id],
+          onBlur: (event) => {
+            const validationError = !event.target.value || !validateRequired(event.target.value)
+              ? 'Required'
+              : undefined;
+            setValidationErrors({
+              ...validationErrors,
+              [cell.id]: validationError,
+            });
+          },
+          onChange: (event) => {
+            const validationError = !event.target.value || !validateRequired(event.target.value)
+              ? 'Required'
+              : undefined;
+            setValidationErrors({
+              ...validationErrors,
+              [cell.id]: validationError,
+            });
             setEditedData({
               ...editedData,
               [row.id]: { ...row.original, role: event.target.value },
-            }),
+            })},
         }),
       },
       {
@@ -108,7 +124,7 @@ const ContributorTable = (props) => {
           helperText: validationErrors?.[cell.id],
           //store edited user in state to be saved later
           onBlur: (event) => {
-            const validationError = !validateEmail(event.currentTarget.value)
+            const validationError = event.currentTarget.value.length > 0 && !validateEmail(event.currentTarget.value)
               ? 'Incorrect Email Format'
               : undefined;
             setValidationErrors({
@@ -125,8 +141,17 @@ const ContributorTable = (props) => {
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'text',
           required: false,
+          error: !!validationErrors?.[cell.id],
+          helperText: validationErrors?.[cell.id],
           //store edited user in state to be saved later
           onBlur: (event) => {
+            const validationError = !validateLength(event.currentTarget.value)
+              ? 'Length cannot be longer than 255 characters'
+              : undefined;
+            setValidationErrors({
+              ...validationErrors,
+              [cell.id]: validationError,
+            });
             setEditedData({ ...editedData, [row.id]: row.original });
           },
         }),
@@ -238,7 +263,7 @@ const ContributorTable = (props) => {
 
   //CREATE action
   const handleCreateSoftwareRow = async ({ values, table }) => {
-    const newValidationErrors = validateRow(values);
+    const newValidationErrors = validateSoftwareRow(values);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationSoftwareErrors(newValidationErrors);
       return;
@@ -279,13 +304,24 @@ const ContributorTable = (props) => {
   };
 
   const table = useMaterialReactTable({
+    muiTableBodyCellProps: {
+      sx: {
+        border: '0.5px solid rgba(200, 200, 200, .5)',
+      },
+    },
+    muiTableHeadCellProps: {
+      sx: {
+        border: '0.5px solid rgba(200, 200, 200, .5)',
+      },
+    },
     columns,
     data: data,
     createDisplayMode: 'row', // ('modal', and 'custom' are also available)
-    editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
-    enableEditing: true,
+    editDisplayMode: 'cell', // ('modal', 'row', 'cell', and 'custom' are also
+    enableEditing: (row) => (row.id !== 1),
     enableRowActions: true,
     positionActionsColumn: 'last',
+    positionCreatingRow: 'bottom',
     getRowId: (row) => row.id,
     muiTableContainerProps: {
       sx: {
@@ -297,7 +333,7 @@ const ContributorTable = (props) => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Delete">
-          <IconButton disabled={row.id === 1} color="error" onClick={() => deleteRow(row)}>
+          <IconButton color="error" onClick={() => deleteRow(row)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -340,11 +376,21 @@ const ContributorTable = (props) => {
   });
 
   const softwareTable = useMaterialReactTable({
+    muiTableBodyCellProps: {
+      sx: {
+        border: '0.5px solid rgba(200, 200, 200, .5)',
+      },
+    },
+    muiTableHeadCellProps: {
+      sx: {
+        border: '0.5px solid rgba(200, 200, 200, .5)',
+      },
+    },
     columns: softwareColumns,
     data: softwareData,
     createDisplayMode: 'row', // ('modal', and 'custom' are also available)
     editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
-    enableEditing: true,
+    enableEditing: (row) => (row.id !== 1),
     enableRowActions: true,
     positionActionsColumn: 'last',
     getRowId: (row) => row.id,
@@ -401,8 +447,8 @@ const ContributorTable = (props) => {
   });
 
 const validateRequired = (value) => !!value.length;
+const validateLength = (value) => value.length < 255;
 const validateEmail = (email) =>
-  !!email.length &&
   email
     .toLowerCase()
     .match(
@@ -417,7 +463,20 @@ function validateRow(row) {
     role: !validateRequired(row.role) 
       ? 'Role is required'
       : '', 
-    email: row.email && !validateEmail(row.email) ? 'Incorrect Email Format' : '',
+    email: row.email && row.email.length > 0 && !validateEmail(row.email) ? 'Incorrect Email Format' : '',
+    organization: !validateLength (row.organization) ? "Length cannot be longer than 255 characters." : '',
+  };
+}
+
+function validateSoftwareRow(row) {
+  return {
+    name: !validateRequired(row.name)
+      ? 'Name is Required'
+      : '',
+    role: !validateRequired(row.role) 
+      ? 'Role is required'
+      : '', 
+    url: !validateLength (row.url) ? "Length cannot be longer than 255 characters." : '',
   };
 }
 
