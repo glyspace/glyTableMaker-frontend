@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useReducer, useState } from 'react';
 import {
   MaterialReactTable,
   // createRow,
@@ -21,6 +21,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Card } from 'react-bootstrap';
 import HelpTooltip from './HelpTooltip';
 import helpText from '../data/helpText.json';
+import { isValidURL } from '../utils/api';
+import TextAlert from "../components/TextAlert";
 
 let peopleId = 2;
 let softwareId = 2;
@@ -38,6 +40,11 @@ const ContributorTable = (props) => {
 
   const roles = [ "createdBy", "contributedBy", "authoredBy", "curatedBy"];
   const softwareRoles = ["importedFrom","retrievedFrom", "createdWith"];
+
+  const [textAlertInput, setTextAlertInput] = useReducer(
+    (state, newState) => ({ ...state, ...newState }),
+    { show: false, id: "" }
+  );
 
   const columns = useMemo(
     () => [
@@ -99,6 +106,10 @@ const ContributorTable = (props) => {
               ...validationErrors,
               [cell.id]: validationError,
             });
+            setEditedData({
+              ...editedData,
+              [row.id]: { ...row.original, role: event.target.value },
+            })
           },
           onChange: (event) => {
             const validationError = !event.target.value || !validateRequired(event.target.value)
@@ -177,8 +188,8 @@ const ContributorTable = (props) => {
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
-          error: !!validationErrors?.[cell.id],
-          helperText: validationErrors?.[cell.id],
+          error: !!validationSoftwareErrors?.[cell.id],
+          helperText: validationSoftwareErrors?.[cell.id],
           //store edited user in state to be saved later
           onBlur: (event) => {
             const validationError = !validateRequired(event.currentTarget.value)
@@ -208,10 +219,23 @@ const ContributorTable = (props) => {
         ),
         editVariant: 'select',
         editSelectOptions: softwareRoles,
-        muiEditTextFieldProps: ({ row }) => ({
+        muiEditTextFieldProps: ({ cell, row }) => ({
           select: true,
-          error: !!validationErrors?.role,
-          helperText: validationErrors?.role,
+          error: !!validationSoftwareErrors?.[cell.id],
+          helperText: validationSoftwareErrors?.[cell.id],
+          onBlur: (event) => {
+            const validationError = !event.target.value || !validateRequired(event.target.value)
+              ? 'Required'
+              : undefined;
+            setValidationSoftwareErrors({
+              ...validationSoftwareErrors,
+              [cell.id]: validationError,
+            });
+            setEditedSoftwareData({
+              ...editedSoftwareData,
+              [row.id]: { ...row.original, role: event.target.value },
+            })
+          },
           onChange: (event) =>
             setEditedSoftwareData({
               ...editedSoftwareData,
@@ -225,8 +249,17 @@ const ContributorTable = (props) => {
         muiEditTextFieldProps: ({ cell, row }) => ({
           type: 'text',
           required: false,
+          error: !!validationSoftwareErrors?.[cell.id],
+          helperText: validationSoftwareErrors?.[cell.id],
           //store edited user in state to be saved later
           onBlur: (event) => {
+            const validationError = !validateUrl(event.currentTarget.value)
+              ? 'Invalid URL'
+              : undefined;
+            setValidationSoftwareErrors({
+              ...validationSoftwareErrors,
+              [cell.id]: validationError,
+            });
             setEditedSoftwareData({ ...editedSoftwareData, [row.id]: row.original });
           },
         }),
@@ -243,6 +276,7 @@ const ContributorTable = (props) => {
   const handleClose = (event, reason) => {
       if (reason && reason === "backdropClick")
           return;
+      setTextAlertInput({"show": false, id: ""});
       setContributorOpen(false);
   };
 
@@ -296,8 +330,14 @@ const ContributorTable = (props) => {
 
   //UPDATE action
   const handleSaveData = async () => {
+    setTextAlertInput({"show": false, id: ""});
     if (Object.values(validationErrors).some((error) => !!error)) return;
     if (Object.values(validationSoftwareErrors).some((error) => !!error)) return;
+
+    if (table.getState().creatingRow || softwareTable.getState().creatingRow) {
+      setTextAlertInput ({"show": true, "message": "You have unsaved changes. Save or Cancel them before saving the contributor information"});
+      return;
+    }
     handleContributorChange (data, softwareData);
     setEditedData({});
     setEditedSoftwareData({})
@@ -455,6 +495,8 @@ const validateEmail = (email) =>
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     );
 
+const validateUrl = (url) => isValidURL(url);
+
 function validateRow(row) {
   return {
     name: !validateRequired(row.name)
@@ -554,10 +596,11 @@ return (
             >
         <CloseIcon />
         </IconButton>
+        <TextAlert alertInput={textAlertInput}/>
         <DialogContent dividers>{getContributorForm()}</DialogContent>
         <DialogActions>
             <Button className="gg-btn-outline-reg" onClick={handleClose}>Cancel</Button>
-            <Button className="gg-btn-blue-reg" onClick={handleSaveData}>OK</Button>
+            <Button className="gg-btn-blue-reg" onClick={handleSaveData}>SAVE</Button>
         </DialogActions>
     </Dialog>
   </React.Fragment>

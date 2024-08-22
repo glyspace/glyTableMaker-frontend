@@ -194,7 +194,7 @@ const Collection = (props) => {
                         setEnableMultiValueSelect (true);
                     } else {
                         const nextSelectedMetadataValue = selectedMetadataValue.map((v, i) => {
-                            if (i === index) {
+                            if (i === index && data.data.data[0]) {
                                 return data.data.data[0].label;
                             } else {
                                 return v;
