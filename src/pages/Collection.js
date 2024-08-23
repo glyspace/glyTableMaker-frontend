@@ -209,12 +209,12 @@ const Collection = (props) => {
             });
     }
  
-    const onInputChange = (event, value, reason, index, dropdown) => {
+    const onInputChange = (event, value, reason, index, dropdown, typeahead) => {
         if (!event) return;
         setTextAlertInputMetadata ({"show": false, "id":""});
         if (value) {
-          if (!dropdown && reason === "input") getTypeAhead(value, index);
-          if (!dropdown && reason === "reset") {
+          if (!dropdown && typeahead && reason === "input") getTypeAhead(value, index);
+          if (!dropdown && typeahead && reason === "reset") {
              event && event.preventDefault();
              getCanonicalForm (namespace[index], value, index);
           } else {
@@ -548,6 +548,14 @@ const Collection = (props) => {
         return false;
     }
 
+    const isTypeahead = (datatypeId) => {
+        var datatype = getDatatype(datatypeId);
+        if (datatype) {
+            return !! (datatype.namespace.fileIdentifier && (datatype.namespace.hasUri || datatype.namespace.hasId));
+        }
+        return false;
+    }
+
     const isMultiple = (datatypeId) => {
         const datatype = getDatatype(datatypeId);
         if (datatype) 
@@ -606,6 +614,7 @@ const Collection = (props) => {
                     {enableMultiValueSelect && multiValueSelectIndex !== -1 && multiValueDialog()} 
                     {selectedMetadataItems.map ((datatypeId, index) => {
                         const dropdown = isDropdown(datatypeId);
+                        const typeahead = isTypeahead(datatypeId);
                         const mandatory = isMandatory(datatypeId);
                         const secondCopy = isSecondCopy (datatypeId, index);
                         const dType = getDatatype(datatypeId);
@@ -645,9 +654,9 @@ const Collection = (props) => {
                                         key={metadataItemKey[index]}
                                         value={selectedMetadataValue[index] ?? ""}
                                         onClose={(event, reason) => {
-                                            if (options[index].length === 0) return;
                                             console.log("closing reason " + reason );
-                                            if (!dropdown && (reason === "selectOption" || reason === "blur")) {
+                                            if (options[index].length === 0) return;
+                                            if (!dropdown && typeahead && (reason === "selectOption" || reason === "blur")) {
                                                 getCanonicalForm (namespace[index], 
                                                     reason === "selectOption" ? event.target.textContent : event.target.value, 
                                                     index);
@@ -665,7 +674,7 @@ const Collection = (props) => {
                                             });
                                             setSelectedOption(nextSelectedOption);
                                         }}
-                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index, dropdown)}
+                                        onInputChange={(e, value, reason) => onInputChange(e, value, reason, index, dropdown, typeahead)}
                                         getOptionLabel={(option) => option}
                                         style={{ width: '100%' }}
                                         renderInput={(params) => (
