@@ -106,9 +106,17 @@ const Collection = (props) => {
 
     const glycanRef = useRef(null);
     const metadataRef = useRef(null);
+    const metadataDialogRef = useRef(null);
     const handleClick = (ref) => {
         ref.current?.scrollIntoView({behavior: 'smooth'});
     };
+
+    const scrollToDialogTop = () => {
+        metadataDialogRef.current?.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+    }
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -488,6 +496,7 @@ const Collection = (props) => {
     const addItemToSelection = (datatypeId) => {
         const insert = getDatatypeName(datatypeId);
         const mandatory = isMandatory(datatypeId);
+        const multiple = isMultiple(datatypeId);
         // insert into the sorted array at the correct index
         let copy = [...selectedMetadataItems];
         let copyValues = [...selectedMetadataValue];
@@ -512,9 +521,21 @@ const Collection = (props) => {
     }
 
     const handleSelectedItemsChange = (event, ids) => {
+        setTextAlertInputMetadata({"show": false, "message":""});
         let filteredSelection = [];
         ids.map ((item, index) => {
             if (typeof item === 'number') {
+                const multiple = isMultiple(item);
+                if (!multiple && userSelection.metadata) {
+                    // check if it already exists
+                    const existing = userSelection.metadata.find ((meta) => 
+                        meta.type.datatypeId === item);
+                    if (existing) {
+                        setTextAlertInputMetadata({"show" : true, message: getDatatypeName(item) + " already exists and is not added to the list. If you'd like to override, please go back and delete it first!"});
+                        scrollToDialogTop();
+                        return;
+                    }
+                }
                 filteredSelection.push(item);
             }
         });
@@ -1107,12 +1128,24 @@ const Collection = (props) => {
     }
 
     const setGlygenMandatoryMetadata = () => {
+        setTextAlertInputMetadata({"show": false, message: ""});
         let added = [];
         categories.map ((category, index) => {
             if (category.categoryId === 1) {   // GlyGen Glycomics Data
                 if (category.dataTypes) {
                     category.dataTypes.map ((d, index) => {
-                        added.push (d.datatypeId);
+                        if (!d.multiple && userSelection.metadata) {
+                            // check if it already exists
+                            const existing = userSelection.metadata.find ((meta) => 
+                                meta.type.name === d.name);
+                            if (!existing)
+                                added.push(d.datatypeId);
+                            else {
+                                setTextAlertInputMetadata({"show" : true, message: d.name + " already exists and is not added to the list. If you'd like to override, please delete it first!"})
+                            }
+                        } else {
+                            added.push (d.datatypeId);
+                        }
                     });
                 }
             }
@@ -1388,7 +1421,7 @@ const Collection = (props) => {
                         >
                     <CloseIcon />
                     </IconButton>
-                    <DialogContent dividers>
+                    <DialogContent dividers ref={metadataDialogRef}>
                         <Typography id="parent-modal-description" sx={{ mt: 2 }}>
                         {addMetadataForm()}
                         </Typography>
@@ -1517,6 +1550,7 @@ const Collection = (props) => {
                     <div className="text-right mb-3">
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
+                            setTextAlertInputMetadata({"show": false, "message":""});
                             setMetadataItemKey([]);
                             setSelectedMetadataValue([]);
                             setSelectedMetadataItems([]);
@@ -1535,6 +1569,7 @@ const Collection = (props) => {
                         </Button>
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
+                            setTextAlertInputMetadata({"show": false, "message":""});
                             setOptions([]);
                             setMetadataItemKey([]);
                             setSelectedMetadataValue([]);
