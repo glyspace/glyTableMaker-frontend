@@ -6,7 +6,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { TopNavBar } from "./components/TopNavBar";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { ScrollToTopBtn } from "./components/ScrollToTop";
-import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
+import { faEdit, 
+  faTrashAlt, 
+  faClone, 
+  faEyeSlash, 
+  faEye,
+  faUsers,
+  faTable } from "@fortawesome/free-solid-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
 import { Col, Row } from "react-bootstrap";
@@ -34,6 +40,7 @@ import Metadata from "./pages/Metadata";
 import AddCoC from "./pages/AddCoC";
 import { FileUpload } from "./pages/FileUpload";
 import Settings from "./pages/Settings";
+import Dataset from "./pages/Dataset";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -42,6 +49,7 @@ const items = [
   { label: stringConstants.sidebar.collectioncollection, id: "ColCol", route: stringConstants.routes.collectioncollection },
   { label: stringConstants.sidebar.metadata, id: "Metadata", route: stringConstants.routes.metadata},
   { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker},
+  { label: stringConstants.sidebar.repository, id: "Repository", route: stringConstants.routes.repository},
 ];  
 
 function App() {
@@ -58,6 +66,8 @@ function App() {
     faClone,
     faEyeSlash,
     faEye,
+    faTable,
+    faUsers,
   );
 
   useEffect(checkAuthorization, [loggedIn]);
@@ -65,8 +75,8 @@ function App() {
   const routes = [
     {
       path: "/",
-      sidebar: () => loggedIn ? <Sidebar items={sideBarData}/> : "",
-      main: () => loggedIn ? <Dashboard authCheckAgent={checkAuthorization}/> : <Home />,
+      sidebar: () => "",
+      main: () =>  <Home />,
     },
     {
       path: "/login",
@@ -146,6 +156,11 @@ function App() {
     {
       path: stringConstants.routes.tablemaker,
       main: () => <Tablemaker authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.repository,
+      main: () => <Dataset authCheckAgent={checkAuthorization}/>,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {

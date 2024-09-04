@@ -9,6 +9,7 @@ import { BiLogIn } from "react-icons/bi";
 import { FaUserGear } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
+import stringConstants from '../data/stringConstants.json';
 
 const TopNavBar = (props) => {
   return (
@@ -22,6 +23,22 @@ const TopNavBar = (props) => {
         {/*<Navbar.Toggle aria-controls="basic-navbar-nav" className="navbar-dark" />*/}
         <Navbar.Collapse className="gg-blue-bg" id="basic-navbar-nav">
           <Col xs={12} sm={12} md={12} lg={6} xl={8}>
+          <Nav activeKey={window.location.pathname}>
+              <LinkContainer className="gg-nav-link" to="/" exact>
+                <Nav.Link>HOME</Nav.Link>
+              </LinkContainer>
+              {/* Top bar menu links when logged in */}
+              {props.loggedInFlag && (
+                <LinkContainer className="gg-nav-link" to={stringConstants.routes.dashboard} exact>
+                  <Nav.Link>PUBLISH</Nav.Link>
+                </LinkContainer>
+              )}
+              {!props.loggedInFlag && (
+                <LinkContainer className="gg-nav-link" to="/login" exact>
+                  <Nav.Link>PUBLISH</Nav.Link>
+                </LinkContainer>
+              )}
+            </Nav>
           </Col>
           <Col xs={12} sm={12} md={12} lg={6} xl={4} className="align-right-header">
             <Nav activeKey={window.location.pathname}>

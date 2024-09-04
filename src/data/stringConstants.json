@@ -5,7 +5,8 @@
         "collection": "Collections",
         "collectioncollection": "Collections of Collections",
         "metadata" : "Metadata",
-        "tablemaker" : "Table Maker"
+        "tablemaker" : "Table Maker",
+        "repository": "Data Repository (Publish)"
     },
 
     "routes" : {
@@ -19,7 +20,8 @@
         "addglycanfromfile": "/glycans/addglycanfromfile",
         "addcollection": "/collections/addcollection",
         "addcoc": "/collections/addcoc",
-        "upload": "/glycans/fileupload"
+        "upload": "/glycans/fileupload",
+        "repository": "/dataset/"
     },
     "api": {
         "statistics" : "api/data/statistics",

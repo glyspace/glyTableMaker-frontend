@@ -7,6 +7,7 @@ import { Alert, Container, FormControlLabel, FormGroup, Slider, Switch, Tooltip 
 import { FormLabel, PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import compositionMarks from '../data/compositiontype.json';
+import { faListNumeric } from "@fortawesome/free-solid-svg-icons";
 
 const Settings = (props) => {
 
@@ -21,6 +22,7 @@ const Settings = (props) => {
         "COC": "Collections of Collections",
         "GLYCANINCOLLECTION": "Glycans (in Collection)",
         "METADATA" : "Metadata",
+        "DATASET" : "Dataset",
     }
 
     const [columnVisibility, setColumnVisibility] = useState({
@@ -119,6 +121,28 @@ const Settings = (props) => {
                 "visible": false,
             },   
         },
+        "DATASET" : {
+            "name" : {
+                "label" : "Name",
+                "visible" : true,
+            },
+            "description" : {
+                "label" : "Description",
+                "visible" : true,
+            }, 
+            "glycanNo" : {
+                "label" : "# Glycans",
+                "visible" : true,
+            },
+            "proteinNo": {
+                "label" : "# Proteins",
+                "visible": false,
+            },
+            "license" : {
+                "label" : "License",
+                "visible": true,
+            }
+        }
     });   // map containing column visibility for each table type
     const [compositionType, setCompositionType] = useState (null); 
     const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
@@ -128,6 +152,7 @@ const Settings = (props) => {
           props.authCheckAgent && props.authCheckAgent();
           getJson("api/setting/getallcolumnsettings", getAuthorizationHeader()).then (({ data }) => {
             if (data.data) {
+                let nextColumnVisibilty = {};
                 let visibilityList = columnVisibility["GLYCAN"];
                 data.data["GLYCAN"] && 
                     data.data["GLYCAN"].map ((setting, index) => {
@@ -135,6 +160,7 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
+                nextColumnVisibilty["GLYCAN"] =  {...visibilityList};
                 visibilityList = columnVisibility["COLLECTION"];
                 data.data["COLLECTION"] && 
                     data.data["COLLECTION"].map ((setting, index) => {
@@ -142,7 +168,7 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
-
+                nextColumnVisibilty["COLLECTION"]= {...visibilityList};
                 visibilityList = columnVisibility["COC"];
                 data.data["COC"] && 
                     data.data["COC"].map ((setting, index) => {
@@ -150,7 +176,7 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
-
+                nextColumnVisibilty["COC"] =  {...visibilityList};
                 visibilityList = columnVisibility["GLYCANINCOLLECTION"];
                 data.data["GLYCANINCOLLECTION"] && 
                     data.data["GLYCANINCOLLECTION"].map ((setting, index) => {
@@ -158,7 +184,7 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
-
+                nextColumnVisibilty["GLYCANINCOLLECTION"] = {...visibilityList};
                 visibilityList = columnVisibility["METADATA"];
                 data.data["METADATA"] && 
                     data.data["METADATA"].map ((setting, index) => {
@@ -166,7 +192,16 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
-                setColumnVisibility({...columnVisibility});
+                nextColumnVisibilty["METADATA"] = {...visibilityList};
+                visibilityList = columnVisibility["DATASET"];
+                data.data["DATASET"] && 
+                    data.data["DATASET"].map ((setting, index) => {
+                        if (visibilityList[setting.columnName]) {
+                            visibilityList[setting.columnName]["visible"] = setting.visible;
+                        }
+                });
+                nextColumnVisibilty["DATASET"] = {...visibilityList};
+                setColumnVisibility (nextColumnVisibilty);
             } 
           }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
