@@ -20,7 +20,7 @@ const TopNavBar = (props) => {
             <img src={logo} alt="GlyGen logo" />
           </Link>
         </Navbar.Brand>
-        {/*<Navbar.Toggle aria-controls="basic-navbar-nav" className="navbar-dark" />*/}
+        {<Navbar.Toggle aria-controls="basic-navbar-nav" className="navbar-dark" />}
         <Navbar.Collapse className="gg-blue-bg" id="basic-navbar-nav">
           <Col xs={12} sm={12} md={12} lg={6} xl={8}>
           <Nav activeKey={window.location.pathname}>

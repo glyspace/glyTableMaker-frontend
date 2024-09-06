@@ -43,7 +43,6 @@ export default function MainFeaturedCard(props) {
           <div
             style={{
               position: "relative",
-              
               padding: theme.spacing(2),
               [theme.breakpoints.up("md")]: {
                 padding: theme.spacing(3, 4),

@@ -21,7 +21,8 @@
         "addcollection": "/collections/addcollection",
         "addcoc": "/collections/addcoc",
         "upload": "/glycans/fileupload",
-        "repository": "/dataset/"
+        "repository": "/data/dataset/",
+        "publishdataset" : "/data/publishdataset"
     },
     "api": {
         "statistics" : "api/data/statistics",

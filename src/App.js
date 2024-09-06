@@ -41,6 +41,7 @@ import AddCoC from "./pages/AddCoC";
 import { FileUpload } from "./pages/FileUpload";
 import Settings from "./pages/Settings";
 import Dataset from "./pages/Dataset";
+import PublishDataset from "./pages/PublishDataset";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -161,6 +162,11 @@ function App() {
     {
       path: stringConstants.routes.repository,
       main: () => <Dataset authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.publishdataset,
+      main: () => <PublishDataset authCheckAgent={checkAuthorization}/>,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {
