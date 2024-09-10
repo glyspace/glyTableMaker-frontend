@@ -6,12 +6,12 @@ import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { PublicationCard } from "../components/PublicationCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getAuthorizationHeader, getJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 
 const PublishDataset = (props) => {
@@ -392,7 +392,22 @@ const PublishDataset = (props) => {
             setTextAlertInputLicense ({"show": true, "message": "License must be selected before publishing!"})
             return;
         }
-        //TODO publish the dataset
+        setShowLoading(true);
+        const dataset = {
+            "name": userSelection.name,
+            "description": userSelection.description,
+            "collections": userSelection.collections,
+            "license": selectedLicense,
+        };
+        //publish the dataset
+        postJson ("api/dataset/publishdataset", dataset, getAuthorizationHeader()).then ((data) => {
+            console.log("published successfully");
+            navigate(stringConstants.routes.repository);
+        }).catch(function(error) {
+            axiosError(error, setShowLoading, setAlertDialogInput);
+        });
+        setShowLoading(false);
+        setShowLicenseDialog(false);
     }
 
     return (
