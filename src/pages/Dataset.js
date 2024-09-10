@@ -108,13 +108,13 @@ and retracted."
               </div>
               <Table
                   authCheckAgent={props.authCheckAgent}
-                  ws="api/data/getdatasets"
+                  ws="api/dataset/getdatasets"
                   columns={columns}
                   enableRowActions={true}
                   setAlertDialogInput={setAlertDialogInput}
                   showEdit={true}
                   edit={stringConstants.routes.addDataset + "?datasetid="}
-                  deletews="api/data/retractdataset/"
+                  deletews="api/dataset/retractdataset/"
                   initialSortColumn="name"
                   rowId="datasetIdentifier"
                   detailPanel={true}

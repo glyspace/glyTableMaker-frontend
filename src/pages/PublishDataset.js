@@ -1,14 +1,18 @@
 import { Container } from "@mui/material";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { Accordion, AccordionContext, Button, Card, Col, Form, Modal, Row, useAccordionButton } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useContext, useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
+import { PublicationCard } from "../components/PublicationCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getAuthorizationHeader, getJson } from "../utils/api";
+import { axiosError } from "../utils/axiosError";
 
 const PublishDataset = (props) => {
     const [searchParams] = useSearchParams();
@@ -23,8 +27,13 @@ const PublishDataset = (props) => {
     );
 
     const [textAlertInput, setTextAlertInput] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    { show: false, id: "" }
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
+    );
+
+    const [textAlertInputLicense, setTextAlertInputLicense] = useReducer(
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
     );
 
     const dataset = {
@@ -33,12 +42,18 @@ const PublishDataset = (props) => {
         collections: [],
     };
 
+    const [publications, setPublications] = useState([]);
+
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [userSelection, setUserSelection] = useReducer(reducer, dataset);
 
     const [showCollectionTable, setShowCollectionTable] = useState(false);
     const [selectedCollections, setSelectedCollections] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
+    const [showLicenseDialog, setShowLicenseDialog] = useState(false);
+
+    const [licenseOptions, setLicenseOptions] = useState([]);
+    const [selectedLicense, setSelectedLicense] = useState(-1);
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -49,10 +64,42 @@ const PublishDataset = (props) => {
         }
     };
 
+    function CustomToggle({ children, eventKey }) {
+        const currentEventKey = useContext(AccordionContext);
+        const decoratedOnClick = useAccordionButton(eventKey, () =>
+          console.log("toggle")
+        );
+        const isCurrentEventKey = currentEventKey.activeEventKey === eventKey;
+
+        return (
+            <FontAwesomeIcon
+            icon={["fas", isCurrentEventKey ? "angle-up" : "angle-down"]}
+            size="1x"
+            title="Collapse and Expand"
+            onClick={decoratedOnClick}
+            className={"font-awesome-color"}
+            >
+            {children}
+            </FontAwesomeIcon>
+        );
+    }
+
     useEffect(() => {
         props.authCheckAgent();
         window.addEventListener("scroll", toggleSaveVisibility);
+        getLicenseOptions();
     }, []);
+
+    const getLicenseOptions = () => {
+        getJson ("api/util/licenses").then (({ data }) => {
+            if (data.data) {
+                setLicenseOptions(data.data);
+                setSelectedLicense(data.data.find ((l) => l.id === 5));
+            }
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
 
     const handleChange = e => {
         const name = e.target.name;
@@ -69,13 +116,34 @@ const PublishDataset = (props) => {
     const handleSubmit = e => {
         props.authCheckAgent();
         setValidate(false);
+        setTextAlertInput({"show": false, id: ""});
+
         if (userSelection.name === "" || userSelection.name.trim().length < 1) {
             setValidate(true);
             setError(true);
             return;
         }
 
-        //TODO submit dataset
+        if (userSelection.collections.length < 1) {
+            setError(true);
+            setTextAlertInput({"show": true, "message": "At least one collection should be added before publishing the dataset"});
+            return;
+        }
+
+        let valid = true;
+        userSelection.collections.forEach ((collection) => {
+            if (collection.errors && collection.errors.length > 0) {
+                valid = false;
+            }
+        });
+        
+        if (!valid) {
+            setError(true);
+            setTextAlertInput({"show": true, "message": "There are errors in the selected collections. Dataset cannot be published!"});
+            return;
+        }
+
+        setShowLicenseDialog (true);
     }
 
     const columns = useMemo(
@@ -86,23 +154,44 @@ const PublishDataset = (props) => {
             size: 50,
           },
           {
-            accessorKey: 'glycanCollections.size', 
+            accessorFn: (row) => row.glycans.length, 
             header: '# Glycans',
             size: 25,
           },
           {
-            accessorFn: (row) => {"noErrors"},
-            header: 'Errors',
-            size: 200,
-          },
-          {
-            accessorKey: 'warnings', 
-            header: 'Warnings',
+            accessorFn: (row) => row.description,
+            header: 'Description',
             size: 200,
           },
         ],
         [],
-      );
+    );
+
+    const tableColumns = useMemo (
+        () => [
+            {
+              accessorKey: 'name', 
+              header: 'Name',
+              size: 50,
+            },
+            {
+              accessorFn: (row) => row.glycans ? row.glycans.length : 0, 
+              header: '# Glycans',
+              size: 25,
+            },
+            {
+              accessorFn: (row) => row.errors,
+              header: 'Errors',
+              size: 200,
+            },
+            {
+                accessorKey : 'row.warnings',
+                header: 'Warnings',
+                size: 200,
+              },
+          ],
+          [],
+    );
 
     const listCollections = () => {
         return (
@@ -122,9 +211,152 @@ const PublishDataset = (props) => {
         );
     };
 
+    const handleLicenseChange = e => {
+        const licenseId = e.target.value;
+        const newLicense = licenseOptions.find ((l) => l.id.toString() === licenseId);
+        setSelectedLicense (newLicense);
+    }
+
+    const listLicenseOptions = () => {
+        return (
+            <>
+            <TextAlert alertInput={textAlertInputLicense}/>
+            <Row>
+            <Col>
+            <Form.Select
+                    as="select"
+                    name="license"
+                    required={true}
+                    onChange={handleLicenseChange}
+                >
+                    {licenseOptions && licenseOptions.map((l , index) =>
+                        <option
+                        selected={l.id === selectedLicense.id}
+                        key={index}
+                        value={l.id}>
+                        {l.name}
+                        </option>
+                    )}
+                </Form.Select>
+                 <Feedback message="License is required"></Feedback>
+            </Col>
+            <Col>
+                <Form.Group
+                  as={Row}
+                  controlId="name"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={12} style={{ textAlign: "left" }}>
+                    <FormLabel label={selectedLicense.name}/>
+                  </Col>
+                </Form.Group>
+                <Form.Group
+                  as={Row}
+                  controlId="attribution"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={4} lg={4} style={{ textAlign: "left" }}>
+                    <FormLabel label="Attribution"/>
+                  </Col>
+                  <Col xs={8} lg={8}>
+                  <Form.Label>{selectedLicense.attribution}</Form.Label>
+                  </Col>
+                </Form.Group>
+                <Form.Group
+                  as={Row}
+                  controlId="distribution"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={4} lg={4} style={{ textAlign: "left" }}>
+                    <FormLabel label="Distribute, remix, ​adapt and build upon"/>
+                  </Col>
+                  <Col xs={8} lg={8}>
+                  <Form.Label>{selectedLicense.distribution}</Form.Label>
+                  </Col>
+                </Form.Group>
+                <Form.Group
+                  as={Row}
+                  controlId="commercial"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={4} lg={4} style={{ textAlign: "left" }}>
+                    <FormLabel label="Commercial Use"/>
+                  </Col>
+                  <Col xs={8} lg={8}>
+                  <Form.Label>{selectedLicense.commercialUse ? "Allowed" : "Not Allowed"}</Form.Label>
+                  </Col>
+                </Form.Group>
+                <Form.Group
+                  as={Row}
+                  controlId="url"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={12}>
+                  <a
+                    href={selectedLicense.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {selectedLicense.url}
+                  </a>
+                  </Col>
+                </Form.Group>
+            </Col>
+            </Row>
+            </>
+        )
+    }
+
+    const populateCollectionData = (colList, pubList) => {
+        let nextSelectedCollections = [...colList];
+        let nextPublications = [...pubList];
+        nextSelectedCollections.forEach ((collection) => {
+            if (collection.metadata) {
+                collection.metadata.forEach ((metadata) => {
+                    if (metadata.type.datatypeId === 2 || metadata.type.name === "Evidence") {
+                        const publicationIdentifier = metadata.value;
+                        // get the publication details
+                        getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
+                            const found = nextPublications.find ((p) => p.id === data.data.id);
+                            if (!found) {
+                                nextPublications.push (data.data);
+                            }
+                            setPublications([...nextPublications]);
+                        }).catch(function(error) {
+                            axiosError(error, null, setAlertDialogInput);
+                        });
+                        
+                    }
+                })
+            }
+            getJson ("api/dataset/checkcollectionforerrors?collectionid=" + collection.collectionId,
+                getAuthorizationHeader()).then (({ data }) => {
+                    let errors = [];
+                    let warnings = [];
+                    if (data.data) {
+                        data.data.forEach ((err) => {
+                            if (err.errorLevel == 0) {
+                                warnings.push (err.message);
+                            } else {
+                                errors.push (err.message);
+                            }
+                        })
+                    }
+                    collection["errors"] = errors;
+                    collection["warnings"] = warnings;
+                    setSelectedCollections(nextSelectedCollections);
+                }).catch(function(error) {
+                    axiosError(error, null, setAlertDialogInput);
+                });
+        });
+        
+    } 
+
     const handleCollectionSelect = () => {
+        setTextAlertInput({"show": false, id: ""});
         setUserSelection({"collections": selectedCollections});
         setShowCollectionTable(false);
+        populateCollectionData(selectedCollections, publications);
     }
 
     const deleteFromTable = (id) => {
@@ -136,9 +368,12 @@ const PublishDataset = (props) => {
         ];
         setUserSelection ({"collections": updated});
         setSelectedCollections(updated);
+        setPublications([]);
+        populateCollectionData(updated, []);
     }
 
     const handleCollectionSelectionChange = (selected) => {
+        setTextAlertInput({"show": false, id: ""});
         // append new selections
         const previous = [...selectedCollections];
         selected.forEach ((collection) => {
@@ -148,6 +383,16 @@ const PublishDataset = (props) => {
             }
         })
         setSelectedCollections(previous);
+    }
+
+    const handlePublish = () => {
+        setTextAlertInputLicense({"show": false, "message" : ""});
+        if (!selectedLicense) {
+            // error
+            setTextAlertInputLicense ({"show": true, "message": "License must be selected before publishing!"})
+            return;
+        }
+        //TODO publish the dataset
     }
 
     return (
@@ -195,6 +440,28 @@ const PublishDataset = (props) => {
                             onClick={(()=> setShowCollectionTable(false))}>Close</Button>
                         <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
                             onClick={handleCollectionSelect}>Add Selected Collections</Button>
+                     </Modal.Footer>
+                </Modal>
+            )}
+            {showLicenseDialog && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={showLicenseDialog}
+                    onHide={() => setShowLicenseDialog(false)}
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Select License:
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{listLicenseOptions()}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowLicenseDialog(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handlePublish}>Publish Dataset</Button>
                      </Modal.Footer>
                 </Modal>
             )}
@@ -273,7 +540,7 @@ const PublishDataset = (props) => {
                     authCheckAgent={props.authCheckAgent}
                     rowId = "collectionId"
                     data = {userSelection.collections}
-                    columns={columns}
+                    columns={tableColumns}
                     enableRowActions={true}
                     delete={deleteFromTable}
                     setAlertDialogInput={setAlertDialogInput}
@@ -281,6 +548,32 @@ const PublishDataset = (props) => {
                 />
             </Card.Body>
           </Card>
+        <Accordion defaultActiveKey={0} className="mb-4" style={{marginTop: "15px"}}>
+          <Card>
+            <Card.Header>
+              <Row>
+                <Col className="font-awesome-color">
+                  <span className="gg-blue" style={{fontWeight: 500, fontSize: "1.25rem"}}>Publications</span>
+                </Col>
+
+                <Col style={{ textAlign: "right" }}>
+                  <CustomToggle eventKey={0}/>
+                </Col>
+              </Row>
+            </Card.Header>
+            <Accordion.Collapse eventKey={0}>
+              <Card.Body>
+              {publications.length < 1 ? (
+                  <p className="no-data-msg-publication">No data available.</p>
+                ) : (
+                  publications.map((pub, pubIndex) => {
+                    return <PublicationCard key={pubIndex} {...pub} />;
+                  }) 
+                )}
+                </Card.Body>
+            </Accordion.Collapse>
+          </Card>
+        </Accordion>    
         </div>
       </Container>
         </>

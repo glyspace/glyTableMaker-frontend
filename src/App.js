@@ -12,7 +12,9 @@ import { faEdit,
   faEyeSlash, 
   faEye,
   faUsers,
-  faTable } from "@fortawesome/free-solid-svg-icons";
+  faTable, 
+  faAngleDown,
+  faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
 import { Col, Row } from "react-bootstrap";
@@ -69,6 +71,8 @@ function App() {
     faEye,
     faTable,
     faUsers,
+    faAngleDown,
+    faAngleUp,
   );
 
   useEffect(checkAuthorization, [loggedIn]);
