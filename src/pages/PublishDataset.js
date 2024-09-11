@@ -180,14 +180,32 @@ const PublishDataset = (props) => {
               size: 25,
             },
             {
-              accessorFn: (row) => row.errors,
+              accessorKey: 'errors',
               header: 'Errors',
               size: 200,
+              Cell: ({ cell }) => (
+                <ul id="errors">
+                      {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((err, index) => (
+                      <li key={index}>
+                          <span>{err.message}</span>
+                      </li>
+                      ))}
+                  </ul>
+              ),
             },
             {
-                accessorKey : 'row.warnings',
+                accessorKey : 'warnings',
                 header: 'Warnings',
                 size: 200,
+                Cell: ({ cell }) => (
+                    <ul id="warnings">
+                          {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((err, index) => (
+                          <li key={index}>
+                              <span>{err.message}</span>
+                          </li>
+                          ))}
+                      </ul>
+                  ),
               },
           ],
           [],
@@ -198,7 +216,7 @@ const PublishDataset = (props) => {
           <>
             <Table
                 authCheckAgent={props.authCheckAgent}
-                ws="api/data/getcollections"
+                ws="api/dataset/getcollections"
                 columns={columns}
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
@@ -329,7 +347,7 @@ const PublishDataset = (props) => {
                     }
                 })
             }
-            getJson ("api/dataset/checkcollectionforerrors?collectionid=" + collection.collectionId,
+            /*getJson ("api/dataset/checkcollectionforerrors?collectionid=" + collection.collectionId,
                 getAuthorizationHeader()).then (({ data }) => {
                     let errors = [];
                     let warnings = [];
@@ -347,7 +365,7 @@ const PublishDataset = (props) => {
                     setSelectedCollections(nextSelectedCollections);
                 }).catch(function(error) {
                     axiosError(error, null, setAlertDialogInput);
-                });
+                });*/
         });
         
     } 
