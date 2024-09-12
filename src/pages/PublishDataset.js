@@ -106,6 +106,7 @@ const PublishDataset = (props) => {
                 setUserSelection (json.data.data);
                 setShowAddCollection(false);
                 setSelectedLicense (json.data.data.license);
+                setPublications(json.data.data.publications);
                 setShowLoading(false);
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
