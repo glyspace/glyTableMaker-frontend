@@ -16,7 +16,7 @@ import { axiosError } from "../utils/axiosError";
 
 const PublishDataset = (props) => {
     const [searchParams] = useSearchParams();
-    let datasetId = searchParams.get("datasetId");
+    let datasetId = searchParams.get("datasetid");
     const navigate = useNavigate();
     const [error, setError] = useState(false);
     const [validate, setValidate] = useState(false);
@@ -48,12 +48,13 @@ const PublishDataset = (props) => {
     const [userSelection, setUserSelection] = useReducer(reducer, dataset);
 
     const [showCollectionTable, setShowCollectionTable] = useState(false);
+    const [showAddCollection, setShowAddCollection] = useState (true);
     const [selectedCollections, setSelectedCollections] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
     const [showLicenseDialog, setShowLicenseDialog] = useState(false);
 
     const [licenseOptions, setLicenseOptions] = useState([]);
-    const [selectedLicense, setSelectedLicense] = useState(-1);
+    const [selectedLicense, setSelectedLicense] = useState(null);
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -88,7 +89,36 @@ const PublishDataset = (props) => {
         props.authCheckAgent();
         window.addEventListener("scroll", toggleSaveVisibility);
         getLicenseOptions();
+
     }, []);
+
+    useEffect(() => {
+        if (datasetId) {
+            fetchData();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [datasetId]);
+
+    const fetchData = async () => {
+        setShowLoading(true);
+        getJson ("api/dataset/getdataset/" + datasetId, getAuthorizationHeader())
+            .then ((json) => {
+                setUserSelection (json.data.data);
+                setShowAddCollection(false);
+                setSelectedLicense (json.data.data.license);
+                setShowLoading(false);
+        }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setError(true);
+                setShowLoading(false);
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+            } else {
+                setShowLoading(false);
+                axiosError(error, null, setAlertDialogInput);
+            }
+        });
+    }
+
 
     const getLicenseOptions = () => {
         getJson ("api/util/licenses").then (({ data }) => {
@@ -124,7 +154,7 @@ const PublishDataset = (props) => {
             return;
         }
 
-        if (userSelection.collections.length < 1) {
+        if (showAddCollection && userSelection.collections.length < 1) {
             setError(true);
             setTextAlertInput({"show": true, "message": "At least one collection should be added before publishing the dataset"});
             return;
@@ -347,25 +377,6 @@ const PublishDataset = (props) => {
                     }
                 })
             }
-            /*getJson ("api/dataset/checkcollectionforerrors?collectionid=" + collection.collectionId,
-                getAuthorizationHeader()).then (({ data }) => {
-                    let errors = [];
-                    let warnings = [];
-                    if (data.data) {
-                        data.data.forEach ((err) => {
-                            if (err.errorLevel == 0) {
-                                warnings.push (err.message);
-                            } else {
-                                errors.push (err.message);
-                            }
-                        })
-                    }
-                    collection["errors"] = errors;
-                    collection["warnings"] = warnings;
-                    setSelectedCollections(nextSelectedCollections);
-                }).catch(function(error) {
-                    axiosError(error, null, setAlertDialogInput);
-                });*/
         });
         
     } 
@@ -416,6 +427,7 @@ const PublishDataset = (props) => {
             "description": userSelection.description,
             "collections": userSelection.collections,
             "license": selectedLicense,
+            "publications" : publications,
         };
         //publish the dataset
         postJson ("api/dataset/publishdataset", dataset, getAuthorizationHeader()).then ((data) => {
@@ -554,6 +566,8 @@ const PublishDataset = (props) => {
             </div>
             </Card.Body>
           </Card>
+
+          {showAddCollection && 
           <Card style={{marginTop: "15px"}}>
             <Card.Body>
             <h5 class="gg-blue" style={{textAlign: "left"}}>
@@ -580,7 +594,7 @@ const PublishDataset = (props) => {
                     initialSortColumn="name"
                 />
             </Card.Body>
-          </Card>
+          </Card>}
         <Accordion defaultActiveKey={0} className="mb-4" style={{marginTop: "15px"}}>
           <Card>
             <Card.Header>

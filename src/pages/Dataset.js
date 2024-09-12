@@ -113,11 +113,12 @@ and retracted."
                   enableRowActions={true}
                   setAlertDialogInput={setAlertDialogInput}
                   showEdit={true}
-                  edit={stringConstants.routes.addDataset + "?datasetid="}
+                  edit={stringConstants.routes.publishdataset + "?datasetid="}
                   deletews="api/dataset/retractdataset/"
                   initialSortColumn="name"
                   rowId="datasetIdentifier"
                   detailPanel={true}
+                  deletelabel="Retract"
                   columnsettingsws="api/setting/getcolumnsettings?tablename=DATASET"
                   saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />

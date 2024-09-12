@@ -341,7 +341,7 @@ const Table = (props) => {
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip title="Delete">
+            <Tooltip title={props.deletelabel ?? "Delete"}>
               <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
               : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
