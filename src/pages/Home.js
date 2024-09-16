@@ -57,17 +57,7 @@ return (
                 </Grid>
               </Grid>
 
-              <Grid item xs={12} md={4} lg={3}>
-                <Grid
-                  container
-                  spacing={4}
-                  style={{
-                    justifyContent: "center"
-                  }}
-                >
-                  <VersionCard data={{}} />
-                </Grid>
-              </Grid>
+              
             </Grid>
           </Row>
         </Container>

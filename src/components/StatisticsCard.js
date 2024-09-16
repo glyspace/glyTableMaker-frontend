@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import glycoProteinIcon from "../images/icons/glycoprotein-img.svg";
 import glycanIcon from "../images/icons/glycan-icon.svg";
 import { Loading } from "./Loading";
+import { getJson } from "../utils/api";
 
 const StatisticsCard = () => {
   const [statistics, setStatistics] = useState([]);
@@ -16,7 +17,15 @@ const StatisticsCard = () => {
   }, []);
 
   const getStatistics = () => {
-    //TODO get the data using API
+    setShowLoading(true);
+    getJson ("api/util/getstatistics").then (({ data }) => {
+      if (data.data) {
+          setStatistics(data.data);
+      }
+    }).catch(function(error) {
+       console.log ("cannot retrieve statistics " + error);
+    });
+    setShowLoading(false);
   }
 
   const icons = [
@@ -44,7 +53,7 @@ const StatisticsCard = () => {
       src: glycanIcon,
       alt: "Glycans Icon",
       title: "Registered Glycans",
-      value: statistics.glycanRegisteredCount ? statistics.glycanRegisteredCount : 0,
+      value: statistics.newGlycanCount ? statistics.newGlycanCount : 0,
     },
     {
       name: "glycoproteins",
