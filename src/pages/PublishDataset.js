@@ -37,9 +37,11 @@ const PublishDataset = (props) => {
     );
 
     const dataset = {
+        id: null,
         name: "",
         description: "",
         collections: [],
+        license : null,
     };
 
     const [publications, setPublications] = useState([]);
@@ -55,6 +57,8 @@ const PublishDataset = (props) => {
 
     const [licenseOptions, setLicenseOptions] = useState([]);
     const [selectedLicense, setSelectedLicense] = useState(null);
+    const [showComment, setShowComment]  = useState(false);
+    const [comment, setComment]  = useState("");
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -125,7 +129,7 @@ const PublishDataset = (props) => {
         getJson ("api/util/licenses").then (({ data }) => {
             if (data.data) {
                 setLicenseOptions(data.data);
-                setSelectedLicense(data.data.find ((l) => l.id === 5));
+                setSelectedLicense(data.data.find ((l) => l.id === 2));
             }
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
@@ -143,6 +147,13 @@ const PublishDataset = (props) => {
         }
         setUserSelection({ [name]: newValue });
     };
+
+    const handleCommentChange = (e) => {
+        const name = e.target.name;
+        const newValue = e.target.value;
+    
+        setComment(newValue);
+      };
 
     const handleSubmit = e => {
         props.authCheckAgent();
@@ -173,6 +184,8 @@ const PublishDataset = (props) => {
             setTextAlertInput({"show": true, "message": "There are errors in the selected collections. Dataset cannot be published!"});
             return;
         }
+
+        datasetId && showAddCollection && setShowComment(true);
 
         setShowLicenseDialog (true);
     }
@@ -264,6 +277,7 @@ const PublishDataset = (props) => {
         const licenseId = e.target.value;
         const newLicense = licenseOptions.find ((l) => l.id.toString() === licenseId);
         setSelectedLicense (newLicense);
+        !showComment && userSelection.license && userSelection.license.id != licenseId && setShowComment(true) ;
     }
 
     const listLicenseOptions = () => {
@@ -297,6 +311,15 @@ const PublishDataset = (props) => {
                 >
                   <Col xs={12} lg={12} style={{ textAlign: "left" }}>
                     <FormLabel label={selectedLicense.name}/>
+                  </Col>
+                </Form.Group>
+                <Form.Group
+                  as={Row}
+                  controlId="name"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={12} style={{ textAlign: "left", color: "red" }}>
+                    <FormLabel label={selectedLicense.id > 2 ? "Data cannot be integrated into GlyGen with this selection due to more restrictions" : "GlyGen compatible"}/>
                   </Col>
                 </Form.Group>
                 <Form.Group
@@ -352,6 +375,28 @@ const PublishDataset = (props) => {
                 </Form.Group>
             </Col>
             </Row>
+            {showComment && 
+            <Form.Group
+                as={Row}
+                controlId="comment"
+                className="gg-align-center mb-3"
+            >
+                <Col xs={4} lg={4} style={{ textAlign: "left" }}>
+                <FormLabel label="Comment" className={"required-asterik"}/>
+                </Col>
+                <Col xs={8} lg={8}>
+                <Form.Control
+                    type="text"
+                    name="comment"
+                    placeholder=" "
+                    value={comment}
+                    onChange={handleCommentChange}
+                    required
+                    className={"custom-text-fields"}
+                  />
+                </Col>
+          </Form.Group>
+            }
             </>
         )
     }
@@ -422,16 +467,34 @@ const PublishDataset = (props) => {
             setTextAlertInputLicense ({"show": true, "message": "License must be selected before publishing!"})
             return;
         }
+       
+        let licenseChanged = false;
+        if (userSelection.license) {
+            if (userSelection.license.name !== selectedLicense.name) {
+                licenseChanged = true;
+            }
+        }
+        if (datasetId && (licenseChanged || userSelection.collections.length > 0)) {
+            // comment is required
+            if (!comment || comment.length < 1) {
+                setTextAlertInputLicense ({"show": true, "message": "Please enter a comment since these changes will generate a new version for the dataset!"});
+                return;
+            }
+        }
+
         setShowLoading(true);
         const dataset = {
+            "id": userSelection.id ?? null,
             "name": userSelection.name,
             "description": userSelection.description,
-            "collections": userSelection.collections,
-            "license": selectedLicense,
+            "collections": userSelection.collections && userSelection.collections.length > 0 ? userSelection.collections : null, 
+            "license": datasetId ? (licenseChanged ? selectedLicense : null) : selectedLicense,
             "publications" : publications,
+            "changeComment" : comment,
         };
         //publish the dataset
-        postJson ("api/dataset/publishdataset", dataset, getAuthorizationHeader()).then ((data) => {
+        const url = datasetId ? "api/dataset/updatedataset" : "api/dataset/publishdataset";
+        postJson (url, dataset, getAuthorizationHeader()).then ((data) => {
             console.log("published successfully");
             navigate(stringConstants.routes.repository);
         }).catch(function(error) {
@@ -568,11 +631,12 @@ const PublishDataset = (props) => {
             </Card.Body>
           </Card>
 
-          {showAddCollection && 
+          
           <Card style={{marginTop: "15px"}}>
             <Card.Body>
             <h5 class="gg-blue" style={{textAlign: "left"}}>
-                Collections in the Dataset</h5>
+            Collections in the Dataset</h5>
+            {showAddCollection && <>
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
@@ -593,9 +657,16 @@ const PublishDataset = (props) => {
                     delete={deleteFromTable}
                     setAlertDialogInput={setAlertDialogInput}
                     initialSortColumn="name"
-                />
+                /></>}
+                {!showAddCollection && 
+                <div className="text-center mb-2">
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                    disabled={error} onClick={() => setShowAddCollection (true)}>
+                    Modify Data
+                </Button></div> }
             </Card.Body>
-          </Card>}
+          </Card>
+          
         <Accordion defaultActiveKey={0} className="mb-4" style={{marginTop: "15px"}}>
           <Card>
             <Card.Header>
