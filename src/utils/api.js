@@ -1,4 +1,7 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import { useContext } from "react";
+import { AccordionContext, useAccordionButton } from "react-bootstrap";
 
 const TABLEMAKER_API = process.env.REACT_APP_API_URL;
 const base = process.env.REACT_APP_BASENAME;
@@ -199,4 +202,24 @@ export const postJsonAsync = async (url, data = {}, headers = {}) => {
   };
 
   return await axios(options);
+}
+
+export function CustomToggle({ children, eventKey }) {
+  const currentEventKey = useContext(AccordionContext);
+  const decoratedOnClick = useAccordionButton(eventKey, () =>
+    console.log("toggle")
+  );
+  const isCurrentEventKey = currentEventKey.activeEventKey === eventKey;
+
+  return (
+      <FontAwesomeIcon
+      icon={["fas", isCurrentEventKey ? "angle-up" : "angle-down"]}
+      size="1x"
+      title="Collapse and Expand"
+      onClick={decoratedOnClick}
+      className={"font-awesome-color"}
+      >
+      {children}
+      </FontAwesomeIcon>
+  );
 }

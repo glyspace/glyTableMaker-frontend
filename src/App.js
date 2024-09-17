@@ -6,15 +6,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { TopNavBar } from "./components/TopNavBar";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { ScrollToTopBtn } from "./components/ScrollToTop";
-import { faEdit, 
-  faTrashAlt, 
-  faClone, 
-  faEyeSlash, 
-  faEye,
+import { 
   faUsers,
   faTable, 
   faAngleDown,
-  faAngleUp } from "@fortawesome/free-solid-svg-icons";
+  faAngleUp,
+  faBookOpen } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
 import { Col, Row } from "react-bootstrap";
@@ -73,6 +71,7 @@ function App() {
     faUsers,
     faAngleDown,
     faAngleUp,
+    faBookOpen,
   );
 
   useEffect(checkAuthorization, [loggedIn]);

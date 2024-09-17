@@ -945,3 +945,17 @@ input[type="check" i] {
   color: #bf0101 !important;
   /* font-weight: 200 !important; */
 }
+
+.descriptor-header {
+  text-align: left;
+  color: var(--gg-blue);
+  margin-bottom: 0.5rem;
+  font-size: 20px;
+  border-bottom: 0.5rem;
+  padding-top: 4px;
+  font-weight: 500;
+}
+
+.font-awesome-color {
+  color: var(--gg-blue);
+}

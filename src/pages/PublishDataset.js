@@ -11,8 +11,10 @@ import { useContext, useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { PublicationCard } from "../components/PublicationCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { CustomToggle, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
+import { GrantsOnExp } from "../components/GrantsOnExp";
+import { PubOnExp } from "../components/PubOnExp";
 
 const PublishDataset = (props) => {
     const [searchParams] = useSearchParams();
@@ -42,6 +44,9 @@ const PublishDataset = (props) => {
         description: "",
         collections: [],
         license : null,
+        associatedPapers : [],
+        grants: [],
+        associatedDatasources: [],
     };
 
     const [publications, setPublications] = useState([]);
@@ -60,6 +65,8 @@ const PublishDataset = (props) => {
     const [showComment, setShowComment]  = useState(false);
     const [comment, setComment]  = useState("");
 
+    const [newPubMedId, setNewPubMedId] = useState("");
+
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
         if (window.scrollY > 300) {
@@ -68,26 +75,6 @@ const PublishDataset = (props) => {
             setIsVisible(false);
         }
     };
-
-    function CustomToggle({ children, eventKey }) {
-        const currentEventKey = useContext(AccordionContext);
-        const decoratedOnClick = useAccordionButton(eventKey, () =>
-          console.log("toggle")
-        );
-        const isCurrentEventKey = currentEventKey.activeEventKey === eventKey;
-
-        return (
-            <FontAwesomeIcon
-            icon={["fas", isCurrentEventKey ? "angle-up" : "angle-down"]}
-            size="1x"
-            title="Collapse and Expand"
-            onClick={decoratedOnClick}
-            className={"font-awesome-color"}
-            >
-            {children}
-            </FontAwesomeIcon>
-        );
-    }
 
     useEffect(() => {
         props.authCheckAgent();
@@ -424,8 +411,44 @@ const PublishDataset = (props) => {
                 })
             }
         });
-        
     } 
+
+    const getPublication = () => {
+        let tempPubmedId = parseInt(newPubMedId);
+        if (isNaN(tempPubmedId) || tempPubmedId === 0) {
+          setNewPubMedId("");
+          return;
+        }
+    
+        if (userSelection && userSelection.associatedPapers) {
+          let duplicate = userSelection.associatedPapers.filter(obj => obj.pubmedId === tempPubmedId);
+          if (duplicate.length > 0) {
+            setNewPubMedId("");
+            return;
+          }
+        }
+        
+        // get the publication details
+        getJson ("api/util/getpublication?identifier=" + tempPubmedId).then (({ data }) => {
+            if (data.data) {
+                setUserSelection({
+                    associatedPapers: userSelection.associatedPapers.concat([data.data])
+                });
+                setNewPubMedId("");
+            }
+            else {
+                setTextAlertInput({"show" : true, "message": "Pubmed Id Not Found"});
+            }
+        }).catch(function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+                setShowLoading(false);
+                return;
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+        });
+    }
 
     const handleCollectionSelect = () => {
         setTextAlertInput({"show": false, id: ""});
@@ -445,6 +468,31 @@ const PublishDataset = (props) => {
         setSelectedCollections(updated);
         setPublications([]);
         populateCollectionData(updated, []);
+    }
+
+    const deletePaper = (id) => {
+        var associatedPapers = userSelection.associatedPapers;
+        const index = associatedPapers.findIndex ((item) => item["id"] === id);
+        var updated = [
+            ...associatedPapers.slice(0, index),
+            ...associatedPapers.slice(index + 1)
+        ];
+        setUserSelection ({"associatedPapers": updated});
+    }
+
+    const deleteGrant = (id) => {
+        var grants = userSelection.grants;
+        const index = grants.findIndex ((item) => item["id"] === id);
+        var updated = [
+            ...grants.slice(0, index),
+            ...grants.slice(index + 1)
+        ];
+        setUserSelection ({"grants": updated});
+    }
+
+    const addGrant = (grant) => {
+        // assign an id and add to the list of grants
+        setUserSelection ({grants: userSelection.grants.concat([grant])});
     }
 
     const handleCollectionSelectionChange = (selected) => {
@@ -503,6 +551,30 @@ const PublishDataset = (props) => {
         setShowLoading(false);
         setShowLicenseDialog(false);
     }
+
+    const getPublicationFormControl = () => {
+        return (
+          <>
+            <Form.Control
+              as="input"
+              name="publication"
+              placeholder="Enter the Pubmed ID and click +"
+              value={newPubMedId}
+              onChange={e => {
+                const _value = e.target.value;
+                if (_value && !/^[0-9]+$/.test(_value)) {
+                  return;
+                }
+                setNewPubMedId(_value);
+                if (textAlertInput.show) {
+                    setTextAlertInput({"show": false, "message": ""});
+                }
+              }}
+              maxLength={100}
+            />
+          </>
+        );
+      };
 
     return (
         <>
@@ -692,7 +764,21 @@ const PublishDataset = (props) => {
                 </Card.Body>
             </Accordion.Collapse>
           </Card>
-        </Accordion>    
+        </Accordion>   
+        {/* Associated Papers */}
+        <PubOnExp
+            getPublication={getPublication}
+            getPublicationFormControl={getPublicationFormControl}
+            newPubMedId={newPubMedId}
+            publications={userSelection.associatedPapers}
+            deleteRow={deletePaper}
+        />
+        {/* Grants */}
+        <GrantsOnExp
+            addGrant={addGrant}
+            grants={userSelection.grants}
+            delete={deleteGrant}
+        /> 
         </div>
       </Container>
         </>

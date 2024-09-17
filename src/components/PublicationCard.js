@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table } from "react-bootstrap";
 import HelpTooltip from './HelpTooltip';
+import { Tooltip } from "@mui/material";
 
 const PublicationCard = props => {
   return (
@@ -40,7 +41,14 @@ const PublicationCard = props => {
             </td>
             {props.enableDelete && (
               <td className="text-right">
-                <HelpTooltip text="Delete Publication">
+                <Tooltip
+                    disableTouchListener
+                    interactive
+                    arrow
+                    placement={"bottom-start"}
+                    classes={{ tooltip: "gg-tooltip" }}
+                    title={<>Delete publication</>}
+                  >
                   <Link>
                     <FontAwesomeIcon
                       icon={["far", "trash-alt"]}
@@ -50,7 +58,7 @@ const PublicationCard = props => {
                       onClick={() => props.deletePublication(props.id ? props.id : props.pubmedId, "deletePublication")}
                     />
                   </Link>
-                </HelpTooltip>
+                </Tooltip>
               </td>
             )}
           </tr>
