@@ -54,6 +54,7 @@ const AddGrant = props => {
 
     if (e.currentTarget.checkValidity()) {
       props.addGrant (grant);
+      props.setShowModal(false);
     }
     e.preventDefault();
   }
@@ -81,7 +82,7 @@ const AddGrant = props => {
               <option value="select">select</option>
               {listFundingOrganizations &&
                 listFundingOrganizations.map(fundOrg => {
-                  return <option value={fundOrg}>{fundOrg}</option>;
+                  return <option key={fundOrg} value={fundOrg}>{fundOrg}</option>;
                 })}
             </Form.Control>
           </Col>
@@ -116,7 +117,9 @@ const AddGrant = props => {
         <Form.Group as={Row} controlId="title" className="gg-align-center mb-3">
           <Col xs={12} lg={9}>
             <FormLabel label="Grant Title" className="required-asterik" />
-            <Form.Control type="text" name="title" value={grant.title} onChange={handleChange} />
+            <Form.Control type="text" 
+              required
+              name="title" value={grant.title} onChange={handleChange} />
           </Col>
         </Form.Group>
 

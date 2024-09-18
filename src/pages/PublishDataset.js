@@ -1,20 +1,22 @@
 import { Container } from "@mui/material";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { Accordion, AccordionContext, Button, Card, Col, Form, Modal, Row, useAccordionButton } from "react-bootstrap";
+import { Accordion, Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useContext, useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { PublicationCard } from "../components/PublicationCard";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CustomToggle, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { GrantsOnExp } from "../components/GrantsOnExp";
-import { PubOnExp } from "../components/PubOnExp";
+import { GrantsOnDataset } from "../components/GrantsOnDataset";
+import { PubOnDataset } from "../components/PubOnDataset";
+import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
+
+let idCounter = 1000;
 
 const PublishDataset = (props) => {
     const [searchParams] = useSearchParams();
@@ -85,6 +87,9 @@ const PublishDataset = (props) => {
 
     useEffect(() => {
         if (datasetId) {
+            if (datasetId.contains("-")) {
+                datasetId = datasetId.substring (0, datasetId.indexOf("-"));   // get rid of version, always update the head version
+            }
             fetchData();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -264,7 +269,7 @@ const PublishDataset = (props) => {
         const licenseId = e.target.value;
         const newLicense = licenseOptions.find ((l) => l.id.toString() === licenseId);
         setSelectedLicense (newLicense);
-        !showComment && userSelection.license && userSelection.license.id != licenseId && setShowComment(true) ;
+        !showComment && userSelection.license && userSelection.license.id !== licenseId && setShowComment(true) ;
     }
 
     const listLicenseOptions = () => {
@@ -375,7 +380,7 @@ const PublishDataset = (props) => {
                 <Form.Control
                     type="text"
                     name="comment"
-                    placeholder=" "
+                    placeholder="Enter description of version changes"
                     value={comment}
                     onChange={handleCommentChange}
                     required
@@ -490,9 +495,26 @@ const PublishDataset = (props) => {
         setUserSelection ({"grants": updated});
     }
 
+    const deleteDatabase = (id) => {
+        var datasources = userSelection.associatedDatasources;
+        const index = datasources.findIndex ((item) => item["id"] === id);
+        var updated = [
+            ...datasources.slice(0, index),
+            ...datasources.slice(index + 1)
+        ];
+        setUserSelection ({"associatedDatasources": updated});
+    }
+
     const addGrant = (grant) => {
         // assign an id and add to the list of grants
+        grant["id"] = idCounter++;
         setUserSelection ({grants: userSelection.grants.concat([grant])});
+    }
+
+    const addDatabase = (database) => {
+        // assign an id and add to the list of databases
+        database["id"] = idCounter++;
+        setUserSelection ({associatedDatasources: userSelection.associatedDatasources.concat([database])});
     }
 
     const handleCollectionSelectionChange = (selected) => {
@@ -642,7 +664,7 @@ const PublishDataset = (props) => {
                         <Button variant="secondary" className="mt-2 gg-ml-20"
                             onClick={(()=> setShowLicenseDialog(false))}>Close</Button>
                         <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
-                            onClick={handlePublish}>Publish Dataset</Button>
+                            onClick={handlePublish}>{datasetId ? "Update Dataset" : "Publish Dataset"}</Button>
                      </Modal.Footer>
                 </Modal>
             )}
@@ -766,7 +788,7 @@ const PublishDataset = (props) => {
           </Card>
         </Accordion>   
         {/* Associated Papers */}
-        <PubOnExp
+        <PubOnDataset
             getPublication={getPublication}
             getPublicationFormControl={getPublicationFormControl}
             newPubMedId={newPubMedId}
@@ -774,10 +796,17 @@ const PublishDataset = (props) => {
             deleteRow={deletePaper}
         />
         {/* Grants */}
-        <GrantsOnExp
+        <GrantsOnDataset
             addGrant={addGrant}
             grants={userSelection.grants}
             delete={deleteGrant}
+        /> 
+
+        {/* Databases */}
+        <DatabasesOnDataset
+            addDatabase={addDatabase}
+            associatedDatasources={userSelection.associatedDatasources}
+            delete={deleteDatabase}
         /> 
         </div>
       </Container>

@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { Form, Row, Col, Button, Accordion, Card, Image } from "react-bootstrap";
 import { PublicationCard } from "./PublicationCard";
 import plusIcon from "../images/icons/plus.svg";
-import { FormLabel } from "../components/FormControls";
+import { FormLabel } from "./FormControls";
 import { CustomToggle } from "../utils/api";
 import { Tooltip } from "@mui/material";
 
-const PubOnExp = props => {
+const PubOnDataset = props => {
   return (
     <>
       <>
@@ -79,4 +79,4 @@ const PubOnExp = props => {
   );
 };
 
-export { PubOnExp };
+export { PubOnDataset };

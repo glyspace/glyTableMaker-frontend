@@ -2,14 +2,14 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Row, Col, Button, Table, Modal } from "react-bootstrap";
-import { AddGrant } from "./AddGrant";
 import { Loading } from "../components/Loading";
+import { AddDatabase } from "./AddDatabase";
 
-const Grants = props => {
+const Databases = props => {
   const [showLoading, setShowLoading] = useState(false);
   const [showModal, setShowModal] = useState();
 
-  const getGrantModal = () => {
+  const getDatabaseModal = () => {
     return (
       <>
         <Modal
@@ -22,11 +22,11 @@ const Grants = props => {
           }}
         >
           <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">Add Grant</Modal.Title>
+            <Modal.Title id="contained-modal-title-vcenter">Add Database/Resource</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <AddGrant
-              addGrant={props.addGrant}
+            <AddDatabase
+              addDatabase={props.addDatabase}
               setShowModal={setShowModal}
             />
           </Modal.Body>
@@ -36,18 +36,18 @@ const Grants = props => {
     );
   };
 
-  const getGrantTable = () => {
+  const getDatabaseTable = () => {
     return (
       <>
-        {props.grants &&
-          props.grants.map((grant, grantIndex) => {
+        {props.associatedDatasources &&
+          props.associatedDatasources.map((datasource, index) => {
             return (
               <Table hover style={{ border: "none" }}>
                 <tbody style={{ border: "none" }}>
-                  <tr style={{ border: "none" }} key={grantIndex}>
+                  <tr style={{ border: "none" }} key={index}>
                     {props.fromPublicDatasetPage
-                      ? grantsPublicTable(grant, grantIndex)
-                      : grantsTable(grant, grantIndex)}
+                      ? databasePublicTable(datasource, index)
+                      : databaseTable(datasource, index)}
                   </tr>
                 </tbody>
               </Table>
@@ -57,22 +57,21 @@ const Grants = props => {
     );
   };
 
-  const grantsTable = (grant, grantIndex) => {
+  const databaseTable = (database, index) => {
     return (
       <>
-        <td key={grantIndex} style={{ border: "none" }}>
+        <td key={index} style={{ border: "none" }}>
           <div>
             <h5>
-              <a href={grant.url} target={"_blank"}>
-                <strong>{grant.title}</strong>
+              <a href={database.url} target={"_blank"}>
+                <strong>{database.name}</strong>
               </a>
             </h5>
           </div>
 
           <div>
             <Row>
-              <Col md={3}>{grant.fundingOrganization}</Col>
-              <Col>{grant.identifier}</Col>
+              <Col>{database.identifier}</Col>
             </Row>
           </div>
         </td>
@@ -83,21 +82,21 @@ const Grants = props => {
             size="lg"
             title="Delete"
             className="caution-color table-btn"
-            onClick={() => props.delete(grant.id)}
+            onClick={() => props.delete(database.id)}
           />
         </td>
       </>
     );
   };
 
-  const grantsPublicTable = (grant, grantIndex) => {
+  const databasePublicTable = (database, index) => {
     return (
       <>
         <div>
           <Row>
             <Col md={3}>
-              <a href={grant.url} target={"_blank"}>
-                <strong>{grant.title}</strong>
+              <a href={database.url} target={"_blank"}>
+                <strong>{database.name}</strong>
               </a>
             </Col>
           </Row>
@@ -105,7 +104,7 @@ const Grants = props => {
 
         <div>
           <Row>
-            <Col>{grant.fundingOrganization}-{grant.identifier}</Col>
+            <Col>{database.identifier}</Col>
           </Row>
         </div>
       </>
@@ -123,26 +122,25 @@ const Grants = props => {
                 setShowModal(true);
               }}
             >
-              Add Grant
+              Add Database
             </Button>
           </div>
-          {showModal && getGrantModal()}
+          {showModal && getDatabaseModal()}
         </>
       )}
 
-      {getGrantTable()}
+      {getDatabaseTable()}
 
       {showLoading ? <Loading show={showLoading} /> : ""}
     </>
   );
 };
 
-Grants.propTypes = {
-  deleteWsCall: PropTypes.string,
+Databases.propTypes = {
   fromPublicDatasetPage: PropTypes.bool,
-  grants: PropTypes.array,
+  associatedDatasources: PropTypes.array,
   delete: PropTypes.func,
-  addGrant: PropTypes.func,
+  addDatabase: PropTypes.func,
 };
 
-export { Grants };
+export { Databases };

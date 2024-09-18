@@ -3,7 +3,7 @@ import { Row, Col, Accordion, Card } from "react-bootstrap";
 import { Grants } from "../pages/Grants";
 import { CustomToggle } from "../utils/api";
 
-const GrantsOnExp = props => {
+const GrantsOnDataset = props => {
   return (
     <>
       {!props.fromPublicDatasetPage ? (
@@ -26,7 +26,6 @@ const GrantsOnExp = props => {
                   addGrant={props.addGrant}
                   grants={props.grants}
                   delete={props.delete}
-                  deleteWsCall={"deletegrant"}
                 />
               </Card.Body>
             </Accordion.Collapse>
@@ -39,4 +38,4 @@ const GrantsOnExp = props => {
   );
 };
 
-export { GrantsOnExp };
+export { GrantsOnDataset };
