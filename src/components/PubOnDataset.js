@@ -47,9 +47,8 @@ const PubOnDataset = props => {
                                   classes={{ tooltip: "gg-tooltip" }}
                                   title={<>Add Paper</>}
                                 >
-                              <Link>
                                   <Image src={plusIcon} alt="plus button" />
-                                </Link>
+                                
                               </Tooltip>
                             </Button>
                           </Col>

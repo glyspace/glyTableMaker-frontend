@@ -87,7 +87,7 @@ const PublishDataset = (props) => {
 
     useEffect(() => {
         if (datasetId) {
-            if (datasetId.contains("-")) {
+            if (datasetId.includes("-")) {
                 datasetId = datasetId.substring (0, datasetId.indexOf("-"));   // get rid of version, always update the head version
             }
             fetchData();
@@ -508,12 +508,14 @@ const PublishDataset = (props) => {
     const addGrant = (grant) => {
         // assign an id and add to the list of grants
         grant["id"] = idCounter++;
+        grant["new"] = true;
         setUserSelection ({grants: userSelection.grants.concat([grant])});
     }
 
     const addDatabase = (database) => {
         // assign an id and add to the list of databases
         database["id"] = idCounter++;
+        database["new"] = true;
         setUserSelection ({associatedDatasources: userSelection.associatedDatasources.concat([database])});
     }
 
@@ -552,6 +554,30 @@ const PublishDataset = (props) => {
             }
         }
 
+        const associatedPapers = [];
+        userSelection.associatedPapers.map ((m) => {
+            if (m.new) {
+                m.id = null;
+            }
+            associatedPapers.push(m);
+        });
+
+        const associatedDatasources = [];
+        userSelection.associatedDatasources.map ((m) => {
+            if (m.new) {
+                m.id = null;
+            }
+            associatedDatasources.push(m);
+        });
+
+        const grants = [];
+        userSelection.grants.map ((m) => {
+            if (m.new) {
+                m.id = null;
+            }
+            grants.push(m);
+        });
+
         setShowLoading(true);
         const dataset = {
             "id": userSelection.id ?? null,
@@ -561,6 +587,9 @@ const PublishDataset = (props) => {
             "license": datasetId ? (licenseChanged ? selectedLicense : null) : selectedLicense,
             "publications" : publications,
             "changeComment" : comment,
+            "associatedPapers" : associatedPapers,
+            "associatedDatasources": associatedDatasources,
+            "grants": grants,
         };
         //publish the dataset
         const url = datasetId ? "api/dataset/updatedataset" : "api/dataset/publishdataset";
