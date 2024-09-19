@@ -36,7 +36,7 @@ return (
               />
           <Row className="show-grid">
             <Grid container spacing={4}>
-              <Grid item xs={12} md={8} lg={9}>
+              <Grid item xs={12} md={12} lg={12}> 
                 <Grid
                   container
                   spacing={4}
@@ -59,8 +59,6 @@ return (
                   </Grid>
                 </Grid>
               </Grid>
-
-              
             </Grid>
           </Row>
         </Container>

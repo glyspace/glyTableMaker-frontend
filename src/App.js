@@ -42,6 +42,8 @@ import { FileUpload } from "./pages/FileUpload";
 import Settings from "./pages/Settings";
 import Dataset from "./pages/Dataset";
 import PublishDataset from "./pages/PublishDataset";
+import { PublicData } from "./pages/PublicData";
+import { PublicDataset } from "./pages/PublicDataset";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -81,6 +83,17 @@ function App() {
       path: "/",
       sidebar: () => "",
       main: () =>  <Home />,
+    },
+    {
+      path: "/data",
+      exact: true,
+      main: () => <PublicData />,
+      sidebar: () => "",
+    },
+    {
+      path: "/data/dataset/:datasetId",
+      main: () => <PublicDataset />,
+      sidebar: () => "",
     },
     {
       path: "/login",

@@ -29,6 +29,7 @@
         "login": "api/account/login",
         "upload": "api/file/upload",
         "addglycanfromfile" : "api/data/addglycanfromfile",
-        "getpublicdatasets" : "api/public/getdatasets"
+        "getpublicdatasets" : "api/public/getdatasets",
+        "getpublicdataset" : "api/public/getdataset"
     }
 }

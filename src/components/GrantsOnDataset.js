@@ -9,6 +9,7 @@ const GrantsOnDataset = props => {
       {!props.fromPublicDatasetPage ? (
         <Accordion defaultActiveKey={0} className="mb-4">
           <Card>
+            {!props.fromPublicDatasetPage ?
             <Card.Header>
               <Row>
                 <Col className="font-awesome-color">
@@ -19,7 +20,7 @@ const GrantsOnDataset = props => {
                   <CustomToggle eventKey={0} classname={"font-awesome-color"} />
                 </Col>
               </Row>
-            </Card.Header>
+            </Card.Header> : <></>}
             <Accordion.Collapse eventKey={0}>
               <Card.Body>
                 <Grants
