@@ -5,8 +5,9 @@ import { Card, Row } from "react-bootstrap";
 import { useReducer } from "react";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import VersionCard from "../components/VersionCard";
 import { StatisticsCard } from "../components/StatisticsCard";
+import { DatasetTable } from "../components/DatasetTable";
+import stringConstants from '../data/stringConstants.json';
 
 const Home = () => {
     const [alertDialogInput, setAlertDialogInput] = useReducer(
@@ -52,6 +53,8 @@ return (
                   <Grid item xs={12} sm={12} style={{ backgroundColor: "white" }}>
                     <Card>
                       {/** published datasets in a table */}
+                      <DatasetTable ws={stringConstants.api.getpublicdatasets} 
+                                    setAlertDialogInput={setAlertDialogInput}/>
                     </Card>
                   </Grid>
                 </Grid>

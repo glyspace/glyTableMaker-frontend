@@ -28,6 +28,7 @@
         "statistics" : "api/data/statistics",
         "login": "api/account/login",
         "upload": "api/file/upload",
-        "addglycanfromfile" : "api/data/addglycanfromfile"
+        "addglycanfromfile" : "api/data/addglycanfromfile",
+        "getpublicdatasets" : "api/public/getdatasets"
     }
 }
