@@ -5,6 +5,7 @@ import { Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { getJson } from "../utils/api";
 import { Box } from "@mui/material";
+import "../pages/PublicDataset.css";
 
 
 const DatasetTable = props => {

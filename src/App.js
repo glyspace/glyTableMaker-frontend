@@ -92,7 +92,7 @@ function App() {
     },
     {
       path: "/data/dataset/:datasetId",
-      main: () => <PublicDataset />,
+      main: () => <PublicDataset authCheckAgent={checkAuthorization}/>,
       sidebar: () => "",
     },
     {

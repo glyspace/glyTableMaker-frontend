@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getJson } from "../utils/api";
-import { useEffect, useReducer, useState } from "react";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError } from "../utils/axiosError";
 import { GrantsOnDataset } from "../components/GrantsOnDataset";
@@ -11,8 +11,10 @@ import { Button, Card, Col, Form, Image, Row } from "react-bootstrap";
 import { FormLabel, Title } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
+import "./PublicDataset.css";
+import Table from "../components/Table";
 
-const PublicDataset = () => {
+const PublicDataset = (props) => {
     let { datasetId } = useParams();
 
     const navigate = useNavigate();
@@ -92,15 +94,167 @@ const PublicDataset = () => {
             )}
             </>
         );
-        };
+    };
         
     const getDescription = desc => {
         return desc.length > 150 && !descOpen ? `${desc.substring(0, 100)}...` : descOpen ? `${desc}` : desc;
     };
 
+    const getCellValue = (row, columnName, id, uri) => {
+      var value = "";
+      row.columns.forEach ((col) => {
+        if (col.glycanColumn) {
+          if (col.glycanColumn === columnName) {
+            value = col.value;
+          }
+        } else if (col.datatype) {
+          if (col.datatype.name === columnName) {
+            if (id) {
+              value = col.valueId;
+            } else if (uri) {
+              value =  col.valueUri;
+            } else { 
+              value =  col.value;
+            }
+          }
+        }
+      });
+
+      return value;
+      
+    }
+
+    const columns = useMemo (
+      () => [
+        {
+          accessorFn: (row) => getCellValue (row, 'GlytoucanID'),
+          header: 'GlyTouCan ID',
+          id: 'id',
+          size: 50,
+        },
+        {
+          accessorKey: 'cartoon',
+          header: 'Image',
+          size: 150,
+          enableColumnFilter: false,
+          enableSorting: false,
+          Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Evidence'),
+          header: 'Evidence',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Species', true),
+          header: 'Species',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Strain'),
+          header: 'Strain',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Tissue', true),
+          header: 'Tissue',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
+          header: 'Cell line ID',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Disease', true),
+          header: 'Disease',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Glycan dictionary term ID'),
+          header: 'Glycan dictionary term ID',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'has_abundance'),
+          header: 'has_abundance',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'has_expression'),
+          header: 'has_expression',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
+          header: 'Functional annotation/Keyword',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Experimental technique'),
+          header: 'Experimental technique',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Variant (Fly, yeast, mouse)'),
+          header: 'Variant (Fly, yeast, mouse)',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype', true),
+          header: 'Organismal/cellular Phenotype',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Molecular Phenotype'),
+          header: 'Molecular Phenotype',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Contributor'),
+          header: 'Contributor',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Comment'),
+          header: 'Comment',
+          size: 100,
+        }
+      ],
+      [],
+    );
+
+    const saveColumnVisibilityChanges = (columnVisibility) => {
+      props.authCheckAgent && props.authCheckAgent();
+      var columnSettings = [];
+      for (var column in columnVisibility) {
+        columnSettings.push ({
+          "tableName": "DATASETMETADATA",
+          "columnName": column,
+          "visible" :  columnVisibility[column] ? true: false,
+        });
+      }
+      postJson ("api/setting/updatecolumnsetting", columnSettings, getAuthorizationHeader()).then (({ data }) => {
+        console.log ("saved visibility settings");
+      }).catch(function(error) {
+        axiosError(error, null, setAlertDialogInput);
+      });
+    }
 
     const getData = () => {
-        return (<>Selected Version : {selectedVersion}</>)
+        return (
+        <>
+        <Table 
+            columns={columns} 
+            data={dataset.data} 
+            detailPanel={false}
+            enableRowActions={false}
+            initialSortColumn="id"
+            rowId="id"
+            columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
+            saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+        />
+        </>)
     }
 
     const getSubmitterDetails = (submitterinfo) => {
@@ -157,12 +311,23 @@ const PublicDataset = () => {
       } else {
         version = listVersions.find ((v) => v.version === versionName);
       }
-      const datasetVersion = {...dataset};
-      datasetVersion["publications"] = version.publications;
-      datasetVersion["data"] = version.data;
-      datasetVersion["license"] = version.license;
 
-      return datasetVersion;
+      const datasetIdentifier = version.head ? datasetId : datasetId + "-" + version.version;
+      setIsLoading(true);
+      getJson (stringConstants.api.getpublicdataset + "/" + datasetIdentifier).then ((data) => {
+          setDataset (data.data.data);
+          setIsLoading(false);
+      }).catch (function(error) {
+          if (error && error.response && error.response.data) {
+              setErrorMessage(error.response.data.message);
+              setIsLoading(false);
+              return;
+          } else {
+              setIsLoading(false);
+              axiosError(error, null, setAlertDialogInput);
+              return;
+          }
+      });
     }
 
     return (
@@ -221,14 +386,12 @@ const PublicDataset = () => {
                   <Form.Group className="pb-3">
                     <Col xs={12} lg={12}>
                       <FormLabel label={"Rendered Version"} />
-                      <Form.Control
-                        as="select"
-                        st1yle={{color: "white"}}
+                      <Form.Select
                         name="renderedVersion "
                         value={selectedVersion}
                         onChange={e => {
                           setSelectedVersion(e.target.value);
-                          setDataset(getDatasetVersion(e.target.value));
+                          getDatasetVersion(e.target.value);
                         }}
                       >
                         {listVersions && listVersions.length > 0 ? (
@@ -238,7 +401,7 @@ const PublicDataset = () => {
                         ) : (
                           <option value={selectedVersion}>{getVersionString(getVersion(selectedVersion))}</option>
                         )}
-                      </Form.Control>
+                      </Form.Select>
                     </Col>
                   </Form.Group>
                   {getData()}
