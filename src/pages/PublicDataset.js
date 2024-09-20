@@ -40,7 +40,10 @@ const PublicDataset = () => {
         getJson (stringConstants.api.getpublicdataset + "/" + datasetId).then ((data) => {
             setDataset (data.data.data);
             setIsLoading(false);
-            //TODO get all version list
+            setListVersions(data.data.data.versions);
+            if (!datasetId.includes("-")) {
+              setSelectedVersion("latest");
+            }
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 setErrorMessage(error.response.data.message);
@@ -54,7 +57,7 @@ const PublicDataset = () => {
         });
     }
 
-    const getUserName = user => {
+    const getFullName = user => {
         return user.firstName ? user.firstName + (user.lastName ? " " + user.lastName : "") : user.username;
     }
 
@@ -62,7 +65,7 @@ const PublicDataset = () => {
         const d = new Date(dateCreated);
         let year = d.getFullYear();
         let month = d.getMonth() + 1;
-        let day = d.getDate();
+        let day = d.getDate() + 1;
         return `${month}/${day}/${year}`;
     }
 
@@ -97,7 +100,7 @@ const PublicDataset = () => {
 
 
     const getData = () => {
-        return (<>Data table</>)
+        return (<>Selected Version : {selectedVersion}</>)
     }
 
     const getSubmitterDetails = (submitterinfo) => {
@@ -106,12 +109,12 @@ const PublicDataset = () => {
           <div>
             <strong>Username: </strong>
             {/*submitterinfo.userName*/}
-            {submitterinfo.userName}
+            {submitterinfo.username}
           </div>
           <div>
             <strong>Full Name: </strong>
             <span
-            >{getUserName(submitterinfo)}</span>
+            >{getFullName(submitterinfo)}</span>
           </div>
           {submitterinfo.groupName && (
             <div>
@@ -132,6 +135,34 @@ const PublicDataset = () => {
             </div>
           )}
         </>);
+    }
+
+    const getVersion = (versionName) => {
+      if (versionName.includes ("latest")) {
+        const v = listVersions.find ((version) => version.head === true);
+        return v;
+      }
+      const v = listVersions.find ((version) => version.version === versionName);
+      return v;
+    }
+
+    const getVersionString = (version) => {
+      return "Version (" + (version.head ? "latest" : version.version)  + (version.versionDate ? ", " + version.versionDate + ")" :  ")");
+    } 
+
+    const getDatasetVersion = (versionName) => {
+      var version;
+      if (versionName.includes("latest")) {
+        version = listVersions.find ((version) => version.head === true);
+      } else {
+        version = listVersions.find ((v) => v.version === versionName);
+      }
+      const datasetVersion = {...dataset};
+      datasetVersion["publications"] = version.publications;
+      datasetVersion["data"] = version.data;
+      datasetVersion["license"] = version.license;
+
+      return datasetVersion;
     }
 
     return (
@@ -195,14 +226,17 @@ const PublicDataset = () => {
                         st1yle={{color: "white"}}
                         name="renderedVersion "
                         value={selectedVersion}
-                        onChange={e => setSelectedVersion(e.target.value)}
+                        onChange={e => {
+                          setSelectedVersion(e.target.value);
+                          setDataset(getDatasetVersion(e.target.value));
+                        }}
                       >
                         {listVersions && listVersions.length > 0 ? (
                           listVersions.map(ver => {
-                            return <option value={ver.id}>{ver.name}</option>;
+                            return <option value={ver.head ? "latest" : ver.version}>{getVersionString(ver)}</option>;
                           })
                         ) : (
-                          <option value={selectedVersion}>{selectedVersion}</option>
+                          <option value={selectedVersion}>{getVersionString(getVersion(selectedVersion))}</option>
                         )}
                       </Form.Control>
                     </Col>
