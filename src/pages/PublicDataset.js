@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, getJsonAsync, postJson } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError } from "../utils/axiosError";
@@ -13,6 +13,7 @@ import { Loading } from "../components/Loading";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import "./PublicDataset.css";
 import Table from "../components/Table";
+import { Tooltip } from "@mui/material";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -33,8 +34,9 @@ const PublicDataset = (props) => {
     );
 
     useEffect(() => {
-        if (datasetId) 
+        if (datasetId) {
             fetchData();
+        }
     }, [datasetId]);
 
     const fetchData = async () => {
@@ -45,6 +47,8 @@ const PublicDataset = (props) => {
             setListVersions(data.data.data.versions);
             if (!datasetId.includes("-")) {
               setSelectedVersion("latest");
+            } else {
+              setSelectedVersion (datasetId.substring(datasetId.indexOf("-")+1));
             }
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -121,7 +125,6 @@ const PublicDataset = (props) => {
       });
 
       return value;
-      
     }
 
     const columns = useMemo (
@@ -129,95 +132,112 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'GlytoucanID'),
           header: 'GlyTouCan ID',
-          id: 'id',
+          id: '1',
           size: 50,
         },
         {
-          accessorKey: 'cartoon',
+          accessorFn: (row) => row.cartoon,
           header: 'Image',
+          id: 'cartoon',
           size: 150,
           enableColumnFilter: false,
           enableSorting: false,
-          Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+          Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />
         },
         {
           accessorFn: (row) => getCellValue (row, 'Evidence'),
+          id: "2",
           header: 'Evidence',
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Species', true),
           header: 'Species',
+          id: "3",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Strain'),
           header: 'Strain',
+          id: "4",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Tissue', true),
           header: 'Tissue',
+          id: "5",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
           header: 'Cell line ID',
+          id: "6",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Disease', true),
           header: 'Disease',
+          id: "7",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Glycan dictionary term ID'),
           header: 'Glycan dictionary term ID',
+          id: "8",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'has_abundance'),
           header: 'has_abundance',
+          id: "9",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'has_expression'),
           header: 'has_expression',
+          id: "10",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
           header: 'Functional annotation/Keyword',
+          id: "11",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Experimental technique'),
           header: 'Experimental technique',
+          id: "12",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Variant (Fly, yeast, mouse)'),
           header: 'Variant (Fly, yeast, mouse)',
+          id: "13",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype', true),
           header: 'Organismal/cellular Phenotype',
+          id: "14",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Molecular Phenotype'),
           header: 'Molecular Phenotype',
+          id: "15",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Contributor'),
           header: 'Contributor',
+          id: "16",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Comment'),
           header: 'Comment',
+          id: "17",
           size: 100,
         }
       ],
@@ -241,6 +261,10 @@ const PublicDataset = (props) => {
       });
     }
 
+    const download = () => {
+      //TODO download csv file
+    }
+
     const getData = () => {
         return (
         <>
@@ -249,8 +273,8 @@ const PublicDataset = (props) => {
             data={dataset.data} 
             detailPanel={false}
             enableRowActions={false}
-            initialSortColumn="id"
-            rowId="id"
+            initialSortColumn="1"
+            rowId="1"
             columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
             saveColumnVisibilityChanges={saveColumnVisibilityChanges}
         />
@@ -383,8 +407,10 @@ const PublicDataset = (props) => {
                 <Title title="Versions" />
                 
                 <div className="pt-2">
+                  <Row>
+                  <Col xs={8} lg={8}>
                   <Form.Group className="pb-3">
-                    <Col xs={12} lg={12}>
+                    
                       <FormLabel label={"Rendered Version"} />
                       <Form.Select
                         name="renderedVersion "
@@ -402,8 +428,17 @@ const PublicDataset = (props) => {
                           <option value={selectedVersion}>{getVersionString(getVersion(selectedVersion))}</option>
                         )}
                       </Form.Select>
-                    </Col>
+                    
                   </Form.Group>
+                  </Col>
+                  <Col>
+                  <Tooltip title="Download table data">
+                  <Button variant="contained" className="gg-btn-blue-rightalign" style={{marginTop: '10px', marginRight: '15px'}}
+                    onClick={()=>download()}> 
+                        Download
+                  </Button>
+                  </Tooltip>
+                  </Col> </Row>
                   {getData()}
                 </div>
               </Card.Body>

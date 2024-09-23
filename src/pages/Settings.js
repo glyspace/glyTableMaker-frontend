@@ -23,6 +23,7 @@ const Settings = (props) => {
         "GLYCANINCOLLECTION": "Glycans (in Collection)",
         "METADATA" : "Metadata",
         "DATASET" : "Dataset",
+        "DATASETMETADATA" : "Public Dataset Metadata",
     }
 
     const [columnVisibility, setColumnVisibility] = useState({
@@ -142,8 +143,83 @@ const Settings = (props) => {
                 "label" : "License",
                 "visible": true,
             }
+        },
+        "DATASETMETADATA" : {
+            "1" : {
+                "label" : "GlyTouCan ID",
+                "visible" : true,
+            },
+            "cartoon" : {
+                "label" : "Image",
+                "visible" : true,
+            }, 
+            "2" : {
+                "label" : "Evidence",
+                "visible" : true,
+            },
+            "3": {
+                "label" : "Species",
+                "visible": true,
+            },
+            "4" : {
+                "label" : "Strain",
+                "visible": true,
+            },
+            "5" : {
+                "label" : "Tissue",
+                "visible" : true,
+            },
+            "6" : {
+                "label" : "Cell line ID",
+                "visible" : true,
+            }, 
+            "7" : {
+                "label" : "Disease",
+                "visible" : true,
+            },
+            "8": {
+                "label" : "Glycan dictionary term ID",
+                "visible": true,
+            },
+            "9" : {
+                "label" : "has_abundance",
+                "visible": true,
+            },
+            "10" : {
+                "label" : "has_expression",
+                "visible": true,
+            },
+            "11" : {
+                "label" : "Functional annotation/Keyword",
+                "visible" : true,
+            },
+            "12" : {
+                "label" : "Experimental technique",
+                "visible" : true,
+            }, 
+            "13" : {
+                "label" : "Variant (Fly, yeast, mouse)",
+                "visible" : true,
+            },
+            "14": {
+                "label" : "Organismal/cellular Phenotype",
+                "visible": true,
+            },
+            "15" : {
+                "label" : "Molecular Phenotype",
+                "visible": true,
+            },
+            "16" : {
+                "label" : "Contributor",
+                "visible": true,
+            },
+            "17" : {
+                "label" : "Comment",
+                "visible": true,
+            }
         }
     });   // map containing column visibility for each table type
+
     const [compositionType, setCompositionType] = useState (null); 
     const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
     const [showSuccessMessage, setShowSuccessMessage]  = useState(null);
@@ -200,7 +276,15 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
-                nextColumnVisibilty["DATASET"] = {...visibilityList};
+                nextColumnVisibilty["DATASETMETADATA"] = {...visibilityList};
+                visibilityList = columnVisibility["DATASETMETADATA"];
+                data.data["DATASETMETADATA"] && 
+                    data.data["DATASETMETADATA"].map ((setting, index) => {
+                        if (visibilityList[setting.columnName]) {
+                            visibilityList[setting.columnName]["visible"] = setting.visible;
+                        }
+                });
+                nextColumnVisibilty["DATASETMETADATA"] = {...visibilityList};
                 setColumnVisibility (nextColumnVisibilty);
             } 
           }).catch(function(error) {

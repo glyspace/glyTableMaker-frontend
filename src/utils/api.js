@@ -204,6 +204,12 @@ export const postJsonAsync = async (url, data = {}, headers = {}) => {
   return await axios(options);
 }
 
+export const getJsonAsync = async (url, headers = {}) => {
+  return await axios.get(TABLEMAKER_API + url, {
+    headers
+  });
+};
+
 export function CustomToggle({ children, eventKey }) {
   const currentEventKey = useContext(AccordionContext);
   const decoratedOnClick = useAccordionButton(eventKey, () =>

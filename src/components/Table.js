@@ -294,18 +294,7 @@ const Table = (props) => {
             }
           : undefined,
         renderToolbarInternalActions: ({ table }) => (
-          <Box>
-            <MRT_ToggleGlobalFilterButton table={table} />
-            <MRT_ToggleFiltersButton table={table} />
-            <MRT_ShowHideColumnsButton table={table} />
-            <MRT_ToggleDensePaddingButton table={table} />
-            <MRT_ToggleFullScreenButton table={table} />
-            {props.saveColumnVisibilityChanges && (
-              <Tooltip title="Save current column visibility as default setting">
-              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
-              </Tooltip>
-            )}
-          </Box>
+         getToolbar(table)
         ),
         onColumnVisibilityChange: (updater) => {
           setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
@@ -410,18 +399,7 @@ const Table = (props) => {
             children: row.original.error || row.original.glytoucanHash ? <InfoIcon/> : <ExpandMoreIcon/>,
         }),
         renderToolbarInternalActions: ({ table }) => (
-          <Box>
-            <MRT_ToggleGlobalFilterButton table={table} />
-            <MRT_ToggleFiltersButton table={table} />
-            <MRT_ShowHideColumnsButton table={table} />
-            <MRT_ToggleDensePaddingButton table={table} />
-            <MRT_ToggleFullScreenButton table={table} />
-            {props.saveColumnVisibilityChanges && (
-              <Tooltip title="Save column visibility settings">
-              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
-              </Tooltip>
-            )}
-          </Box>
+          getToolbar(table)
         ),
         onColumnVisibilityChange: (updater) => {
           setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
@@ -448,6 +426,28 @@ const Table = (props) => {
           columnVisibility,
         },
       });
+
+      const getToolbar = (table) => {
+        return (
+          <Box>
+            <MRT_ToggleGlobalFilterButton table={table} />
+            <MRT_ToggleFiltersButton table={table} />
+            <MRT_ShowHideColumnsButton table={table} />
+            <MRT_ToggleDensePaddingButton table={table} />
+            <MRT_ToggleFullScreenButton table={table} />
+            {props.saveColumnVisibilityChanges && (
+              <Tooltip title="Save column visibility settings">
+              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
+              </Tooltip>
+            )}
+            {props.download && (
+              <Tooltip title="Download table data">
+              <Button style={{marginLeft: '5px'}} className="gg-btn-blue-sm" onClick={()=> props.download}>Download</Button>
+              </Tooltip>
+            )}
+          </Box>
+        )
+      }
 
       const clientTable = useMaterialReactTable({
         columns,
@@ -480,18 +480,7 @@ const Table = (props) => {
           </Box>
         ),
         renderToolbarInternalActions: ({ table }) => (
-          <Box>
-            <MRT_ToggleGlobalFilterButton table={table} />
-            <MRT_ToggleFiltersButton table={table} />
-            <MRT_ShowHideColumnsButton table={table} />
-            <MRT_ToggleDensePaddingButton table={table} />
-            <MRT_ToggleFullScreenButton table={table} />
-            {props.saveColumnVisibilityChanges && (
-              <Tooltip title="Save column visibility settings">
-              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
-              </Tooltip>
-            )}
-          </Box>
+          getToolbar(table)
         ),
         onColumnVisibilityChange: (updater) => {
           setColumnVisibility((prev) => updater instanceof Function ? updater(prev) : updater)
