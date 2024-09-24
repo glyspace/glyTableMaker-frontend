@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getAuthorizationHeader, getJson, getJsonAsync, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, getJsonAsync, postJson, postToAndGetBlob } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError } from "../utils/axiosError";
@@ -14,6 +14,7 @@ import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import "./PublicDataset.css";
 import Table from "../components/Table";
 import { Tooltip } from "@mui/material";
+import TextAlert from "../components/TextAlert";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -32,6 +33,11 @@ const PublicDataset = (props) => {
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+
+    const [textAlertInput, setTextAlertInput] = useReducer(
+      (state, newState) => ({ ...state, ...newState }),
+      { show: false, id: "" }
+  );
 
     useEffect(() => {
         if (datasetId) {
@@ -262,7 +268,45 @@ const PublicDataset = (props) => {
     }
 
     const download = () => {
-      //TODO download csv file
+      // download csv file
+
+      const tableDef = {
+        "filename" : "GlygenDataset-" + datasetId,
+        "data" : dataset.data,
+      }
+      setIsLoading(true);
+      setTextAlertInput({"show": false, id: ""});
+      let url = "api/public/downloadtable";
+      postToAndGetBlob (url, tableDef).then ( (data) => {
+          const contentDisposition = data.headers.get("content-disposition");
+          const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
+          const fileName = contentDisposition.substring(fileNameIndex, contentDisposition.length-1);
+
+          //   window.location.href = fileUrl;
+          var fileUrl = URL.createObjectURL(data.data);
+          var a = document.createElement("a");
+          document.body.appendChild(a);
+          a.style = "display: none";
+          a.href = fileUrl;
+          a.download = fileName;
+          a.click();
+
+          window.URL.revokeObjectURL(fileUrl);
+          setIsLoading(false);
+        }).catch (function(error) {
+          if (error && error.response && error.response.data) {
+              //setTextAlertInput ({"show": true, "message": error.response.data.message });
+              // read blob as json
+              error.response.data.text().then( (resp) => {
+                  const { message } = JSON.parse (resp);
+                  setTextAlertInput ({"show": true, "message": message });
+              });
+          } else {
+              axiosError(error, null, setAlertDialogInput);
+          }
+          setIsLoading(false);
+        }
+      );
     }
 
     const getData = () => {
@@ -403,12 +447,13 @@ const PublicDataset = (props) => {
             </Row>
             <Card style={{marginBottom: "30px"}}>
               <Loading show={isLoading} />
+              <TextAlert alertInput={textAlertInput}/>
               <Card.Body>
                 <Title title="Versions" />
                 
                 <div className="pt-2">
                   <Row>
-                  <Col xs={8} lg={8}>
+                  <Col xs={6} lg={6}>
                   <Form.Group className="pb-3">
                     
                       <FormLabel label={"Rendered Version"} />
@@ -433,7 +478,7 @@ const PublicDataset = (props) => {
                   </Col>
                   <Col>
                   <Tooltip title="Download table data">
-                  <Button variant="contained" className="gg-btn-blue-rightalign" style={{marginTop: '10px', marginRight: '15px'}}
+                  <Button variant="contained" className="gg-btn-blue-rightalign" style={{marginTop: '15px', marginRight: '15px'}}
                     onClick={()=>download()}> 
                         Download
                   </Button>
@@ -445,7 +490,7 @@ const PublicDataset = (props) => {
             </Card>
             <Card style={{marginBottom: "30px"}}>
               <Card.Body>
-                <Title title="Publications" />
+                <Title title="(Data from) Publications" />
                 {dataset.publications && dataset.publications.length > 0 ? (
                   <PubOnDataset publications={dataset.publications} fromPublicDatasetPage={true} />
                 ) : (
@@ -454,16 +499,7 @@ const PublicDataset = (props) => {
               </Card.Body>
             </Card>
 
-            <Card style={{marginBottom: "30px"}}>
-              <Card.Body>
-                <Title title="Associated Papers" />
-                {dataset.associatedPapers && dataset.associatedPapers.length > 0 ? (
-                  <PubOnDataset publications={dataset.associatedPapers} fromPublicDatasetPage={true} />
-                ) : (
-                  <span>No data available</span>
-                )}
-              </Card.Body>
-            </Card>
+            
 
             <Card style={{marginBottom: "30px"}}>
               <Card.Body>
@@ -485,9 +521,34 @@ const PublicDataset = (props) => {
                 ) : (
                     <span>No data available</span>  
                 )}
-                </Card.Body>
-                </Card>
-            
+              </Card.Body>
+            </Card>
+            <Card style={{marginBottom: "30px"}}>
+              <Card.Body>
+                <Title title="Associated Papers" />
+                {dataset.associatedPapers && dataset.associatedPapers.length > 0 ? (
+                  <PubOnDataset publications={dataset.associatedPapers} fromPublicDatasetPage={true} />
+                ) : (
+                  <span>No data available</span>
+                )}
+              </Card.Body>
+            </Card>
+            <Card style={{marginBottom: "30px"}}>
+              <Card.Body>
+                <Title title="Data Integrated In" />
+                {dataset.integratedIn && dataset.integratedIn.length > 0 ? (
+                  <li>
+                  {dataset.integratedIn.forEach ((datasource) => {
+                    <ul>
+                      {datasource.resource.name}-({datasource.versionInResource})
+                    </ul>
+                  })}
+                  </li>
+                ) : (
+                  <span>No data available</span>
+                )}
+              </Card.Body>
+            </Card>
         
             <div className="text-center">
               <Button className="gg-btn-blue" onClick={() => navigate("/data")}>

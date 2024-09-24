@@ -795,7 +795,7 @@ const PublishDataset = (props) => {
             <Card.Header>
               <Row>
                 <Col className="font-awesome-color">
-                  <span className="gg-blue" style={{fontWeight: 500, fontSize: "1.25rem"}}>Publications</span>
+                  <span className="gg-blue" style={{fontWeight: 500, fontSize: "1.25rem"}}>(Data from) Publications</span>
                 </Col>
 
                 <Col style={{ textAlign: "right" }}>
@@ -816,14 +816,7 @@ const PublishDataset = (props) => {
             </Accordion.Collapse>
           </Card>
         </Accordion>   
-        {/* Associated Papers */}
-        <PubOnDataset
-            getPublication={getPublication}
-            getPublicationFormControl={getPublicationFormControl}
-            newPubMedId={newPubMedId}
-            publications={userSelection.associatedPapers}
-            deleteRow={deletePaper}
-        />
+        
         {/* Grants */}
         <GrantsOnDataset
             addGrant={addGrant}
@@ -837,6 +830,14 @@ const PublishDataset = (props) => {
             associatedDatasources={userSelection.associatedDatasources}
             delete={deleteDatabase}
         /> 
+        {/* Associated Papers */}
+        <PubOnDataset
+            getPublication={getPublication}
+            getPublicationFormControl={getPublicationFormControl}
+            newPubMedId={newPubMedId}
+            publications={userSelection.associatedPapers}
+            deleteRow={deletePaper}
+        />
         </div>
       </Container>
         </>
