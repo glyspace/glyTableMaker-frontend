@@ -157,24 +157,40 @@ const Settings = (props) => {
                 "label" : "Evidence",
                 "visible" : true,
             },
-            "3": {
+            "speciesValue": {
                 "label" : "Species",
+                "visible": true,
+            },
+            "3": {
+                "label" : "Species ID",
                 "visible": true,
             },
             "4" : {
                 "label" : "Strain",
                 "visible": true,
             },
-            "5" : {
+            "tissueValue" : {
                 "label" : "Tissue",
                 "visible" : true,
             },
+            "5" : {
+                "label" : "Tissue ID",
+                "visible" : true,
+            },
+            "celllineValue" : {
+                "label" : "Cell line",
+                "visible" : true,
+            }, 
             "6" : {
                 "label" : "Cell line ID",
                 "visible" : true,
             }, 
-            "7" : {
+            "diseaseValue" : {
                 "label" : "Disease",
+                "visible" : true,
+            },
+            "7" : {
+                "label" : "Disease ID",
                 "visible" : true,
             },
             "8": {
@@ -201,8 +217,12 @@ const Settings = (props) => {
                 "label" : "Variant (Fly, yeast, mouse)",
                 "visible" : true,
             },
-            "14": {
+            "phenotypeValue": {
                 "label" : "Organismal/cellular Phenotype",
+                "visible": true,
+            },
+            "14": {
+                "label" : "Organismal/cellular Phenotype ID",
                 "visible": true,
             },
             "15" : {

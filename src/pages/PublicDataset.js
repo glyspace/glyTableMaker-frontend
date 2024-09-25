@@ -15,6 +15,7 @@ import "./PublicDataset.css";
 import Table from "../components/Table";
 import { Tooltip } from "@mui/material";
 import TextAlert from "../components/TextAlert";
+import VersionAlert from "../components/VersionAlert";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -37,7 +38,9 @@ const PublicDataset = (props) => {
     const [textAlertInput, setTextAlertInput] = useReducer(
       (state, newState) => ({ ...state, ...newState }),
       { show: false, id: "" }
-  );
+    );
+
+    const [versionData, setVersionData] = useState ([]);
 
     useEffect(() => {
         if (datasetId) {
@@ -50,11 +53,28 @@ const PublicDataset = (props) => {
         getJson (stringConstants.api.getpublicdataset + "/" + datasetId).then ((data) => {
             setDataset (data.data.data);
             setIsLoading(false);
-            setListVersions(data.data.data.versions);
+            const versionList = data.data.data.versions;
+            versionList.sort((a, b) => {
+              if (a.head) {
+                return -1; // Empty string comes first
+              } else if (b.head) {
+                return 1; // Empty string comes first
+              } else {
+                return a.version < b.version; // Regular string comparison
+              }
+            });
+            setListVersions(versionList);
             if (!datasetId.includes("-")) {
               setSelectedVersion("latest");
+              setVersionData([]);
             } else {
-              setSelectedVersion (datasetId.substring(datasetId.indexOf("-")+1));
+              const v = datasetId.substring(datasetId.indexOf("-")+1);
+              setVersionData ([{"title": "You are viewing an earlier version (" + v + ") of the dataset.",
+                "description" : "Latest version can be found here: ",
+                "url": datasetId.substring(0, datasetId.indexOf("-")),
+                "url_name" : datasetId.substring(0, datasetId.indexOf("-"))
+              }]);
+              setSelectedVersion (v);
             }
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -157,8 +177,14 @@ const PublicDataset = (props) => {
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Species', true),
+          accessorFn: (row) => getCellValue (row, 'Species'),
           header: 'Species',
+          id: "speciesValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Species', true),
+          header: 'Species ID',
           id: "3",
           size: 100,
         },
@@ -169,9 +195,21 @@ const PublicDataset = (props) => {
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Tissue', true),
+          accessorFn: (row) => getCellValue (row, 'Tissue'),
           header: 'Tissue',
+          id: "tissueValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Tissue', true),
+          header: 'Tissue ID',
           id: "5",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cell line ID'),
+          header: 'Cell line',
+          id: "celllineValue",
           size: 100,
         },
         {
@@ -181,8 +219,14 @@ const PublicDataset = (props) => {
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Disease', true),
+          accessorFn: (row) => getCellValue (row, 'Disease'),
           header: 'Disease',
+          id: "diseaseValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Disease', true),
+          header: 'Disease ID',
           id: "7",
           size: 100,
         },
@@ -223,8 +267,14 @@ const PublicDataset = (props) => {
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype', true),
+          accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype'),
           header: 'Organismal/cellular Phenotype',
+          id: "phenotypeValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype', true),
+          header: 'Organismal/cellular Phenotype ID',
           id: "14",
           size: 100,
         },
@@ -369,7 +419,7 @@ const PublicDataset = (props) => {
     }
 
     const getVersionString = (version) => {
-      return "Version (" + (version.head ? "latest" : version.version)  + (version.versionDate ? ", " + version.versionDate + ")" :  ")");
+      return (version.head ? "latest" : "Version " + version.version)  + (version.versionDate ? " (" + version.versionDate + ")" :  "");
     } 
 
     const getDatasetVersion = (versionName) => {
@@ -407,6 +457,7 @@ const PublicDataset = (props) => {
                 setAlertDialogInput({ show: input });
             }}
         />
+        <VersionAlert data={versionData} pageLoading={isLoading}/>
         <div style={{margin: "30px"}}>
         {dataset ? (
           <>
@@ -435,7 +486,6 @@ const PublicDataset = (props) => {
                     <div className="text-center">
                       <a href={dataset.license.url} target="_blank" rel="noopener noreferrer">
                         {dataset.license.name}</a>
-                      <p>{dataset.license.name}</p>
                       {/**  <a href={"https://creativecommons.org/licenses/by/4.0/"} target="_blank" rel="noopener noreferrer">
                         <Image src={licenseLogo} className="licenseIcons" />
                       </a> */}
@@ -449,7 +499,7 @@ const PublicDataset = (props) => {
               <Loading show={isLoading} />
               <TextAlert alertInput={textAlertInput}/>
               <Card.Body>
-                <Title title="Versions" />
+                <Title title="Data" />
                 
                 <div className="pt-2">
                   <Row>

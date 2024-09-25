@@ -58,6 +58,30 @@ footerUnivLogo {
   position: relative;
   /* overflow-x: hidden !important; */
 }
+
+/* ========================================
+        Main Attributes & Typography
+==========================================*/
+.gg-text {
+  color: #2f78b7 !important;
+  font-weight: 600 !important;
+}
+.gg-link {
+  color: #2f78b7 !important;
+  font-weight: 600 !important;
+}
+.gg-link:hover {
+  color: #57affa !important;
+}
+
+p {
+  color: #444444;
+}
+.list-style-none {
+  list-style: none !important;
+  padding: 0;
+}
+
 a {
   text-decoration: none !important;
   color: var(--gg-blue) !important;
@@ -944,6 +968,39 @@ input[type="check" i] {
 .alert-banner-darkgrey a:hover {
   color: #bf0101 !important;
   /* font-weight: 200 !important; */
+}
+
+.event-alerts-border {
+  /* margin-bottom: 35px !important; */
+  border-top: 5px solid #2e78b7 !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+}
+.event-alerts-mb {
+  margin-bottom: 35px !important;
+}
+.banner-bg {
+  background-color: #555 !important;
+  padding: 0 !important;
+}
+.banner-info {
+  border-left: solid 2px #777 !important;
+  /* padding-right: 5px !important; */
+}
+.banner-info h5,
+.banner-info p {
+  color: #fff !important;
+  margin-bottom: 0;
+  /* vertical-align: middle !important; */
+}
+.banner-info a {
+  color: #ff6464 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.banner-info a:hover {
+  color: #bf0101 !important;
 }
 
 .descriptor-header {
