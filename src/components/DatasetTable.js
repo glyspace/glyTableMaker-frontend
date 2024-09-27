@@ -102,9 +102,9 @@ const DatasetTable = props => {
           {
             header: 'List of Datasets',
             Header: ({ column }) => (
-                <span style={{
-                    fontSize: "1.1rem",
-                  }}>{column.columnDef.header} ({rowCount})</span> 
+                <span style={{fontSize: "1.1rem"}}>
+                    {column.columnDef.header} ({rowCount})
+                </span> 
             ),
             enableColumnFilter: false,
             enableSorting: false,
@@ -146,7 +146,7 @@ const DatasetTable = props => {
             ),
           },
         ],
-        [descOpen],
+        [descOpen, rowCount],
     );
 
     const handleSelectSortBy = e => {
