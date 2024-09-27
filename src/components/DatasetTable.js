@@ -102,7 +102,9 @@ const DatasetTable = props => {
           {
             header: 'List of Datasets',
             Header: ({ column }) => (
-                <span>{column.columnDef.header} ({rowCount})</span> 
+                <span style={{
+                    fontSize: "1.1rem",
+                  }}>{column.columnDef.header} ({rowCount})</span> 
             ),
             enableColumnFilter: false,
             enableSorting: false,
@@ -163,7 +165,10 @@ const DatasetTable = props => {
                 icon={["fas", orderBy ? "caret-up" : "caret-down"]}
                 title="Order by"
                 alt="Caret Icon"
-                onClick={() => setOrderBy (!orderBy)}
+                onClick={() => {
+                    setSorting ([{id : sortBy, desc: !orderBy}]);
+                    setOrderBy (!orderBy);
+                }}
             />
             </Col>
             <Col xs={6} lg={8}>
