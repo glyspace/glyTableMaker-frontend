@@ -11,7 +11,9 @@ import {
   faTable, 
   faAngleDown,
   faAngleUp,
-  faBookOpen } from "@fortawesome/free-solid-svg-icons";
+  faBookOpen,
+  faCaretUp,
+  faCaretDown, } from "@fortawesome/free-solid-svg-icons";
 import { faEdit, faTrashAlt, faClone, faEyeSlash, faEye } from "@fortawesome/free-regular-svg-icons";
 import CssBaseline from '@mui/material/CssBaseline';
 import { parseJwt } from "./utils/api";
@@ -74,6 +76,8 @@ function App() {
     faAngleDown,
     faAngleUp,
     faBookOpen,
+    faCaretUp,
+    faCaretDown,
   );
 
   useEffect(checkAuthorization, [loggedIn]);

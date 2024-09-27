@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { axiosError } from "../utils/axiosError";
 import { MaterialReactTable, MRT_ToggleDensePaddingButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, useMaterialReactTable } from "material-react-table";
-import { Row } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { getJson } from "../utils/api";
 import { Box } from "@mui/material";
 import "../pages/PublicDataset.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FormLabel } from "./FormControls";
 
 
 const DatasetTable = props => {
@@ -27,6 +29,9 @@ const DatasetTable = props => {
         pageIndex: 0,
         pageSize: 10,
     });
+
+    const [sortBy, setSortBy] = useState (props.initialSortColumn ?? "datasetIdentifier");
+    const [orderBy, setOrderBy] = useState (false);
 
     useEffect(() => {
         if (props.ws) {
@@ -88,7 +93,7 @@ const DatasetTable = props => {
         const d = new Date(dateCreated);
         let year = d.getFullYear();
         let month = d.getMonth() + 1;
-        let day = d.getDate();
+        let day = d.getDate()+1;
         return `${month}/${day}/${year}`;
     }
 
@@ -142,6 +147,48 @@ const DatasetTable = props => {
         [descOpen],
     );
 
+    const handleSelectSortBy = e => {
+        const selected = e.target.options[e.target.selectedIndex].value;
+        setSortBy (selected);
+        setSorting ([{id : selected, desc: orderBy}]);
+    };
+
+    const getSortToolbar = () => {
+        return (
+        <Row style={{flex: true}}>
+            <Col xs={2} lg={4}>
+            <span>Order&nbsp;by&nbsp;&nbsp;</span>
+            <FontAwesomeIcon
+                key={"view"}
+                icon={["fas", orderBy ? "caret-up" : "caret-down"]}
+                title="Order by"
+                alt="Caret Icon"
+                onClick={() => setOrderBy (!orderBy)}
+            />
+            </Col>
+            <Col xs={6} lg={8}>
+                <Row>
+                    <Col xs={2} lg={4}>
+                    <span>Sort&nbsp;by&nbsp;&nbsp;</span>
+                    </Col>
+                    <Col>
+                    <Form.Select
+                    name={"sortBy"}
+                    value={sortBy}
+                    onChange={handleSelectSortBy}
+                    >
+                    <option value="datasetIdentifier">ID</option>
+                    <option value="name">Dataset Name</option>
+                    <option value="dateCreated">Publication Date</option>
+                    <option value="user">Submitter</option>
+                    </Form.Select>
+                    </Col>
+                </Row>
+            </Col>
+        </Row>
+        );
+    }
+
     const table = useMaterialReactTable({
         columns,
         data : data,
@@ -162,13 +209,16 @@ const DatasetTable = props => {
               </div>,
             }
           : undefined,
-          renderToolbarInternalActions: ({ table }) => (
-            <Box>
-              <MRT_ToggleGlobalFilterButton table={table} />
-              <MRT_ToggleDensePaddingButton table={table} />
-              <MRT_ToggleFullScreenButton table={table} />
-            </Box>
-          ),
+        renderToolbarInternalActions: ({ table }) => (
+        <Box>
+            <MRT_ToggleGlobalFilterButton table={table} />
+            <MRT_ToggleDensePaddingButton table={table} />
+            <MRT_ToggleFullScreenButton table={table} />
+        </Box>
+        ),
+        renderTopToolbarCustomActions : ({ table }) => (
+            getSortToolbar()
+        ),
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
