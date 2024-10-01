@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { parseJwt } from '../utils/api'
 
 function OAuth2Redirect(props) {
-  const [redirectTo, setRedirectTo] = useState('/login')
+  //const [redirectTo, setRedirectTo] = useState('/login')
 
-  const location = useLocation()
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const accessToken = extractUrlParameter('token')
+
     if (accessToken) {
       handleLogin(accessToken)
       //const redirect = '/'
@@ -17,12 +19,16 @@ function OAuth2Redirect(props) {
       var redirectedFrom = "";
       if (location.state && location.state.redirectedFrom) {
         redirectedFrom = location.state.redirectedFrom;
+      } else {
+        var base = process.env.REACT_APP_BASENAME;
+        const redirect = window.localStorage.getItem(base ? base + "_redirectedFrom" : "redirectedFrom");
+        redirectedFrom = redirect ?? "/";
       }
 
       if (redirectedFrom) {
-        setRedirectTo(redirectedFrom);
+        navigate(redirectedFrom);
       } else {
-        setRedirectTo("/");
+        navigate("/");
       }
     }
   }, [])
@@ -39,7 +45,7 @@ function OAuth2Redirect(props) {
     props.updateLogin(true);
   };
 
-  return <Navigate to={redirectTo} />
+  return <></>
 }
 
 export default OAuth2Redirect

@@ -301,7 +301,7 @@ const PublicDataset = (props) => {
     );
 
     const saveColumnVisibilityChanges = (columnVisibility) => {
-      props.authCheckAgent && props.authCheckAgent();
+      props.authCheckAgent && props.authCheckAgent(true);
       var columnSettings = [];
       for (var column in columnVisibility) {
         columnSettings.push ({

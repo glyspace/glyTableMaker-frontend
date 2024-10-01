@@ -158,7 +158,10 @@ export const getAuthorizationHeader = () => {
   return headers;
 };
 
-export function getSocialLoginUrl(name) {
+export function getSocialLoginUrl(name, redirectedFrom) {
+  if (redirectedFrom) {
+    window.localStorage.setItem(base ? base + "_redirectedFrom" : "redirectedFrom", redirectedFrom);
+  }
   return `${TABLEMAKER_API}oauth2/authorization/${name}?redirect_uri=${OAUTH2_REDIRECT_URI}`
 }
 

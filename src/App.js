@@ -287,7 +287,7 @@ function App() {
     return true;
   }
 
-  function checkAuthorization() {
+  function checkAuthorization(forceLogin = false) {
     var authorized = getLoginStatus();
     setLoggedIn(authorized); //async
     var loginNotRequiredPages = [
@@ -297,7 +297,8 @@ function App() {
       "forgotPassword",
       "register",
       "emailConfirmation",
-      "verifyToken"
+      "verifyToken",
+      "data",
     ];
     var pagename = getPageName(location);
 
@@ -315,7 +316,7 @@ function App() {
       }
     }
 
-    if (!authorized && !loginNotRequiredPages.includes(pagename)) {
+    if (!authorized && (forceLogin || !loginNotRequiredPages.includes(pagename))) {
       navigate("/login", {
         state: { redirectedFrom: redirectFrom }
       });
@@ -327,6 +328,7 @@ function App() {
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.removeItem(base ? base + "_token" : "token");
     window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+    window.localStorage.removeItem(base ? base + "_redirectedFrom" : "redirectedFrom");
     setLoggedIn(false);
     navigate("/");
   }
