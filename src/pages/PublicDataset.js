@@ -1,13 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getAuthorizationHeader, getJson, getJsonAsync, postJson, postToAndGetBlob } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson, postToAndGetBlob } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError } from "../utils/axiosError";
 import { GrantsOnDataset } from "../components/GrantsOnDataset";
 import { PubOnDataset } from "../components/PubOnDataset";
-import { Button, Card, Col, Form, Image, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Image, Modal, Row } from "react-bootstrap";
+import { Table as BootstrapTable } from "react-bootstrap";
 import { FormLabel, Title } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
@@ -41,6 +42,7 @@ const PublicDataset = (props) => {
     );
 
     const [versionData, setVersionData] = useState ([]);
+    const [showVersionLog, setShowVersionLog] = useState(false);
 
     useEffect(() => {
         if (datasetId) {
@@ -54,15 +56,7 @@ const PublicDataset = (props) => {
             setDataset (data.data.data);
             setIsLoading(false);
             const versionList = data.data.data.versions;
-            versionList.sort((a, b) => {
-              if (a.head) {
-                return -1; // Empty string comes first
-              } else if (b.head) {
-                return 1; // Empty string comes first
-              } else {
-                return a.version < b.version; // Regular string comparison
-              }
-            });
+            versionList.sort((a, b) => a.version > b.version ? -1 : a.version < b.version ? 1 : 0);
             setListVersions(versionList);
             if (!datasetId.includes("-")) {
               setSelectedVersion("latest");
@@ -419,7 +413,7 @@ const PublicDataset = (props) => {
     }
 
     const getVersionString = (version) => {
-      return (version.head ? "latest" : "Version " + version.version)  + (version.versionDate ? " (" + version.versionDate + ")" :  "");
+      return "Version " + version.version + (version.versionDate ? " (" + version.versionDate + ")" :  "") + (version.head ? "-latest" : "");
     } 
 
     const getDatasetVersion = (versionName) => {
@@ -448,6 +442,27 @@ const PublicDataset = (props) => {
       });
     }
 
+    const getVersionLog = () => {
+      return (
+        <BootstrapTable hover style={{ border: "none" }}>
+                <tbody style={{ border: "none" }}>
+                <tr style={{ border: "none" }} key={0}>
+                    <th>Version</th>
+                    <th>Date</th>
+                    <th>Comment</th>
+                  </tr>
+                {listVersions.map((version, index) => {
+                  return (<tr style={{ border: "none" }} key={index}>
+                    <td>{version.version}{version.head ? "-latest" : ""}</td>
+                    <td>{version.versionDate ?? dataset.dateCreated}</td>
+                    <td>{version.comment ?? ""}</td>
+                  </tr>)
+                })}
+                </tbody>
+        </BootstrapTable>
+      )
+    }
+
     return (
         <>
         <FeedbackWidget />
@@ -458,6 +473,25 @@ const PublicDataset = (props) => {
             }}
         />
         <VersionAlert data={versionData} pageLoading={isLoading}/>
+        {showVersionLog && (
+          <Modal
+              aria-labelledby="contained-modal-title-vcenter"
+              centered
+              show={showVersionLog}
+              onHide={() => setShowVersionLog(false)}
+          >
+              <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                  Version Log:
+              </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>{getVersionLog()}</Modal.Body>
+              <Modal.Footer>
+                  <Button variant="secondary" className="mt-2 gg-ml-20"
+                      onClick={(()=> setShowVersionLog(false))}>Close</Button>
+              </Modal.Footer>
+          </Modal>) 
+        }
         <div style={{margin: "30px"}}>
         {dataset ? (
           <>
@@ -486,7 +520,7 @@ const PublicDataset = (props) => {
                     <div className="text-center">
                       <a href={dataset.license.url} target="_blank" rel="noopener noreferrer">
                         {dataset.license.name}</a>
-                      {/**  <a href={"https://creativecommons.org/licenses/by/4.0/"} target="_blank" rel="noopener noreferrer">
+                      {/**  <a href={dataset.license.url} target="_blank" rel="noopener noreferrer">
                         <Image src={licenseLogo} className="licenseIcons" />
                       </a> */}
                     </div>
@@ -523,8 +557,10 @@ const PublicDataset = (props) => {
                           <option value={selectedVersion}>{getVersionString(getVersion(selectedVersion))}</option>
                         )}
                       </Form.Select>
-                    
                   </Form.Group>
+                  </Col>
+                  <Col style={{marginTop: '35px', marginLeft: '15px'}}>
+                        <button className="gg-link-button" onClick={()=>setShowVersionLog(true)}>Version Log</button>
                   </Col>
                   <Col>
                   <Tooltip title="Download table data">

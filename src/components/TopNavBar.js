@@ -28,16 +28,9 @@ const TopNavBar = (props) => {
                 <Nav.Link>HOME</Nav.Link>
               </LinkContainer>
               {/* Top bar menu links when logged in */}
-              {props.loggedInFlag && (
-                <LinkContainer className="gg-nav-link" to={stringConstants.routes.dashboard} exact>
-                  <Nav.Link>PUBLISH</Nav.Link>
-                </LinkContainer>
-              )}
-              {!props.loggedInFlag && (
-                <LinkContainer className="gg-nav-link" to="/login" exact>
-                  <Nav.Link>PUBLISH</Nav.Link>
-                </LinkContainer>
-              )}
+              <LinkContainer className="gg-nav-link" to={stringConstants.routes.dashboard} exact>
+                <Nav.Link>PUBLISH</Nav.Link>
+              </LinkContainer>
             </Nav>
           </Col>
           <Col xs={12} sm={12} md={12} lg={6} xl={4} className="align-right-header">

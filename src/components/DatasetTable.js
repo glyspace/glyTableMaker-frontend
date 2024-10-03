@@ -108,6 +108,7 @@ const DatasetTable = props => {
             ),
             enableColumnFilter: false,
             enableSorting: false,
+            enableHiding: false,
             Cell: ({ row, index }) => (
             <div key={index} style={{ textAlign: "left", margin: "20px" }}>
                 <div>
@@ -158,7 +159,7 @@ const DatasetTable = props => {
     const getSortToolbar = () => {
         return (
         <Row style={{flex: true}}>
-            <Col xs={2} lg={4}>
+            <Col style={{marginTop: '5px'}} xs={2} lg={4}>
             <span>Order&nbsp;by&nbsp;&nbsp;</span>
             <FontAwesomeIcon
                 key={"view"}
@@ -173,7 +174,7 @@ const DatasetTable = props => {
             </Col>
             <Col xs={6} lg={8}>
                 <Row>
-                    <Col xs={2} lg={4}>
+                    <Col style={{marginTop: '5px'}} xs={2} lg={4}>
                     <span>Sort&nbsp;by&nbsp;&nbsp;</span>
                     </Col>
                     <Col>
@@ -201,6 +202,7 @@ const DatasetTable = props => {
         manualFiltering:  true,
         manualPagination: true,
         manualSorting: true,
+        enableColumnActions: false,
         initialState: {
             showColumnFilters: false,
         },

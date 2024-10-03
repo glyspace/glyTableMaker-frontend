@@ -108,10 +108,17 @@ const sections = [
       },
     ],
   },
+  {
+    name: "Datasets",
+    items: [
+      { title: "Dataset", value: "datasetCount", link: stringConstants.routes.repository}
+    ],
+  },
 ];
 
 const Dashboard = props => {
   useEffect(props.authCheckAgent);
+  
   const [statistics, setStatistics] = useState({});
   const [hasError, setHasError] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
