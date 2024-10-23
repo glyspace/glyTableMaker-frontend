@@ -2,6 +2,7 @@
     "sidebar" : {
         "dashboard": "Dashboard",
         "glycan": "Glycans",
+        "glycoprotein": "Glycoproteins",
         "collection": "Collections",
         "collectioncollection": "Collections of Collections",
         "metadata" : "Metadata",
@@ -11,6 +12,7 @@
 
     "routes" : {
         "glycans" : "/glycans/",
+        "glycoproteins" : "/glycoproteins/",
         "dashboard": "/dashboard/",
         "collection": "/collections/",
         "collectioncollection": "/coc/",
@@ -18,6 +20,8 @@
         "metadata" : "/metadata/",
         "addglycan" : "/glycans/addglycan",
         "addglycanfromfile": "/glycans/addglycanfromfile",
+        "addglycoprotein" : "/glycoproteins/addglycoprotein",
+        "addglycoproteinfromfile": "/glycoproteins/addglycoproteinfromfile",
         "addcollection": "/collections/addcollection",
         "addcoc": "/collections/addcoc",
         "upload": "/glycans/fileupload",

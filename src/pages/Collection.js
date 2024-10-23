@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Autocomplete, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
@@ -25,6 +25,9 @@ const Collection = (props) => {
     const [searchParams] = useSearchParams();
     let collectionId = searchParams.get("collectionId");
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const [collectionType, setCollectionType] = useState((location.state && location.state.collectionType) ?? "GLYCAN");
 
     var base = process.env.REACT_APP_BASENAME;
     const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
@@ -53,6 +56,7 @@ const Collection = (props) => {
         name: "",
         description: "",
         glycans: [],
+        glycoproteins: [],
         metadata: [],
     };
 
@@ -60,7 +64,9 @@ const Collection = (props) => {
     const [userSelection, setUserSelection] = useReducer(reducer, collection);
 
     const [showGlycanTable, setShowGlycanTable] = useState(false);
+    const [showGlycoproteinTable, setShowGlycoproteinTable] = useState(false);
     const [selectedGlycans, setSelectedGlycans] = useState([]);
+    const [selectedGlycoproteins, setSelectedGlycoproteins] = useState([]);
     const [initialSelection, setInitialSelection] = useState({});
     const [enableAddMetadata, setEnableAddMetadata] = useState(false);
 
@@ -270,11 +276,16 @@ const Collection = (props) => {
                 setUserSelection (json.data.data);
                 if (json.data.data.glycans) {
                     setSelectedGlycans (json.data.data.glycans);
+                    setCollectionType ("GLYCAN");
                     let initialIds = {};
                     json.data.data.glycans.forEach ((glycan) => {
                         initialIds[glycan.glycanId] = true;
                     });
                     setInitialSelection(initialIds);
+                }
+                if (json.data.data.glycoproteins) {
+                    setSelectedGlycoproteins (json.data.data.glycoproteins);
+                    setCollectionType("GLYCOPROTEIN")
                 }
                 setShowLoading(false);
         }).catch (function(error) {
@@ -323,6 +334,8 @@ const Collection = (props) => {
             name: userSelection.name,
             description: userSelection.description,
             glycans: userSelection.glycans,
+            glycoproteins: userSelection.glycoproteins,
+            type: collectionType,
             metadata: metadata,
         }
         
@@ -387,6 +400,44 @@ const Collection = (props) => {
         [],
       );
     
+      const columns2 = useMemo(
+        () => [
+          {
+            accessorKey: 'uniprotId', 
+            header: 'Uniprot ID',
+            size: 50,
+          },
+          {
+            accessorKey: 'name', 
+            header: 'Name',
+            size: 50,
+          },
+          {
+            accessorKey: 'sites.length', 
+            header: '# Sites',
+            id : "siteNo",
+            size: 80,
+            Cell: ({ cell }) => cell.getValue() ? Number(cell.getValue().toFixed(2)).toLocaleString('en-US') : null,
+          },
+          {
+            accessorFn: (row) => row.tags.map(tag => tag.label),
+            header: 'Tags',
+            id: "tags",
+            size: 100,
+            Cell: ({ cell }) => (
+              <ul id="tags">
+                    {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((tag, index) => (
+                    <li key={index} className="tag_in_table">
+                        <span className='tag-title'>{tag}</span>
+                    </li>
+                    ))}
+                </ul>
+            ),
+          },
+        ],
+        [],
+      );
+    
     const metadatacolumns = useMemo(
     () => [
         {
@@ -398,7 +449,7 @@ const Collection = (props) => {
         {
         accessorKey: 'type.description',
         header: 'Description',
-        size: 100,
+        size: 250,
         id: 'typeDescr',
         },
         {
@@ -421,7 +472,10 @@ const Collection = (props) => {
     );
 
     const saveColumnVisibilityChanges = (columnVisibility) => {
-        saveColumnVisibility (columnVisibility, "GLYCANINCOLLECTION");
+        if (!collectionType || collectionType === "GLYCAN")
+            saveColumnVisibility (columnVisibility, "GLYCANINCOLLECTION");
+        else
+            saveColumnVisibility (columnVisibility, "GLYCOPROTEININCOLLECTION");
     }
 
     const saveColumnVisibility = (columnVisibility, tableName) => {
@@ -459,6 +513,26 @@ const Collection = (props) => {
                 rowSelectionChange={handleGlycanSelectionChange}
                 rowId="glycanId"
                 columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCANINCOLLECTION"
+                saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+            />
+            </>
+        );
+    };
+
+    const listGlycoproteins = () => {
+        return (
+          <>
+            <Table
+                authCheckAgent={props.authCheckAgent}
+                ws="api/data/getglycoproteins"
+                columns={columns2}
+                enableRowActions={false}
+                setAlertDialogInput={setAlertDialogInput}
+                initialSortColumn="dateCreated"
+                rowSelection={true}
+                rowSelectionChange={handleGlycoproteinSelectionChange}
+                rowId="uniprotId"
+                columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEININCOLLECTION"
                 saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />
             </>
@@ -959,6 +1033,18 @@ const Collection = (props) => {
         setShowGlycanTable(false);
     }
 
+    const handleGlycoproteinSelect = () => {
+        console.log("selected glycoproteins" + selectedGlycoproteins);
+        setTextAlertInput({"show": false, id: ""});
+        const selected=[];
+        selectedGlycoproteins.forEach ((glycoprotein) => {
+                selected.push (glycoprotein);
+        });
+
+        setUserSelection({"glycoproteins": selected});
+        setShowGlycoproteinTable(false);
+    }
+
     const deleteFromTable = (id) => {
         var glycans = userSelection.glycans;
         const index = glycans.findIndex ((item) => item["glycanId"] === id);
@@ -973,6 +1059,17 @@ const Collection = (props) => {
             initialIds[glycan.glycanId] = true;
         });
         setInitialSelection(initialIds);
+    }
+
+    const deleteFromGlycoproteinTable = (id) => {
+        var proteins = userSelection.glycoproteins;
+        const index = proteins.findIndex ((item) => item["uniprotId"] === id);
+        var updated = [
+            ...proteins.slice(0, index),
+            ...proteins.slice(index + 1)
+        ];
+        setUserSelection ({"glycoproteins": updated});
+        setSelectedGlycoproteins(updated);
     }
 
     const deleteMetadataFromTable = (id) => {
@@ -995,6 +1092,18 @@ const Collection = (props) => {
             }
         })
         setSelectedGlycans(previous);
+    }
+
+    const handleGlycoproteinSelectionChange = (selected) => {
+        // append new selections
+        const previous = [...selectedGlycoproteins];
+        selected.forEach ((protein) => {
+            const found = selectedGlycoproteins.find ((item) => item.id === protein.id);
+            if (!found) {
+                previous.push (protein);
+            }
+        })
+        setSelectedGlycoproteins(previous);
     }
 
     const fillInContributor = () => {
@@ -1389,6 +1498,30 @@ const Collection = (props) => {
                 </Modal>
             )}
 
+            {showGlycoproteinTable && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={showGlycoproteinTable}
+                    onHide={() => setShowGlycoproteinTable(false)}
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Select Glycoproteins:
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{listGlycoproteins()}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowGlycoproteinTable(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handleGlycoproteinSelect}>Add Selected Glycoproteins</Button>
+                     </Modal.Footer>
+                </Modal>
+            )}
+
             {enableAddMetadata && (
                 <Dialog
                     maxWidth="xl"
@@ -1502,24 +1635,38 @@ const Collection = (props) => {
             <div className="text-center mb-2">
                 <Button onClick={()=> handleClick(metadataRef)}
                     className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Go to Metadata</Button>
+                {!collectionType || collectionType === "GLYCAN" ?
                 <Button className="gg-btn-outline mt-2 gg-ml-20" 
                     onClick={()=> handleClick(glycanRef)}>
                     Go to Glycans
-                </Button> 
+                </Button> :
+                <Button className="gg-btn-outline mt-2 gg-ml-20" 
+                    onClick={()=> handleClick(glycanRef)}>
+                    Go to Glycoproteins
+                </Button> }
             </div>
             </Card.Body>
           </Card>
           <Card ref={glycanRef} style={{marginTop: "15px"}}>
             <Card.Body>
+            {!collectionType || collectionType === "GLYCAN" ?
             <h5 className="gg-blue" style={{textAlign: "left"}}>
-                Glycans in the Collection</h5>
+                 Glycans in the Collection</h5> : 
+            <h5 className="gg-blue" style={{textAlign: "left"}}>
+                 Glycoproteins in the Collection</h5>
+            }
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
+                    {!collectionType || collectionType === "GLYCAN" ?
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowGlycanTable(true)}>
                          Add Glycan
-                        </Button>
+                        </Button> :
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                         disabled={error} onClick={()=> setShowGlycoproteinTable(true)}>
+                         Add Glycoprotein
+                        </Button>}
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20"
                            disabled={error || !collectionId} onClick={()=>setOpenDownloadDialog(true)}> 
                         Download
@@ -1527,7 +1674,7 @@ const Collection = (props) => {
                         </div>
                     </Col>
                     </Row>
-                
+                {!collectionType || collectionType === "GLYCAN" ?
                 <Table 
                     authCheckAgent={props.authCheckAgent}
                     rowId = "glytoucanID"
@@ -1538,7 +1685,18 @@ const Collection = (props) => {
                     setAlertDialogInput={setAlertDialogInput}
                     columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCANINCOLLECTION"
                     saveColumnVisibilityChanges={saveColumnVisibilityChanges}
-                />
+                /> :
+                <Table 
+                    authCheckAgent={props.authCheckAgent}
+                    rowId = "uniprotId"
+                    data = {userSelection.glycoproteins}
+                    columns={columns2}
+                    enableRowActions={true}
+                    delete={deleteFromGlycoproteinTable}
+                    setAlertDialogInput={setAlertDialogInput}
+                    columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEININCOLLECTION"
+                    saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+                />}
             </Card.Body>
           </Card>
           <Card ref={metadataRef} style={{marginTop: "15px"}}>

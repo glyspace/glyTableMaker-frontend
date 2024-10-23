@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Button, Card, Col, Row } from "react-bootstrap";
@@ -24,6 +24,83 @@ const Settings = (props) => {
         "METADATA" : "Metadata",
         "DATASET" : "Dataset",
         "DATASETMETADATA" : "Public Dataset Metadata",
+        "GLYCOPROTEIN" : "Glycoproteins",
+        "GLYCOPROTEININCOLLECTION": "Glycoproteins (in Collection)"
+    }
+
+    function useHeadings() {
+        const [headings, setHeadings] = useState([]);
+        useEffect(() => {
+            let headingList = [];
+            const compElement = {"id" : "composition", "text": "Composition Settings", "level" : 1};
+            const columnSettingElement = {"id" : "column", "text": "Column Settings", "level" : 1};
+            headingList.push (compElement);
+            headingList.push (columnSettingElement)
+            Object.keys(columnVisibility).map ((table, index) => {
+                const e = {
+                id: index,
+                text: tableNames[table] + " Table Columns",
+                level: 2
+                };
+                headingList.push (e);
+            });
+            setHeadings(headingList);
+        }, []);
+        return headings;
+      }
+
+    function useScrollSpy(
+        ids,
+        options
+      ) {
+        const [activeId, setActiveId] = useState();
+        const observer = useRef();
+        useEffect(() => {
+          const elements = ids.map((id) =>
+            document.getElementById(id)
+          );
+          observer.current?.disconnect();
+          observer.current = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry?.isIntersecting) {
+                setActiveId(entry.target.id);
+              }
+            });
+          }, options);
+          elements.forEach((el) => {
+            if (el) {
+              observer.current?.observe(el);
+            }
+          });
+          return () => observer.current?.disconnect();
+        }, [ids, options]);
+        return activeId;
+    }
+
+    function TableOfContent() {
+        const headings = useHeadings();
+        const activeId = useScrollSpy(
+          headings.map(({ id }) => id),
+          { rootMargin: "0% 0% -25% 0%" }
+        );
+        return (
+          <nav style={{  top: '1em', right: '1em' }}>
+            <ul>
+              {headings.map(heading => (
+                <li key={heading.id} style={{ marginLeft: `${heading.level}em` }}>
+                  <a 
+                    href={`#${heading.id}`} 
+                    style={{ 
+                      fontWeight: activeId === heading.id ? "bold" : "normal" 
+                    }}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        );
     }
 
     const [columnVisibility, setColumnVisibility] = useState({
@@ -55,6 +132,42 @@ const Settings = (props) => {
             "collectionNo" : {
                 "label" : "# Collections",
                 "visible": false,
+            },
+        },
+        "GLYCOPROTEIN" : {
+            "uniprotId": {
+                "label": "Uniprot ID",
+                "visible": true,
+            },
+            "name": {
+                "label" : "Name",
+                "visible": true,
+            },
+            "siteNo" : {
+                "label" : "# Sites",
+                "visible": true,
+            },
+            "tags": {
+                "label" : "Tags",
+                "visible": true,
+            },
+        },
+        "GLYCOPROTEININCOLLECTION" : {
+            "uniprotId": {
+                "label": "Uniprot ID",
+                "visible": true,
+            },
+            "name": {
+                "label" : "Name",
+                "visible": true,
+            },
+            "siteNo" : {
+                "label" : "# Sites",
+                "visible": true,
+            },
+            "tags": {
+                "label" : "Tags",
+                "visible": true,
             },
         },
         "COLLECTION" : {
@@ -257,6 +370,16 @@ const Settings = (props) => {
                         }
                 });
                 nextColumnVisibilty["GLYCAN"] =  {...visibilityList};
+
+                visibilityList = columnVisibility["GLYCOPROTEIN"];
+                data.data["GLYCOPROTEIN"] && 
+                    data.data["GLYCOPROTEIN"].map ((setting, index) => {
+                        if (visibilityList[setting.columnName]) {
+                            visibilityList[setting.columnName]["visible"] = setting.visible;
+                        }
+                });
+                nextColumnVisibilty["GLYCOPROTEIN"] =  {...visibilityList};
+
                 visibilityList = columnVisibility["COLLECTION"];
                 data.data["COLLECTION"] && 
                     data.data["COLLECTION"].map ((setting, index) => {
@@ -281,6 +404,16 @@ const Settings = (props) => {
                         }
                 });
                 nextColumnVisibilty["GLYCANINCOLLECTION"] = {...visibilityList};
+
+                visibilityList = columnVisibility["GLYCOPROTEININCOLLECTION"];
+                data.data["GLYCOPROTEININCOLLECTION"] && 
+                    data.data["GLYCOPROTEININCOLLECTION"].map ((setting, index) => {
+                        if (visibilityList[setting.columnName]) {
+                            visibilityList[setting.columnName]["visible"] = setting.visible;
+                        }
+                });
+                nextColumnVisibilty["GLYCOPROTEININCOLLECTION"] = {...visibilityList};
+
                 visibilityList = columnVisibility["METADATA"];
                 data.data["METADATA"] && 
                     data.data["METADATA"].map ((setting, index) => {
@@ -377,7 +510,7 @@ const Settings = (props) => {
             return (
             <Card>
             <Card.Body>
-            <div style={{marginLeft: '20px'}}>
+            <div style={{marginLeft: '20px'}} id={index}>
             <div>
             <FormGroup>
                 <FormLabel label={tableNames[table] + " Table Columns"}/>
@@ -424,11 +557,18 @@ const Settings = (props) => {
             </Alert>
             )}
             <Card>
+            <div style={{marginLeft: '20px'}}>
+                    <FormLabel  label="Table of Contents"/>
+                </div>
+            <TableOfContent/>
+            </Card>
+           
+            <Card>
             <Card.Body>
               
               {compositionType && (
                 <div>
-                <div style={{marginLeft: '20px'}}>
+                <div style={{marginLeft: '20px'}} id="composition">
                     <FormLabel  label="Composition Type"/>
                 </div>
                 <Row style={{marginLeft: '65px'}}>
@@ -469,8 +609,9 @@ const Settings = (props) => {
                 </div>)}
              </Card.Body>
              </Card>
-
+            <div id="column">
              {columnVisibility && getColumnVisibilityCards()}
+             </div>
             </div>
             </Container>
         </>

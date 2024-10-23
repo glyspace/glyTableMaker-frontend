@@ -234,7 +234,7 @@ const AddCoC = (props) => {
             </div>
         )}
         </div>
-             <PageHeading title={cocId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
+             <PageHeading title={cocId ? "Edit Collection (of Collections)" : "Add Collection (of Collections)"} subTitle="Please provide the information for the new collection." />
             <Card>
             <Card.Body>
             <div className="mt-4 mb-4">

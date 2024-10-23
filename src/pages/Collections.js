@@ -30,9 +30,22 @@ const Collections = (props) => {
         size: 50,
       },
       {
+        id: 'type', 
+        header: 'Type',
+        size: 50,
+        accessorFn: (row) => row.type === "GLYCPPROTEIN" ? "Glycoprotein collection" : "Glycan collection",
+      },
+      {
         accessorKey: 'glycans.length',
         id: "glycanNo",
         header: '# Glycans',
+        size: 30,
+        enableColumnFilter: false,
+      },
+      {
+        accessorKey: 'glycoproteins.length',
+        id: "proteinNo",
+        header: '# Proteins',
         size: 30,
         enableColumnFilter: false,
       },
@@ -83,8 +96,18 @@ const Collections = (props) => {
           <Card>
             <Card.Body>
               <div className="text-center mb-4">
-                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.addcollection)}>
-                Add Collection
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.addcollection, 
+                  {
+                    state: { collectionType: "GLYCAN" }
+                  }
+                )}>
+                Add Glycan Collection
+                </Button>
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.addcollection,
+                  {
+                    state: { collectionType: "GLYCOPROTEIN" }
+                  })}>
+                Add Glycoprotein Collection
                 </Button>
               </div>
               <Table 

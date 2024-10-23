@@ -94,6 +94,12 @@ const sections = [
     ],
   },
   {
+    name: "Glycoproteins",
+    items: [
+      { title: "Glycoprotein", value: "glycoproteinCount", link: stringConstants.routes.glycoproteins}
+    ],
+  },
+  {
     name: "Collections",
     items: [
       {
