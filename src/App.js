@@ -47,6 +47,7 @@ import PublishDataset from "./pages/PublishDataset";
 import { PublicData } from "./pages/PublicData";
 import { PublicDataset } from "./pages/PublicDataset";
 import Glycoproteins from "./pages/Glycoproteins";
+import Glycoprotein from "./pages/Glycoprotein";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -199,6 +200,11 @@ function App() {
     {
       path: stringConstants.routes.addglycan,
       main: () => <Glycan authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.addglycoprotein,
+      main: () => <Glycoprotein authCheckAgent={checkAuthorization}/>,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {

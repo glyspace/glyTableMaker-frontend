@@ -109,8 +109,6 @@ const Glycoproteins = (props) => {
             <Card>
                 <Card.Body>
                 <div className="text-center mb-4">
-               
-
                     <Button variant="contained" className="gg-btn-blue-sm" style={{marginLeft:"5px", marginTop:"-1px"}}
                         onClick={()=>navigate(stringConstants.routes.addglycoprotein)}> 
                             Add a Glycoprotein
@@ -140,6 +138,8 @@ const Glycoproteins = (props) => {
                     </div>
                     </Nav>
                     <StatusMessage
+                        ws="api/data/checkglycoproteinbatchupload"
+                        pageURL="/glycoproteins/fileupload"
                         setBatchUpload={setBatchUpload}
                         setAlertDialogInput={setAlertDialogInput}/>
                 </div>
@@ -151,7 +151,7 @@ const Glycoproteins = (props) => {
                     setAlertDialogInput={setAlertDialogInput}
                     deletews="api/data/deleteglycoprotein/"
                     addtagws="api/data/addglycoproteintag/"
-                    gettagws="api/data/getglycoproteintags"
+                    gettagws="api/data/getglycantags"
                     initialSortColumn="dateCreated"
                     rowId="uniprotId"
                     columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEIN"

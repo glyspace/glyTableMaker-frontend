@@ -81,10 +81,12 @@ const Settings = (props) => {
         const headings = useHeadings();
         const activeId = useScrollSpy(
           headings.map(({ id }) => id),
-          { rootMargin: "0% 0% -25% 0%" }
+          { rootMargin: "0% 0% -20% 0%" }
         );
         return (
-          <nav style={{  top: '1em', right: '1em' }}>
+          <div style={{ position: "relative"}}>
+            <h4>Table of Contents</h4>
+          <nav>
             <ul>
               {headings.map(heading => (
                 <li key={heading.id} style={{ marginLeft: `${heading.level}em` }}>
@@ -100,6 +102,7 @@ const Settings = (props) => {
               ))}
             </ul>
           </nav>
+          </div>
         );
     }
 
@@ -539,12 +542,14 @@ const Settings = (props) => {
     return (
         <>
             <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
+           
             <Container maxWidth="xl">
             <div className="page-container">
             <PageHeading
               title="Your Settings"
               subTitle="Below are the available settings for various tables in the system. You can make changes and save them"
             />
+            {<TableOfContent/>}
             <DialogAlert
                 alertInput={alertDialogInput}
                 setOpen={input => {
@@ -556,13 +561,8 @@ const Settings = (props) => {
               {showSuccessMessage}
             </Alert>
             )}
-            <Card>
-            <div style={{marginLeft: '20px'}}>
-                    <FormLabel  label="Table of Contents"/>
-                </div>
-            <TableOfContent/>
-            </Card>
-           
+            
+            
             <Card>
             <Card.Body>
               

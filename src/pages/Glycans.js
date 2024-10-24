@@ -455,6 +455,8 @@ const getDownloadReport = (reportId) => {
                         Download
                 </Button>
                 <StatusMessage
+                  ws="api/data/checkbatchupload"
+                  pageURL={stringConstants.routes.upload}
                   setBatchUpload={setBatchUpload}
                   setAlertDialogInput={setAlertDialogInput}/>
               </div>

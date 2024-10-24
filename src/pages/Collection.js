@@ -58,6 +58,7 @@ const Collection = (props) => {
         glycans: [],
         glycoproteins: [],
         metadata: [],
+        type: collectionType,
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
@@ -1618,6 +1619,22 @@ const Collection = (props) => {
                       isInvalid={validate}
                       maxLength={5000}
                     />
+                </Col>
+                </Form.Group>
+                {/* collection type */}
+                <Form.Group
+                  as={Row}
+                  controlId="type"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={9} style={{ textAlign: "left" }}>
+                    <FormLabel label="Collection Type" />
+                    <Form.Control
+                      type="text"
+                      name="type"
+                      value={userSelection.type ?? collectionType}
+                      readOnly
+                      />
                 </Col>
                 </Form.Group>
             </Form>

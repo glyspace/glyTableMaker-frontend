@@ -14,7 +14,7 @@ const StatusMessage = props => {
   }, []);
 
   const fetchData = async () => {
-    getJson ("api/data/checkbatchupload", getAuthorizationHeader()).then ( (json) => {
+    getJson (props.ws, getAuthorizationHeader()).then ( (json) => {
       props.setBatchUpload && props.setBatchUpload(true);
       //setBatchUploadResponse(json.data.data);
       countUnreadErrors (json.data.data);
@@ -45,7 +45,7 @@ const StatusMessage = props => {
     <>
       <Button variant="primary" 
         onClick={()=> {
-          navigate("/glycans/fileupload");
+          navigate(props.pageURL);
         }}
         className="gg-btn-blue-rightalign" 
         style={{marginRight:"12px"}}>
