@@ -115,25 +115,6 @@ const Glycoprotein = (props) => {
         [],
     );
 
-    const columns2 = useMemo(
-        () => [
-          {
-            accessorKey: 'glycan.glytoucanID',
-            header: 'GlyTouCan ID',
-            enableEditing: false,
-            size: 30,
-          },
-          {
-            accessorKey: 'glycan.cartoon',
-            header: 'Image',
-            size: 150,
-            columnDefType: 'display',
-            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
-          },
-        ],
-        [],
-      );
-
     const glycanColumns = useMemo(
         () => [
           {
@@ -505,13 +486,6 @@ const Glycoprotein = (props) => {
                     data={siteSelection.glycans} 
                     handleGlycanTypeChange={handleGlycanTypeChange}
                     />
-                <Table 
-                    authCheckAgent={props.authCheckAgent}
-                    rowId = "glytoucanID"
-                    data = {siteSelection.glycans}
-                    columns={columns2}
-                    setAlertDialogInput={setAlertDialogInput}
-                /> 
               </Row>}
 
               {showGlycanSelection && (
