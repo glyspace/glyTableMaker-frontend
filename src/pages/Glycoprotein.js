@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import FeedbackWidget from "../components/FeedbackWidget";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { useNavigate } from "react-router-dom";
@@ -13,14 +13,19 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip,
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AddCircleOutline } from "@mui/icons-material";
+import GlycanTypeTable from "../components/GlycanTypeTable";
+import { ScrollToTop } from "../components/ScrollToTop";
+import { isTimeView } from "@mui/x-date-pickers/internals/utils/time-utils";
 
 const Glycoprotein = (props) => {
 
     const navigate = useNavigate();
     const [validate, setValidate] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [showAddSite, setShowAddSite] = useState(false);
     const [showGlycanTable, setShowGlycanTable] = useState(true);
+    const [showGlycanSelection, setShowGlycanSelection] = useState(false);
     const [showStartEnd, setShowStartEnd] = useState(false);
     const [showAlternatives, setShowAlternatives] = useState(false);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
@@ -44,12 +49,13 @@ const Glycoprotein = (props) => {
     const siteState = {
         type: "",
         glycans: [],
-        positions: [{"position" : -1, "aminoacid": ""}],
+        positions: [{"location" : -1, "aminoAcid": ""}],
     }
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [userSelection, setUserSelection] = useReducer(reducer, initialState);
     const [siteSelection, setSiteSelection] = useReducer(reducer, siteState);
+    const [selectedGlycans, setSelectedGlycans] = useState([]);
 
     const columns = useMemo(
         () => [
@@ -59,19 +65,74 @@ const Glycoprotein = (props) => {
             size: 50,
           },
           {
-            accessorKey: 'position', 
+            accessorKey: 'positions',
             header: 'Position',
-            size: 50,
+            size: 100,
+            Cell: ({ cell }) => (
+                <>
+                {cell.getValue() && cell.getValue().length == 1 &&
+                    <span>{cell.getValue()[0].location}</span>}
+                {cell.row.original.type === "RANGE" && 
+                    cell.getValue() && cell.getValue().length > 1 &&
+                    <span>{`${cell.getValue()[0].location} - ${cell.getValue()[1].location}`}</span>
+                }
+                {cell.row.original.type === "ALTERNATIVE" && 
+                    cell.getValue() && cell.getValue().length > 1 &&
+                    cell.getValue().map ((pos, index) => {
+                    return <span>
+                    {index !== cell.getValue().length - 1 &&
+                        `${pos.location} | `
+                    } 
+                    {index === cell.getValue().length - 1 &&
+                        `${pos.location}`
+                    }
+                    </span>
+                })}
+              </>
+            ),
           },
           {
-            accessorKey: 'glycan', 
+            accessorKey: 'glycans', 
             header: 'Glycan',
-            
-            size: 80,
+            Cell: ({ cell }) => (
+                <>
+                {cell.getValue() && cell.getValue().length > 0 &&
+                    cell.getValue().map ((glycan, index) => {
+                    return <span>
+                    {index !== cell.getValue().length - 1 &&
+                        `${glycan.glycan.glytoucanID} | `
+                    } 
+                    {index === cell.getValue().length - 1 &&
+                        `${glycan.glycan.glytoucanID}`
+                    }
+                    </span>
+                    })
+                }
+                </>
+            ),
           },
         ],
         [],
     );
+
+    const columns2 = useMemo(
+        () => [
+          {
+            accessorKey: 'glycan.glytoucanID',
+            header: 'GlyTouCan ID',
+            enableEditing: false,
+            size: 30,
+          },
+          {
+            accessorKey: 'glycan.cartoon',
+            header: 'Image',
+            size: 150,
+            columnDefType: 'display',
+            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+          },
+        ],
+        [],
+      );
 
     const glycanColumns = useMemo(
         () => [
@@ -112,7 +173,19 @@ const Glycoprotein = (props) => {
         [],
       );
 
-    useEffect(props.authCheckAgent, []);
+    // Show button when page is scrolled upto given distance
+    const toggleSaveVisibility = () => {
+        if (window.scrollY > 300) {
+            setIsVisible(true);
+        } else {
+            setIsVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        props.authCheckAgent();
+        window.addEventListener("scroll", toggleSaveVisibility);
+    }, []);
 
     const handleChange = e => {
         const name = e.target.name;
@@ -133,8 +206,41 @@ const Glycoprotein = (props) => {
             setValidate(true);
             return;
         }
+
+        // re-organize the sites
+        const sites = [];
+        userSelection.sites.forEach ((site) => {
+            const positionList = site.positions;
+            sites.push ({
+                "type": site.type,
+                "position" : { "positionList" : positionList},
+                "glycans" : site.glycans,
+            });
+        })
        
-        //TODO add the glycoprotein
+        // add the glycoprotein
+        const glycoprotein = {
+            "name": userSelection.name,
+            "sequence" : userSelection.sequence,
+            "geneSymbol" : userSelection.geneSymbol,
+            "uniprotId": userSelection.uniprotId,
+            "sites" : sites,
+        }
+
+        setShowLoading(true);
+        let apiURL = "api/data/addglycoprotein";
+        postJson (apiURL, glycoprotein, getAuthorizationHeader()).then ( (data) => {
+            setShowLoading(false);
+            navigate("/glycoproteins");
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+            } else {
+                axiosError(error, null, setAlertDialogInput);
+            }
+            setShowLoading(false);
+          }
+        );
 
         e.preventDefault();
     };
@@ -166,7 +272,8 @@ const Glycoprotein = (props) => {
         sites.push (siteSelection);
         setUserSelection ({"sites": sites});
         setSiteSelection ({ "type": "", "glycans": [], 
-            "positions": [{"position" : -1, "aminoacid": ""}]});
+            "positions": [{"location" : -1, "aminoAcid": ""}]});
+        setShowAddSite(false);
     }
 
     const handleTypeChange = e => {
@@ -178,13 +285,13 @@ const Glycoprotein = (props) => {
             const positions = [...siteSelection.positions];
             if (positions.length < 2) {
                 positions.push ({
-                    "position": -1,
-                    "aminoacid": "",
+                    "location": -1,
+                    "aminoAcid": "",
                 });
             }
             setSiteSelection ({"positions" : positions});
         } else {
-            setSiteSelection ({"positions" : [{"position" : -1, "aminoacid": ""}]});
+            setSiteSelection ({"positions" : [{"location" : -1, "aminoAcid": ""}]});
         }
         setShowAlternatives (selected === "ALTERNATIVE");
     };
@@ -192,17 +299,17 @@ const Glycoprotein = (props) => {
     const handlePositionChange = (e, position, amino) => {
         const val = e.target.value;
         if (amino) {
-            position.aminoacid = val;
+            position.aminoAcid = val;
         } else {
-            position.position = Number.parseInt(val);
+            position.location = Number.parseInt(val);
         }
     };
 
     const handleAddPosition = () => {
         const positions = [...siteSelection.positions];
         positions.push ({
-            "position": -1,
-            "aminoacid": "",
+            "location": -1,
+            "aminoAcid": "",
         });
         setSiteSelection ({"positions" : positions});
     }
@@ -218,15 +325,57 @@ const Glycoprotein = (props) => {
 
     const handleGlycanSelectionChange = (selected) => {
         // append new selections
-        const previous = [...siteSelection.glycans];
+        const previous = [...selectedGlycans];
         selected.forEach ((glycan) => {
-            const found = siteSelection.glycans.find ((item) => item.glycanId === glycan.glycanId);
+            const found = selectedGlycans.find ((item) => item.glycan.glycanId === glycan.glycanId);
             if (!found) {
-                previous.push (glycan);
+                previous.push ({"glycan" : glycan, "type": "Glycan", "glycosylationType" : "N-linked",
+                    "glycosylationSubType": "None",
+                });
             }
         })
-        setSiteSelection({"glycans" : previous});
+        setSelectedGlycans(previous);
     }
+
+    const handleGlycanTypeChange = (data) => {
+        console.log("site selection: " + siteSelection.glycans);
+        console.log("selected glycans" + selectedGlycans);
+       /* const glycans = [...siteSelection.glycans];
+        glycans.forEach ((entry) => {
+            if (entry.glycan.glycanId === glycanId) {
+                entry[field] = value;
+            }
+        });
+
+        setSiteSelection({"glycans": glycans});*/
+    }
+
+    const handleGlycanSelect = () => {
+        console.log("selected glycans" + selectedGlycans);
+        setTextAlertInput({"show": false, id: ""});
+        const selected=[];
+        selectedGlycans.forEach ((glycan) => {
+            if (!glycan.glycan.glytoucanID || glycan.glycan.glytoucanID.length === 0) {
+                // error, not allowed to select this for the collection
+                setTextAlertInput ({"show": true, 
+                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycanId + " is not added."
+                });
+                ScrollToTop();
+            } else {
+                selected.push (glycan);
+            }
+        });
+
+        setSiteSelection({"glycans": selected});
+        setShowGlycanSelection(false);
+    }
+
+    const handleClose = (event, reason) => {
+        if (reason && reason === "backdropClick")
+            return;
+        setTextAlertInput({"show": false, id: ""});
+        setShowGlycanSelection(false);
+    };
 
     const addSiteForm = () => {
         return (
@@ -342,33 +491,73 @@ const Glycoprotein = (props) => {
                 <Col xs={2} lg={2}></Col>
                 </Row>
                 </>
-              }
-              {showGlycanTable && 
+              } 
+              {showGlycanTable &&
               <Row>
                 <FormLabel label="Glycans" className="required-asterik"/>
                 <div style={{"textAlign": "right", "marginTop" : "10px", "marginBottom" : "10px"}}>
-                <Button variant="contained" className="gg-btn-blue-sm">
-                        Add Selected Glycans
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                    onClick={()=> setShowGlycanSelection(true)}>
+                         Add Glycan(s)
                 </Button>
                 </div>
-                <Table
+                <GlycanTypeTable 
+                    data={siteSelection.glycans} 
+                    handleGlycanTypeChange={handleGlycanTypeChange}
+                    />
+                <Table 
                     authCheckAgent={props.authCheckAgent}
-                    ws="api/data/getglycans"
-                    columns={glycanColumns}
-                    columnFilters={[{"id":"glytoucanID","value":"G"}]}
-                    enableRowActions={false}
+                    rowId = "glytoucanID"
+                    data = {siteSelection.glycans}
+                    columns={columns2}
                     setAlertDialogInput={setAlertDialogInput}
-                    initialSortColumn="dateCreated"
-                    rowSelection={true}
-                    rowSelectionChange={handleGlycanSelectionChange}
-                    rowId="glycanId"
-                />
-                <div style={{"textAlign": "right", "marginTop" : "10px", "marginBottom" : "10px"}}>
-                <Button variant="contained" className="gg-btn-blue-sm">
-                        Add Selected Glycans
-                </Button>
-                </div>
-                </Row>}
+                /> 
+              </Row>}
+
+              {showGlycanSelection && (
+                <Dialog
+                    maxWidth="lg"
+                    fullWidth="true"
+                    open={showGlycanSelection}
+                    onClose={handleClose}
+                    aria-labelledby="child-modal-title"
+                    aria-describedby="child-modal-description"
+                    >
+                    <DialogTitle>Select Glycan(s)</DialogTitle>
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleClose}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        >
+                    <CloseIcon />
+                    </IconButton>
+                    <TextAlert alertInput={textAlertInput}/>
+                    <DialogContent dividers>{
+                        <Table
+                        authCheckAgent={props.authCheckAgent}
+                        ws="api/data/getglycans"
+                        columns={glycanColumns}
+                        columnFilters={[{"id":"glytoucanID","value":"G"}]}
+                        enableRowActions={false}
+                        setAlertDialogInput={setAlertDialogInput}
+                        initialSortColumn="dateCreated"
+                        rowSelection={true}
+                        rowSelectionChange={handleGlycanSelectionChange}
+                        rowId="glycanId"
+                    />}</DialogContent>
+                    <DialogActions>
+                    <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowGlycanSelection(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handleGlycanSelect}>Add Selected Glycans</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
             </>
         )
     }
@@ -378,6 +567,16 @@ const Glycoprotein = (props) => {
         <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         <Container maxWidth="xl">
             <div className="page-container">
+            <div className="scroll-to-top-save">
+        {isVisible && (
+            <div>
+                <Button variant="contained" className="gg-btn-blue-sm" 
+                    onClick={handleSubmit}>
+                    Submit
+                </Button>
+            </div>
+        )}
+        </div>
              <PageHeading title="Add Glycoprotein" subTitle="Please provide the information for the new glycoprotein." />
             <Card>
                 <Card.Body>
@@ -519,6 +718,7 @@ const Glycoprotein = (props) => {
                                     setShowAlternatives(false);
                                     setShowGlycanTable(true);
                                     setShowAddSite(true);
+                                    setSelectedGlycans([]);
                                 }}>
                                     Add Site
                             </Button>
