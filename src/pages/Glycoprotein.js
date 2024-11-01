@@ -24,7 +24,7 @@ const Glycoprotein = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [showAddSite, setShowAddSite] = useState(false);
-    const [showGlycanTable, setShowGlycanTable] = useState(true);
+    const [showPosition, setShowPosition] = useState(true);
     const [showGlycanSelection, setShowGlycanSelection] = useState(false);
     const [showStartEnd, setShowStartEnd] = useState(false);
     const [showAlternatives, setShowAlternatives] = useState(false);
@@ -50,6 +50,31 @@ const Glycoprotein = (props) => {
         type: "",
         glycans: [],
         positions: [{"location" : -1, "aminoAcid": ""}],
+    }
+
+    const aminoacidMap = {
+        "A" : "Ala",
+        "R" : "Arg",
+        "N" : "Asn",
+        "D" : "Asp",
+        "C" : "Cys",
+        "Q" : "Gln",
+        "E" : "Glu",
+        "G" : "Gly",
+        "H" : "His",
+        "I" : "Ile",
+        "L" : "Leu",
+        "K" : "Lys",
+        "M" : "Met",
+        "F" : "Phe",
+        "P" : "Pro",
+        "S" : "Ser",
+        "T" : "Thr",
+        "W" : "Trp",
+        "Y" : "Tyr",
+        "V" : "Val",
+        "B" : "Asx",
+        "Z" : "Glx",
     }
 
     const reducer = (state, newState) => ({ ...state, ...newState });
@@ -260,7 +285,7 @@ const Glycoprotein = (props) => {
     const handleTypeChange = e => {
         const selected = e.target.options[e.target.selectedIndex].value;
         setSiteSelection ({"type" : selected});
-        setShowGlycanTable(selected !== "UNKNOWN");
+        setShowPosition(selected !== "UNKNOWN");
         setShowStartEnd(selected === "RANGE");
         if (selected === "RANGE" || selected === "ALTERNATIVE") {
             const positions = [...siteSelection.positions];
@@ -277,14 +302,27 @@ const Glycoprotein = (props) => {
         setShowAlternatives (selected === "ALTERNATIVE");
     };
 
-    const handlePositionChange = (e, position, amino) => {
+    const handlePositionChange = (e, index) => {
         const val = e.target.value;
-        if (amino) {
-            position.aminoAcid = val;
-        } else {
-            position.location = Number.parseInt(val);
+
+        const positions = [...siteSelection.positions];
+        if (positions[index]) {
+            positions[index].location = Number.parseInt(val);
+            positions[index].aminoAcid = getAminoAcidFromSequence(positions[index].location);
         }
-    };
+       
+        setSiteSelection ("positions", positions);   
+    }
+
+    const getAminoAcidFromSequence = (location) => {
+        if (userSelection.sequence && userSelection.sequence.length >= location) {
+            const amino = aminoacidMap [userSelection.sequence.charAt(location-1)];
+            if (amino) return amino;
+            else return "Invalid";
+        } else {
+            return "Invalid";
+        }
+    }
 
     const handleAddPosition = () => {
         const positions = [...siteSelection.positions];
@@ -379,7 +417,7 @@ const Glycoprotein = (props) => {
                 </Col>
                 <Col xs={6} lg={6}></Col>
               </Row>  
-              {!showStartEnd && showGlycanTable && 
+              {!showStartEnd && showPosition && 
               siteSelection.positions.map ((pos, index) => {
                 return (
                     <Row style={{marginBottom: "10px"}}>
@@ -391,16 +429,19 @@ const Glycoprotein = (props) => {
                             type="text"
                             name={"position"}
                             placeholder="Enter the position"
-                            onChange={(e)=> handlePositionChange(e, pos, false)}
+                            onChange={(e)=> handlePositionChange(e, index)}
                             >
                             </Form.Control>
                         </Col>
-                        <Col xs={4} lg={4}>
+                        <Col xs={2} lg={2}>
+                            <FormLabel label="Amino Acid"/>
+                        </Col>
+                        <Col xs={2} lg={2}>
                         <Form.Control
                             type="text"
                             name={"aminoacid"}
-                            placeholder="Enter the aminoacid"
-                            onChange={(e)=>handlePositionChange(e, pos, true)}
+                            value={siteSelection.positions[index].aminoAcid}
+                            disabled
                             >
                             </Form.Control>
                         </Col>
@@ -432,7 +473,7 @@ const Glycoprotein = (props) => {
                   type="text"
                   name={"position"}
                   placeholder="Enter the position"
-                  onChange={(e)=>handlePositionChange(e, siteSelection.positions[0], false)}
+                  onChange={(e)=>handlePositionChange(e, 0)}
                   >
                   </Form.Control>
               </Col>
@@ -440,8 +481,8 @@ const Glycoprotein = (props) => {
               <Form.Control
                   type="text"
                   name={"aminoacid"}
-                  placeholder="Enter the aminoacid"
-                  onChange={(e)=>handlePositionChange(e, siteSelection.positions[0], true)}
+                  value={siteSelection.positions[0].aminoAcid}
+                  disabled
                   >
                   </Form.Control>
               </Col>
@@ -456,7 +497,7 @@ const Glycoprotein = (props) => {
                     type="text"
                     name={"position"}
                     placeholder="Enter the position"
-                    onChange={(e)=>handlePositionChange(e, siteSelection.positions[1], false)}
+                    onChange={(e)=>handlePositionChange(e, 1)}
                     >
                     </Form.Control>
                 </Col>
@@ -464,8 +505,8 @@ const Glycoprotein = (props) => {
                 <Form.Control
                     type="text"
                     name={"aminoacid"}
-                    placeholder="Enter the aminoacid"
-                    onChange={(e)=>handlePositionChange(e, siteSelection.positions[1], true)}
+                    value={siteSelection.positions[1].aminoAcid}
+                    disabled
                     >
                     </Form.Control>
                 </Col>
@@ -473,7 +514,7 @@ const Glycoprotein = (props) => {
                 </Row>
                 </>
               } 
-              {showGlycanTable &&
+
               <Row>
                 <FormLabel label="Glycans" className="required-asterik"/>
                 <div style={{"textAlign": "right", "marginTop" : "10px", "marginBottom" : "10px"}}>
@@ -486,7 +527,7 @@ const Glycoprotein = (props) => {
                     data={siteSelection.glycans} 
                     handleGlycanTypeChange={handleGlycanTypeChange}
                     />
-              </Row>}
+              </Row>
 
               {showGlycanSelection && (
                 <Dialog
@@ -690,7 +731,7 @@ const Glycoprotein = (props) => {
                                         "positions": [{"position" : -1, "aminoacid": ""}]});
                                     setShowStartEnd(false);
                                     setShowAlternatives(false);
-                                    setShowGlycanTable(true);
+                                    setShowPosition(true);
                                     setShowAddSite(true);
                                     setSelectedGlycans([]);
                                 }}>
