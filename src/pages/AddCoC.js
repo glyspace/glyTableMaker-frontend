@@ -31,6 +31,7 @@ const AddCoC = (props) => {
     const coc = {
         name: "",
         description: "",
+        type: "GLYCAN",
         collections: [],
     };
 
@@ -109,6 +110,11 @@ const AddCoC = (props) => {
         setUserSelection({ [name]: newValue });
     };
 
+    const handleSelectType = e => {
+        const selected = e.target.options[e.target.selectedIndex].value;
+        setUserSelection ({ "type": selected})
+    };
+
     const handleSubmit = e => {
         props.authCheckAgent();
         setValidate(false);
@@ -121,6 +127,7 @@ const AddCoC = (props) => {
         const coc = { 
             collectionId: cocId ? cocId : null,
             name: userSelection.name,
+            type: userSelection.type,
             description: userSelection.description,
             children: userSelection.collections,
         }
@@ -170,6 +177,7 @@ const AddCoC = (props) => {
                 authCheckAgent={props.authCheckAgent}
                 ws="api/data/getcollections"
                 columns={columns}
+                columnFilters={[{"id":"type","value": userSelection.type}]}
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
                 initialSortColumn="name"
@@ -182,7 +190,18 @@ const AddCoC = (props) => {
     };
 
     const handleCollectionSelect = () => {
-        setUserSelection({"collections": selectedCollections});
+        const selected=[];
+        selectedCollections.forEach ((col) => {
+            if (col.type !== userSelection.type) {
+                // error, not allowed to select this type of collection
+                setTextAlertInput ({"show": true, 
+                    "message": "You are not allowed to select collections whose type is not " + userSelection.type,
+                });
+            } else {
+                selected.push (col);
+            }
+        });
+        setUserSelection({"collections": selected});
         let initialIds = {};
         selectedCollections.forEach ((collection) => {
             initialIds[collection.collectionId] = true;
@@ -307,6 +326,21 @@ const AddCoC = (props) => {
                       isInvalid={validate}
                       maxLength={5000}
                     />
+                </Col>
+                </Form.Group>
+                <Form.Group as={Row}
+                    controlId="type"
+                    className="gg-align-center mb-3">
+                <Col xs={12} lg={9} style={{ textAlign: "left" }}>
+                <FormLabel label="Collection Type" />
+                <Form.Select
+                    name={"type"}
+                    value={userSelection.type}
+                    onChange={handleSelectType}
+                    >
+                    <option value="GLYCAN">Glycan Collection</option>
+                    <option value="GLYCOPROTEIN">Glycoprotein Collection</option>
+                </Form.Select>
                 </Col>
                 </Form.Group>
             </Form>
