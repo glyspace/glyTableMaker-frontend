@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Container } from "@mui/material";
@@ -40,7 +40,6 @@ const AddCoC = (props) => {
 
     const [showCollectionTable, setShowCollectionTable] = useState(false);
     const [selectedCollections, setSelectedCollections] = useState([]);
-    const [initialSelection, setInitialSelection] = useState({});
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -71,6 +70,7 @@ const AddCoC = (props) => {
                 if (json.data.data) {
                     const coc = { 
                         collectionId: json.data.data.collectionId,
+                        type: json.data.data.type,
                         name: json.data.data.name,
                         description: json.data.data.description,
                         collections: json.data.data.children,
@@ -78,11 +78,6 @@ const AddCoC = (props) => {
                     setUserSelection (coc);
                     if (json.data.data.children) {
                         setSelectedCollections (json.data.data.children);
-                        let initialIds = {};
-                        json.data.data.children.forEach ((collection) => {
-                            initialIds[collection.collectionId] = true;
-                        });
-                        setInitialSelection(initialIds);
                     }
                 }
                 setShowLoading(false);
@@ -202,11 +197,6 @@ const AddCoC = (props) => {
             }
         });
         setUserSelection({"collections": selected});
-        let initialIds = {};
-        selectedCollections.forEach ((collection) => {
-            initialIds[collection.collectionId] = true;
-        });
-        setInitialSelection(initialIds);
         setShowCollectionTable(false);
     }
 
@@ -219,11 +209,6 @@ const AddCoC = (props) => {
         ];
         setUserSelection ({"collections": updated});
         setSelectedCollections(updated);
-        let initialIds = {};
-        updated.forEach ((collection) => {
-            initialIds[collection.collectionId] = true;
-        });
-        setInitialSelection(initialIds);
     }
 
     const handleCollectionSelectionChange = (selected) => {

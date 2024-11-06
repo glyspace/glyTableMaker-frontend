@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Autocomplete, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
@@ -1237,6 +1237,33 @@ const Collection = (props) => {
         setShowLoading (false);
     }
 
+    const setGlycoproteomicsMandatoryMetadata = () => {
+        setTextAlertInputMetadata({"show": false, message: ""});
+        let added = [];
+        categories.map ((category, index) => {
+            if (category.categoryId === 2) {   // GlyGen Glycoproteomics Data
+                if (category.dataTypes) {
+                    category.dataTypes.map ((d, index) => {
+                        if (!d.multiple && userSelection.metadata) {
+                            // check if it already exists
+                            const existing = userSelection.metadata.find ((meta) => 
+                                meta.type.name === d.name);
+                            if (!existing)
+                                added.push(d.datatypeId);
+                            else {
+                                setTextAlertInputMetadata({"show" : true, message: d.name + " already exists and is not added to the list. If you'd like to override, please delete it first!"})
+                            }
+                        } else {
+                            added.push (d.datatypeId);
+                        }
+                    });
+                }
+            }
+        });
+        handleMetadataSelectionChange(added, true);
+        setSelectedMetadataItems(added);
+    }
+
     const setGlygenMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
         let added = [];
@@ -1742,6 +1769,7 @@ const Collection = (props) => {
                         }>
                          Add Metadata
                         </Button>
+                        {!collectionType || collectionType === "GLYCAN" ?
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
                             setTextAlertInputMetadata({"show": false, "message":""});
@@ -1755,7 +1783,21 @@ const Collection = (props) => {
                          }
                         }>
                          Add GlyGen Metadata
-                        </Button>
+                        </Button>  :
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                        disabled={error} onClick={()=> {
+                           setTextAlertInputMetadata({"show": false, "message":""});
+                           setOptions([]);
+                           setMetadataItemKey([]);
+                           setSelectedMetadataValue([]);
+                           setGlycoproteomicsMandatoryMetadata();
+                           setGlygen(true);
+                           setActiveStep(1);
+                           setEnableAddMetadata(true);
+                        }
+                       }>
+                        Add GlyGen Metadata
+                       </Button>}
                         </div>
                     </Col>
                     </Row>

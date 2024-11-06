@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import FeedbackWidget from "../components/FeedbackWidget";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
-import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { AddCircleOutline } from "@mui/icons-material";
 import GlycanTypeTable from "../components/GlycanTypeTable";
 import { ScrollToTop } from "../components/ScrollToTop";
-import { isTimeView } from "@mui/x-date-pickers/internals/utils/time-utils";
 
 const Glycoprotein = (props) => {
 
@@ -95,7 +94,7 @@ const Glycoprotein = (props) => {
             size: 100,
             Cell: ({ cell }) => (
                 <>
-                {cell.getValue() && cell.getValue().length == 1 &&
+                {cell.getValue() && cell.getValue().length === 1 &&
                     <span>{cell.getValue()[0].location}</span>}
                 {cell.row.original.type === "RANGE" && 
                     cell.getValue() && cell.getValue().length > 1 &&
