@@ -68,7 +68,6 @@ const Collection = (props) => {
     const [showGlycoproteinTable, setShowGlycoproteinTable] = useState(false);
     const [selectedGlycans, setSelectedGlycans] = useState([]);
     const [selectedGlycoproteins, setSelectedGlycoproteins] = useState([]);
-    const [initialSelection, setInitialSelection] = useState({});
     const [enableAddMetadata, setEnableAddMetadata] = useState(false);
 
     const [categories, setCategories] = useState([]);
@@ -91,6 +90,8 @@ const Collection = (props) => {
 
     const [activeStep, setActiveStep] = useState(0);
     const [glygen, setGlygen] = useState(false);
+    const [glycomics, setGlycomics] = useState(false);
+    const [glycoproteomics, setGlycoproteomics] = useState(false);
 
     const [contributor, setContributor] = useState(null);
     const [userProfile, setUserProfile] = useState({});
@@ -278,11 +279,6 @@ const Collection = (props) => {
                 if (json.data.data.glycans) {
                     setSelectedGlycans (json.data.data.glycans);
                     setCollectionType ("GLYCAN");
-                    let initialIds = {};
-                    json.data.data.glycans.forEach ((glycan) => {
-                        initialIds[glycan.glycanId] = true;
-                    });
-                    setInitialSelection(initialIds);
                 }
                 if (json.data.data.glycoproteins) {
                     setSelectedGlycoproteins (json.data.data.glycoproteins);
@@ -600,6 +596,10 @@ const Collection = (props) => {
         let filteredSelection = [];
         ids.map ((item, index) => {
             if (typeof item === 'number') {
+                if (item > 200) 
+                    item = item - 200;
+                else if (item > 100) 
+                    item = item - 100;
                 const multiple = isMultiple(item);
                 if (!multiple && userSelection.metadata) {
                     // check if it already exists
@@ -942,17 +942,47 @@ const Collection = (props) => {
                 // find namespace of the datatype and display appropriate value field
                 // locate the datatype
                 categories.map ((element) => {
-                    if (element.dataTypes) {
-                        var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
-                        if (datatype) {
-                            nextDatatype.push(datatype);
-                            nextNamespace.push (datatype.namespace.name);
-                            if (datatype.allowedValues) {
-                                nextOptions.push(datatype.allowedValues);
-                            } else {
-                                nextOptions.push([]);
+                    if (glygen && glycomics && element.categoryId == 1) {
+                        if (element.dataTypes) {
+                            var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
+                            if (datatype) {
+                                nextDatatype.push(datatype);
+                                nextNamespace.push (datatype.namespace.name);
+                                if (datatype.allowedValues) {
+                                    nextOptions.push(datatype.allowedValues);
+                                } else {
+                                    nextOptions.push([]);
+                                }
+                                return;
                             }
-                            return;
+                        }
+                    } else if (glygen && glycoproteomics && element.categoryId == 2) {
+                        if (element.dataTypes) {
+                            var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
+                            if (datatype) {
+                                nextDatatype.push(datatype);
+                                nextNamespace.push (datatype.namespace.name);
+                                if (datatype.allowedValues) {
+                                    nextOptions.push(datatype.allowedValues);
+                                } else {
+                                    nextOptions.push([]);
+                                }
+                                return;
+                            }
+                        }
+                    } else if (!glygen) {
+                        if (element.dataTypes) {
+                            var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
+                            if (datatype) {
+                                nextDatatype.push(datatype);
+                                nextNamespace.push (datatype.namespace.name);
+                                if (datatype.allowedValues) {
+                                    nextOptions.push(datatype.allowedValues);
+                                } else {
+                                    nextOptions.push([]);
+                                }
+                                return;
+                            }
                         }
                     }
                 });
@@ -1026,11 +1056,6 @@ const Collection = (props) => {
         });
 
         setUserSelection({"glycans": selected});
-        let initialIds = {};
-        selected.forEach ((glycan) => {
-            initialIds[glycan.glycanId] = true;
-        });
-        setInitialSelection(initialIds);
         setShowGlycanTable(false);
     }
 
@@ -1055,11 +1080,6 @@ const Collection = (props) => {
         ];
         setUserSelection ({"glycans": updated});
         setSelectedGlycans(updated);
-        let initialIds = {};
-        updated.forEach ((glycan) => {
-            initialIds[glycan.glycanId] = true;
-        });
-        setInitialSelection(initialIds);
     }
 
     const deleteFromGlycoproteinTable = (id) => {
@@ -1239,7 +1259,10 @@ const Collection = (props) => {
 
     const setGlycoproteomicsMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
+        setGlycoproteomics(true);
+        setGlycomics(false);
         let added = [];
+        let notAdded = [];
         categories.map ((category, index) => {
             if (category.categoryId === 2) {   // GlyGen Glycoproteomics Data
                 if (category.dataTypes) {
@@ -1251,7 +1274,7 @@ const Collection = (props) => {
                             if (!existing)
                                 added.push(d.datatypeId);
                             else {
-                                setTextAlertInputMetadata({"show" : true, message: d.name + " already exists and is not added to the list. If you'd like to override, please delete it first!"})
+                                notAdded.push (d.name);
                             }
                         } else {
                             added.push (d.datatypeId);
@@ -1260,13 +1283,20 @@ const Collection = (props) => {
                 }
             }
         });
+
+        if (notAdded.length > 0)
+            setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
+        
         handleMetadataSelectionChange(added, true);
         setSelectedMetadataItems(added);
     }
 
     const setGlygenMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
+        setGlycomics(true);
+        setGlycoproteomics(false);
         let added = [];
+        let notAdded = [];
         categories.map ((category, index) => {
             if (category.categoryId === 1) {   // GlyGen Glycomics Data
                 if (category.dataTypes) {
@@ -1278,7 +1308,7 @@ const Collection = (props) => {
                             if (!existing)
                                 added.push(d.datatypeId);
                             else {
-                                setTextAlertInputMetadata({"show" : true, message: d.name + " already exists and is not added to the list. If you'd like to override, please delete it first!"})
+                                notAdded.push (d.name);
                             }
                         } else {
                             added.push (d.datatypeId);
@@ -1287,6 +1317,9 @@ const Collection = (props) => {
                 }
             }
         });
+
+        if (notAdded.length > 0)
+            setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
         handleMetadataSelectionChange(added, true);
         setSelectedMetadataItems(added);
     }
@@ -1764,6 +1797,8 @@ const Collection = (props) => {
                             setValidationMessage([]);
                             setActiveStep(0);
                             setGlygen(false);
+                            setGlycomics (false);
+                            setGlycoproteomics (false);
                             setEnableAddMetadata(true);
                          }
                         }>

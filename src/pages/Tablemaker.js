@@ -28,6 +28,11 @@ const Tablemaker = (props) => {
         { show: false, id: "" }
     );
 
+    const [textAlertInputCollection, setTextAlertInputCollection] = useReducer(
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
+    );
+
     const [data, setData] = useState([]);
     const [fileFormat, setFileFormat] = useState("EXCEL");
     const [fileName, setFileName] = useState(null);
@@ -36,6 +41,7 @@ const Tablemaker = (props) => {
     const [metadataSelect, setMetadataSelect] = useState("");
 
     const [collections, setCollections] = useState([]);
+    const [collectionType, setCollectionType] = useState ("GLYCAN");
 
     const [selectedCollections, setSelectedCollections] = useState([]);
 
@@ -271,7 +277,11 @@ const Tablemaker = (props) => {
             if (item.datatype) {
                 // check if it is a glycan column
                 if (item.datatype.datatypeId < 0) {
-                    tableColumn["glycanColumn"] = item.datatype.description ? item.datatype.description.toUpperCase() : null;
+                    if (collectionType === "GLYCAN") {
+                        tableColumn["glycanColumn"] = item.datatype.description ? item.datatype.description.toUpperCase() : null;
+                    } else {
+                        tableColumn["proteinColumn"] = item.datatype.description ? item.datatype.description.toUpperCase() : null;
+                    }
                 } else {
                     tableColumn["datatype"] = item.datatype;
                 }
@@ -297,6 +307,13 @@ const Tablemaker = (props) => {
                         name: column.glycanColumn,
                         datatypeId : id,
                         description : column.glycanColumn.toUpperCase(),
+                    };
+                    id --;
+                } else if (column.proteinColumn) {
+                    datatype = {
+                        name: column.proteinColumn,
+                        datatypeId : id,
+                        description : column.proteinColumn.toUpperCase(),
                     };
                     id --;
                 } else {
@@ -632,13 +649,23 @@ const Tablemaker = (props) => {
 
     const handleCollectionSelectionChange = (selected) => {
         // append new selections
+        const cType = null;
+        selectedCollections.forEach ((col) =>  {
+            cType = col.type;
+        });
+        
         const previous = [...selectedCollections];
         selected.forEach ((collection) => {
             const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
             if (!found) {
+                if (cType && collection.type !== cType) {
+                    setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
+                    return;
+                } 
                 previous.push (collection);
+                setCollectionType (cType);
             }
-        })
+        });
         setSelectedCollections(previous);
     };
 
@@ -799,6 +826,7 @@ const Tablemaker = (props) => {
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
                         Select Collections:
                     </Modal.Title>
+                    <TextAlert alertInput={textAlertInputCollection}/>
                     </Modal.Header>
                     <Modal.Body>{listCollections()}</Modal.Body>
                     <Modal.Footer>
@@ -821,6 +849,7 @@ const Tablemaker = (props) => {
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
                         Select Collections:
                     </Modal.Title>
+                    <TextAlert alertInput={textAlertInputCollection}/>
                     </Modal.Header>
                     <Modal.Body>{listCoC()}</Modal.Body>
                     <Modal.Footer>

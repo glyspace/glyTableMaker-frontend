@@ -288,6 +288,7 @@ const Glycoprotein = (props) => {
         setShowStartEnd(selected === "RANGE");
         if (selected === "RANGE" || selected === "ALTERNATIVE") {
             const positions = [...siteSelection.positions];
+            positions.forEach ((pos) => pos.aminoAcid = "");
             if (positions.length < 2) {
                 positions.push ({
                     "location": -1,
@@ -301,13 +302,27 @@ const Glycoprotein = (props) => {
         setShowAlternatives (selected === "ALTERNATIVE");
     };
 
-    const handlePositionChange = (e, index) => {
+    const handlePositionChange = (e, index, minValue) => {
+        setValidate(false);
         const val = e.target.value;
-
         const positions = [...siteSelection.positions];
         if (positions[index]) {
-            positions[index].location = Number.parseInt(val);
-            positions[index].aminoAcid = getAminoAcidFromSequence(positions[index].location);
+            try {
+                const num = Number.parseInt(val);
+                if (Number.isNaN(num)) {
+                    throw new Error("Invalid number format");
+                }
+                if (num < 0 || num > userSelection.sequence.length)
+                    throw new Error("Invalid number range");
+                if (minValue && num < minValue) {
+                    throw new Error("Invalid number range");
+                }
+                positions[index].location = num;
+                positions[index].aminoAcid = getAminoAcidFromSequence(positions[index].location);
+            } catch (error) {
+                setValidate(true);
+                return null;
+            }
         }
        
         setSiteSelection ("positions", positions);   
@@ -429,8 +444,9 @@ const Glycoprotein = (props) => {
                             name={"position"}
                             placeholder="Enter the position"
                             onChange={(e)=> handlePositionChange(e, index)}
-                            >
-                            </Form.Control>
+                            isInvalid={validate}
+                            />
+                            <Feedback message="Position should be a valid number within the range" />
                         </Col>
                         <Col xs={2} lg={2}>
                             <FormLabel label="Amino Acid"/>
@@ -473,8 +489,9 @@ const Glycoprotein = (props) => {
                   name={"position"}
                   placeholder="Enter the position"
                   onChange={(e)=>handlePositionChange(e, 0)}
-                  >
-                  </Form.Control>
+                  isInvalid={validate}
+                  />
+                  <Feedback message="Position should be a valid number within the range" />
               </Col>
               <Col xs={4} lg={4}>
               <Form.Control
@@ -496,9 +513,10 @@ const Glycoprotein = (props) => {
                     type="text"
                     name={"position"}
                     placeholder="Enter the position"
-                    onChange={(e)=>handlePositionChange(e, 1)}
-                    >
-                    </Form.Control>
+                    onChange={(e)=>handlePositionChange(e, 1, siteSelection.positions[0].location)}
+                    isInvalid={validate}
+                    />
+                    <Feedback message="Position should be a valid number within the range" />
                 </Col>
                 <Col xs={4} lg={4}>
                 <Form.Control
@@ -727,7 +745,7 @@ const Glycoprotein = (props) => {
                             <Button variant="contained" className="gg-btn-blue mt-2" 
                                 onClick={()=> {
                                     setSiteSelection ({ "type": "EXPLICIT", "glycans": [], 
-                                        "positions": [{"position" : -1, "aminoacid": ""}]});
+                                        "positions": [{"location" : -1, "aminoAcid": ""}]});
                                     setShowStartEnd(false);
                                     setShowAlternatives(false);
                                     setShowPosition(true);

@@ -53,18 +53,18 @@ const MetadataTreeView = (props) => {
                               </Typography>
                               </Col>
                               <Col style={{display:'flex', justifyContent:'right', marginRight: '50px'}}>
-                              {props.delete && !node.name.includes ("GlyGen Glycomics Data") && (
+                              {props.delete && !node.name.includes ("GlyGen Glyco") && (
                                 <Tooltip title="Delete category">
                               <IconButton color="error" onClick={(event) => deleteCategory(event, node)}>
                                 <DeleteIcon />
                               </IconButton></Tooltip>)}
-                              {props.edit && !node.name.includes ("GlyGen Glycomics Data") && (
+                              {props.edit && !node.name.includes ("GlyGen Glyco") && (
                                     <Tooltip title="Edit category">
                               <IconButton color="primary" onClick={(event) => editCategory(event, node)}>
                                 <EditIcon />
                               </IconButton>
                               </Tooltip>)}
-                              {props.add && !node.name.includes ("GlyGen Glycomics Data") && (
+                              {props.add && !node.name.includes ("GlyGen Glyco") && (
                                 <Tooltip title="Add datatype">
                               <IconButton color="primary" onClick={(event) => addDatatype(event, node)}>
                                 <AddCircleOutline />
@@ -75,7 +75,7 @@ const MetadataTreeView = (props) => {
                           }
                     >
                     {Array.isArray(node.dataTypes)
-                        ? node.dataTypes.map ((datatype) => renderDatatypes(datatype, node, node.name.includes ("GlyGen Glycomics Data")))
+                        ? node.dataTypes.map ((datatype) => renderDatatypes(datatype, node, node.name.includes ("GlyGen Glyco")))
                         : null}
                     </TreeItem>
                 )
@@ -90,8 +90,10 @@ const MetadataTreeView = (props) => {
             return null;
         }
 
+        const itemId = parent.categoryId * 100 + node.datatypeId;
+
         return (
-            <TreeItem itemId={node.datatypeId} label=
+            <TreeItem itemId={itemId} label=
             {
                 <Row>
                     <Col style={{display:'flex', marginTop:'7px'}}>

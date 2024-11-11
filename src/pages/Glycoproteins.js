@@ -153,7 +153,7 @@ const Glycoproteins = (props) => {
                     addtagws="api/data/addglycoproteintag/"
                     gettagws="api/data/getglycantags"
                     initialSortColumn="dateCreated"
-                    rowId="uniprotId"
+                    rowId="id"
                     columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEIN"
                     saveColumnVisibilityChanges={saveColumnVisibilityChanges}
                 />

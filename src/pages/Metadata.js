@@ -460,7 +460,7 @@ const Metadata = (props) => {
                 required={true}
               >
                 {data && data.map((n , index) =>
-                    !n.name.includes ("GlyGen Glycomics Data") && 
+                    !n.name.includes ("GlyGen Glyco") && 
                       <option
                       selected={n.name === category.name}
                       key={index}
@@ -584,7 +584,7 @@ const Metadata = (props) => {
                     onChange={handleCategorySelect}
                   >
                     {data && data.map((n , index) =>
-                        ((!readOnly && !n.name.includes ("GlyGen Glycomics Data")) || (readOnly)) && 
+                        ((!readOnly && !n.name.includes ("GlyGen Glyco")) || (readOnly)) && 
                           <option
                           selected={n.categoryId === datatype.category}
                           key={index}
