@@ -23,7 +23,8 @@ const Settings = (props) => {
         "GLYCANINCOLLECTION": "Glycans (in Collection)",
         "METADATA" : "Metadata",
         "DATASET" : "Dataset",
-        "DATASETMETADATA" : "Public Dataset Metadata",
+        "DATASETMETADATA" : "Public Dataset Glycan Metadata",
+        "DATASETGLYCOPROTEINMETADATA" : "Public Dataset Glycoprotein Metadata",
         "GLYCOPROTEIN" : "Glycoproteins",
         "GLYCOPROTEININCOLLECTION": "Glycoproteins (in Collection)"
     }
@@ -353,6 +354,92 @@ const Settings = (props) => {
                 "label" : "Comment",
                 "visible": true,
             }
+        },
+        "DATASETGLYCOPROTEINMETADATA" : {
+            "1": {
+                "label" : 'UniProt ID',
+                "visible" : true,
+            },
+            "2" : {
+                "label" : "GlyTouCan ID",
+                "visible" : true,
+            },
+            "cartoon" : {
+                "label" : "Image",
+                "visible" : true,
+            }, 
+            "3" : {
+                "label" : "Amino Acid",
+                "visible" : true,
+            },
+            "4" : {
+                "label" : "Site/Position",
+                "visible" : true,
+            },
+            "5" : {
+                "label" : "Glycosylation Type",
+                "visible" : true,
+            },
+            "6" : {
+                "label" : "Glycosylation Subtype",
+                "visible" : true,
+            },
+            "7" : {
+                "label" : "Evidence",
+                "visible" : true,
+            },
+            "speciesValue": {
+                "label" : "Species",
+                "visible": true,
+            },
+            "8": {
+                "label" : "Species ID",
+                "visible": true,
+            },
+            "9" : {
+                "label" : "Strain",
+                "visible": true,
+            },
+            "tissueValue" : {
+                "label" : "Tissue",
+                "visible" : true,
+            },
+            "10" : {
+                "label" : "Tissue ID",
+                "visible" : true,
+            },
+            "celllineValue" : {
+                "label" : "Cell line",
+                "visible" : true,
+            }, 
+            "11" : {
+                "label" : "Cell line ID",
+                "visible" : true,
+            }, 
+            "diseaseValue" : {
+                "label" : "Disease",
+                "visible" : true,
+            },
+            "12" : {
+                "label" : "Disease ID",
+                "visible" : true,
+            },
+            "13" : {
+                "label" : "Functional annotation/Keyword",
+                "visible" : true,
+            },
+            "14" : {
+                "label" : "Experimental technique",
+                "visible" : true,
+            }, 
+            "15" : {
+                "label" : "Contributor",
+                "visible": true,
+            },
+            "16" : {
+                "label" : "Comment",
+                "visible": true,
+            }
         }
     });   // map containing column visibility for each table type
 
@@ -391,6 +478,7 @@ const Settings = (props) => {
                         }
                 });
                 nextColumnVisibilty["COLLECTION"]= {...visibilityList};
+
                 visibilityList = columnVisibility["COC"];
                 data.data["COC"] && 
                     data.data["COC"].map ((setting, index) => {
@@ -399,6 +487,7 @@ const Settings = (props) => {
                         }
                 });
                 nextColumnVisibilty["COC"] =  {...visibilityList};
+
                 visibilityList = columnVisibility["GLYCANINCOLLECTION"];
                 data.data["GLYCANINCOLLECTION"] && 
                     data.data["GLYCANINCOLLECTION"].map ((setting, index) => {
@@ -425,6 +514,7 @@ const Settings = (props) => {
                         }
                 });
                 nextColumnVisibilty["METADATA"] = {...visibilityList};
+
                 visibilityList = columnVisibility["DATASET"];
                 data.data["DATASET"] && 
                     data.data["DATASET"].map ((setting, index) => {
@@ -432,7 +522,8 @@ const Settings = (props) => {
                             visibilityList[setting.columnName]["visible"] = setting.visible;
                         }
                 });
-                nextColumnVisibilty["DATASETMETADATA"] = {...visibilityList};
+                nextColumnVisibilty["DATASET"] = {...visibilityList};
+
                 visibilityList = columnVisibility["DATASETMETADATA"];
                 data.data["DATASETMETADATA"] && 
                     data.data["DATASETMETADATA"].map ((setting, index) => {
@@ -441,6 +532,16 @@ const Settings = (props) => {
                         }
                 });
                 nextColumnVisibilty["DATASETMETADATA"] = {...visibilityList};
+
+                visibilityList = columnVisibility["DATASETGLYCOPROTEINMETADATA"];
+                data.data["DATASETGLYCOPROTEINMETADATA"] && 
+                    data.data["DATASETGLYCOPROTEINMETADATA"].map ((setting, index) => {
+                        if (visibilityList[setting.columnName]) {
+                            visibilityList[setting.columnName]["visible"] = setting.visible;
+                        }
+                });
+                nextColumnVisibilty["DATASETGLYCOPROTEINMETADATA"] = {...visibilityList};
+                
                 setColumnVisibility (nextColumnVisibilty);
             } 
           }).catch(function(error) {

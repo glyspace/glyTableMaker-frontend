@@ -649,7 +649,7 @@ const Tablemaker = (props) => {
 
     const handleCollectionSelectionChange = (selected) => {
         // append new selections
-        const cType = null;
+        let cType = null;
         selectedCollections.forEach ((col) =>  {
             cType = col.type;
         });

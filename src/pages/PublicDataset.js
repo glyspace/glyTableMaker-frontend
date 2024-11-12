@@ -43,6 +43,7 @@ const PublicDataset = (props) => {
 
     const [versionData, setVersionData] = useState ([]);
     const [showVersionLog, setShowVersionLog] = useState(false);
+    const [datasetType, setDatasetType] = useState("GLYCAN");
 
     useEffect(() => {
         if (datasetId) {
@@ -54,6 +55,8 @@ const PublicDataset = (props) => {
         setIsLoading(true);
         getJson (stringConstants.api.getpublicdataset + "/" + datasetId).then ((data) => {
             setDataset (data.data.data);
+            if (data.data.data.glycoproteinData && data.data.data.glycoproteinData.length > 0) 
+              setDatasetType ("GLYCOPROTEIN");
             setIsLoading(false);
             const versionList = data.data.data.versions;
             versionList.sort((a, b) => a.version > b.version ? -1 : a.version < b.version ? 1 : 0);
@@ -131,6 +134,10 @@ const PublicDataset = (props) => {
           if (col.glycanColumn === columnName) {
             value = col.value;
           }
+        } else if (col.glycoproteinColumn) {
+          if (col.glycoproteinColumn === columnName) {
+            value = col.value;
+          }
         } else if (col.datatype) {
           if (col.datatype.name === columnName) {
             if (id) {
@@ -146,6 +153,141 @@ const PublicDataset = (props) => {
 
       return value;
     }
+
+    const proteinColumns = useMemo (
+      () => [
+        {
+          accessorFn: (row) => getCellValue (row, 'UniProtID'),
+          header: 'UniProt ID',
+          id: '1',
+          size: 50,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'GlyTouCanID'),
+          header: 'GlyTouCan ID',
+          id: '2',
+          size: 50,
+        },
+        {
+          accessorFn: (row) => row.cartoon,
+          header: 'Image',
+          id: 'cartoon',
+          size: 150,
+          enableColumnFilter: false,
+          enableSorting: false,
+          Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'AminoAcid'),
+          header: 'Amino Acid',
+          id: '3',
+          size: 50,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Site'),
+          header: 'Site/Position',
+          id: '4',
+          size: 50,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'GlycosylationType'),
+          header: 'Glycosylation Type',
+          id: '5',
+          size: 50,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'GlycosylationSubtype'),
+          header: 'Glycosylation Subtype',
+          id: '6',
+          size: 50,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Evidence'),
+          id: "7",
+          header: 'Evidence',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Species'),
+          header: 'Species',
+          id: "speciesValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Species', true),
+          header: 'Species ID',
+          id: "8",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Strain'),
+          header: 'Strain',
+          id: "9",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Tissue'),
+          header: 'Tissue',
+          id: "tissueValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Tissue', true),
+          header: 'Tissue ID',
+          id: "10",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cell line ID'),
+          header: 'Cell line',
+          id: "celllineValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
+          header: 'Cell line ID',
+          id: "11",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Disease'),
+          header: 'Disease',
+          id: "diseaseValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Disease', true),
+          header: 'Disease ID',
+          id: "12",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
+          header: 'Functional annotation/Keyword',
+          id: "13",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Experimental technique'),
+          header: 'Experimental technique',
+          id: "14",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Contributor'),
+          header: 'Contributor',
+          id: "15",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Comment'),
+          header: 'Comment',
+          id: "16",
+          size: 100,
+        }
+      ],
+      [],
+    );
 
     const columns = useMemo (
       () => [
@@ -297,9 +439,10 @@ const PublicDataset = (props) => {
     const saveColumnVisibilityChanges = (columnVisibility) => {
       props.authCheckAgent && props.authCheckAgent(true);
       var columnSettings = [];
+      const tableName = datasetType === "GLYCAN" ? "DATASETMETADATA" : "DATASETGLYCOPROTEINMETADATA";
       for (var column in columnVisibility) {
         columnSettings.push ({
-          "tableName": "DATASETMETADATA",
+          "tableName": tableName,
           "columnName": column,
           "visible" :  columnVisibility[column] ? true: false,
         });
@@ -313,10 +456,13 @@ const PublicDataset = (props) => {
 
     const download = () => {
       // download csv file
-
-      const tableDef = {
+      var tableDef = {
         "filename" : "GlygenDataset-" + datasetId,
-        "data" : dataset.data,
+      }
+      if (datasetType === "GLYCAN") {
+        tableDef["data"] = dataset.data;
+      } else {
+        tableDef["glycoproteinData"] = dataset.glycoproteinData;
       }
       setIsLoading(true);
       setTextAlertInput({"show": false, id: ""});
@@ -356,6 +502,18 @@ const PublicDataset = (props) => {
     const getData = () => {
         return (
         <>
+        {datasetType === "GLYCOPROTEIN" ? 
+          <Table 
+              columns={proteinColumns} 
+              data={dataset.glycoproteinData} 
+              detailPanel={false}
+              enableRowActions={false}
+              initialSortColumn="1"
+              rowId="1"
+              columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
+              saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+          />
+        :
         <Table 
             columns={columns} 
             data={dataset.data} 
@@ -365,7 +523,7 @@ const PublicDataset = (props) => {
             rowId="1"
             columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
             saveColumnVisibilityChanges={saveColumnVisibilityChanges}
-        />
+        />}
         </>)
     }
 

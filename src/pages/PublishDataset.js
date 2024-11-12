@@ -40,6 +40,11 @@ const PublishDataset = (props) => {
         { show: false, id: "" }
     );
 
+    const [textAlertInputCollection, setTextAlertInputCollection] = useReducer(
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
+    );
+
     const dataset = {
         id: null,
         name: "",
@@ -190,8 +195,13 @@ const PublishDataset = (props) => {
             size: 50,
           },
           {
-            accessorFn: (row) => row.glycans.length, 
+            accessorFn: (row) => row.glycans && row.glycans.length, 
             header: '# Glycans',
+            size: 25,
+          },
+          {
+            accessorFn: (row) => row.glycoproteins && row.glycoproteins.length, 
+            header: '# Proteins',
             size: 25,
           },
           {
@@ -215,6 +225,11 @@ const PublishDataset = (props) => {
               header: '# Glycans',
               size: 25,
             },
+            {
+                accessorFn: (row) => row.glycoproteins ? row.glycoproteins.length : 0, 
+                header: '# Proteins',
+                size: 25,
+              },
             {
               accessorKey: 'errors',
               header: 'Errors',
@@ -521,11 +536,22 @@ const PublishDataset = (props) => {
 
     const handleCollectionSelectionChange = (selected) => {
         setTextAlertInput({"show": false, id: ""});
+
+        // append new selections
+        let cType = null;
+        selectedCollections.forEach ((col) =>  {
+            cType = col.type;
+        });
+
         // append new selections
         const previous = [...selectedCollections];
         selected.forEach ((collection) => {
             const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
             if (!found) {
+                if (cType && collection.type !== cType) {
+                    setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
+                    return;
+                } 
                 previous.push (collection);
             }
         })
@@ -665,6 +691,7 @@ const PublishDataset = (props) => {
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
                         Select Collections:
                     </Modal.Title>
+                    <TextAlert alertInput={textAlertInputCollection}/>
                     </Modal.Header>
                     <Modal.Body>{listCollections()}</Modal.Body>
                     <Modal.Footer>
