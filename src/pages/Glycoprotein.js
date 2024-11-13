@@ -120,18 +120,13 @@ const Glycoprotein = (props) => {
             header: 'Glycan',
             Cell: ({ cell }) => (
                 <>
+                <ul style={{listStyleType: "none"}}>
                 {cell.getValue() && cell.getValue().length > 0 &&
                     cell.getValue().map ((glycan, index) => {
-                    return <span>
-                    {index !== cell.getValue().length - 1 &&
-                        `${glycan.glycan.glytoucanID} | `
-                    } 
-                    {index === cell.getValue().length - 1 &&
-                        `${glycan.glycan.glytoucanID}`
-                    }
-                    </span>
+                    return <li><img src={"data:image/png;base64, " + glycan.glycan.cartoon} alt="cartoon" /></li>
                     })
                 }
+                </ul>
                 </>
             ),
           },

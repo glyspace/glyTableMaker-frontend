@@ -648,6 +648,7 @@ const Tablemaker = (props) => {
     };
 
     const handleCollectionSelectionChange = (selected) => {
+        setTextAlertInputCollection ({"show": false, "message" : ""});
         // append new selections
         let cType = null;
         selectedCollections.forEach ((col) =>  {
@@ -656,7 +657,9 @@ const Tablemaker = (props) => {
         
         const previous = [...selectedCollections];
         selected.forEach ((collection) => {
-            const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
+            const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId
+                || (item.children && item.children.find ((child) => child.collectionId === collection.collectionId))
+                || (collection.children && collection.children.find ((child) => child.collectionId === item.collectionId)));
             if (!found) {
                 if (cType && collection.type !== cType) {
                     setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
@@ -664,12 +667,16 @@ const Tablemaker = (props) => {
                 } 
                 previous.push (collection);
                 setCollectionType (cType);
+            } else {
+                setTextAlertInputCollection ({"show": true, "message": "This collection has already been added to the list!" });
+                return;
             }
         });
         setSelectedCollections(previous);
     };
 
     const handleCollectionSelect = (coc) => {
+        setTextAlertInputCollection ({"show": false, "message" : ""});
         setCollections(selectedCollections);
         if (coc) {
             setEnableCoCAdd(false);

@@ -536,6 +536,7 @@ const PublishDataset = (props) => {
 
     const handleCollectionSelectionChange = (selected) => {
         setTextAlertInput({"show": false, id: ""});
+        setTextAlertInputCollection({"show": false, id: ""});
 
         // append new selections
         let cType = null;
