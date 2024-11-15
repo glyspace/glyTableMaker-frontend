@@ -90,8 +90,6 @@ const Collection = (props) => {
 
     const [activeStep, setActiveStep] = useState(0);
     const [glygen, setGlygen] = useState(false);
-    const [glycomics, setGlycomics] = useState(false);
-    const [glycoproteomics, setGlycoproteomics] = useState(false);
 
     const [contributor, setContributor] = useState(null);
     const [userProfile, setUserProfile] = useState({});
@@ -926,7 +924,7 @@ const Collection = (props) => {
         });
     }
 
-    const handleMetadataSelectionChange = (metadataItems, isNew) => {
+    const handleMetadataSelectionChange = (metadataItems, isNew, categoryId) => {
         const nextDatatype = [];
         const nextNamespace = [];
         const nextOptions = [];
@@ -937,12 +935,14 @@ const Collection = (props) => {
 
         if (isNew) sortMetadata(metadataItems);
 
+        
         metadataItems.map ((itemId, index) => {
             if (typeof itemId === 'number') {  // datatype selected
                 // find namespace of the datatype and display appropriate value field
                 // locate the datatype
+                let found = false;
                 categories.map ((element) => {
-                    if (glygen && glycomics && element.categoryId == 1) {
+                    if (categoryId && element.categoryId === categoryId) {
                         if (element.dataTypes) {
                             var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
                             if (datatype) {
@@ -956,7 +956,8 @@ const Collection = (props) => {
                                 return;
                             }
                         }
-                    } else if (glygen && glycoproteomics && element.categoryId == 2) {
+                    }
+                    if (!categoryId && !found) {
                         if (element.dataTypes) {
                             var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
                             if (datatype) {
@@ -967,20 +968,7 @@ const Collection = (props) => {
                                 } else {
                                     nextOptions.push([]);
                                 }
-                                return;
-                            }
-                        }
-                    } else if (!glygen) {
-                        if (element.dataTypes) {
-                            var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
-                            if (datatype) {
-                                nextDatatype.push(datatype);
-                                nextNamespace.push (datatype.namespace.name);
-                                if (datatype.allowedValues) {
-                                    nextOptions.push(datatype.allowedValues);
-                                } else {
-                                    nextOptions.push([]);
-                                }
+                                found = true;
                                 return;
                             }
                         }
@@ -1084,7 +1072,7 @@ const Collection = (props) => {
 
     const deleteFromGlycoproteinTable = (id) => {
         var proteins = userSelection.glycoproteins;
-        const index = proteins.findIndex ((item) => item["uniprotId"] === id);
+        const index = proteins.findIndex ((item) => item["id"] === id);
         var updated = [
             ...proteins.slice(0, index),
             ...proteins.slice(index + 1)
@@ -1105,9 +1093,9 @@ const Collection = (props) => {
 
     const handleGlycanSelectionChange = (selected) => {
         // append new selections
-        const previous = [...selectedGlycans];
+        const previous = [...userSelection.glycans];
         selected.forEach ((glycan) => {
-            const found = selectedGlycans.find ((item) => item.glycanId === glycan.glycanId);
+            const found = previous.find ((item) => item.glycanId === glycan.glycanId);
             if (!found) {
                 previous.push (glycan);
             }
@@ -1117,9 +1105,9 @@ const Collection = (props) => {
 
     const handleGlycoproteinSelectionChange = (selected) => {
         // append new selections
-        const previous = [...selectedGlycoproteins];
+        const previous = [...userSelection.glycoproteins];
         selected.forEach ((protein) => {
-            const found = selectedGlycoproteins.find ((item) => item.id === protein.id);
+            const found = userSelection.glycoproteins.find ((item) => item.id === protein.id);
             if (!found) {
                 previous.push (protein);
             }
@@ -1259,8 +1247,6 @@ const Collection = (props) => {
 
     const setGlycoproteomicsMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
-        setGlycoproteomics(true);
-        setGlycomics(false);
         let added = [];
         let notAdded = [];
         categories.map ((category, index) => {
@@ -1287,14 +1273,12 @@ const Collection = (props) => {
         if (notAdded.length > 0)
             setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
         
-        handleMetadataSelectionChange(added, true);
+        handleMetadataSelectionChange(added, true, 2);
         setSelectedMetadataItems(added);
     }
 
     const setGlygenMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
-        setGlycomics(true);
-        setGlycoproteomics(false);
         let added = [];
         let notAdded = [];
         categories.map ((category, index) => {
@@ -1320,7 +1304,7 @@ const Collection = (props) => {
 
         if (notAdded.length > 0)
             setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
-        handleMetadataSelectionChange(added, true);
+        handleMetadataSelectionChange(added, true, 1);
         setSelectedMetadataItems(added);
     }
 
@@ -1754,7 +1738,7 @@ const Collection = (props) => {
                 {!collectionType || collectionType === "GLYCAN" ?
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "glytoucanID"
+                    rowId = "glycanId"
                     data = {userSelection.glycans}
                     columns={columns}
                     enableRowActions={true}
@@ -1765,7 +1749,7 @@ const Collection = (props) => {
                 /> :
                 <Table 
                     authCheckAgent={props.authCheckAgent}
-                    rowId = "uniprotId"
+                    rowId = "id"
                     data = {userSelection.glycoproteins}
                     columns={columns2}
                     enableRowActions={true}
@@ -1797,8 +1781,6 @@ const Collection = (props) => {
                             setValidationMessage([]);
                             setActiveStep(0);
                             setGlygen(false);
-                            setGlycomics (false);
-                            setGlycoproteomics (false);
                             setEnableAddMetadata(true);
                          }
                         }>

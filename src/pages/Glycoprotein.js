@@ -40,6 +40,7 @@ const Glycoprotein = (props) => {
     const initialState = {
         uniprotId: "",
         sequence: "",
+        proteinName: "",
         name: "",
         geneSymbol: "",
         sites : [],
@@ -221,6 +222,7 @@ const Glycoprotein = (props) => {
         // add the glycoprotein
         const glycoprotein = {
             "name": userSelection.name,
+            "proteinName": userSelection.proteinName,
             "sequence" : userSelection.sequence,
             "geneSymbol" : userSelection.geneSymbol,
             "uniprotId": userSelection.uniprotId,
@@ -265,6 +267,16 @@ const Glycoprotein = (props) => {
             ...sites.slice(index + 1)
         ];
         setUserSelection ({"sites": updated});
+    }
+
+    const deleteFromGlycanTable = (id) => {
+        var glycans = siteSelection.glycans;
+        const index = glycans.findIndex ((item) => item["glycanId"] === id);
+        var updated = [
+            ...glycans.slice(0, index),
+            ...glycans.slice(index + 1)
+        ];
+        setSiteSelection ({"glycans": updated});
     }
 
     const handleAddSite = () => {
@@ -353,12 +365,12 @@ const Glycoprotein = (props) => {
 
     const handleGlycanSelectionChange = (selected) => {
         // append new selections
-        const previous = [...selectedGlycans];
+        const previous = [...siteSelection.glycans];
         selected.forEach ((glycan) => {
-            const found = selectedGlycans.find ((item) => item.glycan.glycanId === glycan.glycanId);
+            const found = siteSelection.glycans.find ((item) => item.glycan.glycanId === glycan.glycanId);
             if (!found) {
                 previous.push ({"glycan" : glycan, "type": "Glycan", "glycosylationType" : "N-linked",
-                    "glycosylationSubType": "None",
+                    "glycosylationSubType": "High mannose",
                 });
             }
         })
@@ -536,9 +548,12 @@ const Glycoprotein = (props) => {
                 </Button>
                 </div>
                 <GlycanTypeTable 
+                    rowId="glycanId"
                     data={siteSelection.glycans} 
                     handleGlycanTypeChange={handleGlycanTypeChange}
-                    />
+                    delete={deleteFromGlycanTable}
+                    enableRowActions={true}
+                />
               </Row>
 
               {showGlycanSelection && (
@@ -693,12 +708,28 @@ const Glycoprotein = (props) => {
                             )}
                             </Col>
                         </Form.Group>
-                        {userSelection.name &&
-                        <>
-                        <Form.Group as={Row} controlId="name" className="gg-align-center mb-3">
+                        <Form.Group
+                            as={Row}
+                            controlId="name"
+                            className="gg-align-center mb-3"
+                            >
                             <Col xs={12} lg={9}>
-                            <FormLabel label="Name" />
-                            <Form.Control type="text" name="name" value={userSelection.name} disabled />
+                                <FormLabel label="Name"/>
+                                <Form.Control
+                                    type="text"
+                                    name="name"
+                                    placeholder="Enter a name for glycprotein"
+                                    value={userSelection.name}
+                                    onChange={handleChange}
+                                />    
+                            </Col>
+                        </Form.Group>
+                        {userSelection.proteinName &&
+                        <>
+                        <Form.Group as={Row} controlId="proteinName" className="gg-align-center mb-3">
+                            <Col xs={12} lg={9}>
+                            <FormLabel label="Protein Name" />
+                            <Form.Control type="text" name="proteinName" value={userSelection.proteinName} disabled />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId="sequence" className="gg-align-center mb-3">
@@ -722,14 +753,14 @@ const Glycoprotein = (props) => {
                     <div className="text-center mb-2">
                         <Button onClick={()=> navigate("/glycoproteins")}
                             className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycoproteins</Button>
-                        {userSelection.name && 
+                        {userSelection.proteinName && 
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={handleSubmit}>
                             Submit
                         </Button>}
                     </div>
                 </Card.Body>
             </Card>
-            {userSelection.name && 
+            {userSelection.proteinName && 
             <Card style={{marginTop: "15px"}}>
                 <Card.Body>
                     <h5 className="gg-blue" style={{textAlign: "left"}}>

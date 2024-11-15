@@ -1,18 +1,17 @@
-import { Box, Typography } from "@mui/material";
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "react-bootstrap";
+import { useMemo, useState } from "react";
+import typeList from '../data/glycosylationTypes.json';
+import { Box, IconButton, Tooltip } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const GlycanTypeTable = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
     const types = ["Glycan", "Motif", "Fragment"]
-    const glycosylationTypes = [ "N-linked", "O-linked"];
-    const subtypes = ["None", "O-GlcNAcylation","O-Glucosylation"];
+    const glycosylationTypes = typeList.map(type => type.name);
+    const [subtypes, setSubtypes] = useState(typeList.filter(type => type.name === "N-linked").map(type => type.subtype).flat());
 
     const [editedData, setEditedData] = useState({});
     const [data, setData] = useState([]);
-
-    //const data = useMemo(() => props.glycans ? props.glycans: [], [props.glycans]);
 
     const columns = useMemo(
         () => [
@@ -66,6 +65,8 @@ const GlycanTypeTable = (props) => {
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
+                // change subtypes
+                setSubtypes(typeList.filter(type => type.name === event.target.value).map(type => type.subtype).flat());
                 const validationError = !event.target.value || !validateRequired(event.target.value)
                   ? 'Required'
                   : undefined;
@@ -115,37 +116,6 @@ const GlycanTypeTable = (props) => {
     [editedData, validationErrors],
     );
 
-    const table = useMaterialReactTable({
-        muiTableBodyCellProps: {
-          sx: {
-            border: '0.5px solid rgba(200, 200, 200, .5)',
-          },
-        },
-        muiTableHeadCellProps: {
-          sx: {
-            border: '0.5px solid rgba(200, 200, 200, .5)',
-          },
-        },
-        columns,
-        data: props.data ? props.data : [],
-        editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
-        enableEditing: true,
-        getRowId: (row) => row.id,
-        muiTableContainerProps: {
-          sx: {
-            minHeight: '200px',
-          },
-        },
-        
-        renderBottomToolbarCustomActions: () => (
-            <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              {Object.values(validationErrors).some((error) => !!error) && (
-                <Typography color="error">Fix errors before submitting</Typography>
-              )}
-            </Box>
-          ),
-    });
-
     const clientTable = useMaterialReactTable({
         muiTableBodyCellProps: {
             sx: {
@@ -162,6 +132,15 @@ const GlycanTypeTable = (props) => {
         getRowId: (row) => row[props.rowId],
         editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
         enableEditing: true,
+        enableRowActions: props.enableRowActions,
+        renderRowActions: ({ row }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip title="Delete">
+              <IconButton color="error" onClick={() => props.delete && props.delete(row.original[props.rowId])}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            </Box>)
       });
 
     const validateRequired = (value) => !!value.length;

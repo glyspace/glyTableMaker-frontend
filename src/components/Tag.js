@@ -16,7 +16,7 @@ const Tag = (props) => {
             setTagList(json.data.data);
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
-                console.log("Failed to get list of existing glycan tags");
+                console.log("Failed to get list of existing tags");
             } else {
               axiosError(error, null, props.setAlertDialogInput);
             }
@@ -103,7 +103,7 @@ const Tag = (props) => {
                         type="text"
                         name="tag"
                         disabled={existing}
-                        placeholder="Enter tag for all the glycans from this file"
+                        placeholder="Enter tag and click Add"
                         isInvalid={props.validate}
                         onChange={handleInputChange}
                     />

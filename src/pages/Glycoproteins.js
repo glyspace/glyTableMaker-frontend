@@ -41,7 +41,12 @@ const Glycoproteins = (props) => {
           {
             accessorKey: 'name', 
             header: 'Name',
-            size: 50,
+            size: 100,
+          },
+          {
+            accessorKey: 'proteinName', 
+            header: 'Protein Name',
+            size: 100,
           },
           {
             accessorKey: 'sites.length', 
