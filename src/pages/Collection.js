@@ -594,17 +594,18 @@ const Collection = (props) => {
         let filteredSelection = [];
         ids.map ((item, index) => {
             if (typeof item === 'number') {
-                if (item > 200) 
-                    item = item - 200;
-                else if (item > 100) 
-                    item = item - 100;
-                const multiple = isMultiple(item);
+                let itemId = item;
+                if (itemId > 200) 
+                    itemId = itemId - 200;
+                else if (itemId > 100) 
+                    itemId = itemId - 100;
+                const multiple = isMultiple(itemId);
                 if (!multiple && userSelection.metadata) {
                     // check if it already exists
                     const existing = userSelection.metadata.find ((meta) => 
-                        meta.type.datatypeId === item);
+                        meta.type.datatypeId === itemId);
                     if (existing) {
-                        setTextAlertInputMetadata({"show" : true, message: getDatatypeName(item) + " already exists and is not added to the list. If you'd like to override, please go back and delete it first!"});
+                        setTextAlertInputMetadata({"show" : true, message: getDatatypeName(itemId) + " already exists and is not added to the list. If you'd like to override, please go back and delete it first!"});
                         scrollToDialogTop();
                         return;
                     }
@@ -685,16 +686,22 @@ const Collection = (props) => {
                     <div className="tags-input">
                         <ul id="tags">
                             {selectedMetadataItems && selectedMetadataItems.length > 0 && 
-                            selectedMetadataItems.map((m, index) => (
-                            <li key={index} className="tag">
-                                <span className='tag-title'>{getDatatypeName(m)}</span>
-                                <span className='tag-close-icon'
-                                onClick={() => removeMetadataItems(index)}
-                                >
-                                x
-                                </span>
-                            </li>
-                            ))}
+                            selectedMetadataItems.map((m, index) => {
+                                let itemId = m;
+                                if (itemId > 200) 
+                                    itemId = itemId - 200;
+                                else if (itemId > 100) 
+                                    itemId = itemId - 100;
+                                return ( <li key={index} className="tag">
+                                            <span className='tag-title'>{getDatatypeName(itemId)}</span>
+                                            <span className='tag-close-icon'
+                                            onClick={() => removeMetadataItems(index)}
+                                            >
+                                            x
+                                            </span>
+                                        </li>
+                                )
+                            })}
                         </ul>
                     </div>
                     <MetadataTreeView data={categories} checkboxSelection
@@ -998,7 +1005,7 @@ const Collection = (props) => {
     function getStepLabel(stepIndex) {
         switch (stepIndex) {
           case 0:
-            return "Select metadata by using checkboxes and +1 button if the metadata has multiple values";
+            return "Select metadata by using checkboxes, top level categories cannot be selected";
           case 1:
             return "Enter values for each metadata";
           default:
