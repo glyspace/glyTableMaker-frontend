@@ -573,8 +573,14 @@ const Collection = (props) => {
         let addedValues = [];
         let index = 0;
         for (let d of copy) {
-            const name = getDatatypeName(d);
-            const mandatory2 = isMandatory (d);
+            let itemId = d;
+            if (itemId > 200) {
+                itemId = itemId - 200;
+            } else if (itemId > 100) {
+                itemId = itemId - 100;
+            } 
+            const name = getDatatypeName(itemId);
+            const mandatory2 = isMandatory (itemId);
             if (mandatory === mandatory2) {
                 if (insert && insert.toLowerCase() <= name.toLowerCase()) {
                     added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
@@ -713,11 +719,17 @@ const Collection = (props) => {
                 return (
                     <>
                     {enableMultiValueSelect && multiValueSelectIndex !== -1 && multiValueDialog()} 
-                    {selectedMetadataItems.map ((datatypeId, index) => {
+                    {selectedMetadataItems.map ((dId, index) => {
+                        let datatypeId = dId;
+                        if (datatypeId > 200) {
+                            datatypeId = datatypeId - 200;
+                        } else if (datatypeId > 100) {
+                            datatypeId = datatypeId - 100;
+                        } 
                         const dropdown = isDropdown(datatypeId);
                         const typeahead = isTypeahead(datatypeId);
                         const mandatory = isMandatory(datatypeId);
-                        const secondCopy = isSecondCopy (datatypeId, index);
+                        const secondCopy = isSecondCopy (dId, index);
                         const dType = getDatatype(datatypeId);
                         return (
                         <Row>
@@ -909,12 +921,24 @@ const Collection = (props) => {
             var firstMandatory;
             var secondMandatory;
             if (typeof a === 'number') {  // datatype selected
-                first = getDatatypeName(a);
-                firstMandatory = isMandatory(a);
+                let itemId = a;
+                if (itemId > 200) {
+                    itemId -= 200;
+                } else if (itemId > 100) {
+                    itemId -= 100;
+                }
+                first = getDatatypeName(itemId);
+                firstMandatory = isMandatory(itemId);
             }
             if (typeof b === 'number') {  // datatype selected
-                second = getDatatypeName(b);
-                secondMandatory = isMandatory(b);
+                let itemId = b;
+                if (itemId > 200) {
+                    itemId -= 200;
+                } else if (itemId > 100) {
+                    itemId -= 100;
+                }
+                second = getDatatypeName(itemId);
+                secondMandatory = isMandatory(itemId);
             }
 
             if (firstMandatory < secondMandatory) {
@@ -943,10 +967,16 @@ const Collection = (props) => {
         if (isNew) sortMetadata(metadataItems);
 
         
-        metadataItems.map ((itemId, index) => {
-            if (typeof itemId === 'number') {  // datatype selected
+        metadataItems.map ((iId, index) => {
+            if (typeof iId === 'number') {  // datatype selected
                 // find namespace of the datatype and display appropriate value field
                 // locate the datatype
+                let itemId = iId;
+                if (itemId > 200) {
+                    itemId -= 200;
+                } else if (itemId > 100) {
+                    itemId -= 100;
+                }
                 let found = false;
                 categories.map ((element) => {
                     if (categoryId && element.categoryId === categoryId) {
@@ -1009,7 +1039,7 @@ const Collection = (props) => {
           case 1:
             return "Enter values for each metadata";
           default:
-            return "Unknown stepIndex";
+            return "Unknown step " + stepIndex ;
         }
     }
 
@@ -1128,7 +1158,7 @@ const Collection = (props) => {
             if (element.dataTypes) {
                 const datatype = element.dataTypes.find ((item) => item.name === "Contributor");
                 if (datatype) {
-                    const index = selectedMetadataItems.findIndex ((item) => item === datatype.datatypeId);
+                    const index = selectedMetadataItems.findIndex ((item) => item === element.categoryId * 100 + datatype.datatypeId);
                     if (index != -1) {
                         selectedMetadataValue[index] = contributor;
                     }
@@ -1265,12 +1295,12 @@ const Collection = (props) => {
                             const existing = userSelection.metadata.find ((meta) => 
                                 meta.type.name === d.name);
                             if (!existing)
-                                added.push(d.datatypeId);
+                                added.push(category.categoryId * 100 + d.datatypeId);
                             else {
                                 notAdded.push (d.name);
                             }
                         } else {
-                            added.push (d.datatypeId);
+                            added.push (category.categoryId * 100 + d.datatypeId);
                         }
                     });
                 }
@@ -1297,12 +1327,12 @@ const Collection = (props) => {
                             const existing = userSelection.metadata.find ((meta) => 
                                 meta.type.name === d.name);
                             if (!existing)
-                                added.push(d.datatypeId);
+                                added.push(category.categoryId * 100 + d.datatypeId);
                             else {
                                 notAdded.push (d.name);
                             }
                         } else {
-                            added.push (d.datatypeId);
+                            added.push (category.categoryId * 100 + d.datatypeId);
                         }
                     });
                 }
