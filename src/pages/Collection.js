@@ -199,7 +199,7 @@ const Collection = (props) => {
     function getCanonicalForm (namespace, value, index) {
         if (!value || value.length === 0) return;
         // get the canonical form
-        return postJson ("api/util/getcanonicalform?namespace=" + namespace + "&value=" + value,
+        return postJson ("api/util/getcanonicalform?namespace=" + namespace + "&value=" + encodeURIComponent(value),
             null, getAuthorizationHeader()).then ((data) => {
                 if (data.data && data.data.data) {
                     if (data.data.data.length > 1) {
@@ -255,7 +255,7 @@ const Collection = (props) => {
     };
 
     const getTypeAhead =  (searchTerm, index) => {
-        getJson ("api/util/gettypeahead?namespace=" + namespace[index] + "&limit=10&value=" + searchTerm, 
+        getJson ("api/util/gettypeahead?namespace=" + namespace[index] + "&limit=10&value=" + encodeURIComponent(searchTerm), 
                 getAuthorizationHeader()).then (({ data }) => {
                     const nextOptions = options.map ((o, i) => {
                         if (i === index)
