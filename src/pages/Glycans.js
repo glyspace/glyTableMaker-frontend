@@ -50,6 +50,8 @@ const Glycans = (props) => {
   const [glycanStatusList, setGlycanStatusList] = useState([]);
   const [glycanTags, setGlycanTags] = useState([]);
 
+  const [selectedGlycans, setSelectedGlycans] = useState([]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps 
   useEffect(props.authCheckAgent, []);
 
@@ -335,7 +337,7 @@ const getDownloadReport = (reportId) => {
         </Form>
         </>
       );
-  };
+  }; 
 
   return (
     <>
@@ -474,6 +476,10 @@ const getDownloadReport = (reportId) => {
                   detailPanel={true}
                   columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCAN"
                   saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+                  rowSelection={true}
+                  deleteAll={true}
+                  deleteAllws="api/data/deletemultipleglycans"
+                  setTextAlertInput={setTextAlertInput}
             />
             </Card.Body>
           </Card>

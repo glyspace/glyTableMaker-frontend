@@ -26,6 +26,7 @@ const Table = (props) => {
     const [isRefetching, setIsRefetching] = useState(false);
     const [rowCount, setRowCount] = useState(0);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
     const [enableTagDialog, setEnableTagDialog] = useState(false);
     const [selectedId, setSelectedId] = useState(-1);
     const [tags, setTags] = useState("");
@@ -179,6 +180,52 @@ const Table = (props) => {
             props.delete && props.delete(id);
             setShowDeleteModal(false);
 
+        }
+      }
+
+      const deleteSelectedRows = () => {
+        if (props.deleteAllws) {
+          setIsLoading(true);
+          setIsError(false);
+          props.authCheckAgent();
+          let toDelete = [];
+          for (const rowId in rowSelection) {
+            if (rowSelection[rowId]) { // selected
+              toDelete.push (Number(rowId));
+            }
+          }
+          postJson (props.deleteAllws, toDelete, getAuthorizationHeader()).then ( (data) => {
+              setIsLoading(false);
+              setIsError(false);
+              setIsDeleteError(false);
+              fetchData();
+              setShowDeleteAllModal(false);
+          }).catch (function(error) {
+              if (error && error.response && error.response.data) {
+                  if (props.setTextAlertInput) {
+                    props.setTextAlertInput ({"show" : true, "message" : error.response.data.message});
+                  }
+                  else {
+                    setIsDeleteError(true);
+                    setErrorMessage(error.response.data.message);
+                    setIsError(true);
+                  }
+                  setIsLoading(false);
+              } else {
+                  setIsLoading(false);
+                  axiosError(error, null, props.setAlertDialogInput);
+              }
+              fetchData();
+              setShowDeleteAllModal(false);
+          }
+          );
+        } else {
+          for (const rowId in rowSelection) {
+            if (rowSelection[rowId]) { // selected
+              props.delete && props.delete(rowId);
+            }
+          }
+          setShowDeleteAllModal(false);
         }
       }
 
@@ -445,6 +492,11 @@ const Table = (props) => {
               <Button style={{marginLeft: '5px'}} className="gg-btn-blue-sm" onClick={()=> props.download}>Download</Button>
               </Tooltip>
             )}
+            {props.deleteAll && (
+              <Tooltip title="Delete all selected">
+              <Button style={{marginLeft: '5px'}} className="gg-btn-blue-sm" onClick={()=> setShowDeleteAllModal (true)}>Delete selected</Button>
+              </Tooltip>
+            )}
           </Box>
         )
       }
@@ -510,6 +562,14 @@ const Table = (props) => {
         />
 
         <ConfirmationModal
+            showModal={showDeleteAllModal}
+            onCancel={() => setShowDeleteAllModal(false)}
+            onConfirm={deleteSelectedRows}
+            title="Confirm Delete"
+            body="Are you sure you want to delete all selected glycans?"
+        />  
+
+        <ConfirmationModal
           showModal={enableTagDialog}
           onCancel={() => {
             setEnableTagDialog(false);
@@ -536,6 +596,7 @@ const Table = (props) => {
 Table.propTypes = {
     authCheckAgent: PropTypes.func,  // required, token check
     setAlertDialogInput: PropTypes.func,   // required, error dialog 
+    setTextAlertInput: PropTypes.func, // optional, error to show above the page
     data: PropTypes.array,  // optional, if data is not retrieved from the web service
     columns: PropTypes.array,  // required, columns to show
     enableRowActions: PropTypes.bool,  // whether to show actions column (with delete action by default)
@@ -553,6 +614,9 @@ Table.propTypes = {
     columnFilters: PropTypes.array, //optional, initial column filters on the table
     addtagws: PropTypes.string,  //optional, addtag api
     gettagws: PropTypes.string, // optional, gettag api
+    deleteAll: PropTypes.bool, // whether to put deleteSelected button or not
+    deleteAllws: PropTypes.string, // delete multiple items API
+    rowSelectionChange: PropTypes.func, // function to handle row selection
   };
 
 export default Table;
