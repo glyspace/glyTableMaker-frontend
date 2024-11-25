@@ -363,14 +363,27 @@ const Glycoprotein = (props) => {
         setSiteSelection ({"positions": updated});
     }
 
+    const findGlycosylationType = () => {
+        let gType = "N-linked";
+        if (siteSelection.positions) {
+            siteSelection.positions.map ((pos, index) => {
+                if (pos.aminoAcid && (pos.aminoAcid === "Ser" || pos.aminoAcid === "Thr")) {
+                    gType = "O-linked";
+                }
+            })
+        }
+        return gType;
+    }
+
     const handleGlycanSelectionChange = (selected) => {
         // append new selections
         const previous = [...siteSelection.glycans];
         selected.forEach ((glycan) => {
             const found = siteSelection.glycans.find ((item) => item.glycan.glycanId === glycan.glycanId);
             if (!found) {
-                previous.push ({"glycan" : glycan, "type": "Glycan", "glycosylationType" : "N-linked",
-                    "glycosylationSubType": "High mannose",
+                const gType = findGlycosylationType();
+                previous.push ({"glycan" : glycan, "type": "Glycan", "glycosylationType" : gType,
+                    "glycosylationSubType": "",
                 });
             }
         })

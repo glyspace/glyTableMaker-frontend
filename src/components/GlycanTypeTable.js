@@ -8,7 +8,7 @@ const GlycanTypeTable = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
     const types = ["Glycan", "Motif", "Fragment"]
     const glycosylationTypes = typeList.map(type => type.name);
-    const [subtypes, setSubtypes] = useState(typeList.filter(type => type.name === "N-linked").map(type => type.subtype).flat());
+    const [subtypes, setSubtypes] = useState([""].concat (typeList.filter(type => type.name === "N-linked").map(type => type.subtype).flat()));
 
     const [editedData, setEditedData] = useState({});
     const [data, setData] = useState([]);
@@ -66,7 +66,9 @@ const GlycanTypeTable = (props) => {
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
                 // change subtypes
-                setSubtypes(typeList.filter(type => type.name === event.target.value).map(type => type.subtype).flat());
+                var types = typeList.filter(type => type.name === event.target.value).map(type => type.subtype).flat();
+                types = [""].concat(types);
+                setSubtypes(types);
                 const validationError = !event.target.value || !validateRequired(event.target.value)
                   ? 'Required'
                   : undefined;
@@ -94,13 +96,6 @@ const GlycanTypeTable = (props) => {
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
-                const validationError = !event.target.value || !validateRequired(event.target.value)
-                  ? 'Required'
-                  : undefined;
-                setValidationErrors({
-                  ...validationErrors,
-                  [cell.id]: validationError,
-                });
                 const currentRow = row.original;
                 currentRow.glycosylationSubType = event.target.value;
                 setData ({[row.id] : currentRow})
