@@ -1130,7 +1130,8 @@ const Collection = (props) => {
 
     const handleGlycanSelectionChange = (selected) => {
         // append new selections
-        const previous = [...userSelection.glycans];
+        
+        const previous = userSelection.glycans && userSelection.glycans.length ? [...userSelection.glycans] : [];
         selected.forEach ((glycan) => {
             const found = previous.find ((item) => item.glycanId === glycan.glycanId);
             if (!found) {
@@ -1142,7 +1143,7 @@ const Collection = (props) => {
 
     const handleGlycoproteinSelectionChange = (selected) => {
         // append new selections
-        const previous = [...userSelection.glycoproteins];
+        const previous = userSelection.glycoproteins && userSelection.glycoproteins.length ? [...userSelection.glycoproteins] : [];
         selected.forEach ((protein) => {
             const found = userSelection.glycoproteins.find ((item) => item.id === protein.id);
             if (!found) {
