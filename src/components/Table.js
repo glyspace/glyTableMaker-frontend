@@ -583,6 +583,7 @@ const Table = (props) => {
                 setAlertDialogInput={props.setAlertDialogInput}
                 gettagws={props.gettagws}
                 data={tags}
+                addButton={true}
               />
             </>
           }

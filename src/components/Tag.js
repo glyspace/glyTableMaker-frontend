@@ -103,7 +103,7 @@ const Tag = (props) => {
                         type="text"
                         name="tag"
                         disabled={existing}
-                        placeholder="Enter tag and click Add"
+                        placeholder={props.addButton ? "Enter new tag and click Add" : "Enter new tag"}
                         isInvalid={props.validate}
                         onChange={handleInputChange}
                     />

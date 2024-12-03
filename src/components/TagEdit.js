@@ -45,6 +45,7 @@ const TagEdit = (props) => {
                 setTag={setTag}
                 setAlertDialogInput={props.setAlertDialogInput}
                 gettagws={props.gettagws}
+                addButton={props.addButton}
         />
         <Button className="gg-btn-blue-reg" onClick={()=> addTags()}>Add</Button>
         </div>
@@ -57,6 +58,7 @@ TagEdit.propTypes = {
     gettagws: PropTypes.string,
     validate: PropTypes.bool,
     setValidate: PropTypes.func,
-    setAlertDialogInput: PropTypes.func,          
+    setAlertDialogInput: PropTypes.func,    
+    addButton: PropTypes.bool,      
 }
 export default TagEdit;
