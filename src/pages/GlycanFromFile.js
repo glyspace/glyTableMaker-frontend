@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DialogAlert from "../components/DialogAlert";
@@ -12,6 +12,7 @@ import TextAlert from "../components/TextAlert";
 import { axiosError } from "../utils/axiosError";
 import Tag from "../components/Tag";
 import FeedbackWidget from "../components/FeedbackWidget";
+import ExcelParameters from "../components/ExcelParameters";
 
 const GlycanFromFile = props => {
 
@@ -26,6 +27,7 @@ const GlycanFromFile = props => {
 
   const [showLoading, setShowLoading] = useState(false);
   const [uploadedGlycanFile, setUploadedGlycanFile] = useState();
+  const [excelParameters, setExcelParameters] = useState({"columnNo": 1, "startRow": 1, "sheetNumber" : 1});
   const [alertDialogInput, setAlertDialogInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     { show: false, id: "" }
@@ -35,7 +37,6 @@ const GlycanFromFile = props => {
     { show: false, id: "" }
     );
 
-  const [title, setTitle] = useState("Add Glycans From File");
   const [tag, setTag] = useState("");
   const [validate, setValidate] = useState(false);
   const navigate = useNavigate();
@@ -47,14 +48,6 @@ const GlycanFromFile = props => {
     fileType: defaultFileType
   };
 
-  const handleChange = e => {
-    const newValue = e.target.value;  
-    if (newValue.trim().length > 1) {
-        setValidate(false);
-    }
-    setTag(newValue);
-  };
-
   function handleSubmit(e) {
     setShowLoading(true);
     setTextAlertInput({"show": false, id: ""});
@@ -63,12 +56,14 @@ const GlycanFromFile = props => {
         identifier: uploadedGlycanFile.identifier,
         originalName: uploadedGlycanFile.originalName,
         fileFolder: uploadedGlycanFile.fileFolder,
-        fileFormat: uploadedGlycanFile.fileFormat
-      }
+        fileFormat: uploadedGlycanFile.fileFormat,
+        excelParameters: excelParameters
+    }
 
     postJson (stringConstants.api.addglycanfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag, 
         file, getAuthorizationHeader()).then ( (data) => {
-        glycanUploadSucess(data);
+        setShowLoading(false);
+        navigate("/glycans");
       }).catch (function(error) {
         if (error && error.response && error.response.data) {
             setTextAlertInput ({"show": true, "message": error.response.data["message"]});
@@ -82,18 +77,13 @@ const GlycanFromFile = props => {
     e.preventDefault();
   }
 
-  function glycanUploadSucess(response) {
-    setShowLoading(false);
-    navigate("/glycans");
-  }
-
   return (
     <>
     <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
       <Container maxWidth="xl">
         <div className="page-container">
           <PageHeading
-            title={title}
+            title="Add Glycans From File"
             subTitle="Add glycans to your list by uploading a file using one of the specified file formats."
           />
           <DialogAlert
@@ -120,6 +110,10 @@ const GlycanFromFile = props => {
                       required={true}
                     />
                   </Col>
+                  {type === "excel" && 
+                  <>
+                  <ExcelParameters setParameters={setExcelParameters}/>
+                  </>}
                   <Col xs={12} lg={9}>
                   <FormLabel label="Add Tag"/>
                     <Tag validate={validate} setValidate={setValidate}
