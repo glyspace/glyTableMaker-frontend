@@ -11,6 +11,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import PrintIcon from '@mui/icons-material/Print';
+import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from "react-router-dom";
 import { Button, Row } from "react-bootstrap";
 import TagEdit from "./TagEdit";
@@ -484,7 +485,9 @@ const Table = (props) => {
             <MRT_ToggleFullScreenButton table={table} />
             {props.saveColumnVisibilityChanges && (
               <Tooltip title="Save column visibility settings">
-              <Button className="btn btn-secondary" onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>Save</Button>
+                <IconButton onClick={()=>saveColumnVisibilityChanges(columnVisibility)}>
+                  <SaveIcon />
+                </IconButton>
               </Tooltip>
             )}
             {props.download && (

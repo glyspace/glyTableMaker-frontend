@@ -496,6 +496,12 @@ const Collection = (props) => {
     const listGlycans = () => {
         return (
           <>
+            <Row>
+                <Col style={{float: "right"}}>
+                    <Button variant="primary" className="gg-btn-blue mt-2 mb-4 gg-ml-20 float-right"
+                            onClick={handleGlycanSelect}>Add Selected Glycans</Button>
+                </Col>
+            </Row>
             <Table
                 authCheckAgent={props.authCheckAgent}
                 ws="api/data/getglycans"
@@ -517,6 +523,13 @@ const Collection = (props) => {
     const listGlycoproteins = () => {
         return (
           <>
+            <Row>
+                <Col style={{float: "right"}}>
+                <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20 mb-4 float-right"
+                            onClick={handleGlycoproteinSelect}>Add Selected Glycoproteins</Button>
+                </Col>
+            </Row>
+          
             <Table
                 authCheckAgent={props.authCheckAgent}
                 ws="api/data/getglycoproteins"

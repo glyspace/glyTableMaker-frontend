@@ -181,9 +181,14 @@ hr {
 .gg-mb-40 {
   margin-bottom: 40px !important
 }
+
 /* =========================================
         Content Align
 ============================================ */
+.float-right {
+  float: right;
+}
+
 .gg-align-right {
   justify-content: flex-end !important;
 }
