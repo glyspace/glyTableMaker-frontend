@@ -495,18 +495,21 @@ const validateEmail = (email) =>
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     );
 
-const validateUrl = (url) => isValidURL(url);
+const validateUrl = (url) => {
+  let valid = isValidURL(url);
+  return valid;
+}
 
 function validateRow(row) {
   return {
     name: !validateRequired(row.name)
       ? 'Name is Required'
-      : '',
+      : undefined,
     role: !validateRequired(row.role) 
       ? 'Role is required'
-      : '', 
-    email: row.email && row.email.length > 0 && !validateEmail(row.email) ? 'Incorrect Email Format' : '',
-    organization: !validateLength (row.organization) ? "Length cannot be longer than 255 characters." : '',
+      : undefined, 
+    email: row.email && row.email.length > 0 && !validateEmail(row.email) ? 'Incorrect Email Format' : undefined,
+    organization: !validateLength (row.organization) ? "Length cannot be longer than 255 characters." : undefined,
   };
 }
 
@@ -514,11 +517,11 @@ function validateSoftwareRow(row) {
   return {
     name: !validateRequired(row.name)
       ? 'Name is Required'
-      : '',
+      : undefined,
     role: !validateRequired(row.role) 
       ? 'Role is required'
-      : '', 
-    url: !validateLength (row.url) ? "Length cannot be longer than 255 characters." : '',
+      : undefined, 
+    url: !validateUrl (row.url) ? "Invalid URL" : undefined,
   };
 }
 

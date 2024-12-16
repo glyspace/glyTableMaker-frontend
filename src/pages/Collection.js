@@ -162,7 +162,7 @@ const Collection = (props) => {
                setUserProfile(user);
                // set default contributor string
                // fill in the defaults
-               let c = user.role + ":" + user.name + " (" + user.email + (user.organization && user.organization.length !== 0? ", " + userProfile.organization : "") + ")";
+               let c = user.role + ":" + user.name + " (" + user.email + (user.organization && user.organization.length !== 0? ", " + user.organization : "") + ")";
                c += "|" + tableMakerSoftware.role + ":" + tableMakerSoftware.name + " (" + tableMakerSoftware.url + ")";
                setContributor(c);
             }
