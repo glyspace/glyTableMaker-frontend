@@ -93,14 +93,16 @@ const Table = (props) => {
               setColumnVisibility(visibilityList);
             } else {
               // default setting
-              setColumnVisibility({ "information": false, "collectionNo": false});
+              if (!props.columnVisibility)
+                setColumnVisibility({ "information": false, "collectionNo": false});
             }
           }).catch(function(error) {
             axiosError(error, null, props.setAlertDialogInput);
           });
         } else {
           // default setting
-          setColumnVisibility({ "information": false, "collectionNo": false});
+          if (!props.columnVisibility)
+            setColumnVisibility({ "information": false, "collectionNo": false});
         }
       }, []);
     

@@ -27,7 +27,7 @@ const GlycanFromFile = props => {
 
   const [showLoading, setShowLoading] = useState(false);
   const [uploadedGlycanFile, setUploadedGlycanFile] = useState();
-  const [excelParameters, setExcelParameters] = useState({"columnNo": 1, "startRow": 1, "sheetNumber" : 1});
+  const [excelParameters, setExcelParameters] = useState({"columnNo": 1, "startRow": 1, "sheetNumber" : 1, "sheetName": null});
   const [alertDialogInput, setAlertDialogInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     { show: false, id: "" }

@@ -436,21 +436,21 @@ const Collection = (props) => {
     const metadatacolumns = useMemo(
     () => [
         {
-        accessorKey: 'type.name', 
-        header: 'Name',
-        size: 50,
-        id: 'name',
+            accessorKey: 'type.name', 
+            header: 'Name',
+            size: 50,
+            id: 'name',
         },
         {
-        accessorKey: 'type.description',
-        header: 'Description',
-        size: 250,
-        id: 'typeDescr',
+            accessorKey: 'type.description',
+            header: 'Description',
+            size: 250,
+            id: 'typeDescr',
         },
         {
-        accessorKey: 'value',
-        header: 'Value',
-        size: 150,
+            accessorKey: 'value',
+            header: 'Value',
+            size: 150,
         },
         {
             accessorKey: 'valueId',
@@ -1669,7 +1669,7 @@ const Collection = (props) => {
                                 setEnableAddMetadata(false);
                             }}>Cancel</Button>
                         <Button className="gg-btn-blue-reg"
-                            onClick={()=>handleAddMetadata()}>Submit</Button>
+                            onClick={()=>handleAddMetadata()}>Add</Button>
                     </DialogActions>
                      
                 </Dialog>
@@ -1879,6 +1879,7 @@ const Collection = (props) => {
                     delete={deleteMetadataFromTable}
                     setAlertDialogInput={setAlertDialogInput}
                     columnsettingsws="api/setting/getcolumnsettings?tablename=METADATA"
+                    columnVisibility={{"description" : false}}
                     saveColumnVisibilityChanges={saveMetadataColumnVisibilityChanges}
                 />
             </Card.Body>
