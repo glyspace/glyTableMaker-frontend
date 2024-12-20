@@ -35,7 +35,7 @@ const Glycoproteins = (props) => {
         () => [
           {
             accessorKey: 'uniprotId', 
-            header: 'Uniprot ID',
+            header: 'UniProtKB Accession',
             size: 50,
           },
           {

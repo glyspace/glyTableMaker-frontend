@@ -697,11 +697,11 @@ const Glycoprotein = (props) => {
                         className="gg-align-center mb-3"
                         >
                         <Col xs={12} lg={9}>
-                            <FormLabel label="UniProt ID" className="required-asterik"/>
+                            <FormLabel label="UniProtKB Accession" className="required-asterik"/>
                             <Form.Control
                             type="text"
                             name="uniprotId"
-                            placeholder="Enter UniProt ID for the protein"
+                            placeholder="Enter UniProtKB Accession for the protein"
                             value={userSelection.uniprotId}
                             onChange={handleChange}
                             minLength={6}
@@ -709,14 +709,14 @@ const Glycoprotein = (props) => {
                             required={true}
                             isInvalid={validate}
                             />
-                            <Feedback message="Please enter a valid UniProt ID" />
+                            <Feedback message="Please enter a valid UniProtKB Accession" />
                             {userSelection.uniprotId !== "" && userSelection.uniprotId.length > 5 && (
                             <Button
                                 variant="contained"
                                 onClick={() => getProteinFromUniProt(userSelection.uniprotId)}
                                 className="gg-btn-blue-reg btn-to-lower mt-3"
                             >
-                                Retrieve Protein Information from UniProt
+                                Retrieve Protein Information from UniProtKB
                             </Button>
                             )}
                             </Col>

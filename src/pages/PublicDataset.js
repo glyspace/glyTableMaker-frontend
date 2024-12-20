@@ -158,7 +158,7 @@ const PublicDataset = (props) => {
       () => [
         {
           accessorFn: (row) => getCellValue (row, 'UniProtID'),
-          header: 'UniProt ID',
+          header: 'UniProtKB Accession',
           id: '1',
           size: 50,
         },

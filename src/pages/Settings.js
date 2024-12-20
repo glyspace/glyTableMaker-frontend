@@ -140,7 +140,7 @@ const Settings = (props) => {
         },
         "GLYCOPROTEIN" : {
             "uniprotId": {
-                "label": "Uniprot ID",
+                "label": "UniProtKB Accession",
                 "visible": true,
             },
             "name": {
@@ -158,7 +158,7 @@ const Settings = (props) => {
         },
         "GLYCOPROTEININCOLLECTION" : {
             "uniprotId": {
-                "label": "Uniprot ID",
+                "label": "UniProtKB Accession",
                 "visible": true,
             },
             "name": {
@@ -357,7 +357,7 @@ const Settings = (props) => {
         },
         "DATASETGLYCOPROTEINMETADATA" : {
             "1": {
-                "label" : 'UniProt ID',
+                "label" : 'UniProtKB Accession',
                 "visible" : true,
             },
             "2" : {

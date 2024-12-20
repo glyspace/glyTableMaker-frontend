@@ -399,7 +399,7 @@ const Collection = (props) => {
         () => [
           {
             accessorKey: 'uniprotId', 
-            header: 'Uniprot ID',
+            header: 'UniProtKB Accession',
             size: 50,
           },
           {
@@ -539,7 +539,7 @@ const Collection = (props) => {
                 initialSortColumn="dateCreated"
                 rowSelection={true}
                 rowSelectionChange={handleGlycoproteinSelectionChange}
-                rowId="uniprotId"
+                rowId="id"
                 columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEININCOLLECTION"
                 saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />
