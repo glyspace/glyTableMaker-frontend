@@ -742,7 +742,7 @@ const Collection = (props) => {
                         const dropdown = isDropdown(datatypeId);
                         const typeahead = isTypeahead(datatypeId);
                         const mandatory = isMandatory(datatypeId);
-                        const secondCopy = isSecondCopy (dId, index);
+                        const secondCopy = isSecondCopy (datatypeId, index);
                         const dType = getDatatype(datatypeId);
                         return (
                         <Row>
