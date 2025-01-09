@@ -553,7 +553,10 @@ const Glycoprotein = (props) => {
               } 
 
               <Row>
-                <FormLabel label="Glycans" className="required-asterik"/>
+                {!showPosition &&
+                <FormLabel label="Glycans" className="required-asterik"/> }
+                {showPosition && 
+                <FormLabel label="Glycans"/>}
                 <div style={{"textAlign": "right", "marginTop" : "10px", "marginBottom" : "10px"}}>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     onClick={()=> setShowGlycanSelection(true)}>
