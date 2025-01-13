@@ -11,6 +11,28 @@
           }
         ]
       },
+      "composition-string": {
+        "examples": [
+          {
+            "orderID": 105,
+            "example": {
+              "name": "Composition Example",
+              "id": "H2N2F1"
+            }
+          }
+        ]
+      },
+      "composition-byonic": {
+        "examples": [
+          {
+            "orderID": 104,
+            "example": {
+              "name": "Byonic Example",
+              "id": "HexNac(2)dHex(1)"
+            }
+          }
+        ]
+      },
       "GLYCOCT": {
         "examples": [
           {

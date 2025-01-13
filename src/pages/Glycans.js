@@ -421,6 +421,12 @@ const getDownloadReport = (reportId) => {
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=composition`}>
                             Composition
                           </NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=composition-string`}>
+                            Composition from String
+                          </NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=composition-byonic`}>
+                            Composition from Byonic String
+                          </NavDropdown.Item>
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=draw`}>
                             Draw Glycan
                           </NavDropdown.Item>

@@ -20,6 +20,10 @@ const Glycan = (props) => {
 
     const [searchParams] = useSearchParams();
     let type = searchParams ? searchParams.get("type") : "sequence";
+    
+    const compositionLabel = type=== "composition-string" ? "Composition (as a string)" 
+                            : type === "composition-byonic" ?
+                              "Composition (as a byonic string)" : "";
 
     useEffect(props.authCheckAgent, []);
 
@@ -45,7 +49,8 @@ const Glycan = (props) => {
         sequence: "",
         sequenceType: "GLYCOCT",
         glycoGlyphName: "",
-        composition: ""
+        composition: "",
+        compositionString: ""
     };
 
     const reducer = (state, newState) => ({ ...state, ...newState });
@@ -70,6 +75,7 @@ const Glycan = (props) => {
     const handleSubmit = e => {
         props.authCheckAgent();
         setValidate(false);
+        let t=null;
         if (type === "sequence") {
             if (userSelection.sequence === "" || userSelection.sequence.trim().length < 1) {
                 setValidate(true);
@@ -83,20 +89,27 @@ const Glycan = (props) => {
                 return;
             }
         } else if (type === "composition") {
-            if (userSelection.composition === "" || userSelection.compostion.trim().length < 1) {
+            if (userSelection.composition === "" || userSelection.composition.trim().length < 1) {
               setValidate(true);
               setError(true);
               return;
           }
-        }
+        } else if (type === "composition-string" || type === "composition-byonic") {
+            t = (type === "composition-string" ? "COMPACT" : "BYONIC");
+            if (userSelection.compositionString === "" || userSelection.compositionString.trim().length < 1) {
+              setValidate(true);
+              setError(true);
+              return;
+          }
+        } 
 
         const glycan = { 
             sequence: userSelection.sequence,
             glytoucanID: userSelection.glytoucanId,
-            composition: userSelection.composition,
+            composition: userSelection.composition ? userSelection.composition : userSelection.compositionString,
             format: userSelection.sequenceType}
         
-        addGlycan(glycan);
+        addGlycan(glycan, t);
         e.preventDefault();
     };
 
@@ -201,6 +214,36 @@ const Glycan = (props) => {
                       isInvalid={validate}
                     />
                     <Feedback message="Please enter a valid Glytoucan ID" />
+                    </Col>
+                </Form.Group>) }
+                { (type === "composition-string" || type=== "composition-byonic") && (
+                <Form.Group
+                  as={Row}
+                  controlId="composition"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={9}>
+                    <FormLabel label={compositionLabel} className="required-asterik"/>
+                    <Form.Control
+                      type="text"
+                      name="compositionString"
+                      placeholder="Enter composition of the glycan"
+                      value={userSelection.compositionString}
+                      onChange={handleChange}
+                      required={true}
+                      isInvalid={validate}
+                    />
+                    <Feedback message="Please enter a valid composition value" />
+                    <Row>
+                      <Col className="gg-align-left">
+                          <ExampleSequenceControl
+                            setInputValue={id => {
+                              setUserSelection({ compositionString: id });
+                            }}
+                            inputValue={moleculeExamples.glycan[type].examples}
+                          />
+                      </Col>
+                    </Row>
                     </Col>
                 </Form.Group>) }
                 {/* Sequence Type */}
