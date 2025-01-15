@@ -62,6 +62,7 @@ const PublishDataset = (props) => {
     const [userSelection, setUserSelection] = useReducer(reducer, dataset);
 
     const [showCollectionTable, setShowCollectionTable] = useState(false);
+    const [showCoCTable, setShowCoCTable] = useState(false);
     const [showAddCollection, setShowAddCollection] = useState (true);
     const [selectedCollections, setSelectedCollections] = useState([]);
     const [isVisible, setIsVisible] = useState(false);
@@ -195,12 +196,28 @@ const PublishDataset = (props) => {
             size: 50,
           },
           {
-            accessorFn: (row) => row.glycans && row.glycans.length, 
+            accessorFn: (row) => {
+                let numGlycans = 0;
+                if (row.glycans)  
+                    numGlycans = row.glycans.length;
+                if (row.children) {
+                    row.children.forEach ((child) => child.glycans ? numGlycans += child.glycans.length : 0) 
+                }
+                return numGlycans;
+            }, 
             header: '# Glycans',
             size: 25,
           },
           {
-            accessorFn: (row) => row.glycoproteins && row.glycoproteins.length, 
+            accessorFn: (row) => {
+                let num = 0;
+                if (row.glycoproteins)  
+                    num = row.glycoproteins.length;
+                if (row.children) {
+                    row.children.forEach ((child) => child.glycoproteins ? num += child.glycoproteins.length : 0) 
+                }
+                return num;
+            }, 
             header: '# Proteins',
             size: 25,
           },
@@ -274,6 +291,24 @@ const PublishDataset = (props) => {
                 initialSortColumn="name"
                 rowSelection={true}
                 rowSelectionChange={handleCollectionSelectionChange}
+                rowId="collectionId"
+            />
+            </>
+        );
+    };
+
+    const listCoCs = () => {
+        return (
+          <>
+            <Table
+                authCheckAgent={props.authCheckAgent}
+                ws="api/dataset/getcocs"
+                columns={columns}
+                enableRowActions={false}
+                setAlertDialogInput={setAlertDialogInput}
+                initialSortColumn="name"
+                rowSelection={true}
+                rowSelectionChange={handleCoCSelectionChange}
                 rowId="collectionId"
             />
             </>
@@ -474,6 +509,7 @@ const PublishDataset = (props) => {
         setTextAlertInput({"show": false, id: ""});
         setUserSelection({"collections": selectedCollections});
         setShowCollectionTable(false);
+        setShowCoCTable(false);
         populateCollectionData(selectedCollections, publications);
     }
 
@@ -555,6 +591,33 @@ const PublishDataset = (props) => {
                 } 
                 previous.push (collection);
             }
+        })
+        setSelectedCollections(previous);
+    }
+
+    const handleCoCSelectionChange = (selected) => {
+        setTextAlertInput({"show": false, id: ""});
+        setTextAlertInputCollection({"show": false, id: ""});
+
+        // append new selections
+        let cType = null;
+        selectedCollections.forEach ((col) =>  {
+            cType = col.type;
+        });
+
+        // append new selections
+        const previous = [...selectedCollections];
+        selected.forEach ((coc) => {
+            coc.children && coc.children.forEach ((collection) => {
+                const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
+                if (!found) {
+                    if (cType && collection.type !== cType) {
+                        setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
+                        return;
+                    } 
+                    previous.push (collection);
+                }
+            })
         })
         setSelectedCollections(previous);
     }
@@ -703,6 +766,29 @@ const PublishDataset = (props) => {
                      </Modal.Footer>
                 </Modal>
             )}
+            {showCoCTable && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={showCoCTable}
+                    onHide={() => setShowCoCTable(false)}
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Select Collection of Collections:
+                    </Modal.Title>
+                    <TextAlert alertInput={textAlertInputCollection}/>
+                    </Modal.Header>
+                    <Modal.Body>{listCoCs()}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowCoCTable(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handleCollectionSelect}>Add Selected Collections</Button>
+                     </Modal.Footer>
+                </Modal>
+            )}
             {showLicenseDialog && (
                 <Modal
                     size="xl"
@@ -790,11 +876,22 @@ const PublishDataset = (props) => {
             {showAddCollection && <>
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
-                    <div className="text-right mb-3">
-                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                         disabled={error} onClick={()=> setShowCollectionTable(true)}>
-                         Add Collection
-                        </Button>
+                        <div className="text-right mb-3">
+                            <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                            disabled={error} onClick={()=> {
+                                setShowCollectionTable(true);
+                                setTextAlertInputCollection({"show": false, id: ""});
+                                }}>
+                            Add Collection
+                            </Button>
+                        </div>
+                        <div className="text-right mb-3">
+                            <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                            disabled={error} onClick={()=> {
+                                setShowCoCTable(true);
+                                setTextAlertInputCollection({"show": false, id: ""});}}>
+                            Add Collection of Collections
+                            </Button>
                         </div>
                     </Col>
                     </Row>
