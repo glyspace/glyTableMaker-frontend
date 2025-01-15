@@ -37,6 +37,13 @@ const Glycoprotein = (props) => {
         { show: false, id: "" }
     );
 
+    const [textAlertSiteInput, setTextAlertSiteInput] = useReducer(
+        (state, newState) => ({ ...state, ...newState }),
+        { show: false, id: "" }
+    );
+
+    
+
     const initialState = {
         uniprotId: "",
         sequence: "",
@@ -208,6 +215,8 @@ const Glycoprotein = (props) => {
             return;
         }
 
+        
+
         // re-organize the sites
         const sites = [];
         userSelection.sites.forEach ((site) => {
@@ -280,7 +289,38 @@ const Glycoprotein = (props) => {
     }
 
     const handleAddSite = () => {
+        setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
         var sites = [...userSelection.sites];
+
+        if (!showPosition) { // glycan is required
+            if (siteSelection.glycans === null || siteSelection.glycans.length === 0) {
+                setTextAlertSiteInput ({"show": true, "message": "At least one glycan must be added to the site!"});
+                return;
+            }
+        }
+        if (showPosition) {
+            let error = true;
+            if (!showStartEnd && !showAlternatives) {
+                siteSelection.positions.forEach ((pos) => {
+                    if (pos.location > 0) error = false;
+                });
+                if (error) {
+                    setTextAlertSiteInput ({"show": true, "message": "At least one position must be specified!"});
+                    return;
+                }
+            } else {
+                // at least two positions must be specified
+                if (siteSelection.positions.length < 2) {
+                    setTextAlertSiteInput ({"show": true, "message": "At least two positions must be specified!"});
+                    return;
+                }
+                if (siteSelection.positions[0].location < 0 || siteSelection.positions[1].location < 0) {
+                    setTextAlertSiteInput ({"show": true, "message": "At least two positions must be specified!"});
+                    return;
+                }
+            }
+        }
+
         sites.push (siteSelection);
         setUserSelection ({"sites": sites});
         setSiteSelection ({ "type": "", "glycans": [], 
@@ -289,6 +329,7 @@ const Glycoprotein = (props) => {
     }
 
     const handleTypeChange = e => {
+        setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
         const selected = e.target.options[e.target.selectedIndex].value;
         setSiteSelection ({"type" : selected});
         setShowPosition(selected !== "UNKNOWN");
@@ -310,6 +351,7 @@ const Glycoprotein = (props) => {
     };
 
     const handlePositionChange = (e, index, minValue) => {
+        setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
         setValidate(false);
         const val = e.target.value;
         const positions = [...siteSelection.positions];
@@ -376,6 +418,7 @@ const Glycoprotein = (props) => {
     }
 
     const handleGlycanSelectionChange = (selected) => {
+        setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
         // append new selections
         const previous = [...siteSelection.glycans];
         selected.forEach ((glycan) => {
@@ -433,6 +476,7 @@ const Glycoprotein = (props) => {
     const addSiteForm = () => {
         return (
             <>
+            <TextAlert alertInput={textAlertSiteInput}/>
             <Row style={{marginBottom: "10px"}}>
                 <Col xs={2} lg={2}>
                     <FormLabel label="Type" className="required-asterik"/>
