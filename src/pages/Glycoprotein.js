@@ -46,6 +46,9 @@ const Glycoprotein = (props) => {
     const glycosylationTypes = [""].concat (typeList);
     const [subtypes, setSubtypes] = useState([""].concat (typeList.map(type => type.subtype).flat()));
 
+    const [gType, setGType] = useState(null);
+    const [gsType, setGsType] = useState (null);
+
     const initialState = {
         uniprotId: "",
         sequence: "",
@@ -365,6 +368,9 @@ const Glycoprotein = (props) => {
             var types = typeList.filter(type => type.name === e.target.value).map(type => type.subtype).flat();
             types = [""].concat(types);
             setSubtypes(types);
+            setGType (selected);
+        } else {
+            setGsType(selected);
         }
     }
 
@@ -672,6 +678,8 @@ const Glycoprotein = (props) => {
                     handleGlycanTypeChange={handleGlycanTypeChange}
                     delete={deleteFromGlycanTable}
                     enableRowActions={true}
+                    glycosylationType={gType}
+                    glycosylationSubType={gsType}
                 />
               
 

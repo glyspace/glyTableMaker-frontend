@@ -8,7 +8,7 @@ const GlycanTypeTable = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
     const types = ["Glycan", "Motif", "Fragment"]
     const glycosylationTypes = typeList.map(type => type.name);
-    const [subtypes, setSubtypes] = useState([""].concat (typeList.filter(type => type.name === "N-linked").map(type => type.subtype).flat()));
+    const [subtypes, setSubtypes] = useState([""].concat (typeList.filter(type => type.name === (props.glycosylationType ?? "N-linked")).map(type => type.subtype).flat()));
 
     const [editedData, setEditedData] = useState({});
     const [data, setData] = useState([]);
@@ -62,6 +62,7 @@ const GlycanTypeTable = (props) => {
             editSelectOptions: glycosylationTypes,
             muiEditTextFieldProps: ({ cell, row }) => ({
               select: true,
+              value: props.glycosylationType,
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
@@ -93,6 +94,7 @@ const GlycanTypeTable = (props) => {
             editSelectOptions: subtypes,
             muiEditTextFieldProps: ({ cell, row }) => ({
               select: true,
+              value: props.glycosylationSubType,
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
