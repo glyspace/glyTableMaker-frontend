@@ -12,9 +12,10 @@ import Table from "../components/Table";
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { AddCircleOutline } from "@mui/icons-material";
+import { AddCircleOutline, CoPresent } from "@mui/icons-material";
 import GlycanTypeTable from "../components/GlycanTypeTable";
 import { ScrollToTop } from "../components/ScrollToTop";
+import typeList from '../data/glycosylationTypes.json';
 
 const Glycoprotein = (props) => {
 
@@ -42,7 +43,8 @@ const Glycoprotein = (props) => {
         { show: false, id: "" }
     );
 
-    
+    const glycosylationTypes = [""].concat (typeList);
+    const [subtypes, setSubtypes] = useState([""].concat (typeList.map(type => type.subtype).flat()));
 
     const initialState = {
         uniprotId: "",
@@ -55,6 +57,8 @@ const Glycoprotein = (props) => {
 
     const siteState = {
         type: "",
+        glycosylationSubType: "",
+        glycosylationType: "",
         glycans: [],
         positions: [{"location" : -1, "aminoAcid": ""}],
     }
@@ -223,6 +227,8 @@ const Glycoprotein = (props) => {
             const positionList = site.positions;
             sites.push ({
                 "type": site.type,
+                "glycosylationType" : site.glycosylationType,
+                "glycosylationSubType" : site.glycosylationSubType,
                 "position" : { "positionList" : positionList},
                 "glycans" : site.glycans,
             });
@@ -323,7 +329,7 @@ const Glycoprotein = (props) => {
 
         sites.push (siteSelection);
         setUserSelection ({"sites": sites});
-        setSiteSelection ({ "type": "", "glycans": [], 
+        setSiteSelection ({ "type": "", "glycans": [], "glycosylationType" : "", "glycosylationSubType": "",
             "positions": [{"location" : -1, "aminoAcid": ""}]});
         setShowAddSite(false);
     }
@@ -349,6 +355,18 @@ const Glycoprotein = (props) => {
         }
         setShowAlternatives (selected === "ALTERNATIVE");
     };
+
+    const handleGlycosylationTypeChange = e => {
+        setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
+        const name = e.target.name;
+        const selected = e.target.options[e.target.selectedIndex].value;
+        setSiteSelection({[name] : selected});
+        if (name === "glycosylationType") {
+            var types = typeList.filter(type => type.name === e.target.value).map(type => type.subtype).flat();
+            types = [""].concat(types);
+            setSubtypes(types);
+        }
+    }
 
     const handlePositionChange = (e, index, minValue) => {
         setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
@@ -597,10 +615,51 @@ const Glycoprotein = (props) => {
               } 
 
               <Row>
+              <Col xs={2} lg={2}>
                 {!showPosition &&
                 <FormLabel label="Glycans" className="required-asterik"/> }
                 {showPosition && 
                 <FormLabel label="Glycans"/>}
+                </Col>
+                <Col xs={2} lg={2}>
+                <FormLabel label="Glycosylation Type"/>
+                </Col>
+                <Col>
+                <FormLabel label="Glycosylation Subtype"/>
+                </Col>
+                </Row>
+                <Row>
+                    <Col xs={2} lg={2}>
+                    </Col>
+                    <Col xs={2} lg={2}>
+                    <Form.Select
+                        name={"glycosylationType"}
+                        value={siteSelection.glycosylationType}
+                        onChange={handleGlycosylationTypeChange}>
+                         {glycosylationTypes && glycosylationTypes.map((n , index) =>
+                            <option
+                            key={index}
+                            value={n.name}>
+                            {n.name}
+                            </option>
+                        )}
+                    </Form.Select>
+                    </Col>
+                    <Col xs={2} lg={2}>
+                    <Form.Select
+                        name={"glycosylationSubType"}
+                        value={siteSelection.glycosylationSubType}
+                        onChange={handleGlycosylationTypeChange}>
+                        {subtypes && subtypes.map((n , index) =>
+                            <option
+                            key={index}
+                            value={n}>
+                            {n}
+                            </option>
+                        )}
+                    </Form.Select>
+                    </Col>
+                </Row>
                 <div style={{"textAlign": "right", "marginTop" : "10px", "marginBottom" : "10px"}}>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     onClick={()=> setShowGlycanSelection(true)}>
@@ -614,7 +673,7 @@ const Glycoprotein = (props) => {
                     delete={deleteFromGlycanTable}
                     enableRowActions={true}
                 />
-              </Row>
+              
 
               {showGlycanSelection && (
                 <Dialog
@@ -830,7 +889,8 @@ const Glycoprotein = (props) => {
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2" 
                                 onClick={()=> {
-                                    setSiteSelection ({ "type": "EXPLICIT", "glycans": [], 
+                                    setSiteSelection ({ "type": "EXPLICIT", "glycans": [],
+                                        "glycosylationType" : "", "glycosylationSubType": "",
                                         "positions": [{"location" : -1, "aminoAcid": ""}]});
                                     setShowStartEnd(false);
                                     setShowAlternatives(false);
