@@ -156,6 +156,8 @@ const Glycoproteins = (props) => {
                     setAlertDialogInput={setAlertDialogInput}
                     deletews="api/data/deleteglycoprotein/"
                     addtagws="api/data/addglycoproteintag/"
+                    showEdit={true}
+                    edit={stringConstants.routes.addglycoprotein + "?glycoproteinId="}
                     gettagws="api/data/getglycantags"
                     initialSortColumn="dateCreated"
                     rowId="id"

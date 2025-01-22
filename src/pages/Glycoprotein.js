@@ -5,19 +5,22 @@ import DialogAlert from "../components/DialogAlert";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Loading } from "../components/Loading";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import Table from "../components/Table";
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { AddCircleOutline, CoPresent } from "@mui/icons-material";
+import { AddCircleOutline, CoPresent, SignalCellularNullOutlined } from "@mui/icons-material";
 import GlycanTypeTable from "../components/GlycanTypeTable";
 import { ScrollToTop } from "../components/ScrollToTop";
 import typeList from '../data/glycosylationTypes.json';
 
 const Glycoprotein = (props) => {
+
+    const [searchParams] = useSearchParams();
+    let glycoproteinId = searchParams.get("glycoproteinId");
 
     const navigate = useNavigate();
     const [validate, setValidate] = useState(false);
@@ -59,6 +62,7 @@ const Glycoprotein = (props) => {
     };
 
     const siteState = {
+        siteId: null,
         type: "",
         glycosylationSubType: "",
         glycosylationType: "",
@@ -95,6 +99,30 @@ const Glycoprotein = (props) => {
     const [userSelection, setUserSelection] = useReducer(reducer, initialState);
     const [siteSelection, setSiteSelection] = useReducer(reducer, siteState);
     const [selectedGlycans, setSelectedGlycans] = useState([]);
+
+    useEffect(() => {
+        if (glycoproteinId) {
+            fetchData();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [glycoproteinId]);
+
+    const fetchData = async () => {
+            setShowLoading(true);
+            getJson ("api/data/getglycoprotein/" + glycoproteinId, getAuthorizationHeader())
+                .then ((json) => {
+                    setUserSelection (json.data.data);
+                    setShowLoading(false);
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setShowLoading(false);
+                    setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+                } else {
+                    setShowLoading(false);
+                    axiosError(error, null, setAlertDialogInput);
+                }
+            });
+        }
 
     const columns = useMemo(
         () => [
@@ -222,13 +250,12 @@ const Glycoprotein = (props) => {
             return;
         }
 
-        
-
         // re-organize the sites
         const sites = [];
         userSelection.sites.forEach ((site) => {
             const positionList = site.positions;
             sites.push ({
+                "siteId" : site.siteId,
                 "type": site.type,
                 "glycosylationType" : site.glycosylationType,
                 "glycosylationSubType" : site.glycosylationSubType,
@@ -239,6 +266,7 @@ const Glycoprotein = (props) => {
        
         // add the glycoprotein
         const glycoprotein = {
+            "id": glycoproteinId ?? null,
             "name": userSelection.name,
             "proteinName": userSelection.proteinName,
             "sequence" : userSelection.sequence,
@@ -248,7 +276,7 @@ const Glycoprotein = (props) => {
         }
 
         setShowLoading(true);
-        let apiURL = "api/data/addglycoprotein";
+        let apiURL = glycoproteinId ? "api/data/updateglycoprotein" : "api/data/addglycoprotein";
         postJson (apiURL, glycoprotein, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             navigate("/glycoproteins");
@@ -746,7 +774,7 @@ const Glycoprotein = (props) => {
             </div>
         )}
         </div>
-             <PageHeading title="Add Glycoprotein" subTitle="Please provide the information for the new glycoprotein." />
+             <PageHeading title={glycoproteinId ? "Edit Collection" : "Add Glycoprotein"} subTitle="Please provide the information for the new glycoprotein." />
             <Card>
                 <Card.Body>
                     <div className="mt-4 mb-4">
@@ -822,9 +850,10 @@ const Glycoprotein = (props) => {
                             maxLength={10}
                             required={true}
                             isInvalid={validate}
+                            disabled={glycoproteinId !== null}
                             />
                             <Feedback message="Please enter a valid UniProtKB Accession" />
-                            {userSelection.uniprotId !== "" && userSelection.uniprotId.length > 5 && (
+                            {!glycoproteinId && userSelection.uniprotId !== "" && userSelection.uniprotId.length > 5 && (
                             <Button
                                 variant="contained"
                                 onClick={() => getProteinFromUniProt(userSelection.uniprotId)}
