@@ -1,5 +1,5 @@
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import typeList from '../data/glycosylationTypes.json';
 import { Box, IconButton, Tooltip } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,6 +12,21 @@ const GlycanTypeTable = (props) => {
 
     const [editedData, setEditedData] = useState({});
     const [data, setData] = useState([]);
+
+    const [selectedGlycosylationType, setSelectedGlycosylationType] = useState ("");
+    const [selectedGlycosylationSubType, setSelectedGlycosylationSubType] = useState ("");
+
+    useEffect (() => {
+      if (props.glycosylationType) {
+        setSelectedGlycosylationType (props.glycosylationType);
+        var types = typeList.filter(type => type.name === props.glycosylationType).map(type => type.subtype).flat();
+        types = [""].concat(types);
+        setSubtypes(types);
+      }
+      if (props.glycosylationSubType) {
+        setSelectedGlycosylationSubType (props.glycosylationSubType);
+      }
+    }, [props.data, props.glycosylationType, props.glycosylationSubType]);
 
     const columns = useMemo(
         () => [
@@ -62,7 +77,7 @@ const GlycanTypeTable = (props) => {
             editSelectOptions: glycosylationTypes,
             muiEditTextFieldProps: ({ cell, row }) => ({
               select: true,
-              value: props.glycosylationType,
+              value: selectedGlycosylationType,
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
@@ -79,6 +94,7 @@ const GlycanTypeTable = (props) => {
                 });
                 const currentRow = row.original;
                 currentRow.glycosylationType = event.target.value;
+                setSelectedGlycosylationType(event.target.value);
                 setData ({[row.id] : currentRow})
                 props.handleGlycanTypeChange && props.handleGlycanTypeChange (data);
                 setEditedData({
@@ -94,12 +110,13 @@ const GlycanTypeTable = (props) => {
             editSelectOptions: subtypes,
             muiEditTextFieldProps: ({ cell, row }) => ({
               select: true,
-              value: props.glycosylationSubType,
+              value: selectedGlycosylationSubType,
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
                 const currentRow = row.original;
                 currentRow.glycosylationSubType = event.target.value;
+                setSelectedGlycosylationSubType (event.target.value);
                 setData ({[row.id] : currentRow})
                 props.handleGlycanTypeChange && props.handleGlycanTypeChange (data);
                 setEditedData({
@@ -110,7 +127,7 @@ const GlycanTypeTable = (props) => {
             }),
           },
         ],
-    [editedData, validationErrors],
+    [editedData, validationErrors, selectedGlycosylationSubType, selectedGlycosylationType],
     );
 
     const clientTable = useMaterialReactTable({

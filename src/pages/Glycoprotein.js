@@ -112,6 +112,19 @@ const Glycoprotein = (props) => {
             getJson ("api/data/getglycoprotein/" + glycoproteinId, getAuthorizationHeader())
                 .then ((json) => {
                     setUserSelection (json.data.data);
+                    // set the sites properly
+                    let sites = [];
+                    json.data.data.sites && json.data.data.sites.forEach ((site) => {
+                        sites.push ({
+                            "siteId" : site.siteId,
+                            "type": site.type,
+                            "glycosylationType" : site.glycosylationType,
+                            "glycosylationSubType" : site.glycosylationSubType,
+                            "positions" : site.position.positionList ?? [],
+                            "glycans" : site.glycans,
+                        });
+                    });
+                    setUserSelection ({"sites" : sites});
                     setShowLoading(false);
             }).catch (function(error) {
                 if (error && error.response && error.response.data) {
