@@ -32,6 +32,7 @@ const Collection = (props) => {
     var base = process.env.REACT_APP_BASENAME;
     const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
 
+    const [isDirty, setIsDirty] = useState(false);
     const [error, setError] = useState(false);
     const [validate, setValidate] = useState(false);
     const [validMetadata, setValidMetadata] = useState([]);
@@ -143,11 +144,76 @@ const Collection = (props) => {
     }, []);
 
     useEffect(() => {
-        if (collectionId) {
+        if (collectionId && !isDirty) {
             fetchData();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
+
+    // Block navigation inside the app when there are unsaved changes
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            if (isDirty) {
+                const message = "You have unsaved changes. Are you sure you want to leave?";
+                event.returnValue = message; // Standard for most browsers
+                return message; // For some browsers
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        // Cleanup the event listener when component unmounts
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [isDirty]);
+
+   //const blocker = useBlocker(isDirty);
+   // usePrompt("Are you sure you want to leave? You have changes that were not submitted yet!", isDirty) 
+
+    // Block navigation with unsaved changes
+   /* let blocker = useBlocker((shouldBlock) => 
+        isDirty && shouldBlock.currentLocation.pathname != shouldBlock.nextLocation.pathname, [isDirty]
+    );
+
+    useEffect (() => {
+        if (blocker.state ===  "blocked" && !isDirty)
+            blocker.reset();
+
+    }, [blocker, isDirty]);
+
+    function ConfirmNavigation(blocker) {
+        if (blocker.state === "blocked") {
+          return (
+            <>
+              <p style={{ color: "red" }}>
+                Blocked the last navigation to {blocker.location.pathname}
+              </p>
+              <button onClick={() => blocker.proceed?.()}>Let me through</button>
+              <button onClick={() => blocker.reset?.()}>Keep me here</button>
+            </>
+          );
+        }
+      
+        if (blocker.state === "proceeding") {
+          return (
+            <p style={{ color: "orange" }}>Proceeding through blocked navigation</p>
+          );
+        }
+      
+        return <p style={{ color: "green" }}>Blocker is currently unblocked</p>;
+      }*/
+
+
+   /*useBlocker ((tx) => {
+    if (isDirty) {
+        const confirmLeave = window.confirm ("Are you sure you want to leave? You have changes that were not submitted yet!");
+        if (!confirmLeave) {
+            console.log ("blocked to stay on the page");
+            return false;
+        }    
+    } 
+   });*/
 
     function getProfile() {
         getJson ("api/account/user/" + username, getAuthorizationHeader()).then (({ data }) => {
@@ -305,6 +371,7 @@ const Collection = (props) => {
             setError(false);
         }
         setUserSelection({ [name]: newValue });
+        setIsDirty(true);
     };
 
     const handleSubmit = e => {
@@ -340,6 +407,7 @@ const Collection = (props) => {
 
         let apiURL = collectionId ? "api/data/updatecollection" : "api/data/addcollection";
 
+        setIsDirty(false);
         postJson (apiURL, collection, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             navigate("/collections");
@@ -548,6 +616,7 @@ const Collection = (props) => {
     };
 
     const removeMetadataItems = index => {
+        setIsDirty(true);
         let removed = [...selectedMetadataItems];
         removed.splice(index, 1);
         let removedValue = [...selectedMetadataValue];
@@ -576,6 +645,7 @@ const Collection = (props) => {
     };
 
     const addItemToSelection = (datatypeId) => {
+        setIsDirty(true);
         const insert = getDatatypeName(datatypeId);
         const mandatory = isMandatory(datatypeId);
         const multiple = isMultiple(datatypeId);
@@ -630,6 +700,7 @@ const Collection = (props) => {
                     }
                 }
                 filteredSelection.push(item);
+                setIsDirty(true);
             }
         });
         setSelectedMetadataItems (filteredSelection);
@@ -1038,6 +1109,7 @@ const Collection = (props) => {
         setValidMetadata(nextValidMetadata);
         setSelectedMetadataValue(nextSelectedMetadataValue);
         setMetadataItemKey(nextMetadataItemKey);
+        setIsDirty(true);
     }
 
     const handleNext = () => {
@@ -1095,6 +1167,7 @@ const Collection = (props) => {
 
         setUserSelection({"glycans": selected});
         setShowGlycanTable(false);
+        setIsDirty(true);
     }
 
     const handleGlycoproteinSelect = () => {
@@ -1107,6 +1180,7 @@ const Collection = (props) => {
 
         setUserSelection({"glycoproteins": selected});
         setShowGlycoproteinTable(false);
+        setIsDirty(true);
     }
 
     const deleteFromTable = (id) => {
@@ -1118,6 +1192,7 @@ const Collection = (props) => {
         ];
         setUserSelection ({"glycans": updated});
         setSelectedGlycans(updated);
+        setIsDirty(true);
     }
 
     const deleteFromGlycoproteinTable = (id) => {
@@ -1129,6 +1204,7 @@ const Collection = (props) => {
         ];
         setUserSelection ({"glycoproteins": updated});
         setSelectedGlycoproteins(updated);
+        setIsDirty(true);
     }
 
     const deleteMetadataFromTable = (id) => {
@@ -1139,6 +1215,7 @@ const Collection = (props) => {
             ...metadata.slice(index + 1)
         ];
         setUserSelection ({"metadata": updated});
+        setIsDirty(true);
     }
 
     const handleGlycanSelectionChange = (selected) => {
@@ -1152,6 +1229,7 @@ const Collection = (props) => {
             }
         })
         setSelectedGlycans(previous);
+        setIsDirty(true);
     }
 
     const handleGlycoproteinSelectionChange = (selected) => {
@@ -1164,6 +1242,7 @@ const Collection = (props) => {
             }
         })
         setSelectedGlycoproteins(previous);
+        setIsDirty(true);
     }
 
     const fillInContributor = () => {
@@ -1179,6 +1258,7 @@ const Collection = (props) => {
                 }
             }
         }
+        setIsDirty(true);
     }
 
     async function handleAddMetadata () {
@@ -1294,6 +1374,7 @@ const Collection = (props) => {
         }
 
         setShowLoading (false);
+        setIsDirty(true);
     }
 
     const setGlycoproteomicsMandatoryMetadata = () => {
@@ -1545,6 +1626,23 @@ const Collection = (props) => {
                 </Button>
             </div>
         )}
+        {/** <usePrompt message="Are you sure you want to leave? You have changes that were not submitted yet!" when={isDirty} /> */}
+        {/**blocker ? <ConfirmNavigation blocker={blocker} /> : null**/}
+        {/**blocker.state === "blocked" ? (
+                <div>
+                <p>You have unsaved changes!</p>
+                <button onClick={() => blocker.reset()}>
+                    Oh shoot - I need them keep me here!
+                </button>
+                <button onClick={() => blocker.proceed()}>
+                    I know! They don't matter - let me out of here!
+                </button>
+                </div> 
+            ) : blocker.state === "proceeding" ? (
+                <p>Navigating away with unsaved changes...</p>
+            ) : <p>Not blocked </p> */}
+
+    
         </div>
              <PageHeading title={collectionId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
              {downloadReport &&
@@ -1552,6 +1650,7 @@ const Collection = (props) => {
             }
             <Card>
             <Card.Body>
+            
             <div className="mt-4 mb-4">
             <TextAlert alertInput={textAlertInput}/>
             <DialogAlert
@@ -1560,6 +1659,7 @@ const Collection = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+            
             <ConfirmationModal
                 showModal={openDownloadDialog}
                 onCancel={() => {

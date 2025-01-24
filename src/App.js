@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useNavigate, useLocation, Outlet, Routes, Route } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Routes, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { TopNavBar } from "./components/TopNavBar";
@@ -231,20 +231,21 @@ function App() {
 
   return (
       <Routes>
-        <Route element={<Layout />}>
-        {routes.map((element, index) => {
-          return <Route key={index} path={element.path} element={
-            <>
-              {element.sidebar() !== "" && <Row>
-                <Col sm={12} md={12} lg={12} xl={2}>{element.sidebar()}</Col>
-                <Col sm={12} md={12} lg={12} xl={10}>{element.main()}</Col>
-              </Row>}
-              {element.sidebar() === "" && (element.main())}
-          </>
-          } />
-        })}
-        </Route>
-      </Routes>
+      <Route element={<Layout />}>
+      {routes.map((element, index) => {
+        return <Route key={index} path={element.path} element={
+          <>
+            {element.sidebar() !== "" && <Row>
+              <Col sm={12} md={12} lg={12} xl={2}>{element.sidebar()}</Col>
+              <Col sm={12} md={12} lg={12} xl={10}>{element.main()}</Col>
+            </Row>}
+            {element.sidebar() === "" && (element.main())}
+        </>
+        } />
+      })}
+      </Route>
+    </Routes>
+
   );
 
   function Layout() {
