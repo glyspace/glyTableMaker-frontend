@@ -24,6 +24,8 @@ let idCounter = 1000;
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
     let collectionId = searchParams.get("collectionId");
+    let isCopy = searchParams.get("isCopy");
+    if (!isCopy) isCopy=false;
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -348,6 +350,9 @@ const Collection = (props) => {
                     setSelectedGlycoproteins (json.data.data.glycoproteins);
                     setCollectionType("GLYCOPROTEIN")
                 }
+                if (isCopy) {
+                    setUserSelection ({"name" : "", "glycans": []});
+                }
                 setShowLoading(false);
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -385,14 +390,14 @@ const Collection = (props) => {
 
         const metadata = [];
         userSelection.metadata.map ((m) => {
-            if (m.new) {
+            if (m.new || isCopy) {
                 m.metadataId = null;
             }
             metadata.push(m);
         });
 
         const collection = { 
-            collectionId: collectionId ? collectionId : null,
+            collectionId: collectionId && !isCopy ? collectionId : null,
             name: userSelection.name,
             description: userSelection.description,
             glycans: userSelection.glycans,
@@ -405,7 +410,7 @@ const Collection = (props) => {
         setError(false);
         props.authCheckAgent();
 
-        let apiURL = collectionId ? "api/data/updatecollection" : "api/data/addcollection";
+        let apiURL = collectionId && !isCopy ? "api/data/updatecollection" : "api/data/addcollection";
 
         setIsDirty(false);
         postJson (apiURL, collection, getAuthorizationHeader()).then ( (data) => {
@@ -1644,7 +1649,7 @@ const Collection = (props) => {
 
     
         </div>
-             <PageHeading title={collectionId ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
+             <PageHeading title={collectionId && !isCopy ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />
              {downloadReport &&
               displayDownloadReport()
             }

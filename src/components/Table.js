@@ -10,6 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/Info';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from "react-router-dom";
@@ -312,6 +313,13 @@ const Table = (props) => {
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
+            {props.showCopy && (
+              <Tooltip title="Clone">
+              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+                <ContentCopyIcon />
+              </IconButton>
+            </Tooltip>)
+            }
             {props.addtagws && (
               <Tooltip title="View/Add/Delete Tag">
               <IconButton color="primary" onClick={() => { openAddTagModal (row);}}>
@@ -389,6 +397,12 @@ const Table = (props) => {
             {props.showEdit && (<Tooltip title="Edit">
               <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
                 <EditIcon />
+              </IconButton>
+            </Tooltip>)}
+            {props.showCopy && (
+              <Tooltip title="Clone">
+              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+                <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
             {props.addtagws && (
@@ -525,6 +539,12 @@ const Table = (props) => {
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
+            {props.showCopy && (
+              <Tooltip title="Clone">
+              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+                <ContentCopyIcon />
+              </IconButton>
+            </Tooltip>)}
             {props.addtagws && (
               <Tooltip title="Add Tag">
               <IconButton color="primary">
@@ -611,6 +631,8 @@ Table.propTypes = {
     delete: PropTypes.func, // delete function for client side tables
     edit: PropTypes.string,   // edit page
     showEdit: PropTypes.bool,   // whether to add edit icon to actions
+    copy: PropTypes.string, // copy page
+    showCopy: PropTypes.bool, // whether to add copy icon to actions
     initialSortColumn: PropTypes.string,   // required, name of the column to sort initially
     rowSelection: PropTypes.bool,  // whether to show row selection checkboxes
     setSelectedRows: PropTypes.func,

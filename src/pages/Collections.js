@@ -118,6 +118,8 @@ const Collections = (props) => {
                   setAlertDialogInput={setAlertDialogInput}
                   showEdit={true}
                   edit={stringConstants.routes.addcollection + "?collectionId="}
+                  showCopy={true}
+                  copy={stringConstants.routes.addcollection + "?isCopy=true&collectionId="}
                   deletews="api/data/deletecollection/"
                   initialSortColumn="name"
                   rowId="collectionId"
