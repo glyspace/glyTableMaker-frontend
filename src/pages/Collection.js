@@ -69,6 +69,8 @@ const Collection = (props) => {
 
     const [showGlycanTable, setShowGlycanTable] = useState(false);
     const [showGlycoproteinTable, setShowGlycoproteinTable] = useState(false);
+    const [showTagSelection, setShowTagSelection] = useState(false);
+    const [showGlycoproteinTagSelection, setShowGlycoproteinTagSelection] = useState(false);
     const [selectedGlycans, setSelectedGlycans] = useState([]);
     const [selectedGlycoproteins, setSelectedGlycoproteins] = useState([]);
     const [enableAddMetadata, setEnableAddMetadata] = useState(false);
@@ -101,6 +103,7 @@ const Collection = (props) => {
     const [enableMultiValueSelect, setEnableMultiValueSelect] = useState(false);
     const [multiValueSelectIndex, setMultiValueSelectIndex] = useState(-1);
     const [selectedCanonical, setSelectedCanonical] = useState(null);
+    const [selectedTag, setSelectedTag] = useState(null);
 
     const tableMakerSoftware = {
         id: 1,
@@ -378,6 +381,14 @@ const Collection = (props) => {
         setUserSelection({ [name]: newValue });
         setIsDirty(true);
     };
+
+    const handleTagChange = e => {
+        let tag = e.target.options[e.target.selectedIndex].value;
+        if (tag !== "") {
+            setSelectedTag(tag);
+            setValidate(false);
+        }
+    }
 
     const handleSubmit = e => {
         props.authCheckAgent();
@@ -1154,6 +1165,65 @@ const Collection = (props) => {
         )
     }
 
+    const fetchByTag = (url, isGlycan) => {
+        let searchParams = "start=0";
+        searchParams += "&filters=" + encodeURI(JSON.stringify([{"id": "tags", "value": selectedTag}]));
+
+        setShowLoading(true);
+    
+        getJson (url + "?" + searchParams, getAuthorizationHeader()).then ( (json) => {
+          isGlycan ? setSelectedGlycans(json.data.data.objects) : setSelectedGlycoproteins (json.data.data.objects);
+          const selected=[];
+          json.data.data.objects.forEach ((item) => {
+            if (isGlycan && (!item.glytoucanID || item.glytoucanID.length === 0)) {
+                // error, not allowed to select this for the collection
+                setTextAlertInput ({"show": true, 
+                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + item.glycanId + " is not added."
+                });
+                ScrollToTop();
+            } else {
+                selected.push (item);
+            }
+          });
+
+          isGlycan ? setUserSelection({"glycans": selected}) : setUserSelection({"glycoproteins" : selected});
+          setIsDirty(true);
+          setShowLoading(false);
+          isGlycan ? setShowTagSelection (false) : setShowGlycoproteinTagSelection (false);
+        }).catch (function(error) {
+          if (error && error.response && error.response.data) {
+              setTextAlertInput ({"show": true, "message": error.response.data.message });
+              setShowLoading(false);
+              isGlycan ? setShowTagSelection (false) : setShowGlycoproteinTagSelection (false);
+              return;
+          } else {
+              isGlycan ? setShowTagSelection (false) : setShowGlycoproteinTagSelection (false);
+              setShowLoading(false);
+              axiosError(error, null, setAlertDialogInput);
+              return;
+          }
+        });
+    }
+
+    const handleGlycanbyTagSelect = () => {
+        if (!selectedTag) {
+            setValidate(true);
+            return;
+        } else {
+            setValidate(false);
+        }
+        fetchByTag ("api/data/getglycans", true);
+    }
+
+    const handleGlycoproteinbyTagSelect = () => {
+        setValidate(false);
+        if (!selectedTag) {
+            setValidate(true);
+            return;
+        } 
+        fetchByTag ("api/data/getglycoproteins", false);
+    }
+
     const handleGlycanSelect = () => {
         console.log("selected glycans" + selectedGlycans);
         setTextAlertInput({"show": false, id: ""});
@@ -1598,7 +1668,7 @@ const Collection = (props) => {
                     <Form.Select
                     as="select"
                     name="tag"
-                    onChange={handleChange}>
+                    onChange={handleTagChange}>
                         <option key="select" value="">
                             Select
                         </option>
@@ -1695,6 +1765,108 @@ const Collection = (props) => {
                             onClick={(()=> setShowGlycanTable(false))}>Close</Button>
                         <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
                             onClick={handleGlycanSelect}>Add Selected Glycans</Button>
+                     </Modal.Footer>
+                </Modal>
+            )}
+
+            {showTagSelection && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={showTagSelection}
+                    onHide={() => setShowTagSelection(false)}
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Select Tag :
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Form>
+                        <Form.Group
+                        as={Row}
+                        controlId="name"
+                        className="gg-align-center mb-3"
+                        >
+                        <Col xs={12} lg={9} style={{ textAlign: "left" }}>
+                            <FormLabel label="Tag" className="required-asterik" />
+                            <Form.Select
+                                name={"tag"}
+                                onChange={handleTagChange}
+                                isInvalid={validate}
+                                >
+                                <option value="">Select</option>  
+                                {glycanTags.map((glycanTag, index) => {
+                                return (
+                                    <option value={glycanTag.label} key={index}>
+                                        {glycanTag.label}
+                                    </option>
+                                );
+                                })}
+                                </Form.Select>
+                            <Feedback message="Tag selection is required"></Feedback>
+                            </Col>
+                        </Form.Group>
+                    </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowTagSelection(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handleGlycanbyTagSelect}>Add Glycans with Selected Tag</Button>
+                     </Modal.Footer>
+                </Modal>
+            )}
+
+            {showGlycoproteinTagSelection && (
+                <Modal
+                    size="xl"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    backdrop="static"
+                    show={showGlycoproteinTagSelection}
+                    onHide={() => setShowGlycoproteinTagSelection(false)}
+                >
+                    <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
+                        Select Tag :
+                    </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <Form>
+                        <Form.Group
+                        as={Row}
+                        controlId="name"
+                        className="gg-align-center mb-3"
+                        >
+                        <Col xs={12} lg={9} style={{ textAlign: "left" }}>
+                            <FormLabel label="Tag" className="required-asterik" />
+                            <Form.Select
+                                name={"tag"}
+                                onChange={handleTagChange}
+                                isInvalid={validate}
+                                >
+                                <option value="">Select</option>  
+                                {glycanTags.map((glycanTag, index) => {
+                                return (
+                                    <option value={glycanTag.label} key={index}>
+                                        {glycanTag.label}
+                                    </option>
+                                );
+                                })}
+                                </Form.Select>
+                            <Feedback message="Tag selection is required"></Feedback>
+                            </Col>
+                        </Form.Group>
+                    </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" className="mt-2 gg-ml-20"
+                            onClick={(()=> setShowGlycoproteinTagSelection(false))}>Close</Button>
+                        <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
+                            onClick={handleGlycoproteinbyTagSelect}>Add Glycoproteins with Selected Tag</Button>
                      </Modal.Footer>
                 </Modal>
             )}
@@ -1876,14 +2048,32 @@ const Collection = (props) => {
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
                     {!collectionType || collectionType === "GLYCAN" ?
+                    <>
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowGlycanTable(true)}>
                          Add Glycan
-                        </Button> :
+                        </Button>
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                        disabled={error} onClick={()=> {
+                            setSelectedTag(null);
+                            setShowTagSelection(true);
+                        }}>
+                        Add Glycan by Tag
+                       </Button>
+                       </> :
+                       <>
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowGlycoproteinTable(true)}>
                          Add Glycoprotein
-                        </Button>}
+                        </Button>
+                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                        disabled={error} onClick={()=> {
+                            setSelectedTag(null);
+                            setShowGlycoproteinTagSelection(true);
+                        }}>
+                        Add Glycoprotein by Tag
+                       </Button>
+                       </>}
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20"
                            disabled={error || !collectionId} onClick={()=>setOpenDownloadDialog(true)}> 
                         Download
