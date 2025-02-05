@@ -2,38 +2,38 @@
     {
         "name": "O-linked",
         "subtype": [
-            "Core 2",
             "Core 1",
-            "Core 4",
+            "Core 2",
             "Core 3",
+            "Core 4",
             "Core 5",
             "Core 6",
             "Core 7",
+            "O-GlcNAc",
             "O-fucose",
-            "O-mannose",
-            "O-GlcNAc"
+            "O-mannose"
         ]
     },
     {
         "name": "N-linked",
         "subtype": [
-            "High mannose",
             "Complex",
+            "High mannose",
             "Hybrid"
         ]
     },
     {
         "name": "Glycosphingolipid",
         "subtype": [
+            "Arthro series",
+            "Gala series",
             "Ganglio series",
-            "Neo-lacto series",
-            "Lacto series",
-            "Muco series",
             "Globo series",
             "Isoglobo series",
-            "Gala series",
-            "Arthro series",
-            "Mollu series"
+            "Lacto series",
+            "Mollu series",
+            "Muco series",
+            "Neo-lacto series"
         ]
     }
 ]

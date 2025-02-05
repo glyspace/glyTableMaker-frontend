@@ -129,6 +129,16 @@ const Glycans = (props) => {
         enableSorting: false,
       },
       {
+        accessorKey: 'byonicString',
+        header: 'Byonic String',
+        size: 30,
+      },
+      {
+        accessorKey: 'condensedString',
+        header: 'Condensed String',
+        size: 30,
+      },
+      {
         id: 'information',
         header: 'Error',
         size: 150,

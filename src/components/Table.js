@@ -95,7 +95,7 @@ const Table = (props) => {
             } else {
               // default setting
               if (!props.columnVisibility)
-                setColumnVisibility({ "information": false, "collectionNo": false});
+                setColumnVisibility({ "information": false, "collectionNo": false, "byonicString": false, "condensedString": false});
             }
           }).catch(function(error) {
             axiosError(error, null, props.setAlertDialogInput);
@@ -103,7 +103,7 @@ const Table = (props) => {
         } else {
           // default setting
           if (!props.columnVisibility)
-            setColumnVisibility({ "information": false, "collectionNo": false});
+            setColumnVisibility({ "information": false, "collectionNo": false, "byonicString": false, "condensedString": false});
         }
       }, []);
     
