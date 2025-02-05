@@ -18,7 +18,6 @@ import { AddCircleOutline } from "@mui/icons-material";
 import HelpTooltip from "../components/HelpTooltip";
 import CloseIcon from '@mui/icons-material/Close';
 import ContributorTable from "../components/ContributorTable";
-import UseBlockNavigation from "../components/UseBlockNavigation";
 
 let idCounter = 1000;
 
