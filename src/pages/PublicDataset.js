@@ -178,6 +178,16 @@ const PublicDataset = (props) => {
           Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />
         },
         {
+          accessorKey: 'byonicString',
+          header: 'Byonic String',
+          size: 30,
+        },
+        {
+          accessorKey: 'condensedString',
+          header: 'Condensed String',
+          size: 30,
+        },
+        {
           accessorFn: (row) => getCellValue (row, 'AminoAcid'),
           header: 'Amino Acid',
           id: '3',
@@ -305,6 +315,16 @@ const PublicDataset = (props) => {
           enableColumnFilter: false,
           enableSorting: false,
           Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />
+        },
+        {
+          accessorKey: 'byonicString',
+          header: 'Byonic String',
+          size: 30,
+        },
+        {
+          accessorKey: 'condensedString',
+          header: 'Condensed String',
+          size: 30,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Evidence'),

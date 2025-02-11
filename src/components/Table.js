@@ -98,6 +98,8 @@ const Table = (props) => {
                 setColumnVisibility({ "information": false, "collectionNo": false, "byonicString": false, "condensedString": false});
             }
           }).catch(function(error) {
+            if (!props.columnVisibility)
+              setColumnVisibility({ "information": false, "collectionNo": false, "byonicString": false, "condensedString": false});
             axiosError(error, null, props.setAlertDialogInput);
           });
         } else {
