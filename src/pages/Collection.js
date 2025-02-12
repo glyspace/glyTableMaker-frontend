@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Autocomplete, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
+import { Autocomplete, Box, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Popover, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row, Modal} from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
@@ -17,7 +17,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { AddCircleOutline } from "@mui/icons-material";
 import HelpTooltip from "../components/HelpTooltip";
 import CloseIcon from '@mui/icons-material/Close';
+import ArticleIcon from '@mui/icons-material/Article';
 import ContributorTable from "../components/ContributorTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 let idCounter = 1000;
 
@@ -28,6 +30,8 @@ const Collection = (props) => {
     if (!isCopy) isCopy=false;
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [publicationCache, setPublicationCache] = useState({});
 
     const [collectionType, setCollectionType] = useState((location.state && location.state.collectionType) ?? "GLYCAN");
 
@@ -74,6 +78,8 @@ const Collection = (props) => {
     const [selectedGlycans, setSelectedGlycans] = useState([]);
     const [selectedGlycoproteins, setSelectedGlycoproteins] = useState([]);
     const [enableAddMetadata, setEnableAddMetadata] = useState(false);
+    const [showPublicationDetails, setShowPublicationDetails] = useState(false);
+    const [selectedPublication, setSelectedPublication] = useState(null);
 
     const [categories, setCategories] = useState([]);
     const [options, setOptions] = useState([]);    // array (for each selected metadata) of options array
@@ -115,6 +121,8 @@ const Collection = (props) => {
     const steps = ["Select metadata", "Enter values"];
 
     const [selectedMetadataItems, setSelectedMetadataItems] = useState([]);
+
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const glycanRef = useRef(null);
     const metadataRef = useRef(null);
@@ -369,6 +377,34 @@ const Collection = (props) => {
         });
     }
 
+    const getPublication = (pubId, event) => {
+        setAnchorEl(event.currentTarget)
+        if (publicationCache[pubId]) {
+            setSelectedPublication (publicationCache[pubId]);
+            setShowPublicationDetails(true);
+        }
+        else {
+            setShowLoading(true);
+            // get the publication details
+            getJson ("api/util/getpublication?identifier=" + pubId).then (({ data }) => {
+                if (data.data) {
+                    setSelectedPublication(data.data);
+                    publicationCache[pubId] = data.data;
+                    setShowPublicationDetails(true);
+                    setShowLoading(false);
+                }
+            }).catch(function(error) {
+                if (error && error.response && error.response.data) {
+                    setTextAlertInput ({"show": true, "message": error.response.data.message });
+                    setShowLoading(false);
+                    return;
+                } else {
+                    axiosError(error, null, setAlertDialogInput);
+                }
+            });
+        }
+    }
+
     const handleChange = e => {
         const name = e.target.name;
         const newValue = e.target.value;
@@ -535,6 +571,26 @@ const Collection = (props) => {
             accessorKey: 'value',
             header: 'Value',
             size: 150,
+            Cell: ({ renderedCellValue, row }) => (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                }}
+              >
+                {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
+                <span>{renderedCellValue}</span>
+                {row.original.type.name === "Evidence" && <IconButton
+                        aria-label="show publication details"
+                        onClick={(e) =>  {
+                            getPublication(renderedCellValue, e);
+                        }}
+                        >
+                    <ArticleIcon />
+                </IconButton>}
+              </Box>
+            ),
         },
         {
             accessorKey: 'valueId',
@@ -1687,6 +1743,9 @@ const Collection = (props) => {
           );
       };
 
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
     return (
         <>
         <FeedbackWidget setAlertDialogInput={setTextAlertInput}/>
@@ -1744,6 +1803,64 @@ const Collection = (props) => {
                 title={"Download Glycans"}
                 body={downloadForm()}
             />
+
+            {selectedPublication && 
+            <Popover
+                id={id}
+                open={showPublicationDetails}
+                anchorEl={anchorEl}
+                onClose={() => {
+                    setAnchorEl(null);
+                    setShowPublicationDetails(false);
+                }}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                >
+                <Typography sx={{ p: 2 }}>
+                    <div>
+                    <h6 style={{ marginBottom: "3px" }}>
+                    <strong>{selectedPublication.title}</strong>
+                    </h6>
+                </div>
+
+                <div style={{ textAlign: "left", paddingLeft: "35px" }}>
+                    <div>{selectedPublication.authors}</div>
+                    <div>
+                    {selectedPublication.journal} <span>&nbsp;</span>({selectedPublication.year})
+                    </div>
+                    <div>
+                    <FontAwesomeIcon icon={["fas", "book-open"]} size="sm" title="Book" />
+
+                    {selectedPublication.pubmedId && 
+                    <>
+                    <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
+                    <a
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {selectedPublication.pubmedId}
+                    </a>
+                    </>
+                    }
+                    {selectedPublication.doiId && 
+                    <>
+                    <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
+                    <a
+                        href={`https://doi.org/${selectedPublication.doiId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {selectedPublication.doiId}
+                    </a>
+                    </>
+                    }
+                    </div>
+                </div>
+                </Typography>
+            </Popover>}
             
             {showGlycanTable && (
                 <Modal
