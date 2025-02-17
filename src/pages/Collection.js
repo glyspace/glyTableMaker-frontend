@@ -576,7 +576,6 @@ const Collection = (props) => {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '1rem',
                 }}
               >
                 {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
@@ -745,7 +744,7 @@ const Collection = (props) => {
             }
             index++;
         };
-        handleMetadataSelectionChange (added, false);
+        handleMetadataSelectionChange (added, addedValues);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
     }
@@ -753,6 +752,7 @@ const Collection = (props) => {
     const handleSelectedItemsChange = (event, ids) => {
         setTextAlertInputMetadata({"show": false, "message":""});
         let filteredSelection = [];
+        let filteredValues = [];
         ids.map ((item, index) => {
             if (typeof item === 'number') {
                 let itemId = item;
@@ -761,7 +761,16 @@ const Collection = (props) => {
                 else if (itemId > 100) 
                     itemId = itemId - 100;
                 const multiple = isMultiple(itemId);
-                if (!multiple && userSelection.metadata) {
+                const existing = userSelection.metadata.find ((meta) => 
+                    meta.type.datatypeId === itemId);
+                var idx = findSortedIndex (filteredSelection, item);
+                filteredSelection.splice(idx, 0, item);
+                if (existing) {
+                    filteredValues.splice (idx, 0, existing.value);
+                } else {
+                    filteredValues.splice (idx, 0, "");
+                }
+              /*  if (!multiple && userSelection.metadata) {
                     // check if it already exists
                     const existing = userSelection.metadata.find ((meta) => 
                         meta.type.datatypeId === itemId);
@@ -771,11 +780,12 @@ const Collection = (props) => {
                         return;
                     }
                 }
-                filteredSelection.push(item);
+                filteredSelection.push(item);*/
                 setIsDirty(true);
             }
         });
         setSelectedMetadataItems (filteredSelection);
+        setSelectedMetadataValue (filteredValues);
     }
 
     const getDatatype = (datatypeId) => {
@@ -1111,7 +1121,7 @@ const Collection = (props) => {
         });
     }
 
-    const handleMetadataSelectionChange = (metadataItems, isNew, categoryId) => {
+    const handleMetadataSelectionChange = (metadataItems, metadataValues, categoryId, metadataItemKey) => {
         const nextDatatype = [];
         const nextNamespace = [];
         const nextOptions = [];
@@ -1120,7 +1130,7 @@ const Collection = (props) => {
         const nextSelectedMetadataValue = [];
         const nextMetadataItemKey = [];
 
-        if (isNew) sortMetadata(metadataItems);
+        //if (isNew) sortMetadata(metadataItems);
 
         
         metadataItems.map ((iId, index) => {
@@ -1169,7 +1179,7 @@ const Collection = (props) => {
                 });
                 nextSelectedOption.push(selectedOption[index] ?? null);
                 nextValidMetadata.push (false);
-                nextSelectedMetadataValue.push(selectedMetadataValue[index]);
+                nextSelectedMetadataValue.push(metadataValues[index]);
                 nextMetadataItemKey.push(metadataItemKey[index] ?? idCounter++);
             }
         });
@@ -1186,7 +1196,7 @@ const Collection = (props) => {
 
     const handleNext = () => {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
-        handleMetadataSelectionChange (selectedMetadataItems, true);
+        handleMetadataSelectionChange (selectedMetadataItems, selectedMetadataValue);
     }
 
     function getStepLabel(stepIndex) {
@@ -1423,7 +1433,7 @@ const Collection = (props) => {
         let error = false;
         selectedMetadataValue.map ((selected, index) => {
             // check if the metadata already exists, if so, we need to check if it is allowed to be multiple
-            if (!selectedDatatype[index].multiple) {
+            /*if (!selectedDatatype[index].multiple) {
                 const existing = metadata.find ((meta) => meta.type.name === selectedDatatype[index].name);
                 if (existing) {
                     setTextAlertInputMetadata({"show": true, "message": "Multiple copies are not allowed for " + selectedDatatype[index].name});
@@ -1431,11 +1441,12 @@ const Collection = (props) => {
                     //setEnableAddMetadata(false);
                     //return;
                 }
-            }
+            }*/
+            const existing = metadata.find ((meta) => meta.type.name === selectedDatatype[index].name);
             if (selectedOption[index]) {
                 const m = {
                     metadataId: metadataItemKey[index],
-                    new: true,
+                    new: existing ? false : true,
                     type: selectedDatatype[index],
                     value: selected,
                 }
@@ -1443,7 +1454,7 @@ const Collection = (props) => {
             } else {
                 const m = {
                     metadataId: metadataItemKey[index],
-                    new: true,
+                    new: existing ? false : true,
                     type: selectedDatatype[index],
                     value: selectedMetadataValue[index],
                 }
@@ -1490,8 +1501,7 @@ const Collection = (props) => {
             postJson ("api/util/getallcanonicalforms", allMetadataToSubmit,
                 getAuthorizationHeader()).then ((data) => {
             if (data.data && data.data.data) {
-                allMetadataToSubmit = data.data.data;
-                const updated = [...metadata, ...allMetadataToSubmit];
+                const updated = data.data.data;
                 setUserSelection ({"metadata": updated});
                 setEnableAddMetadata(false);
             }
@@ -1511,7 +1521,9 @@ const Collection = (props) => {
     const setGlycoproteomicsMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
         let added = [];
-        let notAdded = [];
+        let addedValues = [];
+        let addedKeys = [];
+        //let notAdded = [];
         categories.map ((category, index) => {
             if (category.categoryId === 2) {   // GlyGen Glycoproteomics Data
                 if (category.dataTypes) {
@@ -1520,55 +1532,170 @@ const Collection = (props) => {
                             // check if it already exists
                             const existing = userSelection.metadata.find ((meta) => 
                                 meta.type.name === d.name);
-                            if (!existing)
-                                added.push(category.categoryId * 100 + d.datatypeId);
+                            if (!existing) {
+                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                addedValues.splice (idx, 0, "");
+                                addedKeys.splice (idx, 0, null);
+                            }
                             else {
-                                notAdded.push (d.name);
+                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                addedValues.splice (idx, 0, existing.value);
+                                addedKeys.splice (idx, 0, existing.id);
                             }
                         } else {
-                            added.push (category.categoryId * 100 + d.datatypeId);
+                            if (userSelection.metadata) {
+                                // check if it already exists
+                                const existing = userSelection.metadata.find ((meta) => 
+                                    meta.type.name === d.name);
+                                if (existing) {
+                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                    addedValues.splice (idx, 0, existing.value);
+                                    addedKeys.splice (idx, 0, existing.id);
+                                } else {
+                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                    addedValues.splice (idx, 0, "");
+                                    addedKeys.splice (idx, 0, null);
+                                }
+                            } else {
+                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                addedValues.splice (idx, 0, "");
+                                addedKeys.splice (idx, 0, null);
+                            }
                         }
                     });
                 }
             }
         });
 
-        if (notAdded.length > 0)
-            setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
+        //if (notAdded.length > 0)
+        //    setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
         
-        handleMetadataSelectionChange(added, true, 2);
+        handleMetadataSelectionChange(added, addedValues, 2, addedKeys);
         setSelectedMetadataItems(added);
+        setSelectedMetadataValue(addedValues);
     }
 
     const setGlygenMandatoryMetadata = () => {
         setTextAlertInputMetadata({"show": false, message: ""});
         let added = [];
-        let notAdded = [];
+        let addedValues = [];
+        let addedKeys = [];
+        //let notAdded = [];
         categories.map ((category, index) => {
             if (category.categoryId === 1) {   // GlyGen Glycomics Data
                 if (category.dataTypes) {
-                    category.dataTypes.map ((d, index) => {
+                    category.dataTypes.map ((d, i) => {
                         if (!d.multiple && userSelection.metadata) {
                             // check if it already exists
                             const existing = userSelection.metadata.find ((meta) => 
                                 meta.type.name === d.name);
-                            if (!existing)
-                                added.push(category.categoryId * 100 + d.datatypeId);
+                            if (!existing) {
+                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                addedValues.splice (idx, 0, "");
+                                addedKeys.splice (idx, 0, null);
+                            }
                             else {
-                                notAdded.push (d.name);
+                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                addedValues.splice (idx, 0, existing.value);
+                                addedKeys.splice (idx, 0, existing.metadataId);
+                                //notAdded.push (d.name);
                             }
                         } else {
-                            added.push (category.categoryId * 100 + d.datatypeId);
+                            if (userSelection.metadata) {
+                                // check if it already exists
+                                const existing = userSelection.metadata.find ((meta) => 
+                                    meta.type.name === d.name);
+                                if (existing) {
+                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                    addedValues.splice (idx, 0, existing.value);
+                                    addedKeys.splice (idx, 0, existing.metadataId);
+                                } else {
+                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                    addedValues.splice (idx, 0, "");
+                                    addedKeys.splice (idx, 0, null);
+                                }
+                            } else {
+                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                addedValues.splice (idx, 0, "");
+                                addedKeys.splice (idx, 0, null);
+                            }   
                         }
                     });
                 }
             }
         });
 
-        if (notAdded.length > 0)
-            setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
-        handleMetadataSelectionChange(added, true, 1);
+        //if (notAdded.length > 0)
+        //    setTextAlertInputMetadata({"show" : true, message: "The following metadata are not added to the list since they already exist: " + notAdded + ". If you'd like to override, please delete them first!"})
+        handleMetadataSelectionChange(added, addedValues, 1, addedKeys);
         setSelectedMetadataItems(added);
+        setSelectedMetadataValue(addedValues);
+    }
+
+    const compare = (first, second, firstMandatory, secondMandatory) => {
+        if (firstMandatory < secondMandatory) {
+            return 1;
+        } 
+        if (secondMandatory < firstMandatory) {
+            return -1;
+        }
+
+        if (first && first.toLowerCase() > second.toLowerCase())
+            return 1;
+        else
+            return -1;
+    }
+
+    const findSortedIndex  = (list, datatype) => {
+        var first;
+        var firstMandatory;
+        
+        if (typeof datatype === 'number') {  // datatype selected
+            let itemId = datatype;
+            if (itemId > 200) {
+                itemId -= 200;
+            } else if (itemId > 100) {
+                itemId -= 100;
+            }
+            first = getDatatypeName(itemId);
+            firstMandatory = isMandatory(itemId);
+        }
+
+        let low = 0;
+        let high = list.length;
+        while (low < high) {
+            const mid = Math.floor ((low+high) /2);
+            var d = list[mid];
+            var second;
+            var secondMandatory;
+            if (typeof d === 'number') {  // datatype selected
+                let itemId = d;
+                if (itemId > 200) {
+                    itemId -= 200;
+                } else if (itemId > 100) {
+                    itemId -= 100;
+                }
+                second = getDatatypeName(itemId);
+                secondMandatory = isMandatory(itemId);
+                const compResult = compare (first, second, firstMandatory, secondMandatory);
+                if (compResult < 0) {
+                    high = mid;
+                } else {
+                    low = mid +1;
+                }
+            }
+        }
+        return low;
     }
 
     const handleChangeDownloadForm = e => {
