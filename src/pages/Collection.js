@@ -111,6 +111,9 @@ const Collection = (props) => {
     const [selectedCanonical, setSelectedCanonical] = useState(null);
     const [selectedTag, setSelectedTag] = useState(null);
 
+    const [availableMetadata, setAvailableMetadata] = useState([]);
+    const [availableMetadataSelected, setAvailableMetadataSelected] = useState(null);
+
     const tableMakerSoftware = {
         id: 1,
         name: "GlyTableMaker",
@@ -713,6 +716,7 @@ const Collection = (props) => {
         setValidMetadata(nextValidMetadata);
         setOptions(nextOptions);
         setMetadataItemKey(nextMetadataItemKey);
+        updateAvailableMetadata (removed);
     };
 
     const addItemToSelection = (datatypeId) => {
@@ -721,14 +725,16 @@ const Collection = (props) => {
         const mandatory = isMandatory(datatypeId);
         const multiple = isMultiple(datatypeId);
         // insert into the sorted array at the correct index
-        let copy = [...selectedMetadataItems];
-        let copyValues = [...selectedMetadataValue];
-        let added = [];
-        let addedValues = [];
+       // let copy = [...selectedMetadataItems];
+       // let copyValues = [...selectedMetadataValue];
+        let added = [...selectedMetadataItems];
+        let addedValues = [...selectedMetadataValue];
         let index = 0;
-        for (let d of copy) {
+        let categoryId = 1;
+        for (let d of selectedMetadataItems) {
             let itemId = d;
             if (itemId > 200) {
+                categoryId = 2;
                 itemId = itemId - 200;
             } else if (itemId > 100) {
                 itemId = itemId - 100;
@@ -737,14 +743,16 @@ const Collection = (props) => {
             const mandatory2 = isMandatory (itemId);
             if (mandatory === mandatory2) {
                 if (insert && insert.toLowerCase() <= name.toLowerCase()) {
-                    added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
-                    addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)];
+                    added.splice (index+1, 0, datatypeId);
+                    addedValues.splice (index+1, 0, "");
+                   //added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
+                   // addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)];
                     break;
                 }
             }
             index++;
         };
-        handleMetadataSelectionChange (added, addedValues);
+        handleMetadataSelectionChange (added, addedValues, categoryId, metadataItemKey);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
     }
@@ -839,7 +847,7 @@ const Collection = (props) => {
 
     const isSecondCopy = (datatypeId, index) => {
         if (index > 0) {
-            for (let i = 0; i < index; i++) {
+            for (let i = 0; i <= index; i++) {
                 if (selectedMetadataItems[i] === datatypeId) {
                     return true; // this is the second or later copy
                 }
@@ -982,6 +990,39 @@ const Collection = (props) => {
                         </Row>
                         );
                     })}
+
+                    {availableMetadata && 
+                    <>
+                    <br/>
+                    <hr width="100%" color="blue" align="center"/>
+                    <Row>
+                    <Col xs={4} lg={4}>
+                        <FormLabel label="Add Missing/Additional Metadata"/>
+                    </Col>
+                    <Col xs={5} lg={5}>
+                        <Form.Select
+                            as="select"
+                            name="metadata"
+                            onChange={(e) => {setAvailableMetadataSelected(Number(e.target.value))}}
+                        >
+                        {availableMetadata && availableMetadata.map((n , index) => 
+                          <option
+                          key={index}
+                          value={n.datatypeId}>
+                          {n.name}
+                          </option>
+                        )}
+                        </Form.Select>
+                    </Col>
+                    <Col xs={3} lg={3}>
+                        <Tooltip title="Add another copy of this metadata">
+                            <IconButton color="primary" onClick={(event) => {addItemToSelection(availableMetadataSelected)}}>
+                                <AddCircleOutline />
+                            </IconButton>
+                        </Tooltip>
+                    </Col>
+                    </Row>
+                    </>}
                     </>
                 );
         }
@@ -1196,7 +1237,7 @@ const Collection = (props) => {
 
     const handleNext = () => {
         setActiveStep(prevActiveStep => prevActiveStep + 1);
-        handleMetadataSelectionChange (selectedMetadataItems, selectedMetadataValue);
+        handleMetadataSelectionChange (selectedMetadataItems, selectedMetadataValue, null, metadataItemKey);
     }
 
     function getStepLabel(stepIndex) {
@@ -1523,6 +1564,7 @@ const Collection = (props) => {
         let added = [];
         let addedValues = [];
         let addedKeys = [];
+        let multiples = [];
         //let notAdded = [];
         categories.map ((category, index) => {
             if (category.categoryId === 2) {   // GlyGen Glycoproteomics Data
@@ -1545,6 +1587,7 @@ const Collection = (props) => {
                                 addedKeys.splice (idx, 0, existing.id);
                             }
                         } else {
+                            multiples.push (d);
                             if (userSelection.metadata) {
                                 // check if it already exists
                                 const existing = userSelection.metadata.find ((meta) => 
@@ -1578,6 +1621,7 @@ const Collection = (props) => {
         handleMetadataSelectionChange(added, addedValues, 2, addedKeys);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
+        setAvailableMetadata(multiples);
     }
 
     const setGlygenMandatoryMetadata = () => {
@@ -1585,6 +1629,7 @@ const Collection = (props) => {
         let added = [];
         let addedValues = [];
         let addedKeys = [];
+        let multiples = [];
         //let notAdded = [];
         categories.map ((category, index) => {
             if (category.categoryId === 1) {   // GlyGen Glycomics Data
@@ -1608,6 +1653,7 @@ const Collection = (props) => {
                                 //notAdded.push (d.name);
                             }
                         } else {
+                            multiples.push(d);
                             if (userSelection.metadata) {
                                 // check if it already exists
                                 const existing = userSelection.metadata.find ((meta) => 
@@ -1640,6 +1686,34 @@ const Collection = (props) => {
         handleMetadataSelectionChange(added, addedValues, 1, addedKeys);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
+        setAvailableMetadata(multiples);
+    }
+
+    const updateAvailableMetadata = (remaining) => {
+        let categoryId = 1;
+        if (selectedMetadataItems && selectedMetadataItems[0] && selectedMetadataItems[0] > 200) {
+            categoryId = 2;
+        } 
+
+        let available = [];
+
+        categories.map ((category, index) => {
+            if (category.categoryId === categoryId) {   
+                if (category.dataTypes) {
+                    category.dataTypes.map ((d, i) => {
+                        if (d.multiple) {
+                            available.push(d);
+                        } else {
+                            const exists = remaining.find ((item) => item === category.categoryId * 100 + d.datatypeId);
+                            if (!exists) {
+                                available.push(d);
+                            }
+                        }
+                    })
+                }
+            }
+        });
+        setAvailableMetadata (available);
     }
 
     const compare = (first, second, firstMandatory, secondMandatory) => {
