@@ -523,18 +523,18 @@ const Collection = (props) => {
           {
             accessorKey: 'uniprotId', 
             header: 'UniProtKB Accession',
-            size: 50,
+            size: 100,
           },
           {
             accessorKey: 'name', 
             header: 'Name',
-            size: 50,
+            size: 100,
           },
           {
             accessorKey: 'sites.length', 
             header: '# Sites',
             id : "siteNo",
-            size: 80,
+            size: 50,
             Cell: ({ cell }) => cell.getValue() ? Number(cell.getValue().toFixed(2)).toLocaleString('en-US') : null,
           },
           {
@@ -552,6 +552,7 @@ const Collection = (props) => {
                 </ul>
             ),
           },
+          
         ],
         [],
       );
@@ -994,7 +995,7 @@ const Collection = (props) => {
                     {availableMetadata && 
                     <>
                     <br/>
-                    <hr width="100%" color="blue" align="center"/>
+                    <hr style={{width:"100%", height:"2px", color:"#2f78b7", backgroundColor: "#2f78b7",align:"center"}}/>
                     <Row>
                     <Col xs={4} lg={4}>
                         <FormLabel label="Add Missing/Additional Metadata"/>
@@ -2342,31 +2343,33 @@ const Collection = (props) => {
             <div className="text-center mb-2">
                 <Button onClick={()=> handleClick(metadataRef)}
                     className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Go to Metadata</Button>
-                {!collectionType || collectionType === "GLYCAN" ?
+                {collectionType && collectionType === "GLYCAN" &&
                 <Button className="gg-btn-outline mt-2 gg-ml-20" 
                     onClick={()=> handleClick(glycanRef)}>
                     Go to Glycans
-                </Button> :
+                </Button>}
+                {collectionType && collectionType === "GLYCOPROTEIN" ?
                 <Button className="gg-btn-outline mt-2 gg-ml-20" 
                     onClick={()=> handleClick(glycanRef)}>
                     Go to Glycoproteins
-                </Button> }
+                </Button> : <></>}
             </div>
             </Card.Body>
           </Card>
           <Card ref={glycanRef} style={{marginTop: "15px"}}>
             <Card.Body>
-            {!collectionType || collectionType === "GLYCAN" ?
+            {collectionType && collectionType === "GLYCAN" &&
             <h5 className="gg-blue" style={{textAlign: "left"}}>
-                 Glycans in the Collection</h5> : 
+                 Glycans in the Collection</h5>}
+            {collectionType && collectionType === "GLYCOPROTEIN" &&
             <h5 className="gg-blue" style={{textAlign: "left"}}>
                  Glycoproteins in the Collection</h5>
             }
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
-                    {!collectionType || collectionType === "GLYCAN" ?
-                    <>
+                    {collectionType && collectionType === "GLYCAN" &&
+                        <>
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowGlycanTable(true)}>
                          Add Glycan
@@ -2378,7 +2381,8 @@ const Collection = (props) => {
                         }}>
                         Add Glycan by Tag
                        </Button>
-                       </> :
+                       </> }
+                       {collectionType && collectionType === "GLYCOPROTEIN" &&
                        <>
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> setShowGlycoproteinTable(true)}>
@@ -2399,7 +2403,7 @@ const Collection = (props) => {
                         </div>
                     </Col>
                     </Row>
-                {!collectionType || collectionType === "GLYCAN" ?
+                {collectionType && collectionType === "GLYCAN" &&
                 <Table 
                     authCheckAgent={props.authCheckAgent}
                     rowId = "glycanId"
@@ -2410,7 +2414,8 @@ const Collection = (props) => {
                     setAlertDialogInput={setAlertDialogInput}
                     columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCANINCOLLECTION"
                     saveColumnVisibilityChanges={saveColumnVisibilityChanges}
-                /> :
+                />}
+                {collectionType && collectionType === "GLYCOPROTEIN" &&
                 <Table 
                     authCheckAgent={props.authCheckAgent}
                     rowId = "id"
@@ -2450,35 +2455,21 @@ const Collection = (props) => {
                         }>
                          Add Metadata
                         </Button>
-                        {!collectionType || collectionType === "GLYCAN" ?
+                        {collectionType &&
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
                             setTextAlertInputMetadata({"show": false, "message":""});
                             setOptions([]);
                             setMetadataItemKey([]);
                             setSelectedMetadataValue([]);
-                            setGlygenMandatoryMetadata();
+                            collectionType === "GLYCAN" ? setGlygenMandatoryMetadata() : setGlycoproteomicsMandatoryMetadata();
                             setGlygen(true);
                             setActiveStep(1);
                             setEnableAddMetadata(true);
                          }
                         }>
                          Add GlyGen Metadata
-                        </Button>  :
-                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                        disabled={error} onClick={()=> {
-                           setTextAlertInputMetadata({"show": false, "message":""});
-                           setOptions([]);
-                           setMetadataItemKey([]);
-                           setSelectedMetadataValue([]);
-                           setGlycoproteomicsMandatoryMetadata();
-                           setGlygen(true);
-                           setActiveStep(1);
-                           setEnableAddMetadata(true);
-                        }
-                       }>
-                        Add GlyGen Metadata
-                       </Button>}
+                        </Button> }
                         </div>
                     </Col>
                     </Row>
