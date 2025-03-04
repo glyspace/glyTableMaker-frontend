@@ -860,7 +860,7 @@ const Glycoprotein = (props) => {
                             value={userSelection.uniprotId}
                             onChange={handleChange}
                             minLength={6}
-                            maxLength={10}
+                            maxLength={15}
                             required={true}
                             isInvalid={validate}
                             disabled={glycoproteinId !== null}
