@@ -28,6 +28,7 @@ const ExampleSequenceControl = (props) => {
           {obj.example && (
             <Col>
               <div>
+                {props.explore && obj.example.name}{" "}
                 <Tooltip 
                     disableTouchListener
                     interactive
@@ -42,7 +43,7 @@ const ExampleSequenceControl = (props) => {
                       setInputValue(obj.example.id);
                     }}
                   >
-                    {obj.example.name}
+                    {props.explore ? obj.example.id : obj.example.name}
                   </Button>
                 </Tooltip>
               </div>

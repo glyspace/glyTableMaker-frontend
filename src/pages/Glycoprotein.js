@@ -16,9 +16,12 @@ import { AddCircleOutline, CoPresent, SignalCellularNullOutlined } from "@mui/ic
 import GlycanTypeTable from "../components/GlycanTypeTable";
 import { ScrollToTop } from "../components/ScrollToTop";
 import typeList from '../data/glycosylationTypes.json';
+import ExampleSequenceControl from "../components/ExampleSequenceControl";
+import TooltipExample from "../data/examples";
+import HelpTooltip from '../components/HelpTooltip';
 
+const examples = TooltipExample.glycoprotein;
 const Glycoprotein = (props) => {
-
     const [searchParams] = useSearchParams();
     let glycoproteinId = searchParams.get("glycoproteinId");
 
@@ -253,6 +256,10 @@ const Glycoprotein = (props) => {
         }
         setUserSelection({ [name]: newValue });
     };
+
+    const funcSetInputValues = (val) => {
+        setUserSelection ({ ["uniprotId"]: val});
+    }
 
     const handleSubmit = e => {
         props.authCheckAgent();
@@ -853,6 +860,10 @@ const Glycoprotein = (props) => {
                         >
                         <Col xs={12} lg={9}>
                             <FormLabel label="UniProtKB Accession" className="required-asterik"/>
+                            <HelpTooltip
+                                title={examples.uniprotId.tooltip.title}
+                                text={examples.uniprotId.tooltip.text}
+                            />
                             <Form.Control
                             type="text"
                             name="uniprotId"
@@ -865,6 +876,7 @@ const Glycoprotein = (props) => {
                             isInvalid={validate}
                             disabled={glycoproteinId !== null}
                             />
+                            <ExampleSequenceControl setInputValue={funcSetInputValues} inputValue={examples.uniprotId.examples} explore={true} />
                             <Feedback message="Please enter a valid UniProtKB Accession" />
                             {!glycoproteinId && userSelection.uniprotId !== "" && userSelection.uniprotId.length > 5 && (
                             <Button

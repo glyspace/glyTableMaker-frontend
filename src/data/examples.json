@@ -1,0 +1,20 @@
+{
+    "glycoprotein" : {
+        "uniprotId": {
+            "tooltip" : {
+                "title": "Uniprot Accession Number",
+                "text": "Unique accessions assigned to the registered protein structures in Uniprot database.",
+                "urlText": "Read more...",
+                "url": "https://www.uniprot.org/"
+            },
+            "examples" : [
+                {
+                    "example" : {
+                        "name" : "Example",
+                        "id": "P05067"
+                    }
+                }
+            ]
+        }
+    }
+}
