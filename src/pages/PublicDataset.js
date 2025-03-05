@@ -102,6 +102,10 @@ const PublicDataset = (props) => {
         return (
             <>
             <div>
+                <strong>Dataset ID: </strong>
+                {dataset.datasetIdentifier}
+            </div>
+            <div>
                 <strong>Dataset Name: </strong>
                 {dataset.name}
             </div>
