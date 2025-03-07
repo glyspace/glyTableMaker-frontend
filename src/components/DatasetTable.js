@@ -58,6 +58,7 @@ const DatasetTable = props => {
         searchParams += "&filters=" + encodeURI(JSON.stringify(columnFilters ?? []));
         searchParams += "&globalFilter=" + globalFilter ?? '';
         searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
+        searchParams += props.searchId ? "&searchId=" + props.searchId : "";
 
         getJson (props.ws + "?" + searchParams).then ( (json) => {
             setData(json.data.data.objects);

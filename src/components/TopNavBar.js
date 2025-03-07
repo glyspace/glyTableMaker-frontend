@@ -1,7 +1,7 @@
 import React from "react";
 import "./TopNavBar.css";
 import { Link } from "react-router-dom";
-import { Nav, Navbar, Col, NavDropdown } from "react-bootstrap";
+import { Nav, Navbar, Col, NavDropdown, NavLink } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import logo from "../images/glygen-logoW-top.svg";
 import { BiLogOut } from "react-icons/bi";
@@ -31,6 +31,23 @@ const TopNavBar = (props) => {
               <LinkContainer className="gg-nav-link" to={stringConstants.routes.dashboard} exact>
                 <Nav.Link>PUBLISH</Nav.Link>
               </LinkContainer>
+              <NavDropdown className={"gg-dropdown-navbar gg-nav-link"} title="SEARCH" id="basic-nav-dropdown" exact="true">
+                <LinkContainer to="/glycanSearch">
+                  <NavDropdown.Item className="gg-nav-link">
+                    By Glycan
+                  </NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/glycoproteinSearch">
+                  <NavDropdown.Item className="gg-nav-link">
+                    By Glycoprotein
+                  </NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/datasetDetailSearch">
+                  <NavDropdown.Item className="gg-nav-link">
+                    By Dataset Detail
+                  </NavDropdown.Item>
+                </LinkContainer>
+              </NavDropdown>
             </Nav>
           </Col>
           <Col xs={12} sm={12} md={12} lg={6} xl={4} className="align-right-header">

@@ -48,6 +48,8 @@ import { PublicData } from "./pages/PublicData";
 import { PublicDataset } from "./pages/PublicDataset";
 import Glycoproteins from "./pages/Glycoproteins";
 import Glycoprotein from "./pages/Glycoprotein";
+import { DatasetDetailSearch } from "./pages/DatasetDetailSearch";
+import { DatasetDetailList } from "./pages/DatasetDetailList";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -102,6 +104,49 @@ function App() {
       main: () => <PublicDataset authCheckAgent={checkAuthorization}/>,
       sidebar: () => "",
     },
+    /*  Public search */
+    {
+      path: "/datasetDetailSearch",
+      exact: true,
+      main: () => <DatasetDetailSearch />,
+      sidebar: () => "",
+    },
+    {
+      path: "/datasetDetailSearch/:searchId",
+      exact: true,
+      main: () => <DatasetDetailSearch />,
+      sidebar: () => "",
+    },
+    {
+      path: "/datasetDetailList/:searchId",
+      exact: true,
+      main: () => <DatasetDetailList />,
+      sidebar: () => "",
+    },
+   /** {
+      path: "/submitterSearch",
+      exact: true,
+      main: () => <SubmitterSearch />,
+      sidebar: () => "",
+    },
+    {
+      path: "/glycanSearch",
+      exact: true,
+      main: () => <GlycanSearch />,
+      sidebar: () => "",
+    },
+    {
+      path: "/glycanSearch/:searchId",
+      exact: true,
+      main: () => <GlycanSearch />,
+      sidebar: () => "",
+    },
+    {
+      path: "/glycanList/:searchId",
+      exact: true,
+      main: () => <GlycanList />,
+      sidebar: () => "",
+    },*/
     {
       path: "/login",
       main: () => <Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/>,
@@ -313,6 +358,8 @@ function App() {
       "emailConfirmation",
       "verifyToken",
       "data",
+      "datasetDetailSearch",
+      "datasetDetailList"
     ];
     var pagename = getPageName(location);
 

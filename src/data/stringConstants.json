@@ -34,6 +34,7 @@
         "upload": "api/file/upload",
         "addglycanfromfile" : "api/data/addglycanfromfile",
         "getpublicdatasets" : "api/public/getdatasets",
-        "getpublicdataset" : "api/public/getdataset"
+        "getpublicdataset" : "api/public/getdataset",
+        "listdatasetsforsearch" : "api/search/listDatasetsForSearch"
     }
 }

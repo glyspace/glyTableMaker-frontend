@@ -16,5 +16,21 @@
                 }
             ]
         }
+    },
+    "datasetSearch" : {
+        "fundingOrganization": {
+            "tooltip" : {
+                "title": "Funding organization",
+                "text": "Name of the funding organization"
+            },
+            "examples" : [
+                {
+                    "example" : {
+                        "name" : "Example",
+                        "id": "NIH"
+                    }
+                }
+            ]
+        }
     }
 }
