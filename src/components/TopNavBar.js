@@ -32,16 +32,16 @@ const TopNavBar = (props) => {
                 <Nav.Link>PUBLISH</Nav.Link>
               </LinkContainer>
               <NavDropdown className={"gg-dropdown-navbar gg-nav-link"} title="SEARCH" id="basic-nav-dropdown" exact="true">
-                <LinkContainer to="/glycanSearch">
+                {/* <LinkContainer to="/glycanSearch">
                   <NavDropdown.Item className="gg-nav-link">
                     By Glycan
                   </NavDropdown.Item>
                 </LinkContainer>
-                <LinkContainer to="/glycoproteinSearch">
+                 <LinkContainer to="/glycoproteinSearch">
                   <NavDropdown.Item className="gg-nav-link">
                     By Glycoprotein
                   </NavDropdown.Item>
-                </LinkContainer>
+                </LinkContainer>*/}
                 <LinkContainer to="/datasetDetailSearch">
                   <NavDropdown.Item className="gg-nav-link">
                     By Dataset Detail
