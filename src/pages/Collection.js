@@ -722,37 +722,23 @@ const Collection = (props) => {
 
     const addItemToSelection = (datatypeId) => {
         setIsDirty(true);
-        const insert = getDatatypeName(datatypeId);
-        const mandatory = isMandatory(datatypeId);
-        const multiple = isMultiple(datatypeId);
-        // insert into the sorted array at the correct index
-       // let copy = [...selectedMetadataItems];
-       // let copyValues = [...selectedMetadataValue];
+
         let added = [...selectedMetadataItems];
         let addedValues = [...selectedMetadataValue];
-        let index = 0;
+
+        var idx = findSortedIndex (added, datatypeId);
+        added.splice(idx, 0, datatypeId);
+        addedValues.splice (idx, 0, "");
+        
         let categoryId = 1;
-        for (let d of selectedMetadataItems) {
-            let itemId = d;
-            if (itemId > 200) {
-                categoryId = 2;
-                itemId = itemId - 200;
-            } else if (itemId > 100) {
-                itemId = itemId - 100;
-            } 
-            const name = getDatatypeName(itemId);
-            const mandatory2 = isMandatory (itemId);
-            if (mandatory === mandatory2) {
-                if (insert && insert.toLowerCase() <= name.toLowerCase()) {
-                    added.splice (index+1, 0, datatypeId);
-                    addedValues.splice (index+1, 0, "");
-                   //added = [...copy.slice(0, index), datatypeId, ...copy.slice(index)];
-                   // addedValues = [...copyValues.slice(0, index), "", ...copyValues.slice(index)];
-                    break;
-                }
-            }
-            index++;
-        };
+        let itemId = datatypeId;
+        if (itemId > 200) {
+            categoryId = 2;
+            itemId = itemId - 200;
+        } else if (itemId > 100) {
+            itemId = itemId - 100;
+        } 
+
         handleMetadataSelectionChange (added, addedValues, categoryId, metadataItemKey);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
@@ -983,7 +969,7 @@ const Collection = (props) => {
                             </Tooltip>)}
                             {isMultiple (datatypeId) && (
                               <Tooltip title="Add another copy of this metadata">
-                              <IconButton color="primary" onClick={(event) => {addItemToSelection(datatypeId)}}>
+                              <IconButton color="primary" onClick={(event) => {addItemToSelection(dId)}}>
                                 <AddCircleOutline />
                               </IconButton></Tooltip>
                             )}
@@ -1009,7 +995,7 @@ const Collection = (props) => {
                         {availableMetadata && availableMetadata.map((n , index) => 
                           <option
                           key={index}
-                          value={n.datatypeId}>
+                          value={100 + n.datatypeId}>
                           {n.name}
                           </option>
                         )}
@@ -1623,6 +1609,9 @@ const Collection = (props) => {
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
         setAvailableMetadata(multiples);
+        if (multiples.length > 0) {
+            setAvailableMetadataSelected(200+ multiples[0].datatypeId);
+        }
     }
 
     const setGlygenMandatoryMetadata = () => {
@@ -1688,6 +1677,9 @@ const Collection = (props) => {
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
         setAvailableMetadata(multiples);
+        if (multiples.length > 0) {
+            setAvailableMetadataSelected(100+ multiples[0].datatypeId);
+        }
     }
 
     const updateAvailableMetadata = (remaining) => {
@@ -1715,6 +1707,9 @@ const Collection = (props) => {
             }
         });
         setAvailableMetadata (available);
+        if (available.length > 0) {
+            setAvailableMetadataSelected(categoryId * 100 + available[0].datatypeId);
+        }
     }
 
     const compare = (first, second, firstMandatory, secondMandatory) => {
