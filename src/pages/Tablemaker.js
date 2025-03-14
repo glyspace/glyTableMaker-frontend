@@ -101,7 +101,7 @@ const Tablemaker = (props) => {
 
     function getGlycanMetadata(previous) {
         getJson ("api/util/getglycanmetadata", getAuthorizationHeader()).then (({ data }) => {
-            const glycanCategory = { "id" : -1, "name": "Glycan columns", "dataTypes" : data.data};
+            const glycanCategory = { "categoryId" : -1, "name": "Glycan columns", "dataTypes" : data.data};
             // glycan columns will have id < 0, name is the displayed label, description is the enum value
             setMetadata ([...previous, glycanCategory]);
         }).catch(function(error) {
@@ -146,8 +146,16 @@ const Tablemaker = (props) => {
             size: 50,
           },
           {
-            accessorKey: 'glycans.length',
+            accessorFn: (row) => row.glycans ? row.glycans.length : null,
+            id: "glycanNo",
             header: '# Glycans',
+            size: 30,
+            enableColumnFilter: false,
+          },
+          {
+            accessorFn: (row) => row.glycoproteins ? row.glycoproteins.length : null,
+            id: "proteinNo",
+            header: '# Proteins',
             size: 30,
             enableColumnFilter: false,
           },
@@ -414,8 +422,9 @@ const Tablemaker = (props) => {
     const handleDatatypeSelection = (event, itemId, isSelected) => {
         if (isSelected && typeof itemId === 'number') {  // datatype selected
             metadata.map ((element) => {
+                let dId = itemId - element.categoryId * 100;
                 if (element.dataTypes) {
-                    var datatype = element.dataTypes.find ((item) => item.datatypeId === itemId);
+                    var datatype = element.dataTypes.find ((item) => item.datatypeId === dId);
                     if (datatype) {
                         setMetadataSelect(datatype.name);
                         setColumn ({datatype: datatype});
@@ -666,7 +675,7 @@ const Tablemaker = (props) => {
                     return;
                 } 
                 previous.push (collection);
-                setCollectionType (cType);
+                setCollectionType (collection.type);
             } else {
                 setTextAlertInputCollection ({"show": true, "message": "This collection has already been added to the list!" });
                 return;
