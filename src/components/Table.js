@@ -528,6 +528,7 @@ const Table = (props) => {
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
         positionActionsColumn: 'last',
+        globalFilterFn: 'contains',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
             <Tooltip title="Delete">
@@ -574,7 +575,7 @@ const Table = (props) => {
             columnVisibility: columnVisibility,
         },
         state: {
-          columnVisibility
+          columnVisibility,
         }
       });
 

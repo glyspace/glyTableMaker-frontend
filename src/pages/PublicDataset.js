@@ -506,7 +506,7 @@ const PublicDataset = (props) => {
     const getData = () => {
         return (
         <>
-        {datasetType === "GLYCOPROTEIN" ? 
+        {datasetType && datasetType === "GLYCOPROTEIN" &&
           <Table 
               columns={proteinColumns} 
               data={dataset.glycoproteinData} 
@@ -517,7 +517,8 @@ const PublicDataset = (props) => {
               columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
               saveColumnVisibilityChanges={saveColumnVisibilityChanges}
           />
-        :
+        }
+        {datasetType && datasetType === "GLYCAN" &&
         <Table 
             columns={columns} 
             data={dataset.data} 
