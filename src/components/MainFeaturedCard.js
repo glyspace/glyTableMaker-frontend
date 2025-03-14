@@ -88,7 +88,7 @@ export default function MainFeaturedCard(props) {
               textAlign: "left",
             }}}>
             <div className="btn-outline-white text-md-left text-xs-center">
-              <Link to={"/signup"} className="gg-btn-outline-blue">
+              <Link to={"/register"} className="gg-btn-outline-blue">
                 <span
                   style={{
                     paddingRight: "10px",
