@@ -103,7 +103,8 @@ const Collection = (props) => {
     const [glygen, setGlygen] = useState(false);
 
     const [contributor, setContributor] = useState(null);
-    const [userProfile, setUserProfile] = useState({});
+    const [userProfile, setUserProfile] = useState([]);
+    const [softwareProfile, setSoftwareProfile] = useState([]);
 
     const [canonicalForm, setCanonicalForm] = useState([]);
     const [enableMultiValueSelect, setEnableMultiValueSelect] = useState(false);
@@ -241,7 +242,12 @@ const Collection = (props) => {
                 organization: data.data.affiliation ?? "",
                 role: "createdBy",
                } 
-               setUserProfile(user);
+               let userArray = [];
+               userArray.push (user);
+               setUserProfile(userArray);
+               let softwareArray = [];
+               softwareArray.push(tableMakerSoftware);
+               setSoftwareProfile(softwareArray);
                // set default contributor string
                // fill in the defaults
                let c = user.role + ":" + user.name + " (" + user.email + (user.organization && user.organization.length !== 0? ", " + user.organization : "") + ")";
@@ -912,7 +918,7 @@ const Collection = (props) => {
                                     <ContributorTable 
                                         setContributor={setContributor} 
                                         user={userProfile} 
-                                        software={tableMakerSoftware} 
+                                        software={softwareProfile} 
                                         contributor={contributor}
                                         error={validMetadata[index]}
                                         validationMessage={validMetadata[index] ? validationMessage[index] : ""}/>
@@ -1430,6 +1436,72 @@ const Collection = (props) => {
         setIsDirty(true);
     }
 
+    const parseContributor = (val) => {
+        // split by | -> multiple items
+        const userSoftware = val.split("|");
+        let userId = 1;
+        let sId = 1;
+        let userArray = [];
+        let softwareArray = [];
+        userSoftware.forEach (u => {
+            const parts = u.split(":");
+            if (parts.length >= 2) {
+                const role = parts[0];
+                if (role.includes ("By")) { // user
+                    const remainder = parts[1];
+                    if (remainder.includes ("(")) {
+                        const name = remainder.substring(0, remainder.indexOf("(")).trim();
+                        const emailOrg = remainder.substring (remainder.indexOf("(")+1, remainder.indexOf(")"));
+                        const splitted = emailOrg.split(",");
+                        const user = {
+                            id: userId,
+                            name: name,
+                            role: role,
+                            email: splitted[0],
+                            organization: splitted.length > 1 ? splitted[1] : "",
+                        }
+                        userId = userId + 1;
+                        userArray.push (user);
+                    } else {
+                        const user = {
+                            id: userId,
+                            name: remainder,
+                            role : role
+                        }
+                        userId = userId + 1;
+                        userArray.push (user);
+                    }
+                } else {  // sofware
+                    const remainder = u.substring (u.indexOf(":")+1);
+                    if (remainder.includes ("(")) {
+                        const name = remainder.substring(0, remainder.indexOf("(")).trim();
+                        const url = remainder.substring (remainder.indexOf("(")+1, remainder.indexOf(")"));
+                        const software = {
+                            id: sId,
+                            name: name,
+                            role: role,
+                            url: url,
+                        }
+                        sId = sId + 1;
+                        softwareArray.push(software);
+                    } else {
+                        const software = {
+                            id: sId,
+                            name: remainder,
+                            role: role,
+                        }
+                        sId = sId + 1;
+                        softwareArray.push(software);
+                    }
+                }
+                
+            }
+        });
+        setUserProfile(userArray);
+        setSoftwareProfile(softwareArray);
+        
+    }
+
     async function handleAddMetadata () {
         setTextAlertInputMetadata ({"show": false, "id": ""});
         console.log("adding metadata " + selectedMetadataValue);
@@ -1571,6 +1643,10 @@ const Collection = (props) => {
                                 var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                 added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
                                 addedValues.splice (idx, 0, existing.value);
+                                if (existing.type.name === "Contributor") {
+                                    parseContributor (existing.value);
+                                    setContributor (existing.value);
+                                }
                                 addedKeys.splice (idx, 0, existing.id);
                             }
                         } else {
@@ -1583,6 +1659,10 @@ const Collection = (props) => {
                                     var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                     added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
                                     addedValues.splice (idx, 0, existing.value);
+                                    if (existing.type.name === "Contributor") {
+                                        parseContributor (existing.value);
+                                        setContributor (existing.value);
+                                    }
                                     addedKeys.splice (idx, 0, existing.id);
                                 } else {
                                     var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
@@ -1639,6 +1719,10 @@ const Collection = (props) => {
                                 var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                 added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
                                 addedValues.splice (idx, 0, existing.value);
+                                if (existing.type.name === "Contributor") {
+                                    parseContributor (existing.value);
+                                    setContributor (existing.value);
+                                }
                                 addedKeys.splice (idx, 0, existing.metadataId);
                                 //notAdded.push (d.name);
                             }
@@ -1652,6 +1736,10 @@ const Collection = (props) => {
                                     var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                     added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
                                     addedValues.splice (idx, 0, existing.value);
+                                    if (existing.type.name === "Contributor") {
+                                        parseContributor (existing.value);
+                                        setContributor (existing.value);
+                                    }
                                     addedKeys.splice (idx, 0, existing.metadataId);
                                 } else {
                                     var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);

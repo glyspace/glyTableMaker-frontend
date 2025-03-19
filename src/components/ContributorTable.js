@@ -33,8 +33,8 @@ const ContributorTable = (props) => {
   //keep track of rows that have been edited
   const [editedData, setEditedData] = useState({});
   const [editedSoftwareData, setEditedSoftwareData] = useState({});
-  const [data, setData] = useState(props.user ? [props.user] : []);
-  const [softwareData, setSoftwareData] = useState(props.software ? [props.software] : []);
+  const [data, setData] = useState(props.user ? props.user : []);
+  const [softwareData, setSoftwareData] = useState(props.software ? props.software : []);
   const [contributorOpen, setContributorOpen] = useState(false);
   const [contributor, setContributor] = useState(props.contributor ?? null);
 
