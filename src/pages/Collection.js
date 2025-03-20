@@ -2212,6 +2212,7 @@ const Collection = (props) => {
                             </Col>
                         </Form.Group>
                     </Form>
+                    <Loading show={showLoading}></Loading>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" className="mt-2 gg-ml-20"
@@ -2263,6 +2264,7 @@ const Collection = (props) => {
                             </Col>
                         </Form.Group>
                     </Form>
+                    <Loading show={showLoading}></Loading>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" className="mt-2 gg-ml-20"
