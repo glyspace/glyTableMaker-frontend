@@ -135,15 +135,15 @@ const Glycoproteins = (props) => {
                             title="Add Glycoproteins(s) from File"
                             id="gg-dropdown-navbar2"
                             >
-                            <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycoproteinfromfile}?type=`}>
-                                ???
+                            <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycoproteinfromfile}?type=byonic`}>
+                                Byonic glycoprotein file (.csv)
                             </NavDropdown.Item>
                             </NavDropdown>
                         </span>
                     </div>
                     </Nav>
                     <StatusMessage
-                        ws="api/data/checkglycoproteinbatchupload"
+                        ws="api/data/checkbatchupload?type=GLYCOPROTEIN"
                         pageURL="/glycoproteins/fileupload"
                         setBatchUpload={setBatchUpload}
                         setAlertDialogInput={setAlertDialogInput}/>

@@ -6,6 +6,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
+import PendingIcon from '@mui/icons-material/Pending';
 import { Alert, Button, Card, Container, Modal, Row } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +19,6 @@ import FeedbackWidget from "../components/FeedbackWidget";
 
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
-
     const navigate = useNavigate();
 
     const [batchUploads, setBatchUploads] = useState([]);
@@ -41,7 +41,7 @@ const FileUpload = (props) => {
     }, []);
   
     const fetchData = async () => {
-      getJson ("api/data/checkbatchupload", getAuthorizationHeader()).then ( (json) => {
+      getJson ("api/data/checkbatchupload?type=" + props.type, getAuthorizationHeader()).then ( (json) => {
         setBatchUploads(json.data.data);
       }).catch (function(error) {
         if (error && error.response && error.response.data) {
@@ -155,7 +155,6 @@ const FileUpload = (props) => {
         </>
       )
     }
-    
 
     const columns = useMemo ( 
         () => [
@@ -174,6 +173,7 @@ const FileUpload = (props) => {
                 {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
                 <span>{renderedCellValue}</span>
                 {row.original.status==="PROCESSING" && <HourglassTopIcon color="primary"/>}
+                {row.original.status==="WAITING" && <PendingIcon color="primary"/>}
               </Box>
             ),
           },
@@ -183,7 +183,7 @@ const FileUpload = (props) => {
             size: 100,
           },
           {
-            accessorFn: (row) => row.glycans.length - (row.existingCount ?? 0),
+            accessorFn: (row) => row.glycans.length - (row.existingCount ?? 0) ,
             header: '# of New Glycans',
             size: 10,
           },
@@ -201,6 +201,51 @@ const FileUpload = (props) => {
         [],
     );
 
+    const glycoproteincolumns = useMemo ( 
+      () => [
+        {
+          accessorKey: 'startDate', 
+          header: 'File upload date',
+          size: 50,
+          Cell: ({ renderedCellValue, row }) => (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+              }}
+            >
+              {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
+              <span>{renderedCellValue}</span>
+              {row.original.status==="PROCESSING" && <HourglassTopIcon color="primary"/>}
+              {row.original.status==="WAITING" && <PendingIcon color="primary"/>}
+            </Box>
+          ),
+        },
+        {
+          accessorKey: 'filename',
+          header: 'Original File Name',
+          size: 100,
+        },
+        {
+          accessorFn: (row) => row.glycoproteins.length - (row.existingCount ?? 0) ,
+          header: '# of New Glycoproteins',
+          size: 10,
+        },
+        {
+          accessorKey: 'existingCount',
+          header: '# of Existing Glycoproteins',
+          size: 10,
+        },
+        {
+          accessorKey: 'errors.length',
+          header: '# of Errors',
+          size: 10,
+        },
+      ],
+      [],
+  );
+
     const errorColumns = useMemo (
         () => [
             {
@@ -215,7 +260,7 @@ const FileUpload = (props) => {
               },
               {
                 accessorKey: 'sequence',
-                header: 'Glycan Sequence',
+                header: 'Sequence (if any)',
                 size: 200,
               },
         ],
@@ -223,7 +268,7 @@ const FileUpload = (props) => {
     );
 
     const table = useMaterialReactTable({
-        columns,
+        columns: props.type === "GLYCOPROTEIN" ? glycoproteincolumns : columns,
         data: batchUploads ?? [],
         enableFilters: false,
         enableRowActions: true,
@@ -242,7 +287,7 @@ const FileUpload = (props) => {
             </Tooltip>
             }
             <Tooltip title="Add Tag">
-              <IconButton color="primary" disabled={row.original.status==="PROCESSING"}>
+              <IconButton color="primary" disabled={row.original.status==="PROCESSING" || row.original.status === "WAITING"}>
                 <NoteAddIcon
                 onClick={() => {
                   setEnableTagDialog (true);
@@ -251,7 +296,7 @@ const FileUpload = (props) => {
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
-              <IconButton color="error" disabled={row.original.status==="PROCESSING"}>
+              <IconButton color="error" disabled={row.original.status==="PROCESSING" || row.original.status === "WAITING"}>
                 <DeleteIcon 
                 onClick={()=> {
                     setUploadId (row.original.id);
@@ -260,7 +305,7 @@ const FileUpload = (props) => {
                 }}/>
               </IconButton>
             </Tooltip>
-            {row.original.status==="PROCESSING" && 
+            {(row.original.status==="PROCESSING" || row.original.status === "WAITING" ) && 
             <Tooltip title="Report error to developers">
             <IconButton color="primary">
               <ForwardToInboxIcon  onClick={() => {
@@ -340,8 +385,8 @@ const FileUpload = (props) => {
             <Card.Body>
             <MaterialReactTable table={table}/>
             <div className="text-center mb-2" style={{marginTop:"5px"}}>
-                <Button onClick={()=> navigate("/glycans")} 
-                  className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Glycans</Button>
+                <Button onClick={()=> navigate(props.type === "GLYCOPROTEIN" ? "/glycoproteins" : "/glycans")} 
+                  className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to {props.type === "GLYCOPROTEIN" ? 'Glyocproteins' : 'Glycans'}</Button>
             </div>
             </Card.Body>
             </Card>

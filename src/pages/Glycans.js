@@ -432,10 +432,7 @@ const getDownloadReport = (reportId) => {
                             Composition
                           </NavDropdown.Item>
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=composition-string`}>
-                            Composition from String
-                          </NavDropdown.Item>
-                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=composition-byonic`}>
-                            Composition from Byonic String
+                            Composition as a text
                           </NavDropdown.Item>
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycan}?type=draw`}>
                             Draw Glycan
@@ -476,7 +473,7 @@ const getDownloadReport = (reportId) => {
                         Download
                 </Button>
                 <StatusMessage
-                  ws="api/data/checkbatchupload"
+                  ws="api/data/checkbatchupload?type=GLYCAN"
                   pageURL={stringConstants.routes.upload}
                   setBatchUpload={setBatchUpload}
                   setAlertDialogInput={setAlertDialogInput}/>

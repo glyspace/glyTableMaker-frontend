@@ -25,6 +25,7 @@
         "addcollection": "/collections/addcollection",
         "addcoc": "/collections/addcoc",
         "upload": "/glycans/fileupload",
+        "glycoproteinupload" : "/glycoproteins/fileupload",
         "repository": "/data/dataset/",
         "publishdataset" : "/data/publishdataset"
     },
@@ -33,6 +34,7 @@
         "login": "api/account/login",
         "upload": "api/file/upload",
         "addglycanfromfile" : "api/data/addglycanfromfile",
+        "addglycoproteinfromfile" : "api/data/addglycoproteinfromfile",
         "getpublicdatasets" : "api/public/getdatasets",
         "getpublicdataset" : "api/public/getdataset",
         "listdatasetsforsearch" : "api/search/listDatasetsForSearch"

@@ -11,7 +11,7 @@
           }
         ]
       },
-      "composition-string": {
+      "composition-single": {
         "examples": [
           {
             "orderID": 105,
@@ -29,6 +29,17 @@
             "example": {
               "name": "Byonic Example",
               "id": "HexNac(2)dHex(1)"
+            }
+          }
+        ]
+      },
+      "composition-wurcs": {
+        "examples": [
+          {
+            "orderID": 106,
+            "example": {
+              "name": "Composition (System) Example",
+              "id": "HexNac:2|dHex:1"
             }
           }
         ]

@@ -50,6 +50,7 @@ import Glycoproteins from "./pages/Glycoproteins";
 import Glycoprotein from "./pages/Glycoprotein";
 import { DatasetDetailSearch } from "./pages/DatasetDetailSearch";
 import { DatasetDetailList } from "./pages/DatasetDetailList";
+import { GlycoproteinFromFile } from "./pages/GlycoproteinFromFile";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -258,6 +259,11 @@ function App() {
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {
+      path: stringConstants.routes.addglycoproteinfromfile,
+      main: () => <GlycoproteinFromFile authCheckAgent={checkAuthorization}/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
       path: stringConstants.routes.addcollection,
       main: () => <Collection authCheckAgent={checkAuthorization}/>,
       sidebar: () => <Sidebar items={sideBarData} />,
@@ -269,7 +275,12 @@ function App() {
     },
     {
       path: stringConstants.routes.upload,
-      main: () => <FileUpload authCheckAgent={checkAuthorization}/>,
+      main: () => <FileUpload authCheckAgent={checkAuthorization} type="GLYCAN"/>,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.glycoproteinupload,
+      main: () => <FileUpload authCheckAgent={checkAuthorization} type="GLYCOPROTEIN"/>,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
   ];

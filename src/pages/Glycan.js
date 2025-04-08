@@ -15,24 +15,28 @@ import DialogAlert from "../components/DialogAlert";
 import { axiosError } from "../utils/axiosError";
 import Composition from "../components/Composition";
 import FeedbackWidget from "../components/FeedbackWidget";
+import Tag from "../components/Tag";
 
 const Glycan = (props) => {
 
     const [searchParams] = useSearchParams();
     let type = searchParams ? searchParams.get("type") : "sequence";
+    const [subType, setSubType] = useState ("composition-wurcs");
     
-    const compositionLabel = type=== "composition-string" ? "Composition (as a string)" 
-                            : type === "composition-byonic" ?
-                              "Composition (as a byonic string)" : "";
+    const compositionLabel = subType=== "composition-string" ? "Composition (single letter code)" 
+                            : subType === "composition-byonic" ?
+                              "Composition (as a byonic string)" : "Composition";
 
     useEffect(props.authCheckAgent, []);
 
+    
     const [glycoGlyphDialog, setGlycoGlyphDialog] = useState(type ? type === "draw" : false);
     const [compositionDialog, setCompositionDialog] = useState(type ? type === "composition" : false);
     const [validate, setValidate] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [readOnly, setReadOnly] = useState(false);
     const [error, setError] = useState(false);
+    const [tag, setTag] = useState("");
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -72,6 +76,12 @@ const Glycan = (props) => {
         setUserSelection({ sequenceType: select });
     };
 
+    const handleCompositionTypeChange = e => {
+      const select = e.target.options[e.target.selectedIndex].value;
+      setUserSelection ({compositionString: ""});
+      setSubType (select);
+  };
+
     const handleSubmit = e => {
         props.authCheckAgent();
         setValidate(false);
@@ -94,8 +104,8 @@ const Glycan = (props) => {
               setError(true);
               return;
           }
-        } else if (type === "composition-string" || type === "composition-byonic") {
-            t = (type === "composition-string" ? "COMPACT" : "BYONIC");
+        } else if (type === "composition-string") {
+            t = (subType === "composition-single" ? "COMPACT" : (subType === "composition-byonic" ? "BYONIC" : "WURCS"));
             if (userSelection.compositionString === "" || userSelection.compositionString.trim().length < 1) {
               setValidate(true);
               setError(true);
@@ -129,23 +139,50 @@ const Glycan = (props) => {
         setError(false);
         props.authCheckAgent();
 
-        let url = "api/data/addglycan";
-        if (type) url += "?compositionType="+type;
-        postJson (url, glycan, getAuthorizationHeader()).then ( (data) => {
-            addGlycanSuccess(data);
-          }).catch (function(error) {
-            if (error && error.response && error.response.data) {
-                if (type === "draw") {
-                    setGlycoGlyphDialog(false);
-                }
-                setError(true);
-                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
-            } else {
-                axiosError(error, null, setAlertDialogInput);
+        if (glycan.composition && glycan.composition.length > 0) {
+          const comps = glycan.composition.split ("\n");
+          const gList = comps.map ((comp) => {
+            const glycan = { 
+              composition: comp,
             }
-            setShowLoading(false);
-          }
-        );
+            return glycan;
+          });
+          let url = "api/data/addglycanfromlist?tag=" + tag;
+          if (type) url += "&compositionType="+type;
+            postJson (url, gList, getAuthorizationHeader()).then ( (data) => {
+              addGlycanSuccess(data);
+            }).catch (function(error) {
+              if (error && error.response && error.response.data) {
+                  if (type === "draw") {
+                      setGlycoGlyphDialog(false);
+                  }
+                  setError(true);
+                  setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+              } else {
+                  axiosError(error, null, setAlertDialogInput);
+              }
+              setShowLoading(false);
+            }
+          );
+        }  else {
+          let url = "api/data/addglycan";
+          if (type) url += "?compositionType="+type;
+          postJson (url, glycan, getAuthorizationHeader()).then ( (data) => {
+              addGlycanSuccess(data);
+            }).catch (function(error) {
+              if (error && error.response && error.response.data) {
+                  if (type === "draw") {
+                      setGlycoGlyphDialog(false);
+                  }
+                  setError(true);
+                  setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+              } else {
+                  axiosError(error, null, setAlertDialogInput);
+              }
+              setShowLoading(false);
+            }
+          );
+        }
     }
 
     function addGlycanSuccess() {
@@ -216,18 +253,29 @@ const Glycan = (props) => {
                     <Feedback message="Please enter a valid Glytoucan ID" />
                     </Col>
                 </Form.Group>) }
-                { (type === "composition-string" || type=== "composition-byonic") && (
+                { type === "composition-string" && (
                 <Form.Group
                   as={Row}
                   controlId="composition"
                   className="gg-align-center mb-3"
                 >
                   <Col xs={12} lg={9}>
+                    <FormLabel label="Composition input type"/>
+                    <Form.Select
+                      name={"compType"}
+                      value={subType}
+                      onChange={handleCompositionTypeChange}
+                    >
+                    <option value="composition-wurcs">Composition (system)</option>
+                    <option value="composition-single">Composition (single letter)</option>
+                    <option value="composition-byonic">Composition (byonic)</option>
+                    </Form.Select>
                     <FormLabel label={compositionLabel} className="required-asterik"/>
                     <Form.Control
-                      type="text"
+                      as="textarea"
+                      rows="10"
                       name="compositionString"
-                      placeholder="Enter composition of the glycan"
+                      placeholder="Enter composition of glycan, one composition per line"
                       value={userSelection.compositionString}
                       onChange={handleChange}
                       required={true}
@@ -240,10 +288,18 @@ const Glycan = (props) => {
                             setInputValue={id => {
                               setUserSelection({ compositionString: id });
                             }}
-                            inputValue={moleculeExamples.glycan[type].examples}
+                            inputValue={moleculeExamples.glycan[subType].examples}
                           />
                       </Col>
                     </Row>
+                    </Col>
+                    <Col xs={12} lg={9}>
+                      <FormLabel label="Add Tag"/>
+                        <Tag validate={validate} setValidate={setValidate}
+                            setTag={setTag}
+                            setAlertDialogInput={setAlertDialogInput}
+                            gettagws="api/data/getglycantags"
+                        />
                     </Col>
                 </Form.Group>) }
                 {/* Sequence Type */}
