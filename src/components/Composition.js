@@ -10,7 +10,7 @@ import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 
 const Composition = (props) => {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     const [textAlertInput, setTextAlertInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -47,7 +47,7 @@ const Composition = (props) => {
 
         //load user settings and set the compositionType
         getCompositionTypeSetting();
-    }, []);
+    }, [props.show]);
 
     function getCompositionTypeSetting () {
         getJson("api/setting/getsettings", getAuthorizationHeader()).then (({ data }) => {
@@ -370,7 +370,8 @@ const Composition = (props) => {
                         style={{ float: "right" }}
                         onClick={() => {
                             props.setOpen(false);
-                            navigate("/glycans");}}
+                            //navigate("/glycans");
+                            }}
                     >
                         Cancel
                     </Button>

@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useEffect } from "react";
+import React, { useReducer, useState, useMemo, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import { Feedback, FormLabel } from "../components/FormControls";
 import moleculeExamples from "../data/moleculeExamples";
@@ -6,7 +6,8 @@ import ExampleSequenceControl from "../components/ExampleSequenceControl";
 import Container from "@mui/material/Container";
 import { Card } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Box } from "@mui/material";
 import GlycoGlyph from "../components/GlycoGlyph";
 import { Loading } from "../components/Loading";
 import { getAuthorizationHeader, postJson } from "../utils/api";
@@ -16,6 +17,10 @@ import { axiosError } from "../utils/axiosError";
 import Composition from "../components/Composition";
 import FeedbackWidget from "../components/FeedbackWidget";
 import Tag from "../components/Tag";
+import { Dialog, DialogContent, DialogActions, DialogTitle, IconButton, Typography, Tooltip } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 
 const Glycan = (props) => {
 
@@ -29,9 +34,9 @@ const Glycan = (props) => {
 
     useEffect(props.authCheckAgent, []);
 
-    
     const [glycoGlyphDialog, setGlycoGlyphDialog] = useState(type ? type === "draw" : false);
-    const [compositionDialog, setCompositionDialog] = useState(type ? type === "composition" : false);
+    const [compositionDialog, setCompositionDialog] = useState(false);
+    const [showComposition, setShowComposition] = useState(type ? type === "composition" : false);
     const [validate, setValidate] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [readOnly, setReadOnly] = useState(false);
@@ -53,7 +58,8 @@ const Glycan = (props) => {
         sequence: "",
         sequenceType: "GLYCOCT",
         glycoGlyphName: "",
-        composition: "",
+        composition: [],
+        compositionType : [],
         compositionString: ""
     };
 
@@ -80,7 +86,7 @@ const Glycan = (props) => {
       const select = e.target.options[e.target.selectedIndex].value;
       setUserSelection ({compositionString: ""});
       setSubType (select);
-  };
+    };
 
     const handleSubmit = e => {
         props.authCheckAgent();
@@ -99,13 +105,13 @@ const Glycan = (props) => {
                 return;
             }
         } else if (type === "composition") {
-            if (userSelection.composition === "" || userSelection.composition.trim().length < 1) {
+            if (userSelection.composition === "" || userSelection.composition.length < 1) {
               setValidate(true);
               setError(true);
               return;
           }
         } else if (type === "composition-string") {
-            t = (subType === "composition-single" ? "COMPACT" : (subType === "composition-byonic" ? "BYONIC" : "WURCS"));
+            t = (subType === "composition-single" ? "COMPACT" : (subType === "composition-byonic" ? "BYONIC" : "GLYGEN"));
             if (userSelection.compositionString === "" || userSelection.compositionString.trim().length < 1) {
               setValidate(true);
               setError(true);
@@ -116,11 +122,11 @@ const Glycan = (props) => {
         const glycan = { 
             sequence: userSelection.sequence,
             glytoucanID: userSelection.glytoucanId,
-            composition: userSelection.composition ? userSelection.composition : userSelection.compositionString,
+            composition: userSelection.composition && userSelection.composition.length > 0 ? userSelection.composition : userSelection.compositionString.split("\n"),
             format: userSelection.sequenceType}
         
         addGlycan(glycan, t);
-        e.preventDefault();
+        e && e.preventDefault();
     };
 
     const handleBackToDraw = e => {
@@ -140,12 +146,13 @@ const Glycan = (props) => {
         props.authCheckAgent();
 
         if (glycan.composition && glycan.composition.length > 0) {
-          const comps = glycan.composition.split ("\n");
-          const gList = comps.map ((comp) => {
-            const glycan = { 
+          const comps = glycan.composition;
+          const gList = comps.map ((comp, index) => {
+            const g = { 
               composition: comp,
+              type: (userSelection.compositionType && userSelection.compositionType[index]) ? userSelection.compositionType[index] : null,
             }
-            return glycan;
+            return g;
           });
           let url = "api/data/addglycanfromlist?tag=" + tag;
           if (type) url += "&compositionType="+type;
@@ -167,6 +174,7 @@ const Glycan = (props) => {
         }  else {
           let url = "api/data/addglycan";
           if (type) url += "?compositionType="+type;
+          if (!type && userSelection.compositionType && userSelection.compositionType[0]) url += "?compositionType="+userSelection.compositionType[0];
           postJson (url, glycan, getAuthorizationHeader()).then ( (data) => {
               addGlycanSuccess(data);
             }).catch (function(error) {
@@ -190,6 +198,88 @@ const Glycan = (props) => {
         navigate("/glycans");
     }
 
+    const deleteComposition = (comp) => {
+      var compositions = userSelection.composition;
+      const index = compositions.findIndex ((item) => item === comp);
+      var updated = [
+          ...compositions.slice(0, index),
+          ...compositions.slice(index + 1)
+      ];
+      var compTypes = userSelection.compositionType;
+      var updatedTypes = [
+        ...compTypes.slice(0, index),
+        ...compTypes.slice(index + 1)
+      ];
+      setUserSelection ({"composition": updated});
+      setUserSelection ({"compositionType" : updatedTypes});
+    }
+
+    const addComposition = ( comp, type ) => {
+      var compositions = [...userSelection.composition];
+      var compTypes = [...userSelection.compositionType]
+      const index = compositions.findIndex ((item) => item === comp.composition);
+      if (index == -1) { // not found
+        compositions.push(comp.composition);
+        compTypes.push(type)
+        setUserSelection ({"composition": compositions});
+        setUserSelection ({"compositionType" : compTypes});
+      }
+    }
+
+    const compColumns = useMemo(
+      () => [
+        {
+          header: 'Composition List',
+          enableColumnFilter: false,
+          enableSorting: false,
+          enableHiding: false,
+          Cell: ({ row, index }) => (
+          <div key={index} style={{ textAlign: "left" }}>
+              <div>
+                  {row.original}
+              </div>
+          </div>
+          ),
+        },
+      ],
+      [],
+    );
+
+    const compositionTable= useMaterialReactTable({
+      columns: compColumns,
+      data: userSelection.composition ?? [],
+      enableFilters: false,
+      enableRowActions: true,
+      positionActionsColumn: 'last',
+      renderRowActions: ({ row }) => (
+        <Box sx={{ display: 'flex'}}>
+          <Tooltip title="Delete">
+              <IconButton color="error">
+                <DeleteIcon 
+                onClick={()=> {
+                    deleteComposition (row.original)
+                }}/>
+              </IconButton>
+            </Tooltip>
+        </Box>
+      ),
+      renderToolbarInternalActions: ({ table }) => (
+        getToolbar(table)
+      ),
+      getRowId: (row) => row
+    });
+
+    const getToolbar = (table) => {
+      return (
+        <Box>
+            <Tooltip title="Create a new composition and add it to the list">
+            <Button className="gg-btn-blue-reg"
+                  onClick={()=>setCompositionDialog(true)}>Add Composition</Button>
+            </Tooltip>
+        </Box>
+      )
+    }
+
     return (
         <>
         <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
@@ -205,17 +295,70 @@ const Glycan = (props) => {
             }}
             submit={(input) => addGlycan(input)}
         />
+        {type === "composition" && (
+          <Dialog
+            maxWidth="xl"
+            fullWidth="true"
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+            scroll="paper"
+            centered
+            open={showComposition}
+            onClose={(event, reason) => {
+                setShowComposition(false)
+            }}>
+          <DialogTitle id="parent-modal-title">
+              <Typography id="parent-modal-title" variant="h6" component="h2">
+              Add Compositions
+              </Typography>
+          </DialogTitle>
+          <IconButton
+              aria-label="close"
+              onClick={() => setShowComposition(false)}
+              sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+              }}
+              >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent>
+                 <div className="gg-align-center mb-3">
+                  <MaterialReactTable table={compositionTable} />
+                </div>
+                  <Col xs={12} lg={9}>
+                  <Form.Group>
+                    <FormLabel label="Add Tag"/>
+                      <Tag validate={validate} setValidate={setValidate}
+                          setTag={setTag}
+                          setAlertDialogInput={setAlertDialogInput}
+                          gettagws="api/data/getglycantags"
+                      />
+                    </Form.Group>
+                  </Col>
+          </DialogContent>
+          <DialogActions>
+              <Button className="gg-btn-outline-reg"
+                  onClick={()=> {
+                      setShowComposition(false);
+                      navigate ("/glycans");
+                  }}>Cancel</Button>
+              <Button className="gg-btn-blue-reg"
+                  onClick={()=>handleSubmit()}>Add Glycans</Button>
+          </DialogActions>
+            
+          </Dialog>
+        )}
          <Composition
             show={compositionDialog}
-            composition={userSelection.composition}
-            setInputValue={setUserSelection}
             setAlertDialogInput={setAlertDialogInput}
-            inputValue={userSelection}
             title={"Glycan Composition"}
             setOpen={(input) => {
                 setCompositionDialog(input)
             }}
-            submit={(input, type) => addGlycan(input, type)}
+            submit={(input, type) => addComposition(input, type)}
         />
         <Container maxWidth="xl">
             <div className="page-container">

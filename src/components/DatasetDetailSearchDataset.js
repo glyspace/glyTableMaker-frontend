@@ -13,21 +13,15 @@ import "../../css/Search.css";
 import ExampleExploreControl from "../ExampleExploreControl";
 import { AutoTextInput } from "../../components/AutoTextInput";
 
-const datasetSearch = glycanSearchData.dataset_search;
 const DatasetDetailSearchDataset = (props) => {
-  const history = useHistory();
-
-  const [showErrorSummary, setShowErrorSummary] = useState(false);
-  const [pageErrorsJson, setPageErrorsJson] = useState({});
-  const [pageErrorMessage, setPageErrorMessage] = useState();
+  const navigate = useNavigate();
 
   const [inputValue, setInputValue] = React.useReducer(
     (state, payload) => ({ ...state, ...payload }),
     {
       datasetName: "",
-      printedSlideName: "",
       pmid: "",
-      keyword: "",
+      
     }
   );
 
