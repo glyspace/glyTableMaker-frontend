@@ -26,9 +26,9 @@ const Glycan = (props) => {
 
     const [searchParams] = useSearchParams();
     let type = searchParams ? searchParams.get("type") : "sequence";
-    const [subType, setSubType] = useState ("composition-wurcs");
+    const [subType, setSubType] = useState ("composition-single");
     
-    const compositionLabel = subType=== "composition-string" ? "Composition (single letter code)" 
+    const compositionLabel = subType=== "composition-single" ? "Composition (single letter code)" 
                             : subType === "composition-byonic" ?
                               "Composition (as a byonic string)" : "Composition";
 
@@ -297,15 +297,17 @@ const Glycan = (props) => {
         />
         {type === "composition" && (
           <Dialog
-            maxWidth="xl"
-            fullWidth="true"
+            maxWidth={'md'}
+            fullWidth={true}
+            style={{ margin: 40 }}
             aria-labelledby="parent-modal-title"
             aria-describedby="parent-modal-description"
             scroll="paper"
             centered
             open={showComposition}
             onClose={(event, reason) => {
-                setShowComposition(false)
+                setShowComposition(false);
+                navigate ("/glycans");
             }}>
           <DialogTitle id="parent-modal-title">
               <Typography id="parent-modal-title" variant="h6" component="h2">
@@ -314,7 +316,10 @@ const Glycan = (props) => {
           </DialogTitle>
           <IconButton
               aria-label="close"
-              onClick={() => setShowComposition(false)}
+              onClick={() => {
+                setShowComposition(false);
+                navigate ("/glycans");
+              }}
               sx={{
                   position: 'absolute',
                   right: 8,
@@ -407,9 +412,9 @@ const Glycan = (props) => {
                     <Form.Select
                       name={"compType"}
                       value={subType}
+                      style={{ marginBottom: "30px"}}
                       onChange={handleCompositionTypeChange}
                     >
-                    <option value="composition-wurcs">Composition (system)</option>
                     <option value="composition-single">Composition (single letter)</option>
                     <option value="composition-byonic">Composition (byonic)</option>
                     </Form.Select>

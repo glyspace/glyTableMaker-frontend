@@ -17,7 +17,7 @@
             "orderID": 105,
             "example": {
               "name": "Composition Example",
-              "id": "H2N2F1"
+              "id": "H2N2F1\nH2N3"
             }
           }
         ]
@@ -28,7 +28,7 @@
             "orderID": 104,
             "example": {
               "name": "Byonic Example",
-              "id": "HexNac(2)dHex(1)"
+              "id": "HexNAc(2)dHex(1)\nHex(2)HexNAc(3)"
             }
           }
         ]
@@ -39,7 +39,7 @@
             "orderID": 106,
             "example": {
               "name": "Composition (System) Example",
-              "id": "HexNac:2|dHex:1"
+              "id": "HexNAc:2|dHex:1"
             }
           }
         ]

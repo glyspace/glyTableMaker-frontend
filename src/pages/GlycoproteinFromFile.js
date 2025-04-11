@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import { ResumableUploader } from "../components/ResumableUploader";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, CardBody, Col, Container, Form, Row } from "react-bootstrap";
 import { FormLabel, PageHeading } from "../components/FormControls";
 import Tag from "../components/Tag";
 import TextAlert from "../components/TextAlert";
@@ -122,7 +122,7 @@ const GlycoproteinFromFile = props => {
     
                     {/* File Upload */}
                     <Form.Group as={Row} controlId="fileUploader" className="gg-align-center mb-35">
-                      <Col xs={12} lg={9}>
+                      <Col xs={12} lg={9} style={{ marginBottom: "40px"}}>
                         <FormLabel label="Upload Glycoprotein File" className="required-asterik" />
                         <ResumableUploader
                           headerObject={getAuthorizationHeader()}
@@ -134,23 +134,24 @@ const GlycoproteinFromFile = props => {
                         />
                       </Col>
                      
-                      <Col xs={12} lg={9}>
+                      <Col xs={12} lg={9} style={{ marginBottom: "40px"}}>
+                      <Card><CardBody>
                       <FormLabel label="Add Tag"/>
                         <Tag validate={validate} setValidate={setValidate}
                             setTag={setTag}
                             setAlertDialogInput={setAlertDialogInput}
                             gettagws="api/data/getglycantags"
                         />
+                        </CardBody>
+                        </Card>
                       </Col>
-
                       <Col xs={12} lg={9}>
                         <FormLabel label="Handle multiple Glycan Annotations per Peptide"/>
-               
                         <Col>
                             <Slider
                             aria-label="Multiple Glycans handling"
                             defaultValue={glycanOrder === "BYONIC" ? 0: glycanOrder==="ALTERNATIVE" ? 1: 2}
-                            valueLabelDisplay="auto"
+                            valueLabelDisplay="off"
                             getAriaValueText={valuetext}
                             shiftStep={1}
                             step={1}

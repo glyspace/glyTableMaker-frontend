@@ -327,7 +327,7 @@ const Composition = (props) => {
                 <Slider
                     aria-label="Composition Type"
                     defaultValue={compositionType === "BASE" ? 0: compositionType==="GLYGEN" ? 1: 2}
-                    valueLabelDisplay="auto"
+                    valueLabelDisplay="off"
                     getAriaValueText={valuetext}
                     shiftStep={1}
                     step={1}
