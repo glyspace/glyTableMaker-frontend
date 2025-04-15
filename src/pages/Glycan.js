@@ -122,7 +122,8 @@ const Glycan = (props) => {
         const glycan = { 
             sequence: userSelection.sequence,
             glytoucanID: userSelection.glytoucanId,
-            composition: userSelection.composition && userSelection.composition.length > 0 ? userSelection.composition : userSelection.compositionString.split("\n"),
+            composition: userSelection.composition && userSelection.composition.length > 0 ? userSelection.composition : 
+                  userSelection.compositionString && userSelection.compositionString.length > 0 ? userSelection.compositionString.split("\n") : null,
             format: userSelection.sequenceType}
         
         addGlycan(glycan, t);
@@ -174,7 +175,8 @@ const Glycan = (props) => {
         }  else {
           let url = "api/data/addglycan";
           if (type) url += "?compositionType="+type;
-          if (!type && userSelection.compositionType && userSelection.compositionType[0]) url += "?compositionType="+userSelection.compositionType[0];
+          if (!type && userSelection.compositionType && userSelection.compositionType.length > 0 && userSelection.compositionType[0]) 
+              url += "?compositionType="+userSelection.compositionType[0];
           postJson (url, glycan, getAuthorizationHeader()).then ( (data) => {
               addGlycanSuccess(data);
             }).catch (function(error) {
