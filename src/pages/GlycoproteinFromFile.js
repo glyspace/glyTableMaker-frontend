@@ -135,15 +135,12 @@ const GlycoproteinFromFile = props => {
                       </Col>
                      
                       <Col xs={12} lg={9} style={{ marginBottom: "40px"}}>
-                      <Card><CardBody>
                       <FormLabel label="Add Tag"/>
                         <Tag validate={validate} setValidate={setValidate}
                             setTag={setTag}
                             setAlertDialogInput={setAlertDialogInput}
                             gettagws="api/data/getglycantags"
                         />
-                        </CardBody>
-                        </Card>
                       </Col>
                       <Col xs={12} lg={9}>
                         <FormLabel label="Handle multiple Glycan Annotations per Peptide"/>
