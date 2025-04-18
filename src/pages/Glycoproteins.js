@@ -54,6 +54,7 @@ const Glycoproteins = (props) => {
             id : "siteNo",
             size: 80,
             Cell: ({ cell }) => cell.getValue() ? Number(cell.getValue().toFixed(2)).toLocaleString('en-US') : null,
+            enableColumnFilter: false,
           },
           {
             accessorFn: (row) => row.tags.map(tag => tag.label),

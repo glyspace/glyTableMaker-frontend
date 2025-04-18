@@ -53,6 +53,8 @@ const Table = (props) => {
         } else {
           setIsRefetching(true);
         }
+
+        props.authCheckAgent && props.authCheckAgent();
     
         let searchParams = "start=" + pagination.pageIndex;
         searchParams += "&size=" + pagination.pageSize;
@@ -84,6 +86,7 @@ const Table = (props) => {
 
       useEffect(()=> {
         // load settings
+        props.authCheckAgent && props.authCheckAgent();
         if (props.columnsettingsws) {
           getJson(props.columnsettingsws, getAuthorizationHeader()).then (({ data }) => {
             let visibilityList = {};
