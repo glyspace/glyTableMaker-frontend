@@ -78,7 +78,7 @@ const GlycoproteinFromFile = props => {
             fileFormat: uploadedFile.fileFormat,
         }
     
-        postJson (stringConstants.api.addglycoproteinfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag + "&glycanOrder=" + glycanOrder, 
+        postJson (stringConstants.api.addglycoproteinfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag + "&glycanorder=" + glycanOrder, 
             file, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             navigate("/glycoproteins");
@@ -96,7 +96,7 @@ const GlycoproteinFromFile = props => {
       }
     
       function valuetext(value) {
-        setGlycanOrder(value == 0 ? "BYONIC" : value== 1 ? "ALTERNATIVE" : "RANGE");
+        setGlycanOrder(value == 0 ? "BYONICORDER" : value== 1 ? "ALTERNATIVE" : "RANGE");
         return value;
      }
 
@@ -147,7 +147,7 @@ const GlycoproteinFromFile = props => {
                         <Col>
                             <Slider
                             aria-label="Multiple Glycans handling"
-                            defaultValue={glycanOrder === "BYONIC" ? 0: glycanOrder==="ALTERNATIVE" ? 1: 2}
+                            defaultValue={glycanOrder === "BYONICORDER" ? 0: glycanOrder==="ALTERNATIVE" ? 1: 2}
                             valueLabelDisplay="off"
                             getAriaValueText={valuetext}
                             shiftStep={1}
