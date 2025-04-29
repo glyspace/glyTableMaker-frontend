@@ -39,6 +39,11 @@ const Glycoproteins = (props) => {
             size: 50,
           },
           {
+            accessorKey: 'sequenceVersion', 
+            header: 'Sequence Version',
+            size: 50,
+          },
+          {
             accessorKey: 'name', 
             header: 'Name',
             size: 100,

@@ -55,9 +55,12 @@ const Glycoprotein = (props) => {
     const [gType, setGType] = useState(null);
     const [gsType, setGsType] = useState (null);
 
+    const [requiredVersion, setRequiredVersion] = useState("");
+
     const initialState = {
         uniprotId: "",
         sequence: "",
+        sequenceVersion: "",
         proteinName: "",
         name: "",
         geneSymbol: "",
@@ -254,6 +257,7 @@ const Glycoprotein = (props) => {
         if (name === "uniprotId" && newValue.trim().length > 1) {
             setValidate(false);
         }
+
         setUserSelection({ [name]: newValue });
     };
 
@@ -290,6 +294,7 @@ const Glycoprotein = (props) => {
             "name": userSelection.name,
             "proteinName": userSelection.proteinName,
             "sequence" : userSelection.sequence,
+            "sequenceVersion" : userSelection.sequenceVersion,
             "geneSymbol" : userSelection.geneSymbol,
             "uniprotId": userSelection.uniprotId,
             "sites" : sites,
@@ -314,7 +319,11 @@ const Glycoprotein = (props) => {
     };
 
     const getProteinFromUniProt = (uniprotId) => {
-        getJson ("api/util/getproteinfromuniprot/" + uniprotId).then ((data) => {
+        let url = "api/util/getproteinfromuniprot/" + uniprotId;
+        if (requiredVersion && requiredVersion.length > 0 && Number.isInteger(Number(requiredVersion))) {
+            url += "?version="+ requiredVersion;
+        }
+        getJson (url).then ((data) => {
             setUserSelection(data.data.data);
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -865,19 +874,38 @@ const Glycoprotein = (props) => {
                                 text={examples.uniprotId.tooltip.text}
                             />
                             <Form.Control
-                            type="text"
-                            name="uniprotId"
-                            placeholder="Enter UniProtKB Accession for the protein"
-                            value={userSelection.uniprotId}
-                            onChange={handleChange}
-                            minLength={6}
-                            maxLength={15}
-                            required={true}
-                            isInvalid={validate}
-                            disabled={glycoproteinId !== null}
+                                type="text"
+                                name="uniprotId"
+                                placeholder="Enter UniProtKB Accession for the protein"
+                                value={userSelection.uniprotId}
+                                onChange={handleChange}
+                                minLength={6}
+                                maxLength={15}
+                                required={true}
+                                isInvalid={validate}
+                                disabled={glycoproteinId !== null}
                             />
                             <ExampleSequenceControl setInputValue={funcSetInputValues} inputValue={examples.uniprotId.examples} explore={true} />
                             <Feedback message="Please enter a valid UniProtKB Accession" />
+                            {!glycoproteinId && 
+                                <>
+                                <div className="mb-1 mt-2">
+                                <FormLabel label="Sequence Version"/>
+                                <Form.Control
+                                    type="text"
+                                    name="version"
+                                    placeholder="Enter the required sequence version. If not provided, the latest version will be retrieved"
+                                    value={requiredVersion}
+                                    onChange={(e) => {
+                                        setRequiredVersion (e.target.value)
+                                    }}
+                                    isInvalid={requiredVersion && !Number.isInteger(Number(requiredVersion))}
+                                    disabled={glycoproteinId !== null}
+                                />
+                                <Feedback message="Version must be a number" />
+                                </div>
+                                </>
+                            }
                             {!glycoproteinId && userSelection.uniprotId !== "" && userSelection.uniprotId.length > 5 && (
                             <Button
                                 variant="contained"
@@ -917,6 +945,12 @@ const Glycoprotein = (props) => {
                             <Col xs={12} lg={9}>
                             <FormLabel label="Sequence" />
                             <Form.Control as="textarea" rows="5" name="sequence" value={userSelection.sequence} disabled />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="sequenceVersion" className="gg-align-center mb-3">
+                            <Col xs={12} lg={9}>
+                            <FormLabel label="Sequence Version" />
+                            <Form.Control type="text" name="sequenceVersion" value={userSelection.sequenceVersion} disabled />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId="gene" className="gg-align-center mb-3">

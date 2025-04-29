@@ -5,6 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import HistoryIcon from '@mui/icons-material/History';
 import ForwardToInboxIcon from '@mui/icons-material/ForwardToInbox';
 import PendingIcon from '@mui/icons-material/Pending';
 import { Alert, Button, Card, Container, Modal, Row } from "react-bootstrap";
@@ -173,7 +174,7 @@ const FileUpload = (props) => {
                 {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
                 <span>{renderedCellValue}</span>
                 {row.original.status==="PROCESSING" && <HourglassTopIcon color="primary"/>}
-                {row.original.status==="WAITING" && <PendingIcon color="primary"/>}
+                {row.original.status==="WAITING" && <HistoryIcon color="primary"/>}
               </Box>
             ),
           },
@@ -217,8 +218,8 @@ const FileUpload = (props) => {
             >
               {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
               <span>{renderedCellValue}</span>
-              {row.original.status==="PROCESSING" && <HourglassTopIcon color="primary"/>}
-              {row.original.status==="WAITING" && <PendingIcon color="primary"/>}
+              {row.original.status==="PROCESSING" &&  <Tooltip title="Still processing"><HourglassTopIcon color="primary"/></Tooltip>}
+              {row.original.status==="WAITING" && <Tooltip title="Waiting for glycan registration"><PendingIcon color="primary"/></Tooltip>}
             </Box>
           ),
         },
