@@ -15,6 +15,7 @@ import { axiosError } from "../utils/axiosError";
 import { GrantsOnDataset } from "../components/GrantsOnDataset";
 import { PubOnDataset } from "../components/PubOnDataset";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
+import { ScrollToTop } from "../components/ScrollToTop";
 
 let idCounter = 1000;
 
@@ -161,25 +162,42 @@ const PublishDataset = (props) => {
         if (userSelection.name === "" || userSelection.name.trim().length < 1) {
             setValidate(true);
             setError(true);
+            ScrollToTop();
             return;
         }
 
         if (showAddCollection && userSelection.collections.length < 1) {
             setError(true);
             setTextAlertInput({"show": true, "message": "At least one collection should be added before publishing the dataset"});
+            ScrollToTop();
             return;
-        }
+        } 
 
         let valid = true;
+        let hasData = false;
         userSelection.collections.forEach ((collection) => {
             if (collection.errors && collection.errors.length > 0) {
                 valid = false;
             }
+            if (collection.glycans && collection.glycans.length > 0) {
+                hasData = true;
+            } 
+            if (collection.glycoproteins && collection.glycoproteins.length > 0) {
+                hasData = true;
+            }
         });
+
+        if (!hasData) {
+            setError(true);
+            setTextAlertInput({"show": true, "message": "Selected collections do not have glycans/glycoproteins. Dataset cannot be published!"});
+            ScrollToTop();
+            return;
+        }
         
         if (!valid) {
             setError(true);
             setTextAlertInput({"show": true, "message": "There are errors in the selected collections. Dataset cannot be published!"});
+            ScrollToTop();
             return;
         }
 
@@ -687,7 +705,12 @@ const PublishDataset = (props) => {
             console.log("published successfully");
             navigate(stringConstants.routes.repository);
         }).catch(function(error) {
-            axiosError(error, setShowLoading, setAlertDialogInput);
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+                ScrollToTop();
+            } else {
+                axiosError(error, setShowLoading, setAlertDialogInput);
+            }
         });
         setShowLoading(false);
         setShowLicenseDialog(false);
@@ -878,7 +901,7 @@ const PublishDataset = (props) => {
                     <Col md={12} style={{ textAlign: "right" }}>
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                            disabled={error} onClick={()=> {
+                            onClick={()=> {
                                 setShowCollectionTable(true);
                                 setTextAlertInputCollection({"show": false, id: ""});
                                 }}>
@@ -887,7 +910,7 @@ const PublishDataset = (props) => {
                         </div>
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                            disabled={error} onClick={()=> {
+                             onClick={()=> {
                                 setShowCoCTable(true);
                                 setTextAlertInputCollection({"show": false, id: ""});}}>
                             Add Collection of Collections
@@ -909,7 +932,7 @@ const PublishDataset = (props) => {
                 {!showAddCollection && 
                 <div className="text-center mb-2">
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                    disabled={error} onClick={() => setShowAddCollection (true)}>
+                    onClick={() => setShowAddCollection (true)}>
                     Modify Data
                 </Button></div> }
             </Card.Body>

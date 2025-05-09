@@ -591,6 +591,8 @@ const PublicDataset = (props) => {
       setIsLoading(true);
       getJson (stringConstants.api.getpublicdataset + "/" + datasetIdentifier).then ((data) => {
           setDataset (data.data.data);
+          if (data.data.data.glycoproteinData && data.data.data.glycoproteinData.length > 0) 
+            setDatasetType ("GLYCOPROTEIN");
           setIsLoading(false);
       }).catch (function(error) {
           if (error && error.response && error.response.data) {
