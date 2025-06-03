@@ -1,8 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import TextAlert from "./TextAlert";
 import { Button, Col, Image, Row } from "react-bootstrap";
-import { Box, Dialog, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
+import { Dialog, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
 import compositionList from '../data/composition.json';
 import compositionMarks from '../data/compositiontype.json';
 import "./Composition.css";
@@ -10,7 +9,6 @@ import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 
 const Composition = (props) => {
-    //const navigate = useNavigate();
     const [textAlertInput, setTextAlertInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -259,7 +257,7 @@ const Composition = (props) => {
     }
 
     function valuetext(value) {
-       setCompositionType(value == 0 ? "BASE" : value== 1 ? "GLYGEN" : "DEFINED");
+       setCompositionType(value === 0 ? "BASE" : value=== 1 ? "GLYGEN" : "DEFINED");
        return value;
     }
 
@@ -293,7 +291,7 @@ const Composition = (props) => {
             onLoad={() => {
             }}
         >
-            <div style={{ overflow: 'hidden' }}>
+            <div style={{ overflowY: 'auto' }}>
                 <Row className="sups-dialog-title">
                 <Col><h5 >{props.title}:
                     {getCompositionDisplay()}</h5></Col>

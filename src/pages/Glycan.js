@@ -92,6 +92,7 @@ const Glycan = (props) => {
         props.authCheckAgent();
         setValidate(false);
         let t=null;
+        e && e.preventDefault();
         if (type === "sequence") {
             if (userSelection.sequence === "" || userSelection.sequence.trim().length < 1) {
                 setValidate(true);
@@ -127,7 +128,7 @@ const Glycan = (props) => {
             format: userSelection.sequenceType}
         
         addGlycan(glycan, t);
-        e && e.preventDefault();
+        
     };
 
     const handleBackToDraw = e => {
@@ -220,7 +221,7 @@ const Glycan = (props) => {
       var compositions = [...userSelection.composition];
       var compTypes = [...userSelection.compositionType]
       const index = compositions.findIndex ((item) => item === comp.composition);
-      if (index == -1) { // not found
+      if (index === -1) { // not found
         compositions.push(comp.composition);
         compTypes.push(type)
         setUserSelection ({"composition": compositions});
@@ -332,6 +333,7 @@ const Glycan = (props) => {
             <CloseIcon />
           </IconButton>
           <DialogContent>
+                 <Loading show={showLoading}></Loading>
                  <div className="gg-align-center mb-3">
                   <MaterialReactTable table={compositionTable} />
                 </div>
