@@ -927,7 +927,7 @@ const Glycoprotein = (props) => {
                                 <Form.Control
                                     type="text"
                                     name="name"
-                                    placeholder="Enter a name for glycprotein"
+                                    placeholder="Enter a name for glycoprotein"
                                     value={userSelection.name}
                                     onChange={handleChange}
                                 />    
