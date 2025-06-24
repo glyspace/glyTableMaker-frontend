@@ -25,6 +25,7 @@ const PublicDataset = (props) => {
 
     const [dataset, setDataset] = useState();
     const [descOpen, setDescOpen] = useState(false);
+    const [notesOpen, setNotesOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -123,12 +124,25 @@ const PublicDataset = (props) => {
                 </button>
                 </div>
             )}
+            {dataset.notes && (
+                <div>
+                <strong>Notes: </strong>
+                {getNotes(dataset.notes)}
+                <button className={"more-less"} onClick={() => setNotesOpen(!notesOpen)}>
+                    {dataset.notes.length > 150 && !notesOpen ? `more` : notesOpen ? `less` : ``}
+                </button>
+                </div>
+            )}
             </>
         );
     };
         
     const getDescription = desc => {
         return desc.length > 150 && !descOpen ? `${desc.substring(0, 100)}...` : descOpen ? `${desc}` : desc;
+    };
+
+    const getNotes = desc => {
+        return desc.length > 150 && !notesOpen ? `${desc.substring(0, 100)}...` : notesOpen ? `${desc}` : desc;
     };
 
     const getCellValue = (row, columnName, id, uri) => {

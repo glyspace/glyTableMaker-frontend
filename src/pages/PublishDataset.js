@@ -50,6 +50,7 @@ const PublishDataset = (props) => {
         id: null,
         name: "",
         description: "",
+        notes: "",
         collections: [],
         license : null,
         associatedPapers : [],
@@ -187,7 +188,7 @@ const PublishDataset = (props) => {
             }
         });
 
-        if (!hasData) {
+        if (showAddCollection && !hasData) {
             setError(true);
             setTextAlertInput({"show": true, "message": "Selected collections do not have glycans/glycoproteins. Dataset cannot be published!"});
             ScrollToTop();
@@ -691,6 +692,7 @@ const PublishDataset = (props) => {
             "id": userSelection.id ?? null,
             "name": userSelection.name,
             "description": userSelection.description,
+            "notes" : userSelection.notes,
             "collections": userSelection.collections && userSelection.collections.length > 0 ? userSelection.collections : null, 
             "license": datasetId ? (licenseChanged ? selectedLicense : null) : selectedLicense,
             "publications" : publications,
@@ -873,6 +875,27 @@ const PublishDataset = (props) => {
                       required={false}
                       isInvalid={validate}
                       maxLength={5000}
+                    />
+                </Col>
+                </Form.Group>
+                {/* Notes */}
+                <Form.Group
+                  as={Row}
+                  controlId="notes"
+                  className="gg-align-center mb-3"
+                >
+                  <Col xs={12} lg={9} style={{ textAlign: "left" }}>
+                    <FormLabel label="Notes" />
+                    <Form.Control
+                      as="textarea"
+                      rows="5"
+                      name="notes"
+                      placeholder="Enter additional notes"
+                      value={userSelection.notes}
+                      onChange={handleChange}
+                      required={false}
+                      isInvalid={validate}
+                      maxLength={10000}
                     />
                 </Col>
                 </Form.Group>
