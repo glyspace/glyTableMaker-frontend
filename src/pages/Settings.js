@@ -346,6 +346,14 @@ const Settings = (props) => {
                 "label" : "Molecular Phenotype",
                 "visible": true,
             },
+            "18" : {
+                "label" : "Cellular Component ID",
+                "visible": true,
+            },
+            "cellularCompValue": {
+                "label" : "Cellular Component",
+                "visible": true,
+            },
             "16" : {
                 "label" : "Contributor",
                 "visible": true,
@@ -439,7 +447,15 @@ const Settings = (props) => {
             "16" : {
                 "label" : "Comment",
                 "visible": true,
-            }
+            }, 
+            "17" : {
+                "label" : "Cellular Component ID",
+                "visible": true,
+            },
+            "cellularCompValue": {
+                "label" : "Cellular Component",
+                "visible": true,
+            },
         }
     });   // map containing column visibility for each table type
 

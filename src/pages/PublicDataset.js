@@ -292,6 +292,18 @@ const PublicDataset = (props) => {
           size: 100,
         },
         {
+          accessorFn: (row) => getCellValue (row, 'Cellular Component'),
+          header: 'Cellular Component',
+          id: "cellularCompValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
+          header: 'Cellular Component ID',
+          id: "17",
+          size: 100,
+        },
+        {
           accessorFn: (row) => getCellValue (row, 'Contributor'),
           header: 'Contributor',
           id: "15",
@@ -436,6 +448,18 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Molecular Phenotype'),
           header: 'Molecular Phenotype',
           id: "15",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cellular Component'),
+          header: 'Cellular Component',
+          id: "cellularCompValue",
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
+          header: 'Cellular Component ID',
+          id: "18",
           size: 100,
         },
         {
