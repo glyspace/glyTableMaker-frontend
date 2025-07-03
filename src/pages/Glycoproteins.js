@@ -144,6 +144,9 @@ const Glycoproteins = (props) => {
                             <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycoproteinfromfile}?type=byonic`}>
                                 Byonic glycoprotein file (.csv)
                             </NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycoproteinfromfile}?type=excel`}>
+                                GlyGen glycoprotein file (.xlsx)
+                            </NavDropdown.Item>
                             </NavDropdown>
                         </span>
                     </div>

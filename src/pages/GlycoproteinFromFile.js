@@ -45,6 +45,7 @@ const GlycoproteinFromFile = props => {
     const [showLoading, setShowLoading] = useState(false);
     const [uploadedFile, setUploadedFile] = useState();
     const [glycanOrder, setGlycanOrder] = useState("ALTERNATIVE");
+    const [compType, setCompType] = useState("BYONIC");
     const [glycanOrderDescription, setGlycanOrderDescription] = useState (marks[1].description);
     
     const [alertDialogInput, setAlertDialogInput] = useReducer(
@@ -67,6 +68,11 @@ const GlycoproteinFromFile = props => {
       fileType: defaultFileType
     };
 
+    const handleCompositionTypeChange = e => {
+      const select = e.target.options[e.target.selectedIndex].value;
+      setCompType(select);
+    };
+
     function handleSubmit(e) {
         setShowLoading(true);
         setTextAlertInput({"show": false, id: ""});
@@ -78,7 +84,8 @@ const GlycoproteinFromFile = props => {
             fileFormat: uploadedFile.fileFormat,
         }
     
-        postJson (stringConstants.api.addglycoproteinfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag + "&glycanorder=" + glycanOrder, 
+        postJson (stringConstants.api.addglycoproteinfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag 
+                      + (type == "byonic" ? "&glycanorder=" + glycanOrder : "&compositiontype=" + compType), 
             file, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             navigate("/glycoproteins");
@@ -142,6 +149,7 @@ const GlycoproteinFromFile = props => {
                             gettagws="api/data/getglycantags"
                         />
                       </Col>
+                      {type && type == 'bynoic' &&
                       <Col xs={12} lg={9}>
                         <FormLabel label="Handle multiple Glycan Annotations per Peptide"/>
                         <Col>
@@ -171,7 +179,23 @@ const GlycoproteinFromFile = props => {
                         <div style={{marginLeft: "20px"}}>
                             <h6>{glycanOrderDescription}</h6></div>
                         }
-                        </Col>
+                        </Col>}
+
+                      {type && type == 'excel' &&
+                        <Col xs={12} lg={9}>
+                          <FormLabel label="Glycan composition format"/>
+                          <Col>
+                          </Col>
+                          <Form.Select
+                                name={"compType"}
+                                value={compType}
+                                style={{ marginBottom: "30px"}}
+                                onChange={handleCompositionTypeChange}
+                              >
+                              <option value="COMPACT">Composition (single letter)</option>
+                              <option value="BYONIC">Composition (byonic)</option>
+                          </Form.Select>
+                          </Col>}
                     </Form.Group>
                         
                     <div className="text-center">
