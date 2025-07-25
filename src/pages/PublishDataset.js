@@ -59,6 +59,7 @@ const PublishDataset = (props) => {
     };
 
     const [publications, setPublications] = useState([]);
+    const [publicationCache, setPublicationCache] = useState({});
 
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [userSelection, setUserSelection] = useReducer(reducer, dataset);
@@ -470,16 +471,26 @@ const PublishDataset = (props) => {
                 collection.metadata.forEach ((metadata) => {
                     if (metadata.type.datatypeId === 2 || metadata.type.name === "Evidence") {
                         const publicationIdentifier = metadata.value;
-                        // get the publication details
-                        getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
-                            const found = nextPublications.find ((p) => p.id === data.data.id);
+                        if (publicationCache[publicationIdentifier]) {
+                            const found = nextPublications.find ((p) => p.id === publicationIdentifier);
                             if (!found) {
-                                nextPublications.push (data.data);
+                                nextPublications.push (publicationCache[publicationIdentifier]);
                             }
                             setPublications([...nextPublications]);
-                        }).catch(function(error) {
-                            axiosError(error, null, setAlertDialogInput);
-                        });
+                        }
+                        else {
+                            // get the publication details
+                            getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
+                                publicationCache[publicationIdentifier] = data.data;
+                                const found = nextPublications.find ((p) => p.id === data.data.id);
+                                if (!found) {
+                                    nextPublications.push (data.data);
+                                }
+                                setPublications([...nextPublications]);
+                            }).catch(function(error) {
+                                axiosError(error, null, setAlertDialogInput);
+                            });
+                        }
                         
                     }
                 })
@@ -595,12 +606,15 @@ const PublishDataset = (props) => {
 
         // append new selections
         let cType = null;
-        selectedCollections.forEach ((col) =>  {
+        selected.forEach ((col) =>  {
+            if (cType && col.type !== cType) {
+                setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
+                return;
+            } 
             cType = col.type;
         });
 
-        // append new selections
-        const previous = [...selectedCollections];
+        const previous = [];
         selected.forEach ((collection) => {
             const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
             if (!found) {
