@@ -731,10 +731,12 @@ const Collection = (props) => {
 
         let added = [...selectedMetadataItems];
         let addedValues = [...selectedMetadataValue];
+        let addedItemKey = [...metadataItemKey];
 
         var idx = findSortedIndex (added, datatypeId);
         added.splice(idx, 0, datatypeId);
         addedValues.splice (idx, 0, "");
+        addedItemKey.splice(idx, 0, null);
         
         let categoryId = 1;
         let itemId = datatypeId;
@@ -745,7 +747,8 @@ const Collection = (props) => {
             itemId = itemId - 100;
         } 
 
-        handleMetadataSelectionChange (added, addedValues, categoryId, metadataItemKey);
+        handleMetadataSelectionChange (added, addedValues, categoryId, addedItemKey);
+        setMetadataItemKey(addedItemKey);
         setSelectedMetadataItems(added);
         setSelectedMetadataValue(addedValues);
     }
@@ -840,7 +843,7 @@ const Collection = (props) => {
 
     const isSecondCopy = (datatypeId, index) => {
         if (index > 0) {
-            for (let i = 0; i <= index; i++) {
+            for (let i = 0; i < index; i++) {
                 if (selectedMetadataItems[i] === datatypeId) {
                     return true; // this is the second or later copy
                 }
@@ -896,7 +899,7 @@ const Collection = (props) => {
                         const dropdown = isDropdown(datatypeId);
                         const typeahead = isTypeahead(datatypeId);
                         const mandatory = isMandatory(datatypeId);
-                        const secondCopy = isSecondCopy (datatypeId, index);
+                        const secondCopy = isSecondCopy (dId, index);
                         const dType = getDatatype(datatypeId);
                         return (
                         <Row>
