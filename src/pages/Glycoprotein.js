@@ -126,7 +126,7 @@ const Glycoprotein = (props) => {
                             "type": site.type,
                             "glycosylationType" : site.glycosylationType,
                             "glycosylationSubType" : site.glycosylationSubType,
-                            "positions" : site.position.positionList ?? [],
+                            "positions" : site.position ? site.position.positionList ? site.position.positionList : [] : [],
                             "glycans" : site.glycans,
                         });
                     });
