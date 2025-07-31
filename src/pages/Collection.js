@@ -1634,39 +1634,44 @@ const Collection = (props) => {
                     category.dataTypes.map ((d, index) => {
                         if (!d.multiple && userSelection.metadata) {
                             // check if it already exists
-                            const existing = userSelection.metadata.find ((meta) => 
+                            const existing = userSelection.metadata.filter ((meta) => 
                                 meta.type.name === d.name);
-                            if (!existing) {
+                            if (!existing || existing.length == 0) {
                                 var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                 added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
                                 addedValues.splice (idx, 0, "");
                                 addedKeys.splice (idx, 0, null);
                             }
                             else {
-                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
-                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
-                                addedValues.splice (idx, 0, existing.value);
-                                if (existing.type.name === "Contributor") {
-                                    parseContributor (existing.value);
-                                    setContributor (existing.value);
-                                }
-                                addedKeys.splice (idx, 0, existing.id);
+                                existing.map ((ex, i) => {
+                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                    addedValues.splice (idx, 0, ex.value);
+                                    if (ex.type.name === "Contributor") {
+                                        parseContributor (ex.value);
+                                        setContributor (ex.value);
+                                    }
+                                    addedKeys.splice (idx, 0, ex.id);
+                                })
+                                
                             }
                         } else {
                             multiples.push (d);
                             if (userSelection.metadata) {
                                 // check if it already exists
-                                const existing = userSelection.metadata.find ((meta) => 
+                                const existing = userSelection.metadata.filter ((meta) => 
                                     meta.type.name === d.name);
-                                if (existing) {
-                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
-                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
-                                    addedValues.splice (idx, 0, existing.value);
-                                    if (existing.type.name === "Contributor") {
-                                        parseContributor (existing.value);
-                                        setContributor (existing.value);
-                                    }
-                                    addedKeys.splice (idx, 0, existing.id);
+                                if (existing && existing.length > 0) {
+                                    existing.map ((ex, i) => {
+                                        var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                        added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                        addedValues.splice (idx, 0, ex.value);
+                                        if (ex.type.name === "Contributor") {
+                                            parseContributor (ex.value);
+                                            setContributor (ex.value);
+                                        }
+                                        addedKeys.splice (idx, 0, ex.id);
+                                    });
                                 } else {
                                     var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                     added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
@@ -1710,40 +1715,44 @@ const Collection = (props) => {
                     category.dataTypes.map ((d, i) => {
                         if (!d.multiple && userSelection.metadata) {
                             // check if it already exists
-                            const existing = userSelection.metadata.find ((meta) => 
+                            const existing = userSelection.metadata.filter ((meta) => 
                                 meta.type.name === d.name);
-                            if (!existing) {
+                            if (!existing || existing.length == 0) {
                                 var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                 added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
                                 addedValues.splice (idx, 0, "");
                                 addedKeys.splice (idx, 0, null);
                             }
                             else {
-                                var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
-                                added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
-                                addedValues.splice (idx, 0, existing.value);
-                                if (existing.type.name === "Contributor") {
-                                    parseContributor (existing.value);
-                                    setContributor (existing.value);
-                                }
-                                addedKeys.splice (idx, 0, existing.metadataId);
-                                //notAdded.push (d.name);
+                                existing.map ((ex, i) => {
+                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                    addedValues.splice (idx, 0, ex.value);
+                                    if (ex.type.name === "Contributor") {
+                                        parseContributor (ex.value);
+                                        setContributor (ex.value);
+                                    }
+                                    addedKeys.splice (idx, 0, ex.metadataId);
+                                    //notAdded.push (d.name);
+                            });
                             }
                         } else {
                             multiples.push(d);
                             if (userSelection.metadata) {
                                 // check if it already exists
-                                const existing = userSelection.metadata.find ((meta) => 
+                                const existing = userSelection.metadata.filter ((meta) => 
                                     meta.type.name === d.name);
-                                if (existing) {
-                                    var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
-                                    added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
-                                    addedValues.splice (idx, 0, existing.value);
-                                    if (existing.type.name === "Contributor") {
-                                        parseContributor (existing.value);
-                                        setContributor (existing.value);
-                                    }
-                                    addedKeys.splice (idx, 0, existing.metadataId);
+                                if (existing && existing.length > 0) {
+                                    existing.map ((ex, i) => {
+                                        var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
+                                        added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
+                                        addedValues.splice (idx, 0, ex.value);
+                                        if (ex.type.name === "Contributor") {
+                                            parseContributor (ex.value);
+                                            setContributor (ex.value);
+                                        }
+                                        addedKeys.splice (idx, 0, ex.metadataId);
+                                    });
                                 } else {
                                     var idx = findSortedIndex (added, category.categoryId * 100 + d.datatypeId);
                                     added.splice(idx, 0, category.categoryId * 100 + d.datatypeId);
