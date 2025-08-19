@@ -472,7 +472,7 @@ const PublishDataset = (props) => {
                     if (metadata.type.datatypeId === 2 || metadata.type.name === "Evidence") {
                         const publicationIdentifier = metadata.value;
                         if (publicationCache[publicationIdentifier]) {
-                            const found = nextPublications.find ((p) => p.id === publicationIdentifier);
+                            const found = nextPublications.find ((p) => (p.pubmedId === publicationIdentifier || p.doiId === publicationIdentifier));
                             if (!found) {
                                 nextPublications.push (publicationCache[publicationIdentifier]);
                             }
@@ -616,14 +616,14 @@ const PublishDataset = (props) => {
 
         const previous = [];
         selected.forEach ((collection) => {
-            const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
-            if (!found) {
+           // const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
+           // if (!found) {
                 if (cType && collection.type !== cType) {
                     setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
                     return;
                 } 
                 previous.push (collection);
-            }
+           // }
         })
         setSelectedCollections(previous);
     }
@@ -639,17 +639,17 @@ const PublishDataset = (props) => {
         });
 
         // append new selections
-        const previous = [...selectedCollections];
+        const previous = [];
         selected.forEach ((coc) => {
             coc.children && coc.children.forEach ((collection) => {
-                const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
-                if (!found) {
+               // const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
+               // if (!found) {
                     if (cType && collection.type !== cType) {
                         setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
                         return;
                     } 
                     previous.push (collection);
-                }
+               // }
             })
         })
         setSelectedCollections(previous);

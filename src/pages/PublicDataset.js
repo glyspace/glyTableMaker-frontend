@@ -223,6 +223,20 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Evidence'),
           id: "7",
           header: 'Evidence',
+          Cell: ({ cell }) => {
+            if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
@@ -271,11 +285,39 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Disease'),
           header: 'Disease',
           id: "diseaseValue",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Disease', true),
           header: 'Disease ID',
+          Cell: ({ cell }) => {
+            if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           id: "12",
           size: 100,
         },
@@ -283,23 +325,79 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
           header: 'Functional annotation/Keyword',
           id: "13",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Experimental technique'),
           header: 'Experimental technique',
           id: "14",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cellular Component'),
           header: 'Cellular Component',
           id: "cellularCompValue",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
           header: 'Cellular Component ID',
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           id: "17",
           size: 100,
         },
@@ -340,6 +438,20 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Evidence'),
           id: "2",
           header: 'Evidence',
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
@@ -388,11 +500,39 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Disease'),
           header: 'Disease',
           id: "diseaseValue",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Disease', true),
           header: 'Disease ID',
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           id: "7",
           size: 100,
         },
@@ -417,12 +557,39 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
           header: 'Functional annotation/Keyword',
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           id: "11",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Experimental technique'),
-          header: 'Experimental technique',
+          header: 'Experimental technique',Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           id: "12",
           size: 100,
         },
@@ -454,12 +621,40 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'Cellular Component'),
           header: 'Cellular Component',
           id: "cellularCompValue",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
           header: 'Cellular Component ID',
           id: "18",
+          Cell: ({ cell }) => {
+             if (cell.getValue() === null) {
+              return <></>
+            } else {
+              const items = cell.getValue().split('|'); // Split the string by '|'
+              return (
+                <>
+                  {items.map((item, index) => (
+                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
+                  ))}
+                </>
+              );
+            }
+          },
           size: 100,
         },
         {
