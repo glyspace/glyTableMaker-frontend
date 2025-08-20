@@ -109,6 +109,9 @@ const Collections = (props) => {
                   })}>
                 Add Glycoprotein Collection
                 </Button>
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.importcollection)}>
+                Import Collection From File
+                </Button>
               </div>
               <Table 
                   authCheckAgent={props.authCheckAgent}
@@ -119,7 +122,9 @@ const Collections = (props) => {
                   showEdit={true}
                   edit={stringConstants.routes.addcollection + "?collectionId="}
                   showCopy={true}
+                  showDownload={true}
                   copy={stringConstants.routes.addcollection + "?isCopy=true&collectionId="}
+                  download={stringConstants.api.downloadcollection + "/"}
                   deletews="api/data/deletecollection/"
                   initialSortColumn="name"
                   rowId="collectionId"

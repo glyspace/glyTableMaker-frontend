@@ -23,6 +23,7 @@
         "addglycoprotein" : "/glycoproteins/addglycoprotein",
         "addglycoproteinfromfile": "/glycoproteins/addglycoproteinfromfile",
         "addcollection": "/collections/addcollection",
+        "importcollection" : "/collections/addcollectionfromfile",
         "addcoc": "/collections/addcoc",
         "upload": "/glycans/fileupload",
         "glycoproteinupload" : "/glycoproteins/fileupload",
@@ -37,6 +38,8 @@
         "addglycoproteinfromfile" : "api/data/addglycoproteinfromfile",
         "getpublicdatasets" : "api/public/getdatasets",
         "getpublicdataset" : "api/public/getdataset",
-        "listdatasetsforsearch" : "api/search/listDatasetsForSearch"
+        "listdatasetsforsearch" : "api/search/listDatasetsForSearch",
+        "downloadcollection" : "api/data/downloadcollection",
+        "importcollection": "api/data/importcollection"
     }
 }

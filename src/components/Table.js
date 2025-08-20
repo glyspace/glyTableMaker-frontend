@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { deleteJson, getAuthorizationHeader, getBlob, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFiltersButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { Box, IconButton, Switch, Tooltip } from "@mui/material";
@@ -11,6 +11,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import PropTypes from "prop-types";
 import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from "react-router-dom";
@@ -262,6 +263,38 @@ const Table = (props) => {
         props.saveColumnVisibilityChanges && props.saveColumnVisibilityChanges (columns);
       }
 
+      const download = (url) => {
+          setIsLoading(true);
+          props.setTextAlertInput && props.setTextAlertInput({"show": false, id: ""});
+      
+          getBlob (url, getAuthorizationHeader()).then ( (data) => {
+              const contentDisposition = data.headers.get("content-disposition");
+              const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
+              //const fileNameEndIndex = contentDisposition.indexOf(":");
+              const fileName = contentDisposition.substring(fileNameIndex, contentDisposition.length - 1);
+      
+              //   window.location.href = fileUrl;
+              var fileUrl = URL.createObjectURL(data.data);
+              var a = document.createElement("a");
+              document.body.appendChild(a);
+              a.style = "display: none";
+              a.href = fileUrl;
+              a.download = fileName;
+              a.click();
+      
+              window.URL.revokeObjectURL(fileUrl);
+              setIsLoading(false);
+            }).catch (function(error) {
+              if (error && error.response && error.response.data) {
+                  props.setTextAlertInput && props.setTextAlertInput ({"show": true, "message": error.response.data.message });
+              } else {
+                  axiosError(error, null, props.setAlertDialogInput);
+              }
+              setIsLoading(false);
+            }
+          );
+      }
+
       const columns = props.columns;
 
       useEffect(() => {
@@ -322,6 +355,13 @@ const Table = (props) => {
               <Tooltip title="Clone">
               <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
                 <ContentCopyIcon />
+              </IconButton>
+            </Tooltip>)
+            }
+            {props.showDownload && (
+              <Tooltip title="Export">
+              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+                <ExitToAppIcon />
               </IconButton>
             </Tooltip>)
             }
@@ -410,6 +450,13 @@ const Table = (props) => {
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
+            {props.showDownload && (
+              <Tooltip title="Export">
+              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+                <ExitToAppIcon />
+              </IconButton>
+            </Tooltip>)
+            }
             {props.addtagws && (
               <Tooltip title="Add Tag">
               <IconButton color="primary">
@@ -511,9 +558,9 @@ const Table = (props) => {
                 </IconButton>
               </Tooltip>
             )}
-            {props.download && (
+            {props.downloadTable && (
               <Tooltip title="Download table data">
-              <Button style={{marginLeft: '5px'}} className="gg-btn-blue-sm" onClick={()=> props.download}>Download</Button>
+              <Button style={{marginLeft: '5px'}} className="gg-btn-blue-sm" onClick={()=> props.downloaTable}>Download</Button>
               </Tooltip>
             )}
             {props.deleteAll && (
@@ -551,6 +598,13 @@ const Table = (props) => {
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
+            {props.showDownload && (
+              <Tooltip title="Export">
+              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+                <ExitToAppIcon />
+              </IconButton>
+            </Tooltip>)
+            }
             {props.addtagws && (
               <Tooltip title="Add Tag">
               <IconButton color="primary">
@@ -639,6 +693,9 @@ Table.propTypes = {
     showEdit: PropTypes.bool,   // whether to add edit icon to actions
     copy: PropTypes.string, // copy page
     showCopy: PropTypes.bool, // whether to add copy icon to actions
+    download: PropTypes.string, // download action
+    showDownload: PropTypes.bool, // whether to add download icon to actions
+    downloadTable: PropTypes.func, // download table function to add to the toolbar
     initialSortColumn: PropTypes.string,   // required, name of the column to sort initially
     rowSelection: PropTypes.bool,  // whether to show row selection checkboxes
     setSelectedRows: PropTypes.func,
