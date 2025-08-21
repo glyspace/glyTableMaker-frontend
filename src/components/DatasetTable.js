@@ -90,6 +90,10 @@ const DatasetTable = props => {
         return user.firstName ? user.firstName + (user.lastName ? " " + user.lastName : "") : user.username;
     }
 
+    const getType = noProtein => {
+        return noProtein && noProtein > 0 ? "Glycoprotein Dataset" : "Glycan Dataset";
+    }
+
     const getDateCreated = dateCreated => {
         const d = new Date(dateCreated);
         let year = d.getFullYear();
@@ -114,6 +118,10 @@ const DatasetTable = props => {
             <div key={index} style={{ textAlign: "left", margin: "20px" }}>
                 <div>
                     <strong>ID:</strong> <Link to={`/data/dataset/${row.original.datasetIdentifier}`}>{row.original.datasetIdentifier}</Link>
+                </div>
+                <div>
+                    <strong>Dataset Type: </strong>
+                    {getType(row.original.noProteins)}
                 </div>
                 <div>
                     <strong>Dataset Name: </strong>
