@@ -111,6 +111,10 @@ const PublicDataset = (props) => {
                 {dataset.name}
             </div>
             <div>
+                <strong>Dataset Type: </strong>
+                {datasetType}
+            </div>
+            <div>
                 <strong>Publish Date: </strong>
                 {getDateCreated(dataset.dateCreated)}
             </div>
