@@ -52,6 +52,8 @@ import { DatasetDetailSearch } from "./pages/DatasetDetailSearch";
 import { DatasetDetailList } from "./pages/DatasetDetailList";
 import { GlycoproteinFromFile } from "./pages/GlycoproteinFromFile";
 import { CollectionFromFile } from "./pages/CollectionFromFile";
+import Footer from "./components/Footer";
+import ReactGA from 'react-ga4';
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -64,6 +66,14 @@ const items = [
   { label: stringConstants.sidebar.repository, id: "Repository", route: stringConstants.routes.repository},
 ];  
 
+function initializeReactGA() {
+      var base = process.env.REACT_APP_BASENAME;
+      if (base) {
+        ReactGA.initialize("G-LDGY4MFWH8");
+        ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+      }
+}
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const loginUpdater = flag => setLoggedIn(flag);
@@ -71,6 +81,8 @@ function App() {
   const [sideBarData, setSidebarData] = useState(items);
   const navigate = useNavigate();
   const location = useLocation();
+
+  initializeReactGA();
 
   library.add(
     faTrashAlt,
@@ -292,6 +304,7 @@ function App() {
   ];
 
   return (
+    <>
       <Routes>
       <Route element={<Layout />}>
       {routes.map((element, index) => {
@@ -307,7 +320,8 @@ function App() {
       })}
       </Route>
     </Routes>
-
+    <Footer />
+  </>
   );
 
   function Layout() {

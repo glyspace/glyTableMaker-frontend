@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logoFooter from "../images/glygen-logoW-top.svg";
-import { Navbar, Col, Row } from "react-bootstrap";
-import Container from "@mui/material/Container";
+import { Navbar, Col, Row, Container } from "react-bootstrap";
+//import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import "../App.css";
 import useCustomStyles from "../utils/useCustomStyles";
@@ -26,23 +26,24 @@ const styles = (theme) => ({
   },
 });
 
+
 export default function Footer() {
   const theme = useTheme();
   const classes = useCustomStyles(styles, theme);
   return (
     <React.Fragment>
-      <div className="gg-blue-bg gg-align-center gg-footer align-right-header">
-        <Container maxWidth="xl" className="justify-content-center align-right-header">
-          <Row className="text-center justify-content-center">
-            <Col md={"auto"}>
+      <div className="gg-blue-bg gg-align-center">
+        <Container maxWidth="xl" className="justify-content-center text-center">
+          <Row className="justify-content-center mt-1 mb-1">
+            <Col xs={12} md={12} className="mt-2">
               <Navbar.Brand>
                 <Link to="/">
                   <img className="justify-content-center" src={logoFooter} alt="GlyGen logo" />
                 </Link>
               </Navbar.Brand>
             </Col>
-            <Box display="flex" alignItems="center" className="box-footer align-right-header">
-              <Col md={"auto"}>
+            <Col xs={12} md={"auto"}>
+            <Box display="flex" className="box-footer">
                 <Navbar.Text className={classes.navbarText}>
                   GlyGen is supported and funded by the{" "}
                   <a
@@ -63,8 +64,9 @@ export default function Footer() {
                     1U01GM125267&nbsp;-&nbsp;01
                   </a>
                 </Navbar.Text>
-              </Col>
+             
             </Box>
+             </Col>
           </Row>
         </Container>
       </div>

@@ -874,6 +874,7 @@ const PublicDataset = (props) => {
                 setAlertDialogInput({ show: input });
             }}
         />
+        <Loading show={isLoading}></Loading>
         <VersionAlert data={versionData} pageLoading={isLoading}/>
         {showVersionLog && (
           <Modal
