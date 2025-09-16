@@ -20,6 +20,8 @@ import ExampleSequenceControl from "../components/ExampleSequenceControl";
 import TooltipExample from "../data/examples";
 import HelpTooltip from '../components/HelpTooltip';
 
+let newId = 1000;
+
 const examples = TooltipExample.glycoprotein;
 const Glycoprotein = (props) => {
     const [searchParams] = useSearchParams();
@@ -30,6 +32,7 @@ const Glycoprotein = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [showLoading, setShowLoading] = useState(false);
     const [showAddSite, setShowAddSite] = useState(false);
+    const [showEditSite, setShowEditSite] = useState(false);
     const [showPosition, setShowPosition] = useState(true);
     const [showGlycanSelection, setShowGlycanSelection] = useState(false);
     const [showStartEnd, setShowStartEnd] = useState(false);
@@ -55,6 +58,9 @@ const Glycoprotein = (props) => {
     const [gType, setGType] = useState(null);
     const [gsType, setGsType] = useState (null);
 
+    const[start, setStart] = useState(null);
+    const[end, setEnd] = useState(null);
+
     const [requiredVersion, setRequiredVersion] = useState("");
 
     const initialState = {
@@ -69,7 +75,8 @@ const Glycoprotein = (props) => {
 
     const siteState = {
         siteId: null,
-        type: "",
+        type: "EXPLICIT",
+        new: null,
         glycosylationSubType: "",
         glycosylationType: "",
         glycans: [],
@@ -279,7 +286,7 @@ const Glycoprotein = (props) => {
         userSelection.sites.forEach ((site) => {
             const positionList = site.positions;
             sites.push ({
-                "siteId" : site.siteId,
+                "siteId" : site.new ? null : site.siteId,
                 "type": site.type,
                 "glycosylationType" : site.glycosylationType,
                 "glycosylationSubType" : site.glycosylationSubType,
@@ -336,12 +343,16 @@ const Glycoprotein = (props) => {
 
     const deleteFromTable = (id) => {
         var sites = userSelection.sites;
-        const index = sites.findIndex ((item) => item["id"] === id);
+        const index = sites.findIndex ((item) => item["siteId"] === id);
         var updated = [
             ...sites.slice(0, index),
             ...sites.slice(index + 1)
         ];
         setUserSelection ({"sites": updated});
+        setSiteSelection ({ "siteId": null, "new": null, "type": "EXPLICIT", "glycans": [], "glycosylationType" : "", "glycosylationSubType": "",
+            "positions": [{"location" : -1, "aminoAcid": ""}]});
+        setStart(null);
+        setEnd(null);
     }
 
     const deleteFromGlycanTable = (id) => {
@@ -352,6 +363,19 @@ const Glycoprotein = (props) => {
             ...glycans.slice(index + 1)
         ];
         setSiteSelection ({"glycans": updated});
+    }
+
+    const editSite = (site) => {
+        setSiteSelection(site);
+        site.positions.map ((position, index) => {
+            if (index == 0) {
+                setStart(position.location);
+            }
+            if (index == 1) {
+                setEnd(position.location);
+            }
+        });
+        setShowEditSite(true);
     }
 
     const handleAddSite = () => {
@@ -387,11 +411,30 @@ const Glycoprotein = (props) => {
             }
         }
 
-        sites.push (siteSelection);
+        if (!siteSelection.siteId) {
+            // new site
+            siteSelection.siteId = newId++;
+            siteSelection.new = true;
+            sites.push (siteSelection);   
+        } else {
+            // update existing
+            const index = sites.findIndex ((item) => item["siteId"] === siteSelection.siteId);
+            if (index !== -1) {
+                sites[index].positions = siteSelection.positions;
+                sites[index].new = false;
+                sites[index].glycans = siteSelection.glycans;
+                sites[index].glycosylationSubType = siteSelection.glycosylationSubType;
+                sites[index].type = siteSelection.type;
+                sites[index].glycosylationType = siteSelection.glycosylationType;
+            }
+        }
         setUserSelection ({"sites": sites});
-        setSiteSelection ({ "type": "", "glycans": [], "glycosylationType" : "", "glycosylationSubType": "",
+        setSiteSelection ({ "siteId": null, "new": null, "type": "EXPLICIT", "glycans": [], "glycosylationType" : "", "glycosylationSubType": "",
             "positions": [{"location" : -1, "aminoAcid": ""}]});
+        setStart(null);
+        setEnd(null);
         setShowAddSite(false);
+        setShowEditSite(false);
     }
 
     const handleTypeChange = e => {
@@ -414,6 +457,8 @@ const Glycoprotein = (props) => {
             setSiteSelection ({"positions" : [{"location" : -1, "aminoAcid": ""}]});
         }
         setShowAlternatives (selected === "ALTERNATIVE");
+        setStart(null);
+        setEnd(null);
     };
 
     const handleGlycosylationTypeChange = e => {
@@ -449,8 +494,12 @@ const Glycoprotein = (props) => {
                 }
                 positions[index].location = num;
                 positions[index].aminoAcid = getAminoAcidFromSequence(positions[index].location);
+                if (index == 0) setStart(num);
+                if (index == 1) setEnd(num);
             } catch (error) {
                 setValidate(true);
+                if (index == 0) setStart(null);
+                if (index == 1) setEnd(null);
                 return null;
             }
         }
@@ -565,7 +614,7 @@ const Glycoprotein = (props) => {
                 <Col xs={4} lg={4}>
                     <Form.Select
                     name={"siteType"}
-                    value={siteSelection.siteType}
+                    value={siteSelection.type}
                     onChange={handleTypeChange}
                     >
                     <option value="EXPLICIT">Explicit</option>
@@ -588,6 +637,7 @@ const Glycoprotein = (props) => {
                             type="text"
                             name={"position"}
                             placeholder="Enter the position"
+                            value={start}
                             onChange={(e)=> handlePositionChange(e, index)}
                             isInvalid={validate}
                             />
@@ -633,6 +683,7 @@ const Glycoprotein = (props) => {
                   type="text"
                   name={"position"}
                   placeholder="Enter the position"
+                  value={start}
                   onChange={(e)=>handlePositionChange(e, 0)}
                   isInvalid={validate}
                   />
@@ -657,6 +708,7 @@ const Glycoprotein = (props) => {
                     <Form.Control
                     type="text"
                     name={"position"}
+                    value={end}
                     placeholder="Enter the position"
                     onChange={(e)=>handlePositionChange(e, 1, siteSelection.positions[0].location)}
                     isInvalid={validate}
@@ -803,7 +855,7 @@ const Glycoprotein = (props) => {
             </div>
         )}
         </div>
-             <PageHeading title={glycoproteinId ? "Edit Collection" : "Add Glycoprotein"} subTitle="Please provide the information for the new glycoprotein." />
+             <PageHeading title={glycoproteinId ? "Edit Glycoprotein" : "Add Glycoprotein"} subTitle="Please provide the information for the new glycoprotein." />
             <Card>
                 <Card.Body>
                     <div className="mt-4 mb-4">
@@ -814,7 +866,7 @@ const Glycoprotein = (props) => {
                             setAlertDialogInput({ show: input });
                         }}
                     />
-                {showAddSite && (
+                {(showAddSite || showEditSite) && (
                 <Dialog
                     maxWidth="xl"
                     fullWidth="true"
@@ -822,11 +874,12 @@ const Glycoprotein = (props) => {
                     aria-describedby="parent-modal-description"
                     scroll="paper"
                     centered
-                    open={showAddSite}
+                    open={(showAddSite || showEditSite)}
                     onClose={(event, reason) => {
                         if (reason && reason === "backdropClick")
                             return;
-                        setShowAddSite(false)
+                        setShowAddSite(false);
+                        setShowEditSite(false);
                     }}
                 >
                     <DialogTitle id="parent-modal-title">
@@ -836,7 +889,10 @@ const Glycoprotein = (props) => {
                     </DialogTitle>
                     <IconButton
                         aria-label="close"
-                        onClick={() => setShowAddSite(false)}
+                        onClick={() => {
+                            setShowAddSite(false); 
+                            setShowEditSite(false);
+                        }}
                         sx={{
                             position: 'absolute',
                             right: 8,
@@ -856,6 +912,7 @@ const Glycoprotein = (props) => {
                         <Button className="gg-btn-outline-reg"
                             onClick={()=> {
                                 setShowAddSite(false);
+                                setShowEditSite(false);
                             }}>Cancel</Button>
                         <Button className="gg-btn-blue-reg"
                             onClick={()=>handleAddSite()}>Submit</Button>
@@ -985,9 +1042,11 @@ const Glycoprotein = (props) => {
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2" 
                                 onClick={()=> {
-                                    setSiteSelection ({ "type": "EXPLICIT", "glycans": [],
+                                    setSiteSelection ({ "siteId": null, "new": null, "type": "EXPLICIT", "glycans": [], 
                                         "glycosylationType" : "", "glycosylationSubType": "",
                                         "positions": [{"location" : -1, "aminoAcid": ""}]});
+                                    setStart(null);
+                                    setEnd(null);
                                     setShowStartEnd(false);
                                     setShowAlternatives(false);
                                     setShowPosition(true);
@@ -1001,10 +1060,12 @@ const Glycoprotein = (props) => {
                     </Row>
                     <Table 
                         authCheckAgent={props.authCheckAgent}
-                        rowId = "id"
+                        rowId = "siteId"
                         data = {userSelection.sites}
                         columns={columns}
                         enableRowActions={true}
+                        showEdit={true}
+                        editInPlace={editSite}
                         delete={deleteFromTable}
                         setAlertDialogInput={setAlertDialogInput}
                     />

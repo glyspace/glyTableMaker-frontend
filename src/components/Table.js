@@ -159,6 +159,10 @@ const Table = (props) => {
           deleteRow(selectedId);
         }
       }
+
+      const editRow = (row) => {
+        props.editInPlace && props.editInPlace(row);
+      }
     
       const deleteRow = (id) => {
         if (props.deletews) {
@@ -347,7 +351,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
+              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
@@ -440,7 +444,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
+              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
@@ -588,7 +592,7 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => navigate(props.edit + row.original[props.rowId])}>
+              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
