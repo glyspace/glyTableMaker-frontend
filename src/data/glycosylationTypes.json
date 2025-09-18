@@ -2,16 +2,12 @@
     {
         "name": "O-linked",
         "subtype": [
-            "Core 1",
-            "Core 2",
-            "Core 3",
-            "Core 4",
-            "Core 5",
-            "Core 6",
-            "Core 7",
-            "O-GlcNAc",
-            "O-fucose",
-            "O-mannose"
+            "O-GalNAcylation",
+            "O-GlcNAcylation",
+            "O-Fucosylation",
+            "O-Glucosylation",
+            "O-Galactosylation",
+            "O-Mannosylation"
         ]
     },
     {
@@ -21,6 +17,16 @@
             "High mannose",
             "Hybrid"
         ]
+    },
+    {
+        "name": "C-linked",
+        "subtype": [
+            "C-Mannosylation"
+        ]
+    },
+    {
+        "name": "S-linked",
+        "subtype": []
     },
     {
         "name": "Glycosphingolipid",

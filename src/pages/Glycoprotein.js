@@ -20,7 +20,7 @@ import ExampleSequenceControl from "../components/ExampleSequenceControl";
 import TooltipExample from "../data/examples";
 import HelpTooltip from '../components/HelpTooltip';
 
-let newId = 1000;
+let newId = 500000;
 
 const examples = TooltipExample.glycoprotein;
 const Glycoprotein = (props) => {
@@ -128,12 +128,28 @@ const Glycoprotein = (props) => {
                     // set the sites properly
                     let sites = [];
                     json.data.data.sites && json.data.data.sites.forEach ((site) => {
+                        let position = [];
+                        if (!site.position) {
+                            if (site.type !== "UNKNOWN") {
+                                position = [{"location" : -1, "aminoAcid": ""}]
+                            } else if (site.type === "RANGE" || site.type === "ALTERNATIVE") {
+                                position = [{"location" : -1, "aminoAcid": ""}, {"location" : -1, "aminoAcid": ""}]
+                            }
+                        } else if (!site.position.positionList) {
+                            if (site.type !== "UNKNOWN") {
+                                position = [{"location" : -1, "aminoAcid": ""}]
+                            } else if (site.type === "RANGE" || site.type === "ALTERNATIVE") {
+                                position = [{"location" : -1, "aminoAcid": ""}, {"location" : -1, "aminoAcid": ""}]
+                            }
+                        } else {
+                            position = site.position.positionList;
+                        }
                         sites.push ({
                             "siteId" : site.siteId,
                             "type": site.type,
                             "glycosylationType" : site.glycosylationType,
                             "glycosylationSubType" : site.glycosylationSubType,
-                            "positions" : site.position ? site.position.positionList ? site.position.positionList : [] : [],
+                            "positions" : position,
                             "glycans" : site.glycans,
                         });
                     });
@@ -445,7 +461,15 @@ const Glycoprotein = (props) => {
         setShowStartEnd(selected === "RANGE");
         if (selected === "RANGE" || selected === "ALTERNATIVE") {
             const positions = [...siteSelection.positions];
-            positions.forEach ((pos) => pos.aminoAcid = "");
+            if (positions.length > 0) {
+                positions.forEach ((pos) => pos.aminoAcid = "");
+            }
+            if (positions.length < 2) {
+                positions.push ({
+                    "location": -1,
+                    "aminoAcid": "",
+                });
+            }
             if (positions.length < 2) {
                 positions.push ({
                     "location": -1,
@@ -536,11 +560,15 @@ const Glycoprotein = (props) => {
     }
 
     const findGlycosylationType = () => {
-        let gType = "N-linked";
+        let gType = "";
         if (siteSelection.positions) {
             siteSelection.positions.map ((pos, index) => {
                 if (pos.aminoAcid && (pos.aminoAcid === "Ser" || pos.aminoAcid === "Thr")) {
                     gType = "O-linked";
+                } else if (pos.aminoAcid === "Asn") {
+                    gType = "N-linked";
+                } else if (pos.aminoAcid === "Trp") {
+                    gType = "C-linked";
                 }
             })
         }

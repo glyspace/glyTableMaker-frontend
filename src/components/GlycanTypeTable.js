@@ -1,14 +1,14 @@
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { useEffect, useMemo, useState } from "react";
 import typeList from '../data/glycosylationTypes.json';
-import { Box, IconButton, Tooltip } from "@mui/material";
+import { Box, IconButton, MenuItem, Tooltip } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const GlycanTypeTable = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
     const types = ["Glycan", "Motif", "Fragment"]
     const glycosylationTypes = typeList.map(type => type.name);
-    const [subtypes, setSubtypes] = useState([""].concat (typeList.filter(type => type.name === (props.glycosylationType ?? "N-linked")).map(type => type.subtype).flat()));
+    //const [subtypes, setSubtypes] = useState([""].concat (typeList.filter(type => type.name === (props.glycosylationType ?? "N-linked")).map(type => type.subtype).flat()));
 
     const [editedData, setEditedData] = useState({});
     const [data, setData] = useState([]);
@@ -19,9 +19,9 @@ const GlycanTypeTable = (props) => {
     useEffect (() => {
       if (props.glycosylationType) {
         setSelectedGlycosylationType (props.glycosylationType);
-        var types = typeList.filter(type => type.name === props.glycosylationType).map(type => type.subtype).flat();
-        types = [""].concat(types);
-        setSubtypes(types);
+        //var types = typeList.filter(type => type.name === props.glycosylationType).map(type => type.subtype).flat();
+        //types = [""].concat(types);
+        //setSubtypes(types);
       }
       if (props.glycosylationSubType) {
         setSelectedGlycosylationSubType (props.glycosylationSubType);
@@ -77,14 +77,14 @@ const GlycanTypeTable = (props) => {
             editSelectOptions: glycosylationTypes,
             muiEditTextFieldProps: ({ cell, row }) => ({
               select: true,
-              value: selectedGlycosylationType,
+              value: row.original.glycosylationType !== "" ? row.original.glycosylationType : selectedGlycosylationType,
               error: !!validationErrors?.[cell.id],
               helperText: validationErrors?.[cell.id],
               onChange: (event) => {
                 // change subtypes
-                var types = typeList.filter(type => type.name === event.target.value).map(type => type.subtype).flat();
-                types = [""].concat(types);
-                setSubtypes(types);
+                //var types = typeList.filter(type => type.name === event.target.value).map(type => type.subtype).flat();
+                //types = [""].concat(types);
+                //setSubtypes(types);
                 const validationError = !event.target.value || !validateRequired(event.target.value)
                   ? 'Required'
                   : undefined;
@@ -107,24 +107,35 @@ const GlycanTypeTable = (props) => {
             accessorKey: 'glycosylationSubType',
             header: 'Glycosylation Subtype',
             editVariant: 'select',
-            editSelectOptions: subtypes,
-            muiEditTextFieldProps: ({ cell, row }) => ({
-              select: true,
-              value: selectedGlycosylationSubType,
-              error: !!validationErrors?.[cell.id],
-              helperText: validationErrors?.[cell.id],
-              onChange: (event) => {
-                const currentRow = row.original;
-                currentRow.glycosylationSubType = event.target.value;
-                setSelectedGlycosylationSubType (event.target.value);
-                setData ({[row.id] : currentRow})
-                props.handleGlycanTypeChange && props.handleGlycanTypeChange (data);
-                setEditedData({
-                  ...editedData,
-                  [row.id]: { ...currentRow, glycosylationSubType: event.target.value },
-                });
-              },
-            }),
+            muiEditTextFieldProps: ({ cell, row }) => {
+              const currentType = row.original.glycosylationType;
+              if (currentType === "") currentType = selectedGlycosylationType;
+              const subTypeOptions = typeList.find(type => type.name === currentType)?.subtype ?? [];
+              return {
+                select: true,
+                value: row.original.glycosylationSubType ?? selectedGlycosylationSubType,
+                error: !!validationErrors?.[cell.id],
+                helperText: validationErrors?.[cell.id],
+                onChange: (event) => {
+                  const currentRow = row.original;
+                  currentRow.glycosylationSubType = event.target.value;
+                  setSelectedGlycosylationSubType (event.target.value);
+                  setData ({[row.id] : currentRow})
+                  props.handleGlycanTypeChange && props.handleGlycanTypeChange (data);
+                  setEditedData({
+                    ...editedData,
+                    [row.id]: { ...currentRow, glycosylationSubType: event.target.value },
+                  });
+                },
+                children: subTypeOptions.length > 0
+                  ? subTypeOptions.map(sub => (
+                    <MenuItem key={sub} value={sub}>
+                      {sub}
+                    </MenuItem>
+                  ))
+                  : <MenuItem disabled>No subtypes available</MenuItem>,
+              }
+            },
           },
         ],
     [editedData, validationErrors, selectedGlycosylationSubType, selectedGlycosylationType],

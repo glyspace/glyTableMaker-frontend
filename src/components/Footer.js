@@ -47,21 +47,21 @@ export default function Footer() {
                 <Navbar.Text className={classes.navbarText}>
                   GlyGen is supported and funded by the{" "}
                   <a
-                    href="https://commonfund.nih.gov/glycoscience"
+                    href="https://www.nigms.nih.gov/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={classes.link}
                   >
-                    NIH Glycoscience Common Fund{" "}
+                    National Institute of General Medical Sciences{" "}
                   </a>
                   under the grant #{" "}
                   <a
-                    href="https://reporter.nih.gov/project-details/9942478"
+                    href="https://reporter.nih.gov/project-details/10494610"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={classes.link}
                   >
-                    1U01GM125267&nbsp;-&nbsp;01
+                    1R24GM146616&nbsp;-&nbsp;01
                   </a>
                 </Navbar.Text>
              
