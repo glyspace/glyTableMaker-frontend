@@ -108,12 +108,12 @@ const GlycanTypeTable = (props) => {
             header: 'Glycosylation Subtype',
             editVariant: 'select',
             muiEditTextFieldProps: ({ cell, row }) => {
-              const currentType = row.original.glycosylationType;
+              let currentType = row.original.glycosylationType;
               if (currentType === "") currentType = selectedGlycosylationType;
               const subTypeOptions = typeList.find(type => type.name === currentType)?.subtype ?? [];
               return {
                 select: true,
-                value: row.original.glycosylationSubType ?? selectedGlycosylationSubType,
+                value: row.original.glycosylationSubType !== "" ? row.original.glycosylationSubType : selectedGlycosylationSubType,
                 error: !!validationErrors?.[cell.id],
                 helperText: validationErrors?.[cell.id],
                 onChange: (event) => {

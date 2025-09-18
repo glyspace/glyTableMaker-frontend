@@ -27,19 +27,5 @@
     {
         "name": "S-linked",
         "subtype": []
-    },
-    {
-        "name": "Glycosphingolipid",
-        "subtype": [
-            "Arthro series",
-            "Gala series",
-            "Ganglio series",
-            "Globo series",
-            "Isoglobo series",
-            "Lacto series",
-            "Mollu series",
-            "Muco series",
-            "Neo-lacto series"
-        ]
     }
 ]
