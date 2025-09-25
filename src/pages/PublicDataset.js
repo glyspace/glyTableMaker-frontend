@@ -17,6 +17,7 @@ import Table from "../components/Table";
 import { Tooltip } from "@mui/material";
 import TextAlert from "../components/TextAlert";
 import VersionAlert from "../components/VersionAlert";
+import { PublicationTable } from "../components/PublicationTable";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -43,6 +44,7 @@ const PublicDataset = (props) => {
     );
 
     const [versionData, setVersionData] = useState ([]);
+    const [selectedVersionId, setSelectedVersionId] = useState(null);
     const [showVersionLog, setShowVersionLog] = useState(false);
     const [datasetType, setDatasetType] = useState("GLYCAN");
 
@@ -56,7 +58,7 @@ const PublicDataset = (props) => {
         setIsLoading(true);
         getJson (stringConstants.api.getpublicdataset + "/" + datasetId).then ((data) => {
             setDataset (data.data.data);
-            if (data.data.data.glycoproteinData && data.data.data.glycoproteinData.length > 0) 
+            if (data.data.data.noProteins && data.data.data.noProteins > 0) 
               setDatasetType ("GLYCOPROTEIN");
             setIsLoading(false);
             const versionList = data.data.data.versions;
@@ -64,6 +66,7 @@ const PublicDataset = (props) => {
             setListVersions(versionList);
             if (!datasetId.includes("-")) {
               setSelectedVersion("latest");
+              setSelectedVersionId(null);
               setVersionData([]);
             } else {
               const v = datasetId.substring(datasetId.indexOf("-")+1);
@@ -73,6 +76,8 @@ const PublicDataset = (props) => {
                 "url_name" : datasetId.substring(0, datasetId.indexOf("-"))
               }]);
               setSelectedVersion (v);
+              const ver = versionList.find ((ver) => ver.version == v);
+              setSelectedVersionId (ver.versionId);
             }
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -181,13 +186,13 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'UniProtID'),
           header: 'UniProtKB Accession',
-          id: '1',
+          id: 'UNIPROTID',
           size: 50,
         },
         {
           accessorFn: (row) => getCellValue (row, 'GlyTouCanID'),
           header: 'GlyTouCan ID',
-          id: '2',
+          id: 'GLYTOUCANID',
           size: 50,
         },
         {
@@ -202,30 +207,30 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'AminoAcid'),
           header: 'Amino Acid',
-          id: '3',
+          id: 'AMINOACID',
           size: 50,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Site'),
           header: 'Site/Position',
-          id: '4',
+          id: 'SITE',
           size: 50,
         },
         {
           accessorFn: (row) => getCellValue (row, 'GlycosylationType'),
           header: 'Glycosylation Type',
-          id: '5',
+          id: 'GLYCOSYLATIONTYPE',
           size: 50,
         },
         {
           accessorFn: (row) => getCellValue (row, 'GlycosylationSubtype'),
           header: 'Glycosylation Subtype',
-          id: '6',
+          id: 'GLYCOSYLATIONSUBTYPE',
           size: 50,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Evidence'),
-          id: "7",
+          id: "2",
           header: 'Evidence',
           Cell: ({ cell }) => {
             if (cell.getValue() === null) {
@@ -246,49 +251,49 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Species'),
           header: 'Species',
-          id: "speciesValue",
+          id: "3",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Species', true),
           header: 'Species ID',
-          id: "8",
+          id: "3-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Strain'),
           header: 'Strain',
-          id: "9",
+          id: "4",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Tissue'),
           header: 'Tissue',
-          id: "tissueValue",
+          id: "5",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Tissue', true),
           header: 'Tissue ID',
-          id: "10",
+          id: "5-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cell line ID'),
           header: 'Cell line',
-          id: "celllineValue",
+          id: "6",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
           header: 'Cell line ID',
-          id: "11",
+          id: "6-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Disease'),
           header: 'Disease',
-          id: "diseaseValue",
+          id: "7",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -322,13 +327,13 @@ const PublicDataset = (props) => {
               );
             }
           },
-          id: "12",
+          id: "7-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
           header: 'Functional annotation/Keyword',
-          id: "13",
+          id: "11",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -348,7 +353,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Experimental technique'),
           header: 'Experimental technique',
-          id: "14",
+          id: "12",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -368,7 +373,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Cellular Component'),
           header: 'Cellular Component',
-          id: "cellularCompValue",
+          id: "18",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -402,19 +407,19 @@ const PublicDataset = (props) => {
               );
             }
           },
-          id: "17",
+          id: "18-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Contributor'),
           header: 'Contributor',
-          id: "15",
+          id: "16",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Comment'),
           header: 'Comment',
-          id: "16",
+          id: "17",
           size: 100,
         }
       ],
@@ -426,7 +431,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'GlytoucanID'),
           header: 'GlyTouCan ID',
-          id: '1',
+          id: 'GLYTOUCANID',
           size: 50,
         },
         {
@@ -461,13 +466,13 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Species'),
           header: 'Species',
-          id: "speciesValue",
+          id: "3",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Species', true),
           header: 'Species ID',
-          id: "3",
+          id: "3-ID",
           size: 100,
         },
         {
@@ -479,31 +484,31 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Tissue'),
           header: 'Tissue',
-          id: "tissueValue",
+          id: "5",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Tissue', true),
           header: 'Tissue ID',
-          id: "5",
+          id: "5-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cell line ID'),
           header: 'Cell line',
-          id: "celllineValue",
+          id: "6",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
           header: 'Cell line ID',
-          id: "6",
+          id: "6-ID",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Disease'),
           header: 'Disease',
-          id: "diseaseValue",
+          id: "7",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -537,7 +542,7 @@ const PublicDataset = (props) => {
               );
             }
           },
-          id: "7",
+          id: "7-ID",
           size: 100,
         },
         {
@@ -606,13 +611,13 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype'),
           header: 'Organismal/cellular Phenotype',
-          id: "phenotypeValue",
+          id: "14",
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype', true),
           header: 'Organismal/cellular Phenotype ID',
-          id: "14",
+          id: "14-ID",
           size: 100,
         },
         {
@@ -624,7 +629,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Cellular Component'),
           header: 'Cellular Component',
-          id: "cellularCompValue",
+          id: "18",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -644,7 +649,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
           header: 'Cellular Component ID',
-          id: "18",
+          id: "18-ID",
           Cell: ({ cell }) => {
              if (cell.getValue() === null) {
               return <></>
@@ -746,11 +751,14 @@ const PublicDataset = (props) => {
         {datasetType && datasetType === "GLYCOPROTEIN" &&
           <Table 
               columns={proteinColumns} 
-              data={dataset.glycoproteinData} 
+              ws={ selectedVersionId 
+                      ? `api/public/getdatasetdata?type=GLYCOPROTEIN&versionid=${selectedVersionId}`
+                      : `api/public/getdatasetdata?type=GLYCOPROTEIN&datasetid=${datasetId}`}
               detailPanel={false}
               enableRowActions={false}
-              initialSortColumn="1"
-              rowId="1"
+              enableSorting={false}
+              initialSortColumn="UNIPROTID"
+              rowId="UNIPROTID"
               columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
               saveColumnVisibilityChanges={saveColumnVisibilityChanges}
           />
@@ -758,11 +766,14 @@ const PublicDataset = (props) => {
         {datasetType && datasetType === "GLYCAN" &&
         <Table 
             columns={columns} 
-            data={dataset.data} 
+            ws={ selectedVersionId 
+                      ? `api/public/getdatasetdata?type=GLYCAN&versionid=${selectedVersionId}`
+                      : `api/public/getdatasetdata?type=GLYCAN&datasetid=${datasetId}`}
             detailPanel={false}
             enableRowActions={false}
-            initialSortColumn="1"
-            rowId="1"
+            enableSorting={false}
+            initialSortColumn="GLYTOUCANID"
+            rowId="GLYTOUCANID"
             columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
             saveColumnVisibilityChanges={saveColumnVisibilityChanges}
         />}
@@ -826,6 +837,7 @@ const PublicDataset = (props) => {
 
       const datasetIdentifier = version.head ? datasetId : datasetId + "-" + version.version;
       setIsLoading(true);
+      
       getJson (stringConstants.api.getpublicdataset + "/" + datasetIdentifier).then ((data) => {
           setDataset (data.data.data);
           if (data.data.data.glycoproteinData && data.data.data.glycoproteinData.length > 0) 
@@ -949,6 +961,8 @@ const PublicDataset = (props) => {
                         value={selectedVersion}
                         onChange={e => {
                           setSelectedVersion(e.target.value);
+                          let ver = getVersion(selectedVersion);
+                          setSelectedVersionId(ver.versionId);
                           getDatasetVersion(e.target.value);
                         }}
                       >
@@ -980,15 +994,14 @@ const PublicDataset = (props) => {
             <Card style={{marginBottom: "30px"}}>
               <Card.Body>
                 <Title title="(Data from) Publications" />
-                {dataset.publications && dataset.publications.length > 0 ? (
-                  <PubOnDataset publications={dataset.publications} fromPublicDatasetPage={true} />
-                ) : (
-                  <span>No data available</span>
-                )}
+                {(datasetId || selectedVersionId) && <PublicationTable
+                    ws={ selectedVersionId 
+                      ? `api/public/getdatasetpublications?versionid=${selectedVersionId}`
+                      : `api/public/getdatasetpublications?datasetid=${datasetId}`}
+                    setAlertDialogInput={setAlertDialogInput}
+                />}
               </Card.Body>
             </Card>
-
-            
 
             <Card style={{marginBottom: "30px"}}>
               <Card.Body>

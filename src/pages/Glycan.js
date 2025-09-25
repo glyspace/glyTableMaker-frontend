@@ -28,9 +28,9 @@ const Glycan = (props) => {
     let type = searchParams ? searchParams.get("type") : "sequence";
     const [subType, setSubType] = useState ("composition-single");
     
-    const compositionLabel = subType=== "composition-single" ? "Composition (single letter code)" 
+    const compositionLabel = subType=== "composition-single" ? "Single Letter Code" 
                             : subType === "composition-byonic" ?
-                              "Composition (as a byonic string)" : "Composition";
+                              "Byonic Encoding" : "ProteinProspector Encoding";
 
     useEffect(props.authCheckAgent, []);
 
@@ -112,7 +112,7 @@ const Glycan = (props) => {
               return;
           }
         } else if (type === "composition-string") {
-            t = (subType === "composition-single" ? "COMPACT" : (subType === "composition-byonic" ? "BYONIC" : "GLYGEN"));
+            t = (subType === "composition-single" ? "COMPACT" : (subType === "composition-byonic" ? "BYONIC" : "PROTEINPROSPECTOR"));
             if (userSelection.compositionString === "" || userSelection.compositionString.trim().length < 1) {
               setValidate(true);
               setError(true);
@@ -419,8 +419,9 @@ const Glycan = (props) => {
                       style={{ marginBottom: "30px"}}
                       onChange={handleCompositionTypeChange}
                     >
-                    <option value="composition-single">Composition (single letter)</option>
-                    <option value="composition-byonic">Composition (byonic)</option>
+                    <option value="composition-single">Single Letter Code</option>
+                    <option value="composition-byonic">Byonic Encoding</option>
+                    <option value="composition-pp">ProteinProspector Encoding</option>
                     </Form.Select>
                     <FormLabel label={compositionLabel} className="required-asterik"/>
                     <Form.Control

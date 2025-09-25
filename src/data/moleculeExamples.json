@@ -33,6 +33,17 @@
           }
         ]
       },
+       "composition-pp": {
+        "examples": [
+          {
+            "orderID": 104,
+            "example": {
+              "name": "ProteinProspector Example",
+              "id": "Glucosylgalactosyl\nHexNAc2Hex3FucXyl+Cation:Fe[III]\nHexNAc6Hex6Fuc2NeuGc2NeuGcAc+Cation:N(1)H(4)"
+            }
+          }
+        ]
+      },
       "composition-wurcs": {
         "examples": [
           {

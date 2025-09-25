@@ -262,7 +262,7 @@ const Settings = (props) => {
             }
         },
         "DATASETMETADATA" : {
-            "1" : {
+            "GLYTOUCANID" : {
                 "label" : "GlyTouCan ID",
                 "visible" : true,
             },
@@ -274,11 +274,11 @@ const Settings = (props) => {
                 "label" : "Evidence",
                 "visible" : true,
             },
-            "speciesValue": {
+            "3": {
                 "label" : "Species",
                 "visible": true,
             },
-            "3": {
+            "3-ID": {
                 "label" : "Species ID",
                 "visible": true,
             },
@@ -286,27 +286,27 @@ const Settings = (props) => {
                 "label" : "Strain",
                 "visible": true,
             },
-            "tissueValue" : {
+            "5" : {
                 "label" : "Tissue",
                 "visible" : true,
             },
-            "5" : {
+            "5-ID" : {
                 "label" : "Tissue ID",
                 "visible" : true,
             },
-            "celllineValue" : {
+            "6" : {
                 "label" : "Cell line",
                 "visible" : true,
             }, 
-            "6" : {
+            "6-ID" : {
                 "label" : "Cell line ID",
                 "visible" : true,
             }, 
-            "diseaseValue" : {
+            "7" : {
                 "label" : "Disease",
                 "visible" : true,
             },
-            "7" : {
+            "7-ID" : {
                 "label" : "Disease ID",
                 "visible" : true,
             },
@@ -334,11 +334,11 @@ const Settings = (props) => {
                 "label" : "Variant (Fly, yeast, mouse)",
                 "visible" : true,
             },
-            "phenotypeValue": {
+            "14": {
                 "label" : "Organismal/cellular Phenotype",
                 "visible": true,
             },
-            "14": {
+            "14-ID": {
                 "label" : "Organismal/cellular Phenotype ID",
                 "visible": true,
             },
@@ -346,11 +346,11 @@ const Settings = (props) => {
                 "label" : "Molecular Phenotype",
                 "visible": true,
             },
-            "18" : {
+            "18-ID" : {
                 "label" : "Cellular Component ID",
                 "visible": true,
             },
-            "cellularCompValue": {
+            "18": {
                 "label" : "Cellular Component",
                 "visible": true,
             },
@@ -364,11 +364,11 @@ const Settings = (props) => {
             }
         },
         "DATASETGLYCOPROTEINMETADATA" : {
-            "1": {
+            "UNIPROTID": {
                 "label" : 'UniProtKB Accession',
                 "visible" : true,
             },
-            "2" : {
+            "GLYTOUCANID" : {
                 "label" : "GlyTouCan ID",
                 "visible" : true,
             },
@@ -376,83 +376,83 @@ const Settings = (props) => {
                 "label" : "Image",
                 "visible" : true,
             }, 
-            "3" : {
+            "AMINOACID" : {
                 "label" : "Amino Acid",
                 "visible" : true,
             },
-            "4" : {
+            "SITE" : {
                 "label" : "Site/Position",
                 "visible" : true,
             },
-            "5" : {
+            "GLYCOSYLATIONTYPE" : {
                 "label" : "Glycosylation Type",
                 "visible" : true,
             },
-            "6" : {
+            "GLYCOSYLATIONSUBTYPE" : {
                 "label" : "Glycosylation Subtype",
                 "visible" : true,
             },
-            "7" : {
+            "2" : {
                 "label" : "Evidence",
                 "visible" : true,
             },
-            "speciesValue": {
+            "3": {
                 "label" : "Species",
                 "visible": true,
             },
-            "8": {
+            "3-ID": {
                 "label" : "Species ID",
                 "visible": true,
             },
-            "9" : {
+            "4" : {
                 "label" : "Strain",
                 "visible": true,
             },
-            "tissueValue" : {
+            "5" : {
                 "label" : "Tissue",
                 "visible" : true,
             },
-            "10" : {
+            "5-ID" : {
                 "label" : "Tissue ID",
                 "visible" : true,
             },
-            "celllineValue" : {
+            "6" : {
                 "label" : "Cell line",
                 "visible" : true,
             }, 
-            "11" : {
+            "6-ID" : {
                 "label" : "Cell line ID",
                 "visible" : true,
             }, 
-            "diseaseValue" : {
+            "7" : {
                 "label" : "Disease",
                 "visible" : true,
             },
-            "12" : {
+            "7-ID" : {
                 "label" : "Disease ID",
                 "visible" : true,
             },
-            "13" : {
+            "11" : {
                 "label" : "Functional annotation/Keyword",
                 "visible" : true,
             },
-            "14" : {
+            "12" : {
                 "label" : "Experimental technique",
                 "visible" : true,
             }, 
-            "15" : {
+            "16" : {
                 "label" : "Contributor",
                 "visible": true,
             },
-            "16" : {
+            "17" : {
                 "label" : "Comment",
                 "visible": true,
             }, 
-            "17" : {
+            "18-ID" : {
                 "label" : "Cellular Component ID",
                 "visible": true,
             },
-            "cellularCompValue": {
+            "18": {
                 "label" : "Cellular Component",
                 "visible": true,
             },

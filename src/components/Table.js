@@ -62,8 +62,15 @@ const Table = (props) => {
         searchParams += "&filters=" + encodeURI(JSON.stringify(columnFilters ?? []));
         searchParams += "&globalFilter=" + globalFilter ?? '';
         searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
+
+        let url = props.ws;
+        if (url.includes("?")) {
+          url = url + "&" + searchParams;
+        } else {
+          url = url + "?" + searchParams;
+        }
     
-        getJson (props.ws + "?" + searchParams, getAuthorizationHeader()).then ( (json) => {
+        getJson (url, getAuthorizationHeader()).then ( (json) => {
           setData(json.data.data.objects);
           setRowCount(json.data.data.totalItems);
           setIsError(false);
@@ -341,6 +348,7 @@ const Table = (props) => {
         data : props.data ? props.data : data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
+        enableSorting: props.enableSorting ?? true,
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
@@ -434,6 +442,7 @@ const Table = (props) => {
         data: props.data ? props.data : data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
+        enableSorting: props.enableSorting ?? true,
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
@@ -690,6 +699,7 @@ Table.propTypes = {
     data: PropTypes.array,  // optional, if data is not retrieved from the web service
     columns: PropTypes.array,  // required, columns to show
     enableRowActions: PropTypes.bool,  // whether to show actions column (with delete action by default)
+    enableSorting: PropTypes.bool, // whether the table should allow sorting 
     ws: PropTypes.string,  // get api
     deletews: PropTypes.string,   // delete api
     delete: PropTypes.func, // delete function for client side tables

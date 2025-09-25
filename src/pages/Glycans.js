@@ -464,6 +464,9 @@ const getDownloadReport = (reportId) => {
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=excel`}>
                             Excel file with GlyTouCan Ids (.xlsx)
                           </NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=ppcomposition`}>
+                            ProteinProspector (.txt)
+                          </NavDropdown.Item>
                         </NavDropdown>
                       </span>
                   </div>

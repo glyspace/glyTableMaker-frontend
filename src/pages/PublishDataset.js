@@ -16,6 +16,8 @@ import { GrantsOnDataset } from "../components/GrantsOnDataset";
 import { PubOnDataset } from "../components/PubOnDataset";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import { ScrollToTop } from "../components/ScrollToTop";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PublicationTable } from "../components/PublicationTable";
 
 let idCounter = 1000;
 
@@ -77,6 +79,8 @@ const PublishDataset = (props) => {
     const [comment, setComment]  = useState("");
 
     const [newPubMedId, setNewPubMedId] = useState("");
+
+    const [rowCount, setRowCount] = useState(0);
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -298,6 +302,8 @@ const PublishDataset = (props) => {
           ],
           [],
     );
+
+    
 
     const listCollections = () => {
         return (
@@ -990,13 +996,19 @@ const PublishDataset = (props) => {
             </Card.Header>
             <Accordion.Collapse eventKey={0}>
               <Card.Body>
-              {publications.length < 1 ? (
+              { /*!publications || publications.length < 1 ? (
                   <p className="no-data-msg-publication">No data available.</p>
                 ) : (
                   publications.map((pub, pubIndex) => {
-                    return <PublicationCard key={pubIndex} {...pub} />;
+                    return 
+                        <PublicationCard key={pubIndex} {...pub} />;
                   }) 
-                )}
+                )*/
+                 <PublicationTable
+                        authCheckAgent={props.authCheckAgent}
+                        ws={`api/dataset/getdatasetpublications?datasetid=${datasetId}`}
+                        setAlertDialogInput={setAlertDialogInput}
+                    />}
                 </Card.Body>
             </Accordion.Collapse>
           </Card>
