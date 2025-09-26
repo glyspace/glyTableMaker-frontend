@@ -2,12 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { axiosError } from "../utils/axiosError";
 import { MaterialReactTable, MRT_ToggleDensePaddingButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, useMaterialReactTable } from "material-react-table";
 import { Col, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { getAuthorizationHeader, getJson } from "../utils/api";
 import { Box } from "@mui/material";
 import "../pages/PublicDataset.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormLabel } from "./FormControls";
 
 
 const PublicationTable = props => {
@@ -117,7 +115,8 @@ const PublicationTable = props => {
                             </div>
                             <div>
                                 <FontAwesomeIcon icon={["fas", "book-open"]} size="sm" title="Book" />
-            
+                                {row.original.pubmedId ? 
+                                <>
                                 <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
                                 <a
                                 href={`https://pubmed.ncbi.nlm.nih.gov/${row.original.pubmedId}`}
@@ -125,7 +124,16 @@ const PublicationTable = props => {
                                 rel="noopener noreferrer"
                                 >
                                 {row.original.pubmedId}
+                                </a> </> : <>
+                                <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
+                                <a
+                                href={`https://doi.org/${row.original.doiId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >
+                                {row.original.doiId}
                                 </a>
+                                </>}
                             </div>
                             </div>
                 </div>
@@ -144,7 +152,7 @@ const PublicationTable = props => {
     const getSortToolbar = () => {
         return (
         <Row style={{flex: true}}>
-            <Col style={{marginTop: '5px'}} xs={4} lg={4}>
+            <Col style={{marginTop: '5px'}} xs={5} lg={5}>
             <span>Order&nbsp;by&nbsp;&nbsp;</span>
             <FontAwesomeIcon
                 key={"view"}
@@ -171,7 +179,7 @@ const PublicationTable = props => {
                             <option value="year">Year</option>
                             <option value="title">Title</option>
                             <option value="authors">Authors</option>
-                            <option value="pubmedId">PubMed Id</option>
+                            <option value="pubmedId">PubMed</option>
                         </Form.Select>
                     </Col>
                 </Row>

@@ -1,10 +1,8 @@
-import React from "react";
 import "../components/PublicationCard.css";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table } from "react-bootstrap";
-import HelpTooltip from './HelpTooltip';
 import { Tooltip } from "@mui/material";
 
 const PublicationCard = props => {
@@ -27,7 +25,8 @@ const PublicationCard = props => {
                 </div>
                 <div>
                   <FontAwesomeIcon icon={["fas", "book-open"]} size="sm" title="Book" />
-
+                  {props.pubmedId ?
+                  <> 
                   <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
                   <a
                     href={`https://pubmed.ncbi.nlm.nih.gov/${props.pubmedId}`}
@@ -35,7 +34,17 @@ const PublicationCard = props => {
                     rel="noopener noreferrer"
                   >
                     {props.pubmedId}
+                  </a></> : 
+                  <>
+                  <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
+                  <a
+                    href={`https://doi.org/${props.doiId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {props.doiId}
                   </a>
+                  </> }
                 </div>
               </div>
             </td>

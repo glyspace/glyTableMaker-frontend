@@ -9,14 +9,12 @@ import Table from "../components/Table";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
-import { PublicationCard } from "../components/PublicationCard";
 import { CustomToggle, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { GrantsOnDataset } from "../components/GrantsOnDataset";
 import { PubOnDataset } from "../components/PubOnDataset";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import { ScrollToTop } from "../components/ScrollToTop";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PublicationTable } from "../components/PublicationTable";
 
 let idCounter = 1000;
