@@ -132,6 +132,7 @@ const Table = (props) => {
         pagination.pageSize,
         sorting,
         columnVisibility,
+        props.ws,
       ]);
 
       const openDeleteConfirmModal = (row) => {
