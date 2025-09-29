@@ -423,7 +423,7 @@ const PublicDataset = (props) => {
           size: 100,
         }
       ],
-      [],
+      [selectedVersionId],
     );
 
     const columns = useMemo (
@@ -679,7 +679,7 @@ const PublicDataset = (props) => {
           size: 100,
         }
       ],
-      [],
+      [selectedVersionId],
     );
 
     const saveColumnVisibilityChanges = (columnVisibility) => {
