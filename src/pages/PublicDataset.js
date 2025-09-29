@@ -748,7 +748,7 @@ const PublicDataset = (props) => {
     const getData = () => {
         return (
         <>
-        {datasetType && datasetType === "GLYCOPROTEIN" &&
+        {datasetType && datasetType === "GLYCOPROTEIN" && (datasetId || selectedVersionId) &&
           <Table 
               columns={proteinColumns} 
               ws={ selectedVersionId 
@@ -961,7 +961,7 @@ const PublicDataset = (props) => {
                         value={selectedVersion}
                         onChange={e => {
                           setSelectedVersion(e.target.value);
-                          let ver = getVersion(selectedVersion);
+                          let ver = getVersion(e.target.value);
                           setSelectedVersionId(ver.versionId);
                           getDatasetVersion(e.target.value);
                         }}
