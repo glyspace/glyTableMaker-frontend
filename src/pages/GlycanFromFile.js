@@ -60,7 +60,7 @@ const GlycanFromFile = props => {
         excelParameters: excelParameters
     }
 
-    postJson (stringConstants.api.addglycanfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag, 
+    postJson (stringConstants.api.addglycanfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + encodeURIComponent(tag), 
         file, getAuthorizationHeader()).then ( (data) => {
         setShowLoading(false);
         navigate("/glycans");

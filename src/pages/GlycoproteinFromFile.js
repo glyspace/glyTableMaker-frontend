@@ -84,8 +84,8 @@ const GlycoproteinFromFile = props => {
             fileFormat: uploadedFile.fileFormat,
         }
     
-        postJson (stringConstants.api.addglycoproteinfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + tag 
-                      + (type == "byonic" ? "&glycanorder=" + glycanOrder : "&compositiontype=" + compType), 
+        postJson (stringConstants.api.addglycoproteinfromfile + "?filetype=" + type.toUpperCase() + "&tag=" + encodeURIComponent(tag) 
+                      + (type === "byonic" ? "&glycanorder=" + glycanOrder : "&compositiontype=" + compType), 
             file, getAuthorizationHeader()).then ( (data) => {
             setShowLoading(false);
             navigate("/glycoproteins");
@@ -103,7 +103,7 @@ const GlycoproteinFromFile = props => {
       }
     
       function valuetext(value) {
-        setGlycanOrder(value == 0 ? "BYONICORDER" : value== 1 ? "ALTERNATIVE" : "RANGE");
+        setGlycanOrder(value === 0 ? "BYONICORDER" : value === 1 ? "ALTERNATIVE" : "RANGE");
         return value;
      }
 
@@ -149,7 +149,7 @@ const GlycoproteinFromFile = props => {
                             gettagws="api/data/getglycantags"
                         />
                       </Col>
-                      {type && type == 'bynoic' &&
+                      {type && type === 'bynoic' &&
                       <Col xs={12} lg={9}>
                         <FormLabel label="Handle multiple Glycan Annotations per Peptide"/>
                         <Col>
@@ -181,7 +181,7 @@ const GlycoproteinFromFile = props => {
                         }
                         </Col>}
 
-                      {type && type == 'excel' &&
+                      {type && type === 'excel' &&
                         <Col xs={12} lg={9}>
                           <FormLabel label="Glycan composition format"/>
                           <Col>

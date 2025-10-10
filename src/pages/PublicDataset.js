@@ -76,7 +76,7 @@ const PublicDataset = (props) => {
                 "url_name" : datasetId.substring(0, datasetId.indexOf("-"))
               }]);
               setSelectedVersion (v);
-              const ver = versionList.find ((ver) => ver.version == v);
+              const ver = versionList.find ((ver) => ver.version === v);
               setSelectedVersionId (ver.versionId);
             }
         }).catch (function(error) {

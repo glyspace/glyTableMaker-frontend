@@ -200,7 +200,7 @@ const Glycans = (props) => {
 
     let url = "api/data/downloadglycans?filetype=" + fileFormat;
     if (glycanStatus) url += "&status=" + glycanStatus;
-    if (tag) url += "&tag=" + tag;
+    if (tag) url += "&tag=" + encodeURIComponent(tag);
     getBlob (url, getAuthorizationHeader()).then ( (data) => {
         const contentDisposition = data.headers.get("content-disposition");
         const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
@@ -472,7 +472,11 @@ const getDownloadReport = (reportId) => {
                   </div>
                 </Nav>
                 <Button variant="contained" className="gg-btn-blue-sm" style={{marginLeft:"5px", marginTop:"-1px"}}
-                    onClick={()=>setOpenDownloadDialog(true)}> 
+                    onClick={()=>{
+                      setGlycanStatus(null);
+                      setTag(null);
+                      setFileFormat("GWS");
+                      setOpenDownloadDialog(true)}}> 
                         Download
                 </Button>
                 <StatusMessage

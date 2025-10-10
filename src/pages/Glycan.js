@@ -156,7 +156,7 @@ const Glycan = (props) => {
             }
             return g;
           });
-          let url = "api/data/addglycanfromlist?tag=" + tag;
+          let url = "api/data/addglycanfromlist?tag=" + encodeURIComponent(tag);
           if (type) url += "&compositionType="+type;
             postJson (url, gList, getAuthorizationHeader()).then ( (data) => {
               addGlycanSuccess(data);

@@ -1890,7 +1890,7 @@ const Collection = (props) => {
     
         let url = "api/data/downloadcollectionglycans?filetype=" + fileFormat;
         if (glycanStatus) url += "&status=" + glycanStatus;
-        if (tag) url += "&tag=" + tag;
+        if (tag) url += "&tag=" + encodeURIComponent(tag);
         url += "&collectionid=" + collectionId;
         getBlob (url, getAuthorizationHeader()).then ( (data) => {
             const contentDisposition = data.headers.get("content-disposition");

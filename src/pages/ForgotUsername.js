@@ -92,7 +92,7 @@ const ForgotUsername = () => {
     setShowSuccessMessage("");
     if (e.currentTarget.checkValidity() === true) {
       const email = userInput.email;
-      getJson ("api/account/recover?email="+email, {}).then ( (data) => {
+      getJson ("api/account/recover?email="+encodeURIComponent(email), {}).then ( (data) => {
         usernameRecoverySuccess();
       }).catch (function(error) {
         if (error && error.response && error.response.data) {
