@@ -2045,7 +2045,7 @@ const Collection = (props) => {
 
     return (
         <>
-        <FeedbackWidget setAlertDialogInput={setTextAlertInput}/>
+        <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
         <Container maxWidth="xl">
             <div className="page-container">
             <div className="scroll-to-top-save">

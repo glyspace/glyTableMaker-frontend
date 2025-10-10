@@ -17,6 +17,7 @@ import DialogAlert from '../components/DialogAlert';
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import Tag from "../components/Tag";
 import FeedbackWidget from "../components/FeedbackWidget";
+import TextAlert from "../components/TextAlert";
 
 const FileUpload = (props) => {
     useEffect(props.authCheckAgent, []);
@@ -32,6 +33,10 @@ const FileUpload = (props) => {
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+    const [textAlertInput, setTextAlertInput] = useReducer(
+            (state, newState) => ({ ...state, ...newState }),
+            { show: false, id: "" }
+        );
     const [tag, setTag] = useState("");
     const [validate, setValidate] = useState(false);
     const [enableReportSent, setEnableReportSent] = useState(false);
@@ -52,7 +57,7 @@ const FileUpload = (props) => {
             setError("Failed to get most recent batch upload");
           }
         } else {
-          axiosError(error, null, props.setAlertDialogInput);
+          axiosError(error, null, setAlertDialogInput);
         }
       });
     }
@@ -61,7 +66,12 @@ const FileUpload = (props) => {
         postJson ("api/data/updatebatchupload/"+ uploadId, null, getAuthorizationHeader()).then ( (data) => {
           console.log ("marked the batch upload results as read");
         }).catch (function(error) {
-            axiosError(error, null, props.setAlertDialogInput);
+          if (error && error.response && error.response.data) {
+                setError(true);
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+          } else {
+              axiosError(error, null, setAlertDialogInput);
+          }
         }
       );  
     };
@@ -96,6 +106,7 @@ const FileUpload = (props) => {
     const handleAddTag = () => {
       // validate
       props.authCheckAgent();
+      setTextAlertInput({"show": false, id: ""});
       setValidate(false);
       if (tag.length < 1) {
         setValidate(true);
@@ -104,7 +115,12 @@ const FileUpload = (props) => {
       postJson ("api/data/addtagforfileupload/" + uploadId, tag, getAuthorizationHeader()).then ( (data) => {
           setEnableTagDialog(false);
       }).catch (function(error) {
-          axiosError(error, null, setAlertDialogInput);
+        if (error && error.response && error.response.data) {
+                setError(true);
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+          } else {
+              axiosError(error, null, setAlertDialogInput);
+          }
           setEnableTagDialog(false);
         }
       );
@@ -117,7 +133,12 @@ const FileUpload = (props) => {
           console.log ("reported the errors");
           setEnableReportSent(true);
       }).catch (function(error) {
-          axiosError(error, null, setAlertDialogInput);
+          if (error && error.response && error.response.data) {
+                setError(true);
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+          } else {
+              axiosError(error, null, setAlertDialogInput);
+          }
       }
     );
     }
@@ -127,7 +148,12 @@ const FileUpload = (props) => {
         deleteJson ("api/data/deletefileupload/" + uploadId, getAuthorizationHeader()).then ( (data) => {
            fetchData();
         }).catch (function(error) {
-            axiosError(error, null, setAlertDialogInput);
+            if (error && error.response && error.response.data) {
+                setError(true);
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+          } else {
+              axiosError(error, null, setAlertDialogInput);
+          }
         }
       );
       }
@@ -373,6 +399,7 @@ const FileUpload = (props) => {
                 title="File Uploads"
                 subTitle="The table below displays the list of file uploads and their status"s
             />
+            <TextAlert alertInput={textAlertInput}/>
             <DialogAlert
                 alertInput={alertDialogInput}
                 setOpen={input => {
