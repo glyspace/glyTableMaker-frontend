@@ -227,7 +227,9 @@ const PublishDataset = (props) => {
                 }
                 return numGlycans;
             }, 
+            id: "glycanNo",
             header: '# Glycans',
+            enableColumnFilter: false,
             size: 25,
           },
           {
@@ -240,11 +242,13 @@ const PublishDataset = (props) => {
                 }
                 return num;
             }, 
+            id: "proteinNo",
             header: '# Proteins',
+            enableColumnFilter: false,
             size: 25,
           },
           {
-            accessorFn: (row) => row.description,
+            accessorKey: 'description',
             header: 'Description',
             size: 200,
           },
@@ -261,18 +265,23 @@ const PublishDataset = (props) => {
             },
             {
               accessorFn: (row) => row.glycans ? row.glycans.length : 0, 
+              id: "glycanNo",
               header: '# Glycans',
+              enableColumnFilter: false,
               size: 25,
             },
             {
                 accessorFn: (row) => row.glycoproteins ? row.glycoproteins.length : 0, 
+                id: "proteinNo",
                 header: '# Proteins',
+                enableColumnFilter: false,
                 size: 25,
               },
             {
               accessorKey: 'errors',
               header: 'Errors',
               size: 200,
+              columnDefType: 'display',
               Cell: ({ cell }) => (
                 <ul id="errors">
                       {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((err, index) => (
@@ -287,6 +296,7 @@ const PublishDataset = (props) => {
                 accessorKey : 'warnings',
                 header: 'Warnings',
                 size: 200,
+                columnDefType: 'display',
                 Cell: ({ cell }) => (
                     <ul id="warnings">
                           {cell.getValue() && cell.getValue().length > 0 && cell.getValue().map((err, index) => (

@@ -54,6 +54,7 @@ import { GlycoproteinFromFile } from "./pages/GlycoproteinFromFile";
 import { CollectionFromFile } from "./pages/CollectionFromFile";
 import Footer from "./components/Footer";
 import ReactGA from 'react-ga4';
+import { OldPublicDataset } from "./pages/OldPublicDataset";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -114,8 +115,13 @@ function App() {
       sidebar: () => "",
     },
     {
-      path: "/data/dataset/:datasetId",
+      path: "/data/:datasetId",
       main: () => <PublicDataset authCheckAgent={checkAuthorization}/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/data/dataset/:datasetId",
+      main: () => <OldPublicDataset authCheckAgent={checkAuthorization}/>,
       sidebar: () => "",
     },
     /*  Public search */

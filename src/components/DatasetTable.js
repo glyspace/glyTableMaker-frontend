@@ -117,7 +117,7 @@ const DatasetTable = props => {
             Cell: ({ row, index }) => (
             <div key={index} style={{ textAlign: "left", margin: "20px" }}>
                 <div>
-                    <strong>ID:</strong> <Link to={`/data/dataset/${row.original.datasetIdentifier}`}>{row.original.datasetIdentifier}</Link>
+                    <strong>ID:</strong> <Link to={`/data/${row.original.datasetIdentifier}`}>{row.original.datasetIdentifier}</Link>
                 </div>
                 <div>
                     <strong>Dataset Type: </strong>
