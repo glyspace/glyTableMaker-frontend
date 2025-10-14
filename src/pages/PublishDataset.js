@@ -16,6 +16,7 @@ import { PubOnDataset } from "../components/PubOnDataset";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { PublicationTable } from "../components/PublicationTable";
+import { PublicationCard } from "../components/PublicationCard";
 
 let idCounter = 1000;
 
@@ -1004,19 +1005,18 @@ const PublishDataset = (props) => {
             </Card.Header>
             <Accordion.Collapse eventKey={0}>
               <Card.Body>
-              { /*!publications || publications.length < 1 ? (
-                  <p className="no-data-msg-publication">No data available.</p>
-                ) : (
-                  publications.map((pub, pubIndex) => {
-                    return 
-                        <PublicationCard key={pubIndex} {...pub} />;
-                  }) 
-                )*/
-                 <PublicationTable
+              { !publications || publications.length < 1 ? (
+                  <PublicationTable
                         authCheckAgent={props.authCheckAgent}
                         ws={`api/dataset/getdatasetpublications?datasetid=${datasetId}`}
                         setAlertDialogInput={setAlertDialogInput}
-                    />}
+                    />
+                ) : (
+                  publications.map((pub, pubIndex) => {
+                    return <PublicationCard key={pubIndex} {...pub} />;
+                  }) 
+                )
+              }
                 </Card.Body>
             </Accordion.Collapse>
           </Card>
