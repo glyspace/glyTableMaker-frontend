@@ -187,6 +187,10 @@ const Settings = (props) => {
                 "label" : "# Glycans",
                 "visible": true,
             },
+            "proteinNo" : {
+                "label" : "# Proteins",
+                "visible": true,
+            },
         },
         "COC" : {
             "name": {

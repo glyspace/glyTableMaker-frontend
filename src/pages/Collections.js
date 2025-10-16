@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useReducer} from "react";
-import { Container } from "@mui/material";
+import { useEffect, useMemo, useReducer, useState} from "react";
+import { Container, IconButton, Popover, Tooltip } from "@mui/material";
 import { PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import { Button, Card } from "react-bootstrap";
@@ -10,6 +10,9 @@ import FeedbackWidget from "../components/FeedbackWidget";
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 const Collections = (props) => {
 
   const [alertDialogInput, setAlertDialogInput] = useReducer(
@@ -17,7 +20,14 @@ const Collections = (props) => {
     { show: false, id: "" }
   );
 
+  const [selectedError, setSelectedError] = useState([]);
+  const [showSelectedError, setShowSelectedError] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
   let navigate = useNavigate();
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(props.authCheckAgent, []);
@@ -56,9 +66,31 @@ const Collections = (props) => {
         size: 30,
         enableColumnFilter: false,
       },
+      {
+        accessorFn: (row) => row.errors && row.errors.length > 0 ? "no": "yes",
+        id: "glygenReady",
+        header: 'GlyGen Ready?',
+        size: 30,
+        columnDefType: 'display',
+        Cell: ({ cell, row }) => {
+            const statusValue = cell.getValue(); // Get the value of the cell
+            if (statusValue === 'yes') {
+              return <CheckCircleIcon color="success" />;
+            } else {
+              return <CancelIcon color="error" onClick={(e) => showErrors(row.original.errors, e)}/>
+                     
+            }
+          },
+      },
     ],
     [],
   );
+
+  const showErrors = (errors, event) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedError(errors);
+    setShowSelectedError(true);
+  }
 
   const saveColumnVisibilityChanges = (columnVisibility) => {
     var columnSettings = [];
@@ -92,6 +124,28 @@ const Collections = (props) => {
                     setAlertDialogInput({ show: input });
                 }}
                 />
+
+          {selectedError && selectedError.length > 0 && 
+                <Popover
+                    id={id}
+                    open={showSelectedError}
+                    anchorEl={anchorEl}
+                    onClose={() => {
+                        setAnchorEl(null);
+                        setShowSelectedError(false);
+                    }}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}>
+                     <ul id="errors">
+                      {selectedError.map((err, index) => (
+                      <li key={index}>
+                          <span>{err.message}</span>
+                      </li>
+                      ))}
+                  </ul>
+                  </Popover>}
               
           <Card>
             <Card.Body>
