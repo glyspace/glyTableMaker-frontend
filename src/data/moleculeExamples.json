@@ -55,6 +55,17 @@
           }
         ]
       },
+      "composition-gg": {
+        "examples": [
+          {
+            "orderID": 106,
+            "example": {
+              "name": "GlycoGenius Example",
+              "id": "H10N3S1F1\nH2N2+1(s)+1(p)"
+            }
+          }
+        ]
+      },
       "GLYCOCT": {
         "examples": [
           {

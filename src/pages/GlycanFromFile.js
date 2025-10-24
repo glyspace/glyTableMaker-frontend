@@ -110,9 +110,9 @@ const GlycanFromFile = props => {
                       required={true}
                     />
                   </Col>
-                  {type === "excel" && 
+                  {(type === "excel" || type === "glycogeniusdb" || type === "glycogeniusresult") && 
                   <>
-                  <ExcelParameters setParameters={setExcelParameters}/>
+                  <ExcelParameters setParameters={setExcelParameters} type={type}/>
                   </>}
                   <Col xs={12} lg={9}>
                   <FormLabel label="Add Tag"/>
