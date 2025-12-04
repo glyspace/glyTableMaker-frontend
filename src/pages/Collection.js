@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
-import { axiosError } from "../utils/axiosError";
+import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import { Autocomplete, Box, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Popover, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row, Modal} from "react-bootstrap";
@@ -497,7 +497,12 @@ const Collection = (props) => {
             header: 'Image',
             size: 150,
             columnDefType: 'display',
-            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+            Cell: ({ cell }) => <img 
+                                    src={"data:image/png;base64, " + cell.getValue()} 
+                                    alt="cartoon" 
+                                    onError={e=> {
+                                        loadDefaultImage(e.target, true)
+                                    }}/>,
           },
           {
             accessorFn: (row) => row.tags.map(tag => tag.label),

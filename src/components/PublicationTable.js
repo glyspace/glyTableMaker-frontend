@@ -156,7 +156,7 @@ const PublicationTable = props => {
             <span>Order&nbsp;by&nbsp;&nbsp;</span>
             <FontAwesomeIcon
                 key={"view"}
-                icon={["fas", orderBy ? "caret-up" : "caret-down"]}
+                icon={["fas", orderBy ? "caret-down" : "caret-up"]}
                 title="Order by"
                 alt="Caret Icon"
                 onClick={() => {

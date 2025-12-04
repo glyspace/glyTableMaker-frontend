@@ -37,6 +37,8 @@ const Glycoproteins = (props) => {
             accessorKey: 'uniprotId', 
             header: 'UniProtKB Accession',
             size: 50,
+            Cell: ({renderedCellValue, row}) => <a href={"https://www.uniprot.org/uniprotkb/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
+                        {renderedCellValue}</a>
           },
           {
             accessorKey: 'sequenceVersion', 

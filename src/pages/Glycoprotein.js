@@ -7,7 +7,7 @@ import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
-import { axiosError } from "../utils/axiosError";
+import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import Table from "../components/Table";
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
@@ -208,7 +208,14 @@ const Glycoprotein = (props) => {
                 <ul style={{listStyleType: "none"}}>
                 {cell.getValue() && cell.getValue().length > 0 &&
                     cell.getValue().map ((glycan, index) => {
-                    return <li><img src={"data:image/png;base64, " + glycan.glycan.cartoon} alt="cartoon" /></li>
+                    return <li>
+                        <img 
+                            src={"data:image/png;base64, " + glycan.glycan.cartoon} 
+                            alt="cartoon" 
+                            onError={e=> {
+                                loadDefaultImage(e.target, true)
+                            }}/>
+                        </li>
                     })
                 }
                 </ul>
@@ -231,7 +238,12 @@ const Glycoprotein = (props) => {
             header: 'Image',
             size: 150,
             columnDefType: 'display',
-            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+            Cell: ({ cell }) => <img 
+                                    src={"data:image/png;base64, " + cell.getValue()} 
+                                    alt="cartoon" 
+                                    onError={e=> {
+                                        loadDefaultImage(e.target, true)
+                                    }}/>,
           },
           {
             accessorFn: (row) => row.tags.map(tag => tag.label),

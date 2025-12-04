@@ -1,4 +1,6 @@
 import messages from '../data/messages';
+import glygenNotFoundSmall from "../images/glygenNotFoundSmall.svg";
+import glygenNotFound from "../images/glygenNotFound.svg";
 
 /**
  * Call this function to stop page loading and display error dialog.
@@ -20,4 +22,16 @@ export const axiosError = (error, setPageLoading, setAlertDialogInput) => {
         (setPageLoading && setPageLoading(false));
         (setAlertDialogInput && setAlertDialogInput({"show": true, "id": error.response.data["code"]}));
     }
+}
+
+/**
+ * Loads a default image on an image element
+ * @param {Object} img DOM object of the image element to load the default image into. Pass 'this' in the call to this method from an event handler
+ * @param {boolean} smallVersion Whether to load the smaller version image or not
+ */
+export function loadDefaultImage(img, smallVersion) {
+  img.onerror = "";
+  img.src = smallVersion ? glygenNotFoundSmall : glygenNotFound;
+  img.classList.add("img-not-found-error");
+  return true;
 }

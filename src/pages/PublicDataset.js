@@ -4,7 +4,7 @@ import FeedbackWidget from "../components/FeedbackWidget";
 import { getAuthorizationHeader, getJson, postJson, postToAndGetBlob } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
-import { axiosError } from "../utils/axiosError";
+import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import { GrantsOnDataset } from "../components/GrantsOnDataset";
 import { PubOnDataset } from "../components/PubOnDataset";
 import { Button, Card, Col, Form, Image, Modal, Row } from "react-bootstrap";
@@ -18,6 +18,7 @@ import { Tooltip } from "@mui/material";
 import TextAlert from "../components/TextAlert";
 import VersionAlert from "../components/VersionAlert";
 import { PublicationTable } from "../components/PublicationTable";
+import { render } from "@testing-library/react";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -188,12 +189,17 @@ const PublicDataset = (props) => {
           header: 'UniProtKB Accession',
           id: 'UNIPROTID',
           size: 50,
+          Cell: ({renderedCellValue, row}) => <a href={"https://www.uniprot.org/uniprotkb/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
+                        {renderedCellValue}</a>
         },
         {
           accessorFn: (row) => getCellValue (row, 'GlyTouCanID'),
           header: 'GlyTouCan ID',
           id: 'GLYTOUCANID',
           size: 50,
+          Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
+                        {renderedCellValue}</a>
+          
         },
         {
           accessorFn: (row) => row.cartoon,
@@ -202,7 +208,12 @@ const PublicDataset = (props) => {
           size: 150,
           enableColumnFilter: false,
           enableSorting: false,
-          Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />
+          Cell: ({ cell }) => <img 
+                                src={"data:image/png;base64, " + cell.getValue()} 
+                                alt="cartoon" 
+                                onError={e=> {
+                                  loadDefaultImage(e.target, true)
+                                }}/>
         },
         {
           accessorFn: (row) => getCellValue (row, 'AminoAcid'),
@@ -433,6 +444,8 @@ const PublicDataset = (props) => {
           header: 'GlyTouCan ID',
           id: 'GLYTOUCANID',
           size: 50,
+          Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
+                        {renderedCellValue}</a>
         },
         {
           accessorFn: (row) => row.cartoon,
@@ -441,7 +454,12 @@ const PublicDataset = (props) => {
           size: 150,
           enableColumnFilter: false,
           enableSorting: false,
-          Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />
+          Cell: ({ cell }) => <img 
+                                src={"data:image/png;base64, " + cell.getValue()} 
+                                alt="cartoon" 
+                                onError={e=> {
+                                  loadDefaultImage(e.target, true)
+                                }}/>
         },
         {
           accessorFn: (row) => getCellValue (row, 'Evidence'),

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import typeList from '../data/glycosylationTypes.json';
 import { Box, IconButton, MenuItem, Tooltip } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { loadDefaultImage } from "../utils/axiosError";
 
 const GlycanTypeTable = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
@@ -41,7 +42,12 @@ const GlycanTypeTable = (props) => {
             header: 'Image',
             size: 150,
             columnDefType: 'display',
-            Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+            Cell: ({ cell }) => <img 
+                                            src={"data:image/png;base64, " + cell.getValue()} 
+                                            alt="cartoon" 
+                                            onError={e=> {
+                                              loadDefaultImage(e.target, true)
+                                            }}/>,
           },
           {
             accessorKey: 'type',

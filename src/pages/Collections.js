@@ -51,6 +51,7 @@ const Collections = (props) => {
         header: '# Glycans',
         size: 30,
         enableColumnFilter: false,
+        enableSorting: false,
       },
       {
         accessorFn: (row) => row.glycoproteins ? row.glycoproteins.length : null,
@@ -58,6 +59,7 @@ const Collections = (props) => {
         header: '# Proteins',
         size: 30,
         enableColumnFilter: false,
+        enableSorting: false,
       },
       {
         accessorFn: (row) => row.metadata ? row.metadata.length : 0,
@@ -65,6 +67,7 @@ const Collections = (props) => {
         id: 'metadata',
         size: 30,
         enableColumnFilter: false,
+        enableSorting: false,
       },
       {
         accessorFn: (row) => row.errors && row.errors.length > 0 ? "no": "yes",

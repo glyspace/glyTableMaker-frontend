@@ -16,7 +16,7 @@ import DialogAlert from '../components/DialogAlert';
 import { StatusMessage } from '../components/StatusMessage';
 import Table from '../components/Table';
 import { getAuthorizationHeader, getBlob, getJson } from '../utils/api';
-import { axiosError } from '../utils/axiosError';
+import { axiosError, loadDefaultImage } from '../utils/axiosError';
 import { Loading } from '../components/Loading';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import FeedbackWidget from "../components/FeedbackWidget";
@@ -99,6 +99,8 @@ const Glycans = (props) => {
         accessorKey: 'glytoucanID', 
         header: 'GlyTouCan ID',
         size: 50,
+        Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
+                        {renderedCellValue}</a>
       },
       {
         accessorKey: 'status',
@@ -112,7 +114,12 @@ const Glycans = (props) => {
         size: 150,
         enableColumnFilter: false,
         enableSorting: false,
-        Cell: ({ cell }) => <img src={"data:image/png;base64, " + cell.getValue()} alt="cartoon" />,
+        Cell: ({ cell }) => <img 
+                                src={"data:image/png;base64, " + cell.getValue()} 
+                                alt="cartoon" 
+                                onError={e=> {
+                                  loadDefaultImage(e.target, true)
+                                }}/>,
       },
       {
         accessorKey: 'mass', 
