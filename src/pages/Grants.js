@@ -96,16 +96,21 @@ const Grants = props => {
         <div>
           <Row>
             <Col md={3}>
+            {grant.url ? 
               <a href={grant.url} target={"_blank"}>
                 <strong>{grant.title}</strong>
-              </a>
+              </a> : <strong>{grant.title}</strong>
+            }
             </Col>
           </Row>
         </div>
 
         <div>
           <Row>
-            <Col>{grant.fundingOrganization}-{grant.identifier}</Col>
+            <Col>{grant.fundingOrganization}</Col>
+          </Row>
+          <Row>
+            <Col>{grant.identifier}</Col>
           </Row>
         </div>
       </>
