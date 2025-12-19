@@ -63,9 +63,11 @@ const Grants = props => {
         <td key={grantIndex} style={{ border: "none" }}>
           <div>
             <h5>
+              {grant.url ? 
               <a href={grant.url} target={"_blank"}>
                 <strong>{grant.title}</strong>
-              </a>
+              </a> : <strong>{grant.title}</strong>
+            }
             </h5>
           </div>
 
@@ -107,10 +109,10 @@ const Grants = props => {
 
         <div>
           <Row>
-            <Col>{grant.fundingOrganization}</Col>
-          </Row>
-          <Row>
-            <Col>{grant.identifier}</Col>
+            <Row>
+              <Col md={3}>{grant.fundingOrganization}</Col>
+              <Col>{grant.identifier}</Col>
+            </Row>
           </Row>
         </div>
       </>

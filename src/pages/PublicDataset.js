@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getAuthorizationHeader, getJson, postJson, postToAndGetBlob } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getJson, postJson, postToAndGetBlob } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
@@ -720,18 +720,10 @@ const PublicDataset = (props) => {
 
     const download = () => {
       // download csv file
-      var tableDef = {
-        "filename" : "GlygenDataset-" + datasetId,
-      }
-      if (datasetType === "GLYCAN") {
-        tableDef["data"] = dataset.data;
-      } else {
-        tableDef["glycoproteinData"] = dataset.glycoproteinData;
-      }
       setIsLoading(true);
       setTextAlertInput({"show": false, id: ""});
-      let url = "api/public/downloadtable";
-      postToAndGetBlob (url, tableDef).then ( (data) => {
+      let url = "api/public/downloadtablefordataset/"+datasetId+"?version="+selectedVersion+"&filename=GlygenDataset-" + datasetId;
+      getBlob (url).then ( (data) => {
           const contentDisposition = data.headers.get("content-disposition");
           const fileNameIndex = contentDisposition.indexOf("filename=") + 10;
           const fileName = contentDisposition.substring(fileNameIndex, contentDisposition.length-1);
