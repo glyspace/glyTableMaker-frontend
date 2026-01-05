@@ -1049,14 +1049,14 @@ const PublicDataset = (props) => {
               <Card.Body>
                 <Title title="Data Integrated In" />
                 {dataset.integratedIn && dataset.integratedIn.length > 0 ? (
-                  <li>
-                  {dataset.integratedIn.forEach ((datasource) => {
-                    <ul>
-                      {datasource.resource && datasource.resource.URL ?
-                      <a href={datasource.resource.URL}>{datasource.resource.name}-({datasource.versionInResource})</a>
+                  <li style={{marginLeft:"20px"}}>
+                  {dataset.integratedIn.map ((datasource, index) => {
+                    return (<ul>
+                      {datasource.resource.url ?
+                      <a href={datasource.resource.url}>{datasource.resource.name}-({datasource.versionInResource})</a>
                       :
                       <span>{datasource.resource.name}-({datasource.versionInResource})</span>}
-                    </ul>
+                    </ul>)
                   })}
                   </li>
                 ) : (
