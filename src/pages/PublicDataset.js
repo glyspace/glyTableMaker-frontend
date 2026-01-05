@@ -1060,7 +1060,7 @@ const PublicDataset = (props) => {
                   <li>
                   {dataset.integratedIn.forEach ((datasource) => {
                     <ul>
-                      {datasource.resource.URL ?
+                      {datasource.resource && datasource.resource.URL ?
                       <a href={datasource.resource.URL}>{datasource.resource.name}-({datasource.versionInResource})</a>
                       :
                       <span>{datasource.resource.name}-({datasource.versionInResource})</span>}
