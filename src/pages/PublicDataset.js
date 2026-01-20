@@ -19,6 +19,7 @@ import TextAlert from "../components/TextAlert";
 import VersionAlert from "../components/VersionAlert";
 import { PublicationTable } from "../components/PublicationTable";
 import { render } from "@testing-library/react";
+import glygenLogo from "../images/GlyGen logo.png";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -1049,16 +1050,31 @@ const PublicDataset = (props) => {
               <Card.Body>
                 <Title title="Data Integrated In" />
                 {dataset.integratedIn && dataset.integratedIn.length > 0 ? (
-                  <li style={{marginLeft:"20px"}}>
-                  {dataset.integratedIn.map ((datasource, index) => {
-                    return (<ul>
-                      {datasource.resource.url ?
-                      <a href={datasource.resource.url}>{datasource.resource.name}-({datasource.versionInResource})</a>
-                      :
-                      <span>{datasource.resource.name}-({datasource.versionInResource})</span>}
-                    </ul>)
-                  })}
-                  </li>
+                  <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
+                    {dataset.integratedIn.map((datasource, index) => {
+                      const isGlyGen = datasource.resource.name.toLowerCase() === "glygen";
+                      const link = datasource.resource.url;
+                      const identifier = datasource.identifier;
+
+                      if (isGlyGen) {
+                        return (
+                          <a key={index} href={link} style={{ textAlign: "center", textDecoration: "none", color: "inherit" }} >
+                            <img src={glygenLogo} alt="GlyGen" style={{ width: "120px", display: "block", margin: "0 auto" }} />
+                            <div style={{ marginTop: "8px", fontWeight: "bold" }}>
+                              {identifier}
+                            </div>
+                          </a>
+                        );
+                      }
+
+                      // Default rendering for other resources
+                      return (
+                        <a key={index} href={link} style={{ textDecoration: "none", color: "inherit", fontWeight: "bold" }} >
+                          {datasource.resource.name} ({identifier})
+                        </a>
+                      );
+                    })}
+                  </div>
                 ) : (
                   <span>No data available</span>
                 )}
