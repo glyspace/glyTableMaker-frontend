@@ -1054,7 +1054,7 @@ const PublicDataset = (props) => {
                     {dataset.integratedIn.map((datasource, index) => {
                       const isGlyGen = datasource.resource.name.toLowerCase() === "glygen";
                       const link = datasource.resource.url;
-                      const identifier = datasource.identifier;
+                      const identifier = datasource.resource.identifier;
 
                       if (isGlyGen) {
                         return (
