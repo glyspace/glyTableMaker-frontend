@@ -1058,7 +1058,10 @@ const PublicDataset = (props) => {
 
                       if (isGlyGen) {
                         return (
-                          <a key={index} href={link} style={{ textAlign: "center", textDecoration: "none", color: "inherit" }} >
+                          <a key={index} href={link} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textAlign: "center", textDecoration: "none", color: "inherit" }} >
                             <img src={glygenLogo} alt="GlyGen" style={{ width: "120px", display: "block", margin: "0 auto" }} />
                             <div style={{ marginTop: "8px", fontWeight: "bold" }}>
                               {identifier}
@@ -1069,7 +1072,10 @@ const PublicDataset = (props) => {
 
                       // Default rendering for other resources
                       return (
-                        <a key={index} href={link} style={{ textDecoration: "none", color: "inherit", fontWeight: "bold" }} >
+                        <a key={index} href={link} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: "none", color: "inherit", fontWeight: "bold" }} >
                           {datasource.resource.name} ({identifier})
                         </a>
                       );
