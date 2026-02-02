@@ -963,6 +963,12 @@ input[type="check" i] {
   margin-right: 20px !important;
   color:#2e78b7 !important;
 }
+
+.alert-banner-icon-red {
+  font-size: 40px !important;
+  margin-right: 20px !important;
+}
+
 .alert-banner-message a {
   font-weight: 700 !important;
   color: #fff !important;

@@ -18,12 +18,15 @@ export default function VersionAlert(props) {
           <Card className="event-alerts-border" >
             <Loading show={props.pageLoading} />
             <Alert
-              classes={{
+              classes={obj.retracted ? {
+                message: "alert-banner-message",
+                icon: "alert-banner-icon-red gg-align-middle",
+              } : {
                 message: "alert-banner-message",
                 icon: "alert-banner-icon gg-align-middle",
               }}
-              severity="info"
-              action={
+              severity={obj.retracted ? "error" : "info"}
+              action={obj.retracted ? "" : 
                 <IconButton
                   aria-label="close"
                   // color="inherit"
@@ -42,7 +45,7 @@ export default function VersionAlert(props) {
                 <Col xs={12} sm={"auto"} className={"mt-1 mb-1"}>
                   <>
                     <AlertTitle>
-                      <h5 className={"gg-blue"}>{obj.title}</h5>
+                      <h5 className={obj.retracted ? "": "gg-blue"}>{obj.title}</h5>
                     </AlertTitle>
                     <div>
                       {obj.description}

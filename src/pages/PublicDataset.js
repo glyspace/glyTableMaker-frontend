@@ -46,6 +46,7 @@ const PublicDataset = (props) => {
     );
 
     const [versionData, setVersionData] = useState ([]);
+    const [retractionData, setRetractionData] = useState([]);
     const [selectedVersionId, setSelectedVersionId] = useState(null);
     const [showVersionLog, setShowVersionLog] = useState(false);
     const [datasetType, setDatasetType] = useState("GLYCAN");
@@ -59,7 +60,20 @@ const PublicDataset = (props) => {
     const fetchData = async () => {
         setIsLoading(true);
         getJson (stringConstants.api.getpublicdataset + "/" + datasetId).then ((data) => {
+            if (data.data.data.removed) {
+              // do not display the data
+              return;
+            }
             setDataset (data.data.data);
+            if (data.data.data.retracted) {
+              var details = "";
+              if (data.data.data.retraction) {
+                details += "retracted at " + data.data.data.retraction.retractionDate + " Reason: " + data.data.data.retraction.reason;
+              }
+              setRetractionData ([{"retracted": true, "title" : "This dataset has been retracted!", "description" : "Details (if any): " + details}]);
+            } else {
+              setRetractionData([]);
+            }
             if (data.data.data.noProteins && data.data.data.noProteins > 0) 
               setDatasetType ("GLYCOPROTEIN");
             setIsLoading(false);
@@ -898,6 +912,7 @@ const PublicDataset = (props) => {
             }}
         />
         <Loading show={isLoading}></Loading>
+        <VersionAlert data={retractionData} pageLoading={isLoading}></VersionAlert>
         <VersionAlert data={versionData} pageLoading={isLoading}/>
         {showVersionLog && (
           <Modal

@@ -15,8 +15,9 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate } from "react-router-dom";
-import { Button, Row } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import TagEdit from "./TagEdit";
+import { FormLabel } from "./FormControls";
 
 // server side table
 const Table = (props) => {
@@ -29,6 +30,7 @@ const Table = (props) => {
     const [isRefetching, setIsRefetching] = useState(false);
     const [rowCount, setRowCount] = useState(0);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showRetractModal, setShowRetractModal] = useState(false);
     const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
     const [enableTagDialog, setEnableTagDialog] = useState(false);
     const [selectedId, setSelectedId] = useState(-1);
@@ -45,6 +47,7 @@ const Table = (props) => {
     const [columnVisibility, setColumnVisibility] = useState(props.columnVisibility ?? {});
     const [rowSelection, setRowSelection] = useState(props.selected ?? {});
     const [selectedData, setSelectedData] = useState(props.selectedRows ?? []);
+    const [reason, setReason] = useState("");
 
     let navigate = useNavigate();
 
@@ -137,7 +140,9 @@ const Table = (props) => {
 
       const openDeleteConfirmModal = (row) => {
         setSelectedId(row.original[props.rowId]);
-        setShowDeleteModal(true);
+        if (props.deletews && props.deletews.includes("retract"))
+          setShowRetractModal(true);
+        else setShowDeleteModal(true);
       };
 
       const openAddTagModal = (row) => {
@@ -178,11 +183,16 @@ const Table = (props) => {
             setIsError(false);
             props.authCheckAgent();
         
-            deleteJson (props.deletews + id, getAuthorizationHeader()).then ( (data) => {
+            var url = props.deletews + id;
+            if (reason && reason.length > 0) {
+              url += "?reason=" + encodeURI(reason);
+            }
+            deleteJson (url, getAuthorizationHeader()).then ( (data) => {
                 setIsLoading(false);
                 setIsError(false);
                 setIsDeleteError(false);
                 setShowDeleteModal(false);
+                setShowRetractModal(false);
                 fetchData();
             }).catch (function(error) {
                 if (error && error.response && error.response.data) {
@@ -195,6 +205,7 @@ const Table = (props) => {
                     axiosError(error, null, props.setAlertDialogInput);
                 }
                 setShowDeleteModal(false);
+                setShowRetractModal(false);
             }
             );
         } else {
@@ -269,6 +280,10 @@ const Table = (props) => {
           );
         }
       }
+
+      const handleChange = (event) => {
+        setReason(event.target.value);
+      };
 
       const saveColumnVisibilityChanges = (columns) => {
         console.log ("saving changes");
@@ -658,6 +673,39 @@ const Table = (props) => {
             onConfirm={confirmDelete}
             title="Confirm Delete"
             body="Are you sure you want to delete?"
+        />
+
+        <ConfirmationModal
+          showModal={showRetractModal}
+          onCancel={() => {
+            setShowRetractModal(false);
+          }}
+          onConfirm={confirmDelete}
+          title="Confirm Retraction"
+          body={
+            <>
+              <Form.Group
+                as={Row}
+                controlId="reason"
+                className="gg-align-center mb-3"
+            >
+                <Col xs={4} lg={4} style={{ textAlign: "left" }}>
+                <FormLabel label="Reason" className={"required-asterik"}/>
+                </Col>
+                <Col xs={8} lg={8}>
+                <Form.Control
+                    type="text"
+                    name="reason"
+                    placeholder="Reason for retraction"
+                    value={reason}
+                    onChange={handleChange}
+                    required
+                    className={"custom-text-fields"}
+                  />
+                </Col>
+          </Form.Group>
+            </>
+          }
         />
 
         <ConfirmationModal
