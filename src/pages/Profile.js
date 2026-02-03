@@ -202,6 +202,24 @@ const Profile = (props) => {
                 </Form.Group>
               </Col>
             </Row>
+            <Row>
+              <Col md={12}>
+                  <Form.Group as={Row} controlId="userType">
+                    <Col>
+                      <Form.Control
+                              as="select"
+                              name="userType"
+                              value={userProfile.userType}
+                              onChange={handleChange}
+                              disabled={!isUpdate}
+                            >
+                            <option value="INVESTIGATOR">Investigator</option>
+                            <option value="CURATOR">Curator</option>
+                      </Form.Control>
+                    </Col>
+                  </Form.Group>
+                </Col>
+            </Row>
             <div className={!isUpdate ? "text-center mt-2" : "hide-content"}>
                 <Button className="gg-btn-blue mt-3 gg-mr-20" onClick={() => editUser()}>
                   Edit

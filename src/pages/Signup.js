@@ -22,7 +22,8 @@ const Signup = () => {
     affiliation: "",
     affiliationWebsite: "",
     groupName: "",
-    department: ""
+    department: "",
+    userType: "INVESTIGATOR"
   });
 
   const [validURL, setValidURL] = useState(true);
@@ -288,6 +289,21 @@ const Signup = () => {
                     />
                     <Form.Label className={"label"}>Website</Form.Label>
                     <Feedback className={"feedback"} message="Please enter a valid affiliation website." />
+                  </Col>
+                </Form.Group>
+              </Col>
+              <Col md={12}>
+                <Form.Group as={Row} controlId="userType">
+                  <Col>
+                    <Form.Control
+                            as="select"
+                            name="userType"
+                            value={userInput.userType}
+                            onChange={handleChange}
+                          >
+                          <option value="INVESTIGATOR">Investigator</option>
+                          <option value="CURATOR">Curator</option>
+                    </Form.Control>
                   </Col>
                 </Form.Group>
               </Col>
