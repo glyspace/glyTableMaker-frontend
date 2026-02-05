@@ -68,9 +68,11 @@ const PublicDataset = (props) => {
             if (data.data.data.retracted) {
               var details = "";
               if (data.data.data.retraction) {
-                details += "retracted at " + data.data.data.retraction.retractionDate + " Reason: " + data.data.data.retraction.reason;
+                details += "When: " + new Date(data.data.data.retraction.retractionDate).toLocaleString() 
+                        + "\nReason: " + data.data.data.retraction.reason;
               }
-              setRetractionData ([{"retracted": true, "title" : "This dataset has been retracted!", "description" : "Details (if any): " + details}]);
+              setRetractionData ([{"retracted": true, "title" : "This dataset has been retracted!", 
+                                  "description" : "Details (if any): \n" + details}]);
             } else {
               setRetractionData([]);
             }

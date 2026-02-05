@@ -1,4 +1,4 @@
-import { Container } from "@mui/material";
+import { Box, Container, IconButton, Tooltip } from "@mui/material";
 import FeedbackWidget from "../components/FeedbackWidget";
 import { PageHeading } from "../components/FormControls";
 import TextAlert from "../components/TextAlert";
@@ -62,6 +62,27 @@ const Dataset = (props) => {
             enableColumnFilter: false,
             enableSorting: false,
           },
+          {
+            accessorFn: (row) => row.removed ? "removed" : row.retracted ? "retracted" : "published",
+            header: 'Status',
+            id: "retracted",
+            size: 100,
+            enableColumnFilter: false,
+            enableSorting: false,
+            Cell: ({ renderedCellValue, row }) => (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {/* using renderedCellValue instead of cell.getValue() preserves filter match highlighting */}
+                  {(renderedCellValue === "retracted" || renderedCellValue === "removed") ? <span style={{color: "red"}}>{renderedCellValue}</span>
+                  : <span>{renderedCellValue}</span>
+                  }
+                </Box>
+            ),
+          },
         ],
         [],
     );
@@ -115,6 +136,7 @@ and retracted."
                   showEdit={true}
                   edit={stringConstants.routes.publishdataset + "?datasetid="}
                   deletews="api/dataset/retractdataset/"
+                  recoverws="api/dataset/recoverdataset/"
                   initialSortColumn="name"
                   rowId="datasetIdentifier"
                   detailPanel={true}

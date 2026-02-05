@@ -47,7 +47,7 @@ export default function VersionAlert(props) {
                     <AlertTitle>
                       <h5 className={obj.retracted ? "": "gg-blue"}>{obj.title}</h5>
                     </AlertTitle>
-                    <div>
+                    <div style={{ whiteSpace: "pre-line" }}>
                       {obj.description}
                     </div>
                     {obj.url && obj.url_name &&

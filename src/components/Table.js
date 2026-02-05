@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import TagEdit from "./TagEdit";
 import { FormLabel } from "./FormControls";
+import RestorePageIcon from '@mui/icons-material/RestorePage';
 
 // server side table
 const Table = (props) => {
@@ -175,6 +176,30 @@ const Table = (props) => {
 
       const editRow = (row) => {
         props.editInPlace && props.editInPlace(row);
+      }
+
+      const recoverDataset = (id) => {
+        if (props.recoverws) {
+          setIsLoading(true);
+          setIsError(false);
+          props.authCheckAgent();
+      
+          var url = props.recoverws + id;
+          postJson (url, null, getAuthorizationHeader()).then (({ data }) => {
+            setIsLoading(false);
+            setIsError(false);
+            fetchData();
+          }).catch (function(error) {
+              if (error && error.response && error.response.data) {
+                  setIsError(true);
+                  setErrorMessage(error.response.data.message);
+                  setIsLoading(false);
+              } else {
+                  setIsLoading(false);
+                  axiosError(error, null, props.setAlertDialogInput);
+              }
+          });
+        }
       }
     
       const deleteRow = (id) => {
@@ -461,13 +486,27 @@ const Table = (props) => {
         enableSorting: props.enableSorting ?? true,
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
+          <>
+          {row.original.removed ? "" :
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip title={props.deletelabel ?? "Delete"}>
+            {row.original.retracted && props.recoverws ? 
+            <Tooltip title="Recover">
+                  <IconButton
+                        aria-label="recover dataset"
+                        onClick={(e) =>  {
+                            recoverDataset(row.original[props.rowId], e);
+                        }}
+                        >
+                    <RestorePageIcon />
+                </IconButton>
+            </Tooltip>
+            : <Tooltip title={props.deletelabel ?? "Delete"}>
               <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
               : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
+            }
             {props.showEdit && (<Tooltip title="Edit">
               <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
@@ -495,7 +534,8 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             )}
-          </Box>
+          </Box>}
+          </>
         ),
         renderDetailPanel: ({ row }) =>
             row.original.description ? <div><span>{row.original.description}</span> </div> : 
