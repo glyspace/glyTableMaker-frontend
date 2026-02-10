@@ -53,7 +53,7 @@ const Glycoprotein = (props) => {
     );
 
     const glycosylationTypes = [""].concat (typeList);
-    const [subtypes, setSubtypes] = useState([""].concat (typeList.map(type => type.subtype).flat()));
+    const [subtypes, setSubtypes] = useState([""]);
 
     const [gType, setGType] = useState(null);
     const [gsType, setGsType] = useState (null);
@@ -461,6 +461,7 @@ const Glycoprotein = (props) => {
             "positions": [{"location" : -1, "aminoAcid": ""}]});
         setStart(null);
         setEnd(null);
+        setSubtypes([""]);
         setShowAddSite(false);
         setShowEditSite(false);
     }
@@ -919,6 +920,7 @@ const Glycoprotein = (props) => {
                         if (reason && reason === "backdropClick")
                             return;
                         setShowAddSite(false);
+                        setSubtypes([""]);
                         setShowEditSite(false);
                     }}
                 >
@@ -931,6 +933,7 @@ const Glycoprotein = (props) => {
                         aria-label="close"
                         onClick={() => {
                             setShowAddSite(false); 
+                            setSubtypes([""]);
                             setShowEditSite(false);
                         }}
                         sx={{
@@ -951,6 +954,7 @@ const Glycoprotein = (props) => {
                         
                         <Button className="gg-btn-outline-reg"
                             onClick={()=> {
+                                setSubtypes([""]);
                                 setShowAddSite(false);
                                 setShowEditSite(false);
                             }}>Cancel</Button>
