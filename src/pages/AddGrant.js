@@ -100,7 +100,7 @@ const AddGrant = props => {
                   onChange={e => {
                     setOtherFO(e.target.value);
                   }}
-                  maxLength={50}
+                  maxLength={255}
                 />
               </Col>
             </Form.Group>
