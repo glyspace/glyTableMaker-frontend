@@ -21,6 +21,7 @@ import { Col, Row } from "react-bootstrap";
 import Home  from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
+import { DatasetManagement } from "./pages/DatasetManagement";
 import { Signup } from "./pages/Signup";
 import { EmailConfirmation } from "./pages/EmailConfirmation";
 import { VerifyToken } from "./pages/VerifyToken";
@@ -55,6 +56,7 @@ import { CollectionFromFile } from "./pages/CollectionFromFile";
 import Footer from "./components/Footer";
 import ReactGA from 'react-ga4';
 import { OldPublicDataset } from "./pages/OldPublicDataset";
+import { UserManagement } from "./pages/UserManagement";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -77,6 +79,7 @@ function initializeReactGA() {
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [admin, setAdmin] = useState(false);
   const loginUpdater = flag => setLoggedIn(flag);
   const logoutHandler = e => logout(e);
   const [sideBarData, setSidebarData] = useState(items);
@@ -175,6 +178,16 @@ function App() {
     {
       path: "/profile",
       main: () => <Profile authCheckAgent={checkAuthorization} />,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: "/managedatasets",
+      main: () => <DatasetManagement authCheckAgent={checkAuthorization} />,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: "/manageusers",
+      main: () => <UserManagement authCheckAgent={checkAuthorization} />,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {
@@ -334,7 +347,7 @@ function App() {
     return (
       <>
       <div className="App">
-      <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} />
+      <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} admin={admin}/>
       <CssBaseline />
       <ScrollToTopBtn />
       <Outlet />
@@ -346,6 +359,12 @@ function App() {
   function getLoginStatus() {
     var base = process.env.REACT_APP_BASENAME;
     var token = window.localStorage.getItem(base ? base + "_token" : "token");
+    var role =  window.localStorage.getItem(base ? base + "_loggedinuserrole" : "loggedinuserrole");
+    if (role === "ADMIN") {
+      setAdmin(true);
+    } else {
+      setAdmin(false);
+    }
     //if token exists
     if (token) {
       // check if it is expired
@@ -356,7 +375,9 @@ function App() {
         console.log("invalid token, removing the token");
         window.localStorage.removeItem(base ? base + "_token" : "token");
         window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+        window.localStorage.removeItem(base ? base + "_loggedinuserrole" : "loggedinuserrole");
         setLoggedIn(false);
+        setAdmin(false);
         return false;
       }
       if (jwt.exp === "undefined") return true; // never expires
@@ -364,6 +385,7 @@ function App() {
         /* expired */
         window.localStorage.removeItem(base ? base + "_token" : "token");
         window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+        window.localStorage.removeItem(base ? base + "_loggedinuserrole" : "loggedinuserrole");
         //window.localStorage.clear();
         token = null;
         return false;
@@ -426,8 +448,10 @@ function App() {
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.removeItem(base ? base + "_token" : "token");
     window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+    window.localStorage.removeItem(base ? base + "_loggedinuserrole" : "loggedinuserrole");
     window.localStorage.removeItem(base ? base + "_redirectedFrom" : "redirectedFrom");
     setLoggedIn(false);
+    setAdmin(false);
     navigate("/");
   }
 

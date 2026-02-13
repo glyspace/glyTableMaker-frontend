@@ -23,7 +23,7 @@ const Signup = () => {
     affiliationWebsite: "",
     groupName: "",
     department: "",
-    userType: "INVESTIGATOR"
+    userType: "CURATOR"
   });
 
   const [validURL, setValidURL] = useState(true);

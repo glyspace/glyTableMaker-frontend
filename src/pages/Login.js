@@ -176,6 +176,7 @@ const Login = props => {
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.setItem(base ? base + "_token" : "token", token);
     window.localStorage.setItem(base ? base + "_loggedinuser" : "loggedinuser", credentials.userName);
+    window.localStorage.setItem(base ? base + "_loggedinuserrole" : "loggedinuserrole", user.role);
     props.updateLogin(true);
 
     var redirectedFrom = "";

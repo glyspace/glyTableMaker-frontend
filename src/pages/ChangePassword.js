@@ -216,6 +216,7 @@ const ChangePassword = () => {
       var base = process.env.REACT_APP_BASENAME;
       window.localStorage.removeItem(base ? base + "_token" : "token");
       window.localStorage.removeItem(base ? base + "_loggedinuser" : "loggedinuser");
+      window.localStorage.removeItem(base ? base + "_loggedinuserrole" : "loggedinuserrole");
       history ("/login");
     } else {
       history("/profile");
