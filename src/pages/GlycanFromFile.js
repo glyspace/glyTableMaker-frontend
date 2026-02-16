@@ -77,6 +77,22 @@ const GlycanFromFile = props => {
     e.preventDefault();
   }
 
+  const getLabel = () => {
+    if (type == "excel") {
+      return "Upload an Excel file with GlyTouCan Accessions";
+    } else if (type == "glycogeniusdb") {
+        return "Upload a GlycoGenius DB (Excel) file";
+    } else if (type == "glycogeniusresult") {
+      return "Upload a GlycoGenius Result (Excel) file";
+    } else if (type == "gws") {
+      return "Upload a Glycoworkbench file";
+    } else if (type == "ppcomposition") {
+      return "Upload ProteinProspector file";
+    } else {
+      return "Upload a Glycan file";
+    }
+  }
+
   return (
     <>
     <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
@@ -100,7 +116,7 @@ const GlycanFromFile = props => {
                 {/* File Upload */}
                 <Form.Group as={Row} controlId="fileUploader" className="gg-align-center mb-35">
                   <Col xs={12} lg={9}>
-                    <FormLabel label="Upload Glycan File" className="required-asterik" />
+                    <FormLabel label={getLabel()} className="required-asterik" />
                     <ResumableUploader
                       headerObject={getAuthorizationHeader()}
                       fileType={fileDetails.fileType}
