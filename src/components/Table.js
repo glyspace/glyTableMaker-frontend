@@ -137,6 +137,7 @@ const Table = (props) => {
         sorting,
         columnVisibility,
         props.ws,
+        props.data,
       ]);
 
       const openDeleteConfirmModal = (row) => {
@@ -178,7 +179,7 @@ const Table = (props) => {
         props.editInPlace && props.editInPlace(row);
       }
 
-      const recoverDataset = (id) => {
+      const recover = (id) => {
         if (props.recoverws) {
           setIsLoading(true);
           setIsError(false);
@@ -200,6 +201,9 @@ const Table = (props) => {
               }
           });
         }
+        else {
+            props.recover && props.recover(id);
+        }
       }
     
       const deleteRow = (id) => {
@@ -218,7 +222,7 @@ const Table = (props) => {
                 setIsDeleteError(false);
                 setShowDeleteModal(false);
                 setShowRetractModal(false);
-                fetchData();
+                if (props.ws) fetchData();
             }).catch (function(error) {
                 if (error && error.response && error.response.data) {
                     setIsError(true);
@@ -489,20 +493,22 @@ const Table = (props) => {
           <>
           {row.original.removed ? "" :
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            {row.original.retracted && props.recoverws ? 
-            <Tooltip title="Recover">
+            {(row.original.retracted || !row.original.enabled) && (props.recoverws || props.recover) ? 
+            <Tooltip title={props.recoverLabel ?? "Recover"}>
                   <IconButton
-                        aria-label="recover dataset"
+                        aria-label={props.recoverLabel ?? "Recover"}
                         onClick={(e) =>  {
-                            recoverDataset(row.original[props.rowId], e);
+                            recover(row.original[props.rowId], e);
                         }}
                         >
                     <RestorePageIcon />
                 </IconButton>
             </Tooltip>
             : <Tooltip title={props.deletelabel ?? "Delete"}>
-              <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
-              : deleteRow(row.original[props.rowId])}>
+              <IconButton color="error" 
+                 aria-label={props.deletelabel ?? "Delete"} 
+                 onClick={() => props.deletews ? openDeleteConfirmModal(row)
+                                : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -650,12 +656,26 @@ const Table = (props) => {
         globalFilterFn: 'contains',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            <Tooltip title="Delete">
-              <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
-              : deleteRow(row.original[props.rowId])}>
+            {(row.original.retracted || !row.original.enabled) && (props.recoverws || props.recover) ? 
+            <Tooltip title={props.recoverLabel ?? "Recover"}>
+                  <IconButton
+                        aria-label={props.recoverLabel ?? "Recover"}
+                        onClick={(e) =>  {
+                            recover(row.original[props.rowId], e);
+                        }}
+                        >
+                    <RestorePageIcon />
+                </IconButton>
+            </Tooltip>
+            : <Tooltip title={props.deletelabel ?? "Delete"}>
+              <IconButton color="error" 
+                 aria-label={props.deletelabel ?? "Delete"} 
+                 onClick={() => props.deletews ? openDeleteConfirmModal(row)
+                                : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
+            }
             {props.showEdit && (<Tooltip title="Edit">
               <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
@@ -711,8 +731,8 @@ const Table = (props) => {
             showModal={showDeleteModal}
             onCancel={() => setShowDeleteModal(false)}
             onConfirm={confirmDelete}
-            title="Confirm Delete"
-            body="Are you sure you want to delete?"
+            title={"Confirm " + (props.deletelabel ? props.deletelabel : "Delete")}
+            body={"Are you sure you want to " + (props.deletelabel ? props.deletelabel : "delete") + "?"}
         />
 
         <ConfirmationModal
@@ -753,7 +773,7 @@ const Table = (props) => {
             onCancel={() => setShowDeleteAllModal(false)}
             onConfirm={deleteSelectedRows}
             title="Confirm Delete"
-            body="Are you sure you want to delete all selected glycans?"
+            body="Are you sure you want to delete all selected?"
         />  
 
         <ConfirmationModal

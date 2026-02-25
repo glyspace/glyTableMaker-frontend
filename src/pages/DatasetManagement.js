@@ -11,11 +11,6 @@ const DatasetManagement = (props) => {
 
     useEffect(props.authCheckAgent, []);
 
-    const [textAlertInput, setTextAlertInput] = useReducer(
-            (state, newState) => ({ ...state, ...newState }),
-            { show: false, id: "" }
-    );
-
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -95,7 +90,6 @@ const DatasetManagement = (props) => {
                   title="Manage datasets"
                   subTitle="The table below displays the list of all public datasets. An admin user can delete (retract/hide) or recover (unhide) datasets"
               />
-              <TextAlert alertInput={textAlertInput}/>
               <DialogAlert
                     alertInput={alertDialogInput}
                     setOpen={input => {
