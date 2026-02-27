@@ -128,7 +128,12 @@ const UserManagement = (props) => {
                 size: 50,
                 enableColumnFilter: false,
             },
-            
+            {
+                accessorKey: 'datasetNo',
+                header: '# Public Datasets',
+                size: 30,
+                id: "rowNo",
+            },
             {
                 accessorFn: (row) => row.enabled ? "enabled" : "disabled",
                 header: 'Status',
