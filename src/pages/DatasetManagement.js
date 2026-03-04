@@ -47,14 +47,26 @@ const DatasetManagement = (props) => {
                 header: 'Last Update',
                 id: "versionDate",
                 size: 50,
-                enableColumnFilter: false,
             },
             {
                 accessorKey: 'version', 
                 header: 'Current Version',
                 id: "version",
                 size: 20,
+            },
+            {
+                accessorFn: (row) => {
+                    if (row.error) {
+                        var err = JSON.parse(row.error);
+                        if (err.excluded_records) return err.excluded_records.length;
+                    }
+                    return 0;
+                },
+                header: '# of Glygen Errors',
+                id: "errors",
+                size: 50,
                 enableColumnFilter: false,
+                enableSorting: false,
             },
             {
                 accessorFn: (row) => row.removed ? "removed" : row.retracted ? "retracted" : "published",
