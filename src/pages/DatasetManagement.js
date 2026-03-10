@@ -116,6 +116,7 @@ const DatasetManagement = (props) => {
                     rowId="datasetIdentifier"
                     detailPanel={true}
                     deletelabel="Retract"
+                    admin={true}
                 />
             </Card.Body>
           </Card>

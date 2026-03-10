@@ -489,7 +489,7 @@ const Table = (props) => {
           <>
           {row.original.removed ? "" :
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            {row.original.retracted && props.recoverws ? 
+            {(row.original.removed && props.admin) || (row.original.retracted && !row.original.removed && !props.admin)  && props.recoverws ?
             <Tooltip title="Recover">
                   <IconButton
                         aria-label="recover dataset"
@@ -500,7 +500,10 @@ const Table = (props) => {
                     <RestorePageIcon />
                 </IconButton>
             </Tooltip>
-            : <Tooltip title={props.deletelabel ?? "Delete"}>
+            : (row.original.retracted && props.admin) ?
+            <></>
+            :
+            <Tooltip title={props.deletelabel ?? "Delete"}>
               <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
               : deleteRow(row.original[props.rowId])}>
                 <DeleteIcon />
