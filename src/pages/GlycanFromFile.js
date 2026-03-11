@@ -78,15 +78,15 @@ const GlycanFromFile = props => {
   }
 
   const getLabel = () => {
-    if (type == "excel") {
+    if (type === "excel") {
       return "Upload an Excel file with GlyTouCan Accessions";
-    } else if (type == "glycogeniusdb") {
+    } else if (type === "glycogeniusdb") {
         return "Upload a GlycoGenius DB (Excel) file";
-    } else if (type == "glycogeniusresult") {
+    } else if (type === "glycogeniusresult") {
       return "Upload a GlycoGenius Result (Excel) file";
-    } else if (type == "gws") {
+    } else if (type === "gws") {
       return "Upload a Glycoworkbench file";
-    } else if (type == "ppcomposition") {
+    } else if (type === "ppcomposition") {
       return "Upload ProteinProspector file";
     } else {
       return "Upload a Glycan file";

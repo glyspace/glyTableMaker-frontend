@@ -116,17 +116,16 @@ const UserManagement = (props) => {
                 size: 100,
             },
             {
-                accessorKey: 'dateCreated', 
+                accessorFn: (row) => row.dateCreated ? new Date(row.dateCreated).toLocaleDateString() : null,
                 header: 'Creation Date',
                 id: "dateCreated",
                 size: 50,
             },
             {
-                accessorKey: 'lastLoginDate', 
-                header: 'Last Login Date',
+                accessorFn: (row) => row.lastLoginDate ? new Date(row.lastLoginDate).toLocaleString() : null,
+                header: 'Last Login',
                 id: "loginDate",
                 size: 50,
-                enableColumnFilter: false,
             },
             {
                 accessorKey: 'datasetNo',

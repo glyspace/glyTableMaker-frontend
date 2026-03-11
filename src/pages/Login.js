@@ -16,8 +16,13 @@ import FeedbackWidget from "../components/FeedbackWidget";
 
 const Login = props => {
   useEffect(() => {
-    if (props.authCheckAgent) {
-      props.authCheckAgent();
+    const error = new URLSearchParams(location.search).get("error");
+    if (error) {
+      setTextAlertInput ({"show": true, "message": error});
+    } else {
+      if (props.authCheckAgent) {
+        props.authCheckAgent();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -119,7 +124,10 @@ const Login = props => {
               <div className="divider d-flex align-items-center my-4">
                 <p className="text-center fw-bold mx-3 mb-0">OR</p>
               </div>
-              <button class="gsi-material-button" onClick={() => { window.location.href = getSocialLoginUrl('google', (location.state && location.state.redirectedFrom ? location.state.redirectedFrom: "/"))}}>
+              <button class="gsi-material-button" onClick={() => { 
+                setCredentials(userDetails);
+                window.location.href = getSocialLoginUrl('google', (location.state && location.state.redirectedFrom ? location.state.redirectedFrom: "/"))
+                }}>
                 <div class="gsi-material-button-state"></div>
                 <div class="gsi-material-button-content-wrapper">
                   <div class="gsi-material-button-icon">

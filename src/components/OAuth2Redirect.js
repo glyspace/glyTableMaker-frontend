@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { parseJwt } from '../utils/api'
+
 
 function OAuth2Redirect(props) {
   //const [redirectTo, setRedirectTo] = useState('/login')
@@ -30,7 +31,7 @@ function OAuth2Redirect(props) {
       } else {
         navigate("/");
       }
-    }
+    } 
   }, [])
 
   const extractUrlParameter = (key) => {
@@ -45,7 +46,8 @@ function OAuth2Redirect(props) {
     props.updateLogin(true);
   };
 
-  return <></>
+  return <>
+  </>
 }
 
 export default OAuth2Redirect
