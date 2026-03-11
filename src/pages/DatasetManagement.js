@@ -11,11 +11,6 @@ const DatasetManagement = (props) => {
 
     useEffect(props.authCheckAgent, []);
 
-    const [textAlertInput, setTextAlertInput] = useReducer(
-            (state, newState) => ({ ...state, ...newState }),
-            { show: false, id: "" }
-    );
-
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -52,14 +47,26 @@ const DatasetManagement = (props) => {
                 header: 'Last Update',
                 id: "versionDate",
                 size: 50,
-                enableColumnFilter: false,
             },
             {
                 accessorKey: 'version', 
                 header: 'Current Version',
                 id: "version",
                 size: 20,
+            },
+            {
+                accessorFn: (row) => {
+                    if (row.error) {
+                        var err = JSON.parse(row.error);
+                        if (err.excluded_records) return err.excluded_records.length;
+                    }
+                    return 0;
+                },
+                header: '# of Glygen Errors',
+                id: "errors",
+                size: 50,
                 enableColumnFilter: false,
+                enableSorting: false,
             },
             {
                 accessorFn: (row) => row.removed ? "removed" : row.retracted ? "retracted" : "published",
@@ -95,7 +102,6 @@ const DatasetManagement = (props) => {
                   title="Manage datasets"
                   subTitle="The table below displays the list of all public datasets. An admin user can delete (retract/hide) or recover (unhide) datasets"
               />
-              <TextAlert alertInput={textAlertInput}/>
               <DialogAlert
                     alertInput={alertDialogInput}
                     setOpen={input => {

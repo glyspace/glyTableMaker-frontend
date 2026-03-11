@@ -14,6 +14,11 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
+Before running the app, a file named .env.dev needs to be created locally (in the same folder as .env.prod) with the following content:
+
+      REACT_APP_API_URL = http://localhost:8080/
+      REACT_APP_OAUTH2_REDIRECT_URI = http://localhost:3000/oauth2/redirect
+
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.\
