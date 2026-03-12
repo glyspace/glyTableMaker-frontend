@@ -1,4 +1,4 @@
-import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Table as MTable, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import FeedbackWidget from "../components/FeedbackWidget";
 import DialogAlert from "../components/DialogAlert";
 import { useEffect, useMemo, useReducer, useState } from "react";
@@ -89,7 +89,7 @@ const DatasetManagement = (props) => {
                     >
                         <span
                             style={renderedCellValue === 0 ? {} :{ color: "#1976d2", cursor: "pointer"}}
-                            onClick={() => handleOpenGlygenErrorDialog(row.error)}
+                            onClick={() => handleOpenGlygenErrorDialog(row.original.error)}
                         >
                             {renderedCellValue}
                         </span>
@@ -146,11 +146,37 @@ const DatasetManagement = (props) => {
                     {glygenError.excluded_records.length === 0 ? (
                     <p>No excluded records</p>
                     ) : (
-                    <ul>
-                        {glygenError.excluded_records.map((rec, index) => (
-                        <li key={index}>{rec}</li>
+                    
+                    <MTable size="small">
+                        <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ width: 120 }}>Row Index</TableCell>
+                            <TableCell>Exclusion Reason(s)</TableCell>
+                        </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                        {glygenError.excluded_records.map((record) => (
+                            <TableRow key={record.row_index}>
+                            <TableCell>{record.row_index}</TableCell>
+
+                            <TableCell>
+                                <ul style={{ margin: 0, paddingInlineStart: 18 }}>
+                                {record.exclusion_flags.map((flag) => (
+                                    <li key={flag}>
+                                    <Typography variant="body2">
+                                        {glygenError.exclusion_flag_desc[flag] ??
+                                        `Unknown exclusion flag: ${flag}`}
+                                    </Typography>
+                                    </li>
+                                ))}
+                                </ul>
+                            </TableCell>
+                            </TableRow>
                         ))}
-                    </ul>
+                        </TableBody>
+                    </MTable>
+
                     )}
                 </DialogContent>
 
