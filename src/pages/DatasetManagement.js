@@ -1,20 +1,33 @@
-import { Box, Container } from "@mui/material";
+import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import FeedbackWidget from "../components/FeedbackWidget";
 import DialogAlert from "../components/DialogAlert";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { PageHeading } from "../components/FormControls";
-import TextAlert from "../components/TextAlert";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import Table from "../components/Table";
 
 const DatasetManagement = (props) => {
 
     useEffect(props.authCheckAgent, []);
 
+    const [openGlygenErrorDialog, setOpenGlygenErrorDialog] = useState(false);
+    const [glygenError, setGlygenError] = useState({"excluded_records": []});
+
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+
+    const handleOpenGlygenErrorDialog = (error) => {
+        if (error) {
+            setGlygenError(JSON.parse(error)); 
+            setOpenGlygenErrorDialog(true);
+        }
+    };
+
+    const handleCloseGlygenErrorDialog = () => {
+        setOpenGlygenErrorDialog(false);
+    };
 
     const columns = useMemo(
         () => [
@@ -67,6 +80,21 @@ const DatasetManagement = (props) => {
                 size: 50,
                 enableColumnFilter: false,
                 enableSorting: false,
+                Cell: ({ renderedCellValue, row }) => (
+                    <Box
+                        sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        }}
+                    >
+                        <span
+                            style={renderedCellValue === 0 ? {} :{ color: "#1976d2", cursor: "pointer"}}
+                            onClick={() => handleOpenGlygenErrorDialog(row.error)}
+                        >
+                            {renderedCellValue}
+                        </span>
+                    </Box>
+                ),
             },
             {
                 accessorFn: (row) => row.removed ? "removed" : row.retracted ? "retracted" : "published",
@@ -109,7 +137,29 @@ const DatasetManagement = (props) => {
                     }}
               />
               <Card>
-                <Card.Body>   
+                <Card.Body>  
+
+               <Dialog open={openGlygenErrorDialog} onClose={handleCloseGlygenErrorDialog} maxWidth="sm" fullWidth>
+                <DialogTitle>Excluded Records</DialogTitle>
+
+                <DialogContent>
+                    {glygenError.excluded_records.length === 0 ? (
+                    <p>No excluded records</p>
+                    ) : (
+                    <ul>
+                        {glygenError.excluded_records.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                        ))}
+                    </ul>
+                    )}
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={handleCloseGlygenErrorDialog}>Close</Button>
+                </DialogActions>
+                </Dialog>
+
+
                 <Table
                     authCheckAgent={props.authCheckAgent}
                     ws="api/dataset/getalldatasets"
