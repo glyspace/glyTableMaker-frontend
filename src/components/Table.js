@@ -19,6 +19,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import TagEdit from "./TagEdit";
 import { FormLabel } from "./FormControls";
 import RestorePageIcon from '@mui/icons-material/RestorePage';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 // server side table
 const Table = (props) => {
@@ -397,6 +398,11 @@ const Table = (props) => {
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
+            {props.view && (<Tooltip title="View">
+              <IconButton onClick={()=> props.view(row.original[props.rowId])}>
+                <VisibilityOutlinedIcon aria-label="view"/>
+              </IconButton>
+            </Tooltip>)}
             <Tooltip title="Delete">
               <IconButton color="error" onClick={() => props.deletews ? openDeleteConfirmModal(row)
               : deleteRow(row.original[props.rowId])}>
@@ -493,6 +499,11 @@ const Table = (props) => {
           <>
           {row.original.removed && props.admin === false ? "" :
           <Box sx={{ display: 'flex', gap: '1rem' }}>
+            {props.view && (<Tooltip title="View">
+              <IconButton onClick={()=> props.view(row.original[props.rowId])}>
+                <VisibilityOutlinedIcon aria-label="view"/>
+              </IconButton>
+            </Tooltip>)}
             {(row.original.retracted === true || row.original.enabled === false || row.original.removed === true) && (props.recoverws || props.recover) ? 
             <Tooltip title={props.recoverLabel ?? "Recover"}>
                   <IconButton
@@ -656,7 +667,12 @@ const Table = (props) => {
         globalFilterFn: 'contains',
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
-            {(row.original.retracted || !row.original.enabled) && (props.recoverws || props.recover) ? 
+            {props.view && (<Tooltip title="View">
+              <IconButton onClick={()=> props.view(row.original[props.rowId])}>
+                <VisibilityOutlinedIcon aria-label="view"/>
+              </IconButton>
+            </Tooltip>)}
+            {(row.original.retracted === true || row.original.enabled === false || row.original.removed === true) && (props.recoverws || props.recover) ? 
             <Tooltip title={props.recoverLabel ?? "Recover"}>
                   <IconButton
                         aria-label={props.recoverLabel ?? "Recover"}

@@ -57,6 +57,7 @@ import Footer from "./components/Footer";
 import ReactGA from 'react-ga4';
 import { OldPublicDataset } from "./pages/OldPublicDataset";
 import { UserManagement } from "./pages/UserManagement";
+import { Inbox } from "./pages/Inbox";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -80,6 +81,7 @@ function initializeReactGA() {
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [admin, setAdmin] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const loginUpdater = flag => setLoggedIn(flag);
   const logoutHandler = e => logout(e);
   const [sideBarData, setSidebarData] = useState(items);
@@ -172,7 +174,12 @@ function App() {
     },*/
     {
       path: "/login",
-      main: () => <Login updateLogin={loginUpdater} authCheckAgent={checkAuthorization}/>,
+      main: () => <Login updateLogin={loginUpdater} unreadCount={setUnreadCount} authCheckAgent={checkAuthorization}/>,
+      sidebar: () => "",
+    },
+    {
+      path: "/messages",
+      main: () => <Inbox authCheckAgent={checkAuthorization}/>,
       sidebar: () => "",
     },
     {
@@ -347,7 +354,7 @@ function App() {
     return (
       <>
       <div className="App">
-      <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} admin={admin}/>
+      <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} admin={admin} unreadCount={unreadCount}/>
       <CssBaseline />
       <ScrollToTopBtn />
       <Outlet />

@@ -10,6 +10,9 @@ import { FaUserGear } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
 import stringConstants from '../data/stringConstants.json';
+import Badge from "@mui/material/Badge";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+
 
 const TopNavBar = (props) => {
   return (
@@ -68,6 +71,13 @@ const TopNavBar = (props) => {
               {/* Top bar right side links when logged in */}
               {props.loggedInFlag && (
                 <>
+                <LinkContainer to="/messages" className="gg-nav-link">
+                    <Nav.Link aria-label="Messages">
+                      <Badge badgeContent={props.unreadCount} color="error">
+                        <MailOutlineIcon sx={{ fontSize: 22 }} />
+                      </Badge>
+                    </Nav.Link>
+                  </LinkContainer>
                   <NavDropdown title="USER" id="basic-nav-dropdown" className="gg-nav-link gg-dropdown-navbar">
                     <LinkContainer to="/profile">
                       <NavDropdown.Item className="dropdown-item">

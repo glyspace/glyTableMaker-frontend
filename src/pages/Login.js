@@ -181,11 +181,13 @@ const Login = props => {
   function logInSuccess(response) {
     var token = response.data.data.token;
     var user = response.data.data.user;
+    var unread = response.data.data.unreadMessageCount;
     var base = process.env.REACT_APP_BASENAME;
     window.localStorage.setItem(base ? base + "_token" : "token", token);
     window.localStorage.setItem(base ? base + "_loggedinuser" : "loggedinuser", credentials.userName);
     window.localStorage.setItem(base ? base + "_loggedinuserrole" : "loggedinuserrole", user.role);
     props.updateLogin(true);
+    props.unreadCount(unread);
 
     var redirectedFrom = "";
     if (location.state && location.state.redirectedFrom) {
