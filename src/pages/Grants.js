@@ -17,12 +17,17 @@ const Grants = props => {
           aria-labelledby="contained-modal-title-vcenter"
           centered
           show={showModal}
+          backdrop="static"
+          keyboard={false}
           onHide={() => {
             setShowModal(false);
           }}
         >
           <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">Add Grant</Modal.Title>
+            <div style={{ display: 'block' }}> 
+              <h4 className="modal-title">Add Grant</h4>
+              <p className="mb-0 text-muted">Enter the funding organization and at least one of grant number or grant title.</p>
+            </div>
           </Modal.Header>
           <Modal.Body>
             <AddGrant
@@ -74,7 +79,11 @@ const Grants = props => {
           <div>
             <Row>
               <Col md={3}>{grant.fundingOrganization}</Col>
-              <Col>{grant.identifier}</Col>
+              <Col>
+              {grant.title === "" && grant.url ? 
+              <a href={grant.url} target={"_blank"}><strong>{grant.identifier}</strong></a> :
+              <strong>{grant.identifier}</strong>
+              }</Col>
             </Row>
           </div>
         </td>
@@ -111,7 +120,11 @@ const Grants = props => {
           <Row>
             <Row>
               <Col md={3}>{grant.fundingOrganization}</Col>
-              <Col>{grant.identifier}</Col>
+              <Col>
+              {grant.title === "" && grant.url ? 
+              <a href={grant.url} target={"_blank"}><strong>{grant.identifier}</strong></a> :
+              <strong>{grant.identifier}</strong>
+              }</Col>
             </Row>
           </Row>
         </div>

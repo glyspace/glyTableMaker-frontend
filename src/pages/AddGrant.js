@@ -109,8 +109,8 @@ const AddGrant = props => {
 
         <Form.Group as={Row} controlId="grantNumber" className="gg-align-center mb-3">
           <Col xs={12} lg={9}>
-            <FormLabel label="Grant Number" className="required-asterik"/>
-            <Form.Control type="text" required name="identifier" value={grant.identifier} onChange={handleChange} />
+            <FormLabel label="Grant Number"/>
+            <Form.Control type="text" name="identifier" value={grant.identifier} onChange={handleChange} />
           </Col>
         </Form.Group>
 
@@ -138,7 +138,7 @@ const AddGrant = props => {
           <Button
             type="submit"
             className="gg-btn-blue mt-2 gg-ml-20"
-            disabled={!grant.identifier || !grant.fundingOrganization}
+            disabled={(!grant.identifier && !grant.title) || !grant.fundingOrganization}
           >
             Submit
           </Button>
