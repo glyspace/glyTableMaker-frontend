@@ -23,7 +23,11 @@ const Signup = () => {
     affiliationWebsite: "",
     groupName: "",
     department: "",
-    userType: "CURATOR"
+    userType: "CURATOR",
+    software: false,
+    softwareName: "",
+    softwareURL: "",
+    softwarePublication: "",
   });
 
   const [validURL, setValidURL] = useState(true);
@@ -48,7 +52,12 @@ const Signup = () => {
   const handleChange = e => {
     const name = e.target.name;
     const newValue = e.target.value;
+    const checked = e.target.checked;
     setValidURL(true);
+    if (name === "software") {
+      setUserInput ({ [name] : checked});
+      return;
+    }
     if (newValue) {
       if (name === "password") setShowEye(true);
       if (name === "confirmPassword") setShowEye2(true);
@@ -59,7 +68,7 @@ const Signup = () => {
       if (name === "password") setShowEye(false);
       if (name === "confirmPassword") setShowEye2(false);
     }
-    if (newValue && newValue.trim().length > 0 && name === "affiliationWebsite") {
+    if (newValue && newValue.trim().length > 0 && (name === "affiliationWebsite" || name === "softwareURL")) {
       setValidURL(isValidURL(newValue));
     }
   };
@@ -291,11 +300,89 @@ const Signup = () => {
                     <Feedback className={"feedback"} message="Please enter a valid affiliation website." />
                   </Col>
                 </Form.Group>
+              </Col></Row>
+              <Row>
+              <Col md={12}>  
+                <Form.Group as={Row} controlId="userRole">
+                  <Col className="d-flex align-items-center">
+                    <Form.Check
+                      type="checkbox"
+                      name="software"
+                      checked={userInput.role}
+                      onChange={handleChange}
+                    />
+                    <span style={{fontSize: '18px'}}>
+                      Account will be used for data submission by a software
+                    </span>
+                  </Col>
+                </Form.Group>
               </Col>
+              </Row>
+              {userInput.software === true ? 
+              <>
+              <Row className="mt-4">
+                <Col md={12}>
+                <Form.Group as={Row} controlId="sName">
+                  <Col>
+                    <Form.Control
+                      type="text"
+                      placeholder=" "
+                      name="softwareName"
+                      value={userInput.softwareName}
+                      onChange={handleChange}
+                      maxLength={250}
+                      className={"custom-text-fields"}
+                    />
+                    <Form.Label className={"label"}>Software Name</Form.Label>
+                  </Col>
+                </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                <Form.Group as={Row} controlId="sName">
+                  <Col>
+                    <Form.Control
+                      type="text"
+                      placeholder=" "
+                      name="softwarePublication"
+                      value={userInput.softwarePublication}
+                      onChange={handleChange}
+                      maxLength={50}
+                      className={"custom-text-fields"}
+                    />
+                    <Form.Label className={"label"}>Publication (PMID/DOI)</Form.Label>
+                  </Col>
+                </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                <Form.Group as={Row} controlId="sURL">
+                  <Col>
+                    <Form.Control
+                      type="text"
+                      placeholder=" "
+                      name="softwareURL"
+                      value={userInput.softwareURL}
+                      onChange={handleChange}
+                      maxLength={250}
+                      isInvalid={!validURL}
+                      className={"custom-text-fields"}
+                    />
+                    <Feedback className={"feedback"} message="Please enter a valid software website." />
+                    <Form.Label className={"label"}>Software URL</Form.Label>
+                  </Col>
+                </Form.Group>
+                </Col>
+              </Row>
+              </>
+               :
+              <Row className="mt-4">
               <Col md={12}>
                 <Form.Group as={Row} controlId="userType">
                   <Col>
-                    <Form.Control
+                    <Form.Control style={{fontSize: '18px'}}
                             as="select"
                             name="userType"
                             value={userInput.userType}
@@ -307,7 +394,7 @@ const Signup = () => {
                   </Col>
                 </Form.Group>
               </Col>
-            </Row>
+            </Row>}
             {/* <br /> */}
             <div className="text-center mt-4">
               <Button type="submit" disabled={showError} className="gg-btn-blue">
@@ -342,6 +429,13 @@ const Signup = () => {
     }
   }
 
+  function checkSoftware() {
+    if (userInput.software && userInput.softwareName === "") {
+      setShowError(true);
+      setTextAlertInput ({"show": true, "id" : "", "message": "Software name must be provided for software accounts!"});
+    }
+  }
+
   /*function checkUsernameSuccess() {}
 
   function checkUsernameFailure(response) {
@@ -370,6 +464,9 @@ const Signup = () => {
       setTextAlertInput ({"show": true, "id" : "", "message": "New and confirm passwords must match."});
     } else if (e.currentTarget.checkValidity()) {
       checkUserName();
+      checkSoftware();
+      userInput["role"] = userInput.software ? "SOFTWARE" : "USER";
+      userInput["software"]= { "name" : userInput.softwareName, "url": userInput.softwareURL, "publication": userInput.softwarePublication};
       postJson ("api/account/register", userInput, null).then ( (data) => {
             navigate("/verifyToken");
       }).catch(function(error) {

@@ -111,7 +111,7 @@ const PublicDataset = (props) => {
     }
 
     const getFullName = user => {
-        return user.firstName ? user.firstName + (user.lastName ? " " + user.lastName : "") : user.username;
+        return user.firstName ? user.firstName + (user.lastName ? " " + user.lastName : "") : user.userName;
     }
 
     const getDateCreated = dateCreated => {
@@ -813,7 +813,7 @@ const PublicDataset = (props) => {
           <div>
             <strong>Username: </strong>
             {/*submitterinfo.userName*/}
-            {submitterinfo.username}
+            {submitterinfo.userName}
           </div>
           <div>
             <strong>Full Name: </strong>
@@ -836,6 +836,12 @@ const PublicDataset = (props) => {
             <div>
               <strong>Institution: </strong>
               {submitterinfo.affiliation}
+            </div>
+          )}
+          {submitterinfo.role === "SOFTWARE" && (
+            <div>
+              <strong>Software Name: </strong>
+              {submitterinfo.software.name}
             </div>
           )}
         </>);
@@ -951,7 +957,7 @@ const PublicDataset = (props) => {
                 <Card style={{ height: "100%", marginBottom: "30px" }}>
                   <Card.Body>
                     <Title title="Submitter" />
-                    {dataset.user && dataset.user.username ? (
+                    {dataset.user && dataset.user.userName ? (
                       getSubmitterDetails(dataset.user)
                     ) : null}
                   </Card.Body>

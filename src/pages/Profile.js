@@ -20,6 +20,9 @@ const Profile = (props) => {
     affiliationWebsite: "",
     groupName: "",
     department: "",
+    software: null,
+    role: "USER",
+    type: "CURATOR",
   };
 
   const navigate = useNavigate();
@@ -36,7 +39,7 @@ const Profile = (props) => {
 
   var base = process.env.REACT_APP_BASENAME;
   const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
-  const [validated, setValidate] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [isUpdate, setIsupdate] = useState(false);
   const [title, setTitle] = useState("User Profile");
   const [validURL, setValidURL] = useState(true);
@@ -54,18 +57,36 @@ const Profile = (props) => {
 
     if (name === "firstName" || name === "lastName") {
       if ((!value && value === "") || value === " ") {
-        setValidate(true);
+        setValidated(true);
       } else {
-        setValidate(false);
+        setValidated(false);
       }
     } 
-    if (value && value.trim().length > 0 && name === "affiliationWebsite") {
+    if (value && value.trim().length > 0 && (name === "affiliationWebsite" || name === "softwareURL")) {
       setValidURL(isValidURL(value));
     }
-    setUserProfile({ [name]: value });
+
+    var software = userProfile.software;
+    if (software === null) {
+      software = {};
+    }
+    if (name.includes ("software")) {
+      if (name === "softwareName") {
+        software["name"] = value;
+      } else if (name === "softwareURL") {
+        software["url"] = value;
+      } else if (name === "softwarePublication") {
+        software["publication"] = value;
+      }
+      setUserProfile ({["software"]: software});
+    }
+    else {
+      setUserProfile({ [name]: value });
+    }
   };
 
   const editUser = () => {
+    setValidated(false);
     setTitle("Edit User Profile");
     setIsupdate(true);
   };
@@ -202,6 +223,7 @@ const Profile = (props) => {
                 </Form.Group>
               </Col>
             </Row>
+            {userProfile.role !== "SOFTWARE" && 
             <Row>
               <Col md={12}>
                   <Form.Group as={Row} controlId="userType">
@@ -219,7 +241,61 @@ const Profile = (props) => {
                     </Col>
                   </Form.Group>
                 </Col>
+            </Row>}
+            {userProfile.software && userProfile.role === "SOFTWARE" && (
+              <>
+              <Row>
+              <Col md={12}>
+                <Form.Group controlId="softwareName">
+                  <Form.Control
+                    type="text"
+                    name="softwareName"
+                    onChange={handleChange}
+                    disabled={!isUpdate}
+                    value={userProfile.software.name}
+                    maxLength={100}
+                    className="custom-text-fields"
+                  />
+                  <Form.Label className={"label"}>Software Name</Form.Label>
+                </Form.Group>
+              </Col>
             </Row>
+            <Row>
+              <Col md={12}>
+                <Form.Group controlId="softwarePub">
+                  <Form.Control
+                    type="text"
+                    name="softwarePublication"
+                    onChange={handleChange}
+                    disabled={!isUpdate}
+                    value={userProfile.software.publication}
+                    maxLength={50}
+                    className="custom-text-fields"
+                  />
+                  <Form.Label className={"label"}>Software Publication</Form.Label>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={12}>
+                <Form.Group controlId="softwareJ=URL">
+                  <Form.Control
+                    type="text"
+                    name="softwareURL"
+                    onChange={handleChange}
+                    disabled={!isUpdate}
+                    value={userProfile.software.url}
+                    maxLength={250}
+                    isInvalid={!validURL}
+                    className="custom-text-fields"
+                  />
+                  <Form.Label className={"label"}>Software Website</Form.Label>
+                  <Feedback className={"feedback"} message="Please enter a valid software website." />
+                </Form.Group>
+              </Col>
+            </Row>
+              </>
+            )}
             <div className={!isUpdate ? "text-center mt-2" : "hide-content"}>
                 <Button className="gg-btn-blue mt-3 gg-mr-20" onClick={() => editUser()}>
                   Edit
@@ -259,7 +335,7 @@ const Profile = (props) => {
   }
 
   function handleSubmit(e) {
-    setValidate(true);
+    setValidated(true);
 
     if (e.currentTarget.checkValidity()) {
         postJson("api/account/update/"+ username, userProfile, getAuthorizationHeader()).then (({ data }) => {
