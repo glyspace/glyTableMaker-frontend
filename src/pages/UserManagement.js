@@ -5,11 +5,11 @@ import DialogAlert from "../components/DialogAlert";
 import InfoIcon from '@mui/icons-material/Info';
 import { PageHeading } from "../components/FormControls";
 import { Card } from "react-bootstrap";
-import Table from "../components/Table";
 import { Loading } from "../components/Loading";
 import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import TextAlert from "../components/TextAlert";
 import { axiosError } from "../utils/axiosError";
+import { UserTable } from "../components/UserTable";
 
 const UserManagement = (props) => {
 
@@ -56,6 +56,38 @@ const UserManagement = (props) => {
         setTextAlertInput({"show": false, "message":""});
         setIsLoading(true);
         deleteJson ("api/account/disable/" + id, getAuthorizationHeader()).then ( (data) => {
+            fetchData();
+        }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+                setIsLoading(false);
+            } else {
+                setIsLoading(false);
+                axiosError(error, null, setAlertDialogInput);
+            }
+        });
+    }
+
+    const promoteUser = (id) => {
+        setTextAlertInput({"show": false, "message":""});
+        setIsLoading(true);
+        postJson ("api/account/promote/" + id, null, getAuthorizationHeader()).then ( (data) => {
+            fetchData();
+        }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+                setIsLoading(false);
+            } else {
+                setIsLoading(false);
+                axiosError(error, null, setAlertDialogInput);
+            }
+        });
+    }
+
+    const demoteUser = (id) => {
+        setTextAlertInput({"show": false, "message":""});
+        setIsLoading(true);
+        postJson ("api/account/demote/" + id, null, getAuthorizationHeader()).then ( (data) => {
             fetchData();
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
@@ -177,7 +209,7 @@ const UserManagement = (props) => {
               />
               <Card>
                 <Card.Body>   
-                <Table
+                <UserTable
                     authCheckAgent={props.authCheckAgent}
                     data={data}
                     columns={columns}
@@ -185,6 +217,8 @@ const UserManagement = (props) => {
                     setAlertDialogInput={setAlertDialogInput}
                     delete={disableUser}
                     recover={enableUser}
+                    promote={promoteUser}
+                    demote={demoteUser}
                     initialSortColumn="userName"
                     rowId="userName"
                     deletelabel="Disable"
