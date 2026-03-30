@@ -516,6 +516,7 @@ const getDownloadReport = (reportId) => {
                   deleteAll={true}
                   deleteAllws="api/data/deletemultipleglycans"
                   setTextAlertInput={setTextAlertInput}
+                  refresh={getGlycanTags}
             />
             </Card.Body>
           </Card>

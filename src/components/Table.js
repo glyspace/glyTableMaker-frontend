@@ -95,6 +95,7 @@ const Table = (props) => {
               return;
           }
         });
+        props.refresh && props.refresh();
       };
 
       useEffect(()=> {
