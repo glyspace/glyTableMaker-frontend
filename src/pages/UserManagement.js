@@ -145,7 +145,7 @@ const UserManagement = (props) => {
             {
                 accessorKey: 'role',
                 header: 'Role',
-                size: 100,
+                size: 30,
             },
             {
                 accessorKey: 'email',

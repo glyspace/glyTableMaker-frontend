@@ -20,6 +20,7 @@ import TagEdit from "./TagEdit";
 import { FormLabel } from "./FormControls";
 import RestorePageIcon from '@mui/icons-material/RestorePage';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import IosShareIcon from '@mui/icons-material/IosShare';
 
 // server side table
 const Table = (props) => {
@@ -411,20 +412,20 @@ const Table = (props) => {
               </IconButton>
             </Tooltip>
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
+              <IconButton color="primary" onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)
             }
             {props.showDownload && (
               <Tooltip title="Export">
-              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => download(props.download + row.original[props.rowId])}>
                 <ExitToAppIcon />
               </IconButton>
             </Tooltip>)
@@ -433,6 +434,13 @@ const Table = (props) => {
               <Tooltip title="View/Add/Delete Tag">
               <IconButton color="primary" onClick={() => { openAddTagModal (row);}}>
                 <NoteAddIcon/>
+              </IconButton>
+            </Tooltip>
+            )}
+            {props.transfer && (
+              <Tooltip title={row.original.transferRequested ? "Cancel transfer request" : "Transfer ownership"}>
+              <IconButton color={row.original.transferRequested ? "secondary" : "primary"} onClick={() => { props.transfer (row.original);}}>
+                <IosShareIcon/>
               </IconButton>
             </Tooltip>
             )}
@@ -526,13 +534,13 @@ const Table = (props) => {
             </Tooltip>
             }
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
+              <IconButton color="primary" onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
@@ -549,6 +557,13 @@ const Table = (props) => {
                 <NoteAddIcon
                 onClick={() => { openAddTagModal (row);
                 }}/>
+              </IconButton>
+            </Tooltip>
+            )}
+            {props.transfer && (
+              <Tooltip title={row.original.transferRequested ? "Cancel transfer request" : "Transfer ownership"}>
+              <IconButton color={row.original.transferRequested ? "gray" : "primary"} onClick={() => { props.transfer (row.original);}}>
+                <IosShareIcon/>
               </IconButton>
             </Tooltip>
             )}

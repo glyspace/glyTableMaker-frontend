@@ -63,7 +63,7 @@ const Databases = props => {
         <td key={index} style={{ border: "none" }}>
           <div>
             <h5>
-              <a href={database.url} target={"_blank"}>
+              <a href={database.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{database.name}</strong>
               </a>
             </h5>
@@ -95,7 +95,7 @@ const Databases = props => {
         <div>
           <Row>
             <Col md={3}>
-              <a href={database.url} target={"_blank"}>
+              <a href={database.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{database.name}</strong>
               </a>
             </Col>

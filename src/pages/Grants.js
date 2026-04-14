@@ -69,7 +69,7 @@ const Grants = props => {
           <div>
             <h5>
               {grant.url ? 
-              <a href={grant.url} target={"_blank"}>
+              <a href={grant.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{grant.title}</strong>
               </a> : <strong>{grant.title}</strong>
             }
@@ -81,7 +81,7 @@ const Grants = props => {
               <Col md={3}>{grant.fundingOrganization}</Col>
               <Col>
               {grant.title === "" && grant.url ? 
-              <a href={grant.url} target={"_blank"}><strong>{grant.identifier}</strong></a> :
+              <a href={grant.url} target={"_blank"} rel="noopener noreferrer"><strong>{grant.identifier}</strong></a> :
               <strong>{grant.identifier}</strong>
               }</Col>
             </Row>
@@ -108,7 +108,7 @@ const Grants = props => {
           <Row>
             <Col md={3}>
             {grant.url ? 
-              <a href={grant.url} target={"_blank"}>
+              <a href={grant.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{grant.title}</strong>
               </a> : <strong>{grant.title}</strong>
             }
@@ -122,7 +122,7 @@ const Grants = props => {
               <Col md={3}>{grant.fundingOrganization}</Col>
               <Col>
               {grant.title === "" && grant.url ? 
-              <a href={grant.url} target={"_blank"}><strong>{grant.identifier}</strong></a> :
+              <a href={grant.url} target={"_blank"} rel="noopener noreferrer"><strong>{grant.identifier}</strong></a> :
               <strong>{grant.identifier}</strong>
               }</Col>
             </Row>

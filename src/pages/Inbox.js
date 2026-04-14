@@ -135,6 +135,45 @@ const Inbox = props => {
         setOpenViewMessage(false);
     };
 
+    const transferDataset = (datasetHash, accept) => {
+        setTextAlertInput({"show": false, "message":""});
+        setIsLoading(true);
+
+        const transfer = {"datasetIdentifier": datasetHash};
+        if (accept) {
+            // transfer dataset
+            postJson ("api/dataset/transferdataset", transfer, getAuthorizationHeader()).then ( (data) => {
+                setIsLoading(false);
+                setOpenViewMessage(false);
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setTextAlertInput ({"show": true, "message": error.response.data.message });
+                    setIsLoading(false);
+                } else {
+                    setIsLoading(false);
+                    axiosError(error, null, setAlertDialogInput);
+                }
+                setOpenViewMessage(false);
+            });
+        } else {
+            // delete transfer request
+            postJson ("api/dataset/rejecttransfer/" + selectedMessage.id, null, getAuthorizationHeader()).then ( (data) => {
+                fetchData();
+                setOpenViewMessage(false);
+            }).catch (function(error) {
+                if (error && error.response && error.response.data) {
+                    setTextAlertInput ({"show": true, "message": error.response.data.message });
+                    setIsLoading(false);
+                } else {
+                    setIsLoading(false);
+                    axiosError(error, null, setAlertDialogInput);
+                }
+                setOpenViewMessage(false);
+            });
+            
+        }
+    }
+
     return (
         <>
         <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
@@ -178,7 +217,7 @@ const Inbox = props => {
                         </Col>
                         <Col>{new Date(selectedMessage.createdAt).toLocaleString()}</Col>
                     </Row>
-                    {selectedMessage.type !== "Transfer Request" ? 
+                    {selectedMessage.type === "Error" && 
                     <>
                     <FormLabel label="Errors:"/>
                     <MTable size="small">
@@ -209,10 +248,25 @@ const Inbox = props => {
                             </TableRow>
                         ))}
                         </TableBody>
-                    </MTable></> : <span>Transfer Request</span>}
+                    </MTable></>}
+                    {selectedMessage.type === "Transfer Request" && 
+                    <Row>
+                    <span>The user has requested to transfer dataset </span>
+                    <a href={"/data/" + selectedMessage.metadata.datasetIdentifier} target={"_blank"} rel="noopener noreferrer">
+                        <strong>{selectedMessage.metadata.datasetIdentifier}</strong>
+                    </a>
+                    <span>Please click below to accept or reject this transfer</span>
+                    </Row>
+                    }
+
                 </DialogContent>
 
                 <DialogActions>
+                    {selectedMessage.type === "Transfer Request" && 
+                    <>
+                    <Button onClick={() => {transferDataset(selectedMessage.metadata.datasetHash, true)}}>Accept</Button>
+                    <Button style={{marginRight: "100px"}} onClick={() => {transferDataset(selectedMessage.metadata.datasetHash, false)}}>Reject</Button>
+                    </>}
                     <Button onClick={handleCloseViewMessage}>Close</Button>
                 </DialogActions>
                 </Dialog>)}

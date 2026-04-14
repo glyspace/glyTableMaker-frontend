@@ -1,21 +1,37 @@
 import { Box, Container, IconButton, Tooltip } from "@mui/material";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { PageHeading } from "../components/FormControls";
+import { FormLabel, PageHeading } from "../components/FormControls";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import Table from "../components/Table";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { useNavigate } from "react-router-dom";
-import { getAuthorizationHeader, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
+import { ConfirmationModal } from "../components/ConfirmationModal";
+import { Loading } from "../components/Loading";
 
 const Dataset = (props) => {
 
     let navigate = useNavigate();
 
     useEffect(props.authCheckAgent, []);
+
+    useEffect(() => {
+        // load existing users
+        getJson ("api/account/getusers", getAuthorizationHeader()).then ( (json) => {
+            setUsers(json.data.data.objects);
+          }).catch (function(error) {
+            if (error && error.response && error.response.data) {
+                console.log("Failed to get list of existing users");
+            } else {
+              axiosError(error, null, props.setAlertDialogInput);
+            }
+          });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
@@ -25,6 +41,14 @@ const Dataset = (props) => {
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+
+    const [openTransferDialog, setOpenTransferDialog] = useState(false);
+    const [openTransferCancel, setOpenTransferCancel] = useState(false);
+    const [selectedDataset, setSelectedDataset] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [users, setUsers] = useState([]);
+    const [transferRequestSuccess, setTransferRequestSuccess] = useState(null);
+    const [showLoading, setShowLoading] = useState(false);
 
     const columns = useMemo(
         () => [
@@ -102,6 +126,107 @@ const Dataset = (props) => {
             axiosError(error, null, setAlertDialogInput);
         });
     }
+
+    const transfer = (dataset) => {
+      setTextAlertInput({show: false, id: ""});
+      setSelectedDataset(dataset);
+      if (dataset.transferRequested) {
+        // there is already a transfer request, do you want to cancel it
+        setOpenTransferCancel (true);
+      } else {
+        // open dialog to show user list and dataset details
+        setTransferRequestSuccess(null);
+        setOpenTransferDialog(true);
+      }
+    }
+
+    const deleteTransferRequest = () => {
+      setShowLoading(true);
+      setTextAlertInput({show: false, id: ""});
+      if (!selectedDataset) {
+        setTextAlertInput ({"show": true, "id" : "", 
+          "message": "Dataset must be selected to cancel transfer request!"});
+        setOpenTransferCancel(false);
+        return;
+      }
+      const url = "api/dataset/canceltransferrequest";
+      const body = {"datasetIdentifier" : selectedDataset.datasetIdentifier}
+      postJson (url, body, getAuthorizationHeader()).then ( (data) => {
+          setOpenTransferCancel(false);
+          setShowLoading(false);
+      }).catch(function(error) {
+        if (error && error.response && error.response.data) {
+            // duplicate
+            setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+        } else {
+            axiosError(error, null, setAlertDialogInput);
+        }
+        setOpenTransferCancel(false);
+      }); 
+    }
+
+    const submitTransferRequest = () => {
+      setShowLoading(true);
+      setTransferRequestSuccess(null);
+      setTextAlertInput({show: false, id: ""});
+      if (!selectedDataset || !selectedUser || selectedUser === "") {
+        setTextAlertInput ({"show": true, "id" : "", 
+          "message": "Dataset and user must be selected for transfer requests!"});
+        setOpenTransferDialog(false);
+        return;
+      }
+      const url = "api/dataset/transferdatasetrequest";
+      const body = {"userName" : selectedUser, "datasetIdentifier" : selectedDataset.datasetIdentifier}
+      postJson (url, body, getAuthorizationHeader()).then ( (data) => {
+          setTransferRequestSuccess("Transfer request has been sent to the selected user successfully!")
+          setOpenTransferDialog(false);
+          setShowLoading(false);
+      }).catch(function(error) {
+        if (error && error.response && error.response.data) {
+            // duplicate
+            setTextAlertInput ({"show": true, "message": error.response.data["message"]});
+        } else {
+            axiosError(error, null, setAlertDialogInput);
+        }
+        setOpenTransferDialog(false);
+      }); 
+    }
+
+   const handleChange = e => {
+      const value = e.target.value;
+      setSelectedUser(value || null);
+    };
+
+    const transferForm = () => {
+      return (
+      <>
+        <Form>
+          <Form.Group
+            as={Row}
+            controlId="user"
+            className="gg-align-center mb-3"
+          >
+            <Col xs={12} lg={9}>
+              <FormLabel label="User" className="required-asterik"/>
+              <Form.Select
+                  as="select"
+                  name="user"
+                  onChange={handleChange}
+                >
+                  <option value="">Select</option>
+                      {users.map((user, index) => {
+                      return (
+                          <option value={user.userName} key={index}>
+                          {user.userName}
+                          </option>
+                      );
+                  })}
+                </Form.Select>
+            </Col>
+          </Form.Group>
+        </Form>
+      </>)
+    }
     
     return (
         <>
@@ -120,6 +245,28 @@ and retracted."
                         setAlertDialogInput({ show: input });
                     }}
               />
+              <div className={`alert-success ${transferRequestSuccess ? "alert" : ""}`}>
+                <strong>{transferRequestSuccess}</strong>
+              </div>
+              <ConfirmationModal
+                  showModal={openTransferDialog}
+                  onCancel={() => {
+                    setOpenTransferDialog(false);
+                  }}
+                  onConfirm={() => submitTransferRequest()}
+                  title={"Transfer Dataset to selected user"}
+                  body={transferForm()}
+                />
+
+              <ConfirmationModal
+                  showModal={openTransferCancel}
+                  onCancel={() => {
+                    setOpenTransferCancel(false);
+                  }}
+                  onConfirm={() => deleteTransferRequest()}
+                  title={"Cancel transfer request"}
+                  body={"There is a pending transfer request for this dataset. Do you wish to cancel the request?"}
+                />
               <Card>
                 <Card.Body>
                     <div className="text-center mb-4">
@@ -127,6 +274,7 @@ and retracted."
                 Publish new dataset
                 </Button>
               </div>
+              <Loading show={showLoading}></Loading>
               <Table
                   authCheckAgent={props.authCheckAgent}
                   ws="api/dataset/getdatasets"
@@ -137,6 +285,7 @@ and retracted."
                   edit={stringConstants.routes.publishdataset + "?datasetid="}
                   deletews="api/dataset/retractdataset/"
                   recoverws="api/dataset/recoverdataset/"
+                  transfer={transfer}
                   initialSortColumn="name"
                   rowId="datasetIdentifier"
                   detailPanel={true}

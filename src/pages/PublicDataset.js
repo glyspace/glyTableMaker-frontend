@@ -29,6 +29,7 @@ const PublicDataset = (props) => {
     const [dataset, setDataset] = useState();
     const [descOpen, setDescOpen] = useState(false);
     const [notesOpen, setNotesOpen] = useState(false);
+    const [pubOpen, setPubOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -170,6 +171,10 @@ const PublicDataset = (props) => {
 
     const getNotes = desc => {
         return desc.length > 150 && !notesOpen ? `${desc.substring(0, 100)}...` : notesOpen ? `${desc}` : desc;
+    };
+
+    const getPublication = doi => {
+        return doi.length > 10 && !pubOpen ? `${doi.substring(0, 10)}...` : pubOpen ? `${doi}` : doi;
     };
 
     const getCellValue = (row, columnName, id, uri) => {
@@ -839,10 +844,45 @@ const PublicDataset = (props) => {
             </div>
           )}
           {submitterinfo.role === "SOFTWARE" && (
-            <div>
+            <>
+              {submitterinfo.software.url ? 
+              <div>
+              <strong>Software Name: </strong>
+              <a href={submitterinfo.software.url} target={"_blank"} rel="noopener noreferrer">
+              {submitterinfo.software.name}</a>
+              </div>
+              :
+              <div>
               <strong>Software Name: </strong>
               {submitterinfo.software.name}
-            </div>
+              </div>}
+              {submitterinfo.software.publication && 
+              <div>
+              <strong>Software Publication: </strong>
+              {submitterinfo.software.publication.includes ("/") ?    // DOI
+                  <>
+                  <a
+                    href={`https://doi.org/${submitterinfo.software.publication}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {getPublication(submitterinfo.software.publication)}
+                  </a>
+                  <button className={"more-less"} onClick={() => setPubOpen(!pubOpen)}>
+                      {submitterinfo.software.publication.length > 10 && !pubOpen ? `more` : pubOpen ? `less` : ``}
+                    </button>
+                    </>
+               :   // PMID
+                <a
+                    href={`https://pubmed.ncbi.nlm.nih.gov/${submitterinfo.software.publication}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {submitterinfo.software.publication}
+                  </a>
+              }                  
+              </div>}
+              </>
           )}
         </>);
     }

@@ -330,7 +330,7 @@ const Signup = () => {
                       name="softwareName"
                       value={userInput.softwareName}
                       onChange={handleChange}
-                      maxLength={250}
+                      maxLength={100}
                       className={"custom-text-fields"}
                     />
                     <Form.Label className={"label"}>Software Name</Form.Label>
