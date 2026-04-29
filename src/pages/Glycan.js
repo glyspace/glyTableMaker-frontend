@@ -106,7 +106,7 @@ const Glycan = (props) => {
                 return;
             }
         } else if (type === "composition") {
-            if (userSelection.composition === "" || userSelection.composition.length < 1) {
+            if (userSelection.composition === "" || userSelection.composition.trim().length < 1) {
               setValidate(true);
               setError(true);
               return;
@@ -125,7 +125,7 @@ const Glycan = (props) => {
             sequence: userSelection.sequence,
             glytoucanID: userSelection.glytoucanId,
             composition: userSelection.composition && userSelection.composition.length > 0 ? userSelection.composition : 
-                  userSelection.compositionString && userSelection.compositionString.length > 0 ? userSelection.compositionString.split("\n") : null,
+                  userSelection.compositionString && userSelection.compositionString.trim().length > 0 ? userSelection.compositionString.trim().split("\n") : null,
             format: userSelection.sequenceType}
         
         addGlycan(glycan, t);
@@ -151,15 +151,22 @@ const Glycan = (props) => {
         if (glycan.composition && glycan.composition.length > 0) {
           const comps = glycan.composition;
           const gList = comps.map ((comp, index) => {
-            const g = { 
-              composition: comp,
-              type: (userSelection.compositionType && userSelection.compositionType[index]) ? userSelection.compositionType[index] : null,
+            if (comp.trim().length > 0) {
+              const g = { 
+                composition: comp.trim(),
+                type: (userSelection.compositionType && userSelection.compositionType[index]) ? userSelection.compositionType[index] : null,
+              }
+              return g;
             }
-            return g;
+          });
+          // clean up the list
+          const cleanList = [];
+          gList.forEach(element => {
+            if (element) cleanList.push(element);
           });
           let url = "api/data/addglycanfromlist?tag=" + encodeURIComponent(tag);
           if (type) url += "&compositionType="+type;
-            postJson (url, gList, getAuthorizationHeader()).then ( (data) => {
+            postJson (url, cleanList, getAuthorizationHeader()).then ( (data) => {
               addGlycanSuccess(data);
             }).catch (function(error) {
               if (error && error.response && error.response.data) {
@@ -219,14 +226,16 @@ const Glycan = (props) => {
     }
 
     const addComposition = ( comp, type ) => {
-      var compositions = [...userSelection.composition];
-      var compTypes = [...userSelection.compositionType]
-      const index = compositions.findIndex ((item) => item === comp.composition);
-      if (index === -1) { // not found
-        compositions.push(comp.composition);
-        compTypes.push(type)
-        setUserSelection ({"composition": compositions});
-        setUserSelection ({"compositionType" : compTypes});
+      if (comp.composition && comp.composition.trim().length > 0) {
+        var compositions = [...userSelection.composition];
+        var compTypes = [...userSelection.compositionType]
+        const index = compositions.findIndex ((item) => item === comp.composition.trim());
+        if (index === -1) { // not found
+          compositions.push(comp.composition.trim());
+          compTypes.push(type)
+          setUserSelection ({"composition": compositions});
+          setUserSelection ({"compositionType" : compTypes});
+        }
       }
     }
 
