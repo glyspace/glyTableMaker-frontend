@@ -12,6 +12,7 @@ import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { Loading } from "../components/Loading";
+import AutoTextInput from "../components/AutoTextInput";
 
 const Dataset = (props) => {
 
@@ -45,7 +46,7 @@ const Dataset = (props) => {
     const [openTransferDialog, setOpenTransferDialog] = useState(false);
     const [openTransferCancel, setOpenTransferCancel] = useState(false);
     const [selectedDataset, setSelectedDataset] = useState(null);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState("");
     const [users, setUsers] = useState([]);
     const [transferRequestSuccess, setTransferRequestSuccess] = useState(null);
     const [showLoading, setShowLoading] = useState(false);
@@ -189,6 +190,7 @@ const Dataset = (props) => {
             axiosError(error, null, setAlertDialogInput);
         }
         setOpenTransferDialog(false);
+        setShowLoading(false);
       }); 
     }
 
@@ -208,20 +210,13 @@ const Dataset = (props) => {
           >
             <Col xs={12} lg={9}>
               <FormLabel label="User" className="required-asterik"/>
-              <Form.Select
-                  as="select"
-                  name="user"
-                  onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                      {users.map((user, index) => {
-                      return (
-                          <option value={user.userName} key={index}>
-                          {user.userName}
-                          </option>
-                      );
-                  })}
-                </Form.Select>
+              <AutoTextInput
+                length={100}
+                placeholder="Start typing user's firsname, lastname or email"
+                inputValue={selectedUser}
+                setInputValue={(value) => setSelectedUser(value)}
+                typeahedID="user"
+              />
             </Col>
           </Form.Group>
         </Form>

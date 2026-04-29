@@ -233,7 +233,7 @@ const AddCoC = (props) => {
             <div>
                 <Button variant="contained" className="gg-btn-blue-sm" 
                     disabled={error} onClick={handleSubmit}>
-                    Submit
+                    Save
                 </Button>
             </div>
         )}
@@ -337,7 +337,7 @@ const AddCoC = (props) => {
                     className="gg-btn-outline mt-2 gg-mr-20 btn-to-lower">Back to Collections of Collections</Button>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                     disabled={error} onClick={handleSubmit}>
-                    Submit
+                    Save
                 </Button> 
             </div>
             </Card.Body>

@@ -69,7 +69,7 @@ const AddDatabase = props => {
             className="gg-btn-blue mt-2 gg-ml-20"
             disabled={!database.name }
           >
-            Submit
+            Save
           </Button>
         </div>
       </Form>

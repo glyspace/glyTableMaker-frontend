@@ -140,7 +140,7 @@ const AddGrant = props => {
             className="gg-btn-blue mt-2 gg-ml-20"
             disabled={(!grant.identifier && !grant.title) || !grant.fundingOrganization}
           >
-            Submit
+            Save
           </Button>
         </div>
       </Form>
