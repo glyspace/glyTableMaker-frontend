@@ -308,7 +308,7 @@ const Signup = () => {
                     <Form.Check
                       type="checkbox"
                       name="software"
-                      checked={userInput.role}
+                      checked={userInput.software}
                       onChange={handleChange}
                     />
                     <span style={{fontSize: '18px'}}>
