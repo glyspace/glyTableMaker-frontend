@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { getAuthorizationHeader, getBlob, getJson, postJson, postJsonAsync } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getCartoonSetting, getJson, loadCartoons, postJson, postJsonAsync } from "../utils/api";
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import { Autocomplete, Box, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Popover, Radio, RadioGroup, Step, StepLabel, Stepper, TextField, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
@@ -161,6 +161,7 @@ const Collection = (props) => {
     }, []);
 
     useEffect(() => {
+        getCartoonSetting();
         if (collectionId && !isDirty) {
             fetchData();
         }
@@ -357,6 +358,7 @@ const Collection = (props) => {
         });
     }
 
+
     const fetchData = async () => {
         setShowLoading(true);
         getJson ("api/data/getcollection/" + collectionId, getAuthorizationHeader())
@@ -365,6 +367,10 @@ const Collection = (props) => {
                 if (json.data.data.glycans) {
                     setSelectedGlycans (json.data.data.glycans);
                     setCollectionType ("GLYCAN");
+                    loadCartoons(json.data.data.glycans).then((updated) => {
+                        setUserSelection({"glycans": updated})
+                        setSelectedGlycans(updated);
+                    });
                 }
                 if (json.data.data.glycoproteins) {
                     setSelectedGlycoproteins (json.data.data.glycoproteins);
@@ -493,12 +499,12 @@ const Collection = (props) => {
             size: 50,
           },
           {
-            accessorKey: 'cartoon',
+            accessorKey: "cartoon",
             header: 'Image',
             size: 150,
             columnDefType: 'display',
             Cell: ({ cell }) => <img 
-                                    src={"data:image/png;base64, " + cell.getValue()} 
+                                    src={"data:image/png;base64," + cell.getValue()} 
                                     alt="cartoon" 
                                     onError={e=> {
                                         loadDefaultImage(e.target, true)

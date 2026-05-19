@@ -43,11 +43,11 @@ const GlycanTypeTable = (props) => {
             size: 150,
             columnDefType: 'display',
             Cell: ({ cell }) => <img 
-                                            src={"data:image/png;base64, " + cell.getValue()} 
-                                            alt="cartoon" 
-                                            onError={e=> {
-                                              loadDefaultImage(e.target, true)
-                                            }}/>,
+                                  src={"data:image/png;base64, " + cell.getValue()} 
+                                  alt="cartoon" 
+                                  onError={e=> {
+                                    loadDefaultImage(e.target, true)
+            }}/>,
           },
           {
             accessorKey: 'type',

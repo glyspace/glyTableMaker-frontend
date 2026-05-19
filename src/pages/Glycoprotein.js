@@ -6,7 +6,7 @@ import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
+import { getAuthorizationHeader, getCartoon, getCartoonSetting, getJson, postJson } from "../utils/api";
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import Table from "../components/Table";
 import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip, Typography } from "@mui/material";
@@ -114,11 +114,30 @@ const Glycoprotein = (props) => {
     const [selectedGlycans, setSelectedGlycans] = useState([]);
 
     useEffect(() => {
+        getCartoonSetting();
         if (glycoproteinId) {
             fetchData();
         }
+
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [glycoproteinId]);
+
+    async function loadCartoons(glycans) {
+      const updated = [];
+    
+      for (const glycan of glycans) {
+          await getCartoon(glycan.glycan).then ((json) => {
+              glycan.glycan.cartoon = json.data.data;
+              updated.push(glycan);
+          }).catch(function(error) {
+                console.log ("could not get the cartoon " + error);
+                updated.push(glycan);
+          });
+      }
+    
+      return updated;
+    }
 
     const fetchData = async () => {
             setShowLoading(true);
@@ -155,6 +174,24 @@ const Glycoprotein = (props) => {
                     });
                     setUserSelection ({"sites" : sites});
                     setShowLoading(false);
+                    var updatedSites = []
+                    var i = 0;
+                    for (const s of sites) {
+                        loadCartoons(s.glycans).then ((updated) => {
+                            updatedSites.push ({
+                                "siteId" : s.siteId,
+                                "type": s.type,
+                                "glycosylationType" : s.glycosylationType,
+                                "glycosylationSubType" : s.glycosylationSubType,
+                                "positions" : s.positions,
+                                "glycans" : updated,
+                            });
+                            i++;
+                            if (i === sites.length) {
+                                setUserSelection ({"sites": updatedSites});
+                            }
+                        });
+                    }
             }).catch (function(error) {
                 if (error && error.response && error.response.data) {
                     setShowLoading(false);
@@ -858,17 +895,18 @@ const Glycoprotein = (props) => {
                     <TextAlert alertInput={textAlertInput}/>
                     <DialogContent dividers>{
                         <Table
-                        authCheckAgent={props.authCheckAgent}
-                        ws="api/data/getglycans"
-                        columns={glycanColumns}
-                        columnFilters={[{"id":"glytoucanID","value":"G"}]}
-                        enableRowActions={false}
-                        setAlertDialogInput={setAlertDialogInput}
-                        initialSortColumn="dateCreated"
-                        rowSelection={true}
-                        rowSelectionChange={handleGlycanSelectionChange}
-                        rowId="glycanId"
-                    />}</DialogContent>
+                            authCheckAgent={props.authCheckAgent}
+                            ws="api/data/getglycans"
+                            columns={glycanColumns}
+                            columnFilters={[{"id":"glytoucanID","value":"G"}]}
+                            enableRowActions={false}
+                            setAlertDialogInput={setAlertDialogInput}
+                            initialSortColumn="dateCreated"
+                            rowSelection={true}
+                            rowSelectionChange={handleGlycanSelectionChange}
+                            rowId="glycanId"
+                        />}
+                    </DialogContent>
                     <DialogActions>
                     <Button variant="secondary" className="mt-2 gg-ml-20"
                             onClick={(()=> setShowGlycanSelection(false))}>Close</Button>

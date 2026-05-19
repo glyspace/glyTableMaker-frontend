@@ -478,22 +478,13 @@ const PublicDataset = (props) => {
           size: 150,
           enableColumnFilter: false,
           enableSorting: false,
-          Cell: ({ cell, row }) => {
-              const id = getCellValue (row.original, 'GlytoucanID')
-
-              const src = useApiImage
-                ? `https://glymage.glyomics.org/image/snfg/compact/${id}.png`
-                : `data:image/png;base64,${cell.getValue()}`;
-
-              return (
-                <img
-                  src={src}
-                  alt="cartoon"
-                  onError={(e) => loadDefaultImage(e.target, true)}
-                />
-              );
-            }
-
+          Cell: ({ cell, row }) => 
+            <img 
+                src={"data:image/png;base64, " + cell.getValue()} 
+                alt="cartoon" 
+                onError={e=> {
+                    loadDefaultImage(e.target, true)
+                }}/>,
         },
         {
           accessorFn: (row) => getCellValue (row, 'Evidence'),

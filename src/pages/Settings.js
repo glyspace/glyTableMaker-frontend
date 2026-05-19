@@ -1,9 +1,9 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { Alert, Container, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
+import { Alert, Box, Container, FormControlLabel, FormGroup, Slider, Switch, Tooltip } from "@mui/material";
 import { FormLabel, PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import compositionMarks from '../data/compositiontype.json';
@@ -15,6 +15,11 @@ const Settings = (props) => {
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
     );
+
+    const [cartoon1, setCartoon1] = useState (null);
+    const [cartoon2, setCartoon2] = useState (null);
+    const [cartoon3, setCartoon3] = useState (null);
+    const [cartoon4, setCartoon4] = useState (null);
 
     const tableNames = {
         "GLYCAN" : "Glycans",
@@ -33,8 +38,10 @@ const Settings = (props) => {
         const [headings, setHeadings] = useState([]);
         useEffect(() => {
             let headingList = [];
+            const imageElement = {"id": "cartoon", "text": "Glycan Cartoon Settings", "level": 1};
             const compElement = {"id" : "composition", "text": "Composition Settings", "level" : 1};
             const columnSettingElement = {"id" : "column", "text": "Column Settings", "level" : 1};
+            headingList.push (imageElement);
             headingList.push (compElement);
             headingList.push (columnSettingElement)
             Object.keys(columnVisibility).map ((table, index) => {
@@ -466,6 +473,7 @@ const Settings = (props) => {
     const [compositionType, setCompositionType] = useState (null); 
     const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
     const [showSuccessMessage, setShowSuccessMessage]  = useState(null);
+    const [cartoonSetting, setCartoonSetting] = useState ({"display": "extended", "redEnd": "y"});
 
     useEffect(()=> {
           props.authCheckAgent && props.authCheckAgent();
@@ -567,10 +575,26 @@ const Settings = (props) => {
           }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
           });
-          getCompositionTypeSetting();
+          getOtherSettings();
+          getCartoonOptions();
     }, []);
 
-    function getCompositionTypeSetting () {
+    function getCartoonOptions () {
+        getJson("api/util/getcartoon?glytoucanId=G85966NB&display=extended&redEnd=y").then (({ data }) => {
+            setCartoon1(data.data);
+        });
+        getJson("api/util/getcartoon?glytoucanId=G85966NB&display=extended&redEnd=n").then (({ data }) => {
+            setCartoon2(data.data);
+        });
+        getJson("api/util/getcartoon?glytoucanId=G85966NB&display=compact&redEnd=y").then (({ data }) => {
+            setCartoon3(data.data);
+        });
+        getJson("api/util/getcartoon?glytoucanId=G85966NB&display=compact&redEnd=n").then (({ data }) => {
+            setCartoon4(data.data);
+        });
+    }
+
+    function getOtherSettings () {
         getJson("api/setting/getsettings", getAuthorizationHeader()).then (({ data }) => {
             if (data.data && data.data.length > 0) {
                 data.data.forEach ((setting) => {
@@ -578,6 +602,11 @@ const Settings = (props) => {
                         setCompositionType(setting.value);
                         const index = setting.value === "BASE" ? 0 : setting.value === "GLYGEN" ? 1 : 2;
                         setCompositionTypeDescription(compositionMarks[index].description);
+                    } else if (setting.name && (setting.name.toLowerCase() === "display" || setting.name.toLowerCase() === "redend")) {
+                        setCartoonSetting(prev => ({
+                            ...prev,
+                            [setting.name]: setting.value
+                            }));
                     }
                 });
             } else {
@@ -620,7 +649,31 @@ const Settings = (props) => {
             setShowSuccessMessage("Saved the composition type setting");
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
-        });;
+        });
+    }
+
+    const saveCartoonSettings = () => {
+        setShowSuccessMessage(null);
+        
+        var setting = {
+            "name" : "display",
+            "value" : cartoonSetting.display
+        };
+        postJson ("api/setting/updatesetting", setting, getAuthorizationHeader()).then (({ data }) => {
+            setShowSuccessMessage("Saved the cartoon setting");
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+
+        var setting = {
+            "name" : "redEnd",
+            "value" : cartoonSetting.redEnd
+        };
+        postJson ("api/setting/updatesetting", setting, getAuthorizationHeader()).then (({ data }) => {
+            setShowSuccessMessage("Saved the cartoon setting");
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
     }
 
     const showHideColumn = (e, column, table) => {
@@ -660,6 +713,95 @@ const Settings = (props) => {
          })
     }
 
+    const handleChange = e => {
+        const flag = e.target.checked;
+        const id = e.currentTarget.id;
+        if (id === "extended" || id === "compact") {
+            setCartoonSetting({
+                   ...cartoonSetting,
+                   display: id});
+        } else if (id === "redEnd" || id === "noRedEnd") {
+            setCartoonSetting({...cartoonSetting, "redEnd": (id === "redEnd" ? "y": "n")});
+        }
+    }
+
+    const getCartoonSettings = () => {
+        return (
+        <Card>
+            <Card.Body>
+            <div style={{marginLeft: '20px'}}>
+            <FormGroup>
+                <FormLabel label="Cartoon Settings"/>
+                <Box sx={{ textAlign: "center", marginBottom: "10px"}}>
+                <img 
+                    src={"data:image/png;base64, " + 
+                        (cartoonSetting.display === "extended" ? (cartoonSetting.redEnd === "y" ? cartoon1 : cartoon2) : 
+                        (cartoonSetting.redEnd === "y" ? cartoon3 : cartoon4))} 
+                    alt="cartoon" />
+                </Box>
+                <Row>
+                <Col>
+                <span>Display</span>
+                </Col>
+                <Col>
+                <FormControlLabel 
+                        control={
+                            <Form.Check
+                                    type="radio"
+                                    name="displayGroup"
+                                    id="extended"
+                                    checked={cartoonSetting.display === "extended"}
+                                    onChange={handleChange}/>
+                } label="extended" />
+                </Col>
+                <Col>
+                <FormControlLabel 
+                        control={
+                            <Form.Check
+                                    type="radio"
+                                    name="displayGroup"
+                                    id="compact"
+                                    checked={cartoonSetting.display === "compact"}
+                                    onChange={handleChange}/>} label="compact" />
+                </Col>
+                </Row>
+                <Row>
+                <Col>
+                <span>Reducing End</span>
+                </Col>
+                <Col>
+                <FormControlLabel 
+                        control={
+                            <Form.Check
+                                    type="radio"
+                                    name="redEndGroup"
+                                    id="redEnd"
+                                    checked={cartoonSetting.redEnd === "y"}
+                                    onChange={handleChange}/>
+                } label="show" />
+                </Col>
+                <Col>
+                <FormControlLabel 
+                        control={
+                            <Form.Check
+                                    type="radio"
+                                    name="redEndGroup"
+                                    id="noRedEnd"
+                                    checked={cartoonSetting.redEnd === "n"}
+                                    onChange={handleChange}/>} label="do not show" />
+                </Col>
+                </Row>
+            </FormGroup>
+            </div>
+            <Tooltip title="Save cartoon settings as default">
+                <Button className="gg-btn-outline-reg mb-3 mt-3" 
+                style={{ float: "right", marginLeft: "5px" }}
+                onClick={()=>saveCartoonSettings()}>Save as default </Button>
+            </Tooltip>
+            </Card.Body>
+        </Card>)
+    }
+
     return (
         <>
             <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
@@ -668,7 +810,7 @@ const Settings = (props) => {
             <div className="page-container">
             <PageHeading
               title="Your Settings"
-              subTitle="Below are the available settings for various tables in the system. You can make changes and save them"
+              subTitle="Below are the available settings for glycan images and various tables in the system. You can make changes and save them"
             />
             {<TableOfContent/>}
             <DialogAlert
@@ -683,10 +825,12 @@ const Settings = (props) => {
             </Alert>
             )}
             
+            <div id="cartoon">
+                {getCartoonSettings()}
+            </div>
             
             <Card>
-            <Card.Body>
-              
+            <Card.Body>    
               {compositionType && (
                 <div>
                 <div style={{marginLeft: '20px'}} id="composition">

@@ -8,6 +8,8 @@ const base = process.env.REACT_APP_BASENAME;
 //const OAUTH2_REDIRECT_URI = "http://localhost:3000/oauth2/redirect";
 const OAUTH2_REDIRECT_URI = process.env.REACT_APP_OAUTH2_REDIRECT_URI;
 
+var cartoonSetting = {"display": "extended", "redEnd": "y"};
+
 /**
  * Gets JSON from REST api call.
  * @param {string} url - url for REST api call.
@@ -213,6 +215,67 @@ export const getJsonAsync = async (url, headers = {}) => {
     headers
   });
 };
+
+export const getCartoon = (glycan, display, redEnd) => {
+  var id = glycan.glycanId;
+  if (glycan && glycan.glytoucanID && glycan.glytoucanID.length > 0) {
+    id = glycan.glytoucanID;
+  }
+
+  var url = "api/util/getcartoon?glytoucanId=" + id;
+  if (display) url += "&display=" + display;
+  if (redEnd) url += "&redEnd=" + redEnd;
+  return axios.get(TABLEMAKER_API + url);
+}
+
+export const getCartoonById = (id, display, redEnd) => {
+  if (cartoonSetting !== null) { 
+    display = cartoonSetting.display; 
+    redEnd = cartoonSetting.redEnd;
+  }
+  var url = "api/util/getcartoon?glytoucanId=" + id;
+  if (display) url += "&display=" + display;
+  if (redEnd) url += "&redEnd=" + redEnd;
+  return axios.get(TABLEMAKER_API + url);
+}
+
+export function getCartoonSetting () {
+    cartoonSetting = {};
+    getJson("api/setting/getsettings", getAuthorizationHeader()).then (({ data }) => {
+        if (data.data && data.data.length > 0) {
+            data.data.forEach ((setting) => {
+                if (setting.name && setting.name.toLowerCase() === "display") {
+                    cartoonSetting.display = setting.value;
+                }
+                if (setting.name && setting.name.toLowerCase() === "redend") {
+                    cartoonSetting.redEnd = setting.value;
+                }
+            });
+        } else {
+            cartoonSetting = {"display": "extended", "redEnd": "y"}; // default
+        }
+    }).catch(function(error) {
+        console.log ("Could not load cartoon settings " + error);
+    });
+}
+
+export async function loadCartoons(glycans) {
+  const updated = [];
+
+  for (const glycan of glycans) {
+      await getCartoon(glycan, cartoonSetting.display, cartoonSetting.redEnd).then ((json) => {
+          updated.push({
+          ...glycan,
+          cartoon: json.data.data, 
+          });
+      }).catch(function(error) {
+            console.log ("could not get the cartoon " + error);
+            updated.push({...glycan });
+      });
+  }
+
+  return updated;
+}
 
 export function CustomToggle({ children, eventKey }) {
   const currentEventKey = useContext(AccordionContext);

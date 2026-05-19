@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { deleteJson, getAuthorizationHeader, getBlob, getJson, postJson } from "../utils/api";
+import { deleteJson, getAuthorizationHeader, getBlob, getCartoonById, getCartoonSetting, getJson, loadCartoons, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFiltersButton, MRT_ToggleFullScreenButton, MRT_ToggleGlobalFilterButton, MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { Box, IconButton, Switch, Tooltip } from "@mui/material";
@@ -54,12 +54,37 @@ const Table = (props) => {
 
     let navigate = useNavigate();
 
+    async function loadDatasetCartoons(rows) {
+      const updated = [];
+    
+      for (const row of rows) {
+        for (const col of row.columns) { 
+          if (col.glycanColumn === "GlytoucanID") {
+            await getCartoonById(col.value).then ((json) => {
+                updated.push({
+                ...row,
+                cartoon: json.data.data, 
+                });
+            }).catch(function(error) {
+                  console.log ("could not get the cartoon " + error);
+                  updated.push({...row });
+            });
+            break;
+          }
+        }
+      }
+    
+      return updated;
+    }
+
     const fetchData = async () => {
         if (!data.length) {
           setIsLoading(true);
         } else {
           setIsRefetching(true);
         }
+
+        getCartoonSetting();
 
         props.authCheckAgent && props.authCheckAgent();
     
@@ -79,6 +104,15 @@ const Table = (props) => {
         getJson (url, getAuthorizationHeader()).then ( (json) => {
           setData(json.data.data.objects);
           setRowCount(json.data.data.totalItems);
+          if (url.includes ("glycans")) {
+            loadCartoons(json.data.data.objects).then((updated) => {
+              setData(updated);
+            });
+          } else if (url.includes ("getdatasetdata")) {   // dataset detail page
+            loadDatasetCartoons(json.data.data.objects).then((updated) => {
+              setData(updated);
+            });
+          }
           setIsError(false);
           setIsLoading(false);
           setIsRefetching(false);
