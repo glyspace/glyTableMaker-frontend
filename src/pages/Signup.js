@@ -24,7 +24,7 @@ const Signup = () => {
     groupName: "",
     department: "",
     userType: "CURATOR",
-    software: false,
+    softwareRole: false,
     softwareName: "",
     softwareURL: "",
     softwarePublication: "",
@@ -308,7 +308,7 @@ const Signup = () => {
                     <Form.Check
                       type="checkbox"
                       name="software"
-                      checked={userInput.software}
+                      checked={userInput.softwareRole}
                       onChange={handleChange}
                     />
                     <span style={{fontSize: '18px'}}>
@@ -318,7 +318,7 @@ const Signup = () => {
                 </Form.Group>
               </Col>
               </Row>
-              {userInput.software === true ? 
+              {userInput.softwareRole === true ? 
               <>
               <Row className="mt-4">
                 <Col md={12}>
@@ -430,7 +430,7 @@ const Signup = () => {
   }
 
   function checkSoftware() {
-    if (userInput.software && userInput.softwareName === "") {
+    if (userInput.softwareRole && userInput.softwareName === "") {
       setShowError(true);
       setTextAlertInput ({"show": true, "id" : "", "message": "Software name must be provided for software accounts!"});
     }
@@ -465,7 +465,7 @@ const Signup = () => {
     } else if (e.currentTarget.checkValidity()) {
       checkUserName();
       checkSoftware();
-      userInput["role"] = userInput.software ? "SOFTWARE" : "USER";
+      userInput["role"] = userInput.softwareRole ? "SOFTWARE" : "USER";
       userInput["software"]= { "name" : userInput.softwareName, "url": userInput.softwareURL, "publication": userInput.softwarePublication};
       postJson ("api/account/register", userInput, null).then ( (data) => {
             navigate("/verifyToken");
