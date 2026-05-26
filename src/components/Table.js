@@ -59,7 +59,7 @@ const Table = (props) => {
     
       for (const row of rows) {
         for (const col of row.columns) { 
-          if (col.glycanColumn === "GlytoucanID") {
+          if (col.glycoproteinColumn === "GlyTouCanID") {
             await getCartoonById(col.value).then ((json) => {
                 updated.push({
                 ...row,
