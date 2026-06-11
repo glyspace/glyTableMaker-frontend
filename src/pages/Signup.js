@@ -23,6 +23,7 @@ const Signup = () => {
     affiliationWebsite: "",
     groupName: "",
     department: "",
+    researchCenter: "",
     userType: "CURATOR",
     softwareRole: false,
     softwareName: "",
@@ -245,7 +246,7 @@ const Signup = () => {
                     maxLength={250}
                     className={"custom-text-fields"}
                   />
-                  <Form.Label className={"label"}>Group name</Form.Label>
+                  <Form.Label className={"label"}>Group name/Project name</Form.Label>
                 </Form.Group>
               </Col>
               </Row>
@@ -262,7 +263,25 @@ const Signup = () => {
                       maxLength={250}
                       className={"custom-text-fields"}
                     />
-                    <Form.Label className={"label"}>Department</Form.Label>
+                    <Form.Label className={"label"}>Department or Unit</Form.Label>
+                  </Col>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={12}>
+                <Form.Group as={Row} controlId="formReseachCenter">
+                  <Col>
+                    <Form.Control
+                      type="text"
+                      placeholder=" "
+                      name="researchCenter"
+                      value={userInput.researchCenter}
+                      onChange={handleChange}
+                      maxLength={250}
+                      className={"custom-text-fields"}
+                    />
+                    <Form.Label className={"label"}>Research center or subdivision or affiliated center</Form.Label>
                   </Col>
                 </Form.Group>
               </Col>
@@ -387,10 +406,12 @@ const Signup = () => {
                             name="userType"
                             value={userInput.userType}
                             onChange={handleChange}
+                            className={"custom-text-fields"}
                           >
                           <option value="INVESTIGATOR">Investigator</option>
                           <option value="CURATOR">Curator</option>
                     </Form.Control>
+                    <Form.Label className={"label-dropdown"}>Account Type</Form.Label>
                   </Col>
                 </Form.Group>
               </Col>

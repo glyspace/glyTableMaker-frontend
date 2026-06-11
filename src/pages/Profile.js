@@ -20,6 +20,7 @@ const Profile = (props) => {
     affiliationWebsite: "",
     groupName: "",
     department: "",
+    researchCenter: "",
     software: null,
     role: "USER",
     type: "CURATOR",
@@ -168,7 +169,7 @@ const Profile = (props) => {
                     maxLength={250}
                     className="custom-text-fields"
                   />
-                  <Form.Label className={"label"}>Group Name</Form.Label>
+                  <Form.Label className={"label"}>Group Name/Project name</Form.Label>
                 </Form.Group>
               </Col>
             </Row>
@@ -185,10 +186,28 @@ const Profile = (props) => {
                     maxLength={250}
                     className="custom-text-fields"
                   />
-                  <Form.Label className={"label"}>Department</Form.Label>
+                  <Form.Label className={"label"}>Department or Unit</Form.Label>
                 </Form.Group>
               </Col>
             </Row>
+            <Row>
+                <Col md={12}>
+                  <Form.Group as={Row} controlId="formReseachCenter">
+                    <Col>
+                      <Form.Control
+                        type="text"
+                        name="researchCenter"
+                        value={userProfile.researchCenter}
+                        onChange={handleChange}
+                        disabled={!isUpdate}
+                        maxLength={250}
+                        className="custom-text-fields"
+                      />
+                      <Form.Label className={"label"}>Research center or subdivision or affiliated center</Form.Label>
+                    </Col>
+                  </Form.Group>
+                </Col>
+              </Row>
             <Row>
               <Col md={12}>
                 <Form.Group controlId="affiliation">
@@ -234,10 +253,12 @@ const Profile = (props) => {
                               value={userProfile.userType}
                               onChange={handleChange}
                               disabled={!isUpdate}
+                              className="custom-text-fields"
                             >
                             <option value="INVESTIGATOR">Investigator</option>
                             <option value="CURATOR">Curator</option>
                       </Form.Control>
+                      <Form.Label className={"label-dropdown"}>Account Type</Form.Label>
                     </Col>
                   </Form.Group>
                 </Col>
@@ -278,7 +299,7 @@ const Profile = (props) => {
             </Row>
             <Row>
               <Col md={12}>
-                <Form.Group controlId="softwareJ=URL">
+                <Form.Group controlId="softwareURL">
                   <Form.Control
                     type="text"
                     name="softwareURL"

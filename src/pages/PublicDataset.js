@@ -840,6 +840,12 @@ const PublicDataset = (props) => {
               {submitterinfo.department}
             </div>
           )}
+          {submitterinfo.researchCenter && (
+            <div>
+              <strong>Research Center: </strong>
+              {submitterinfo.researchCenter}
+            </div>
+          )}
           {submitterinfo.affiliation && (
             <div>
               <strong>Institution: </strong>

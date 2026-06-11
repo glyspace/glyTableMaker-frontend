@@ -232,6 +232,19 @@ hr {
   position: absolute;
 }
 
+.label-dropdown {
+  font-size: 18px;
+  margin-top: -60px;
+  margin-left: 15px;
+  color: grey;
+  position: absolute;
+  opacity: 100;
+  color: #215b9e;
+  background-color: #fff;
+  padding: 0 5px 0 5px;
+  transform: scale(0.75) translateY(-140%) translateX(-20%);
+}
+
 input[type]:focus + label,
 input[type]:not(:placeholder-shown) + label {
   opacity: 100;
