@@ -468,6 +468,9 @@ const getDownloadReport = (reportId) => {
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=gws`}>
                             Glycoworkbench File (.gws)
                           </NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=wurcs`}>
+                            Text File with WURCS sequences (.txt)
+                          </NavDropdown.Item>
                           <NavDropdown.Item as={Link} to={`${stringConstants.routes.addglycanfromfile}?type=excel`}>
                             Excel file with GlyTouCan Ids (.xlsx)
                           </NavDropdown.Item>
