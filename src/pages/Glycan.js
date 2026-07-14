@@ -106,9 +106,10 @@ const Glycan = (props) => {
                 return;
             }
         } else if (type === "composition") {
-            if (userSelection.composition === "" || userSelection.composition.trim().length < 1) {
+            if (userSelection.composition === "" || userSelection.composition.length < 1) {
               setValidate(true);
               setError(true);
+              setShowComposition(false);
               return;
           }
         } else if (type === "composition-string") {
@@ -117,6 +118,7 @@ const Glycan = (props) => {
             if (userSelection.compositionString === "" || userSelection.compositionString.trim().length < 1) {
               setValidate(true);
               setError(true);
+              setShowComposition(false);
               return;
           }
         } 
@@ -172,13 +174,14 @@ const Glycan = (props) => {
               if (error && error.response && error.response.data) {
                   if (type === "draw") {
                       setGlycoGlyphDialog(false);
-                  }
+                  } 
                   setError(true);
                   setTextAlertInput ({"show": true, "message": error.response.data["message"]});
               } else {
                   axiosError(error, null, setAlertDialogInput);
               }
               setShowLoading(false);
+              setShowComposition(false);
             }
           );
         }  else {
@@ -199,6 +202,7 @@ const Glycan = (props) => {
                   axiosError(error, null, setAlertDialogInput);
               }
               setShowLoading(false);
+              setShowComposition(false);
             }
           );
         }
