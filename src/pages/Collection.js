@@ -2544,7 +2544,7 @@ const Collection = (props) => {
                 <Row>
                     <Col md={12} style={{ textAlign: "right" }}>
                     <div className="text-right mb-3">
-                        <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
+                        <Button variant="contained" className="gg-btn-outline mt-2 gg-ml-20" 
                          disabled={error} onClick={()=> {
                             setTextAlertInputMetadata({"show": false, "message":""});
                             setMetadataItemKey([]);
@@ -2561,7 +2561,7 @@ const Collection = (props) => {
                             setEnableAddMetadata(true);
                          }
                         }>
-                         Add Metadata
+                         Add Other Metadata
                         </Button>
                         {collectionType &&
                         <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
@@ -2576,7 +2576,7 @@ const Collection = (props) => {
                             setEnableAddMetadata(true);
                          }
                         }>
-                         Add GlyGen Metadata
+                         Add GlyTableMaker Metadata
                         </Button> }
                         </div>
                     </Col>
