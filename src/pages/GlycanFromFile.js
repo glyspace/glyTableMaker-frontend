@@ -88,6 +88,8 @@ const GlycanFromFile = props => {
       return "Upload a Glycoworkbench file";
     } else if (type === "ppcomposition") {
       return "Upload ProteinProspector file";
+    } else if (type === "wurcs") {
+      return "Upload a file with WURCS sequences";
     } else {
       return "Upload a Glycan file";
     }
