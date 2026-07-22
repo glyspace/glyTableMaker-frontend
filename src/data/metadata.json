@@ -1,0 +1,1161 @@
+{
+    "biological_sample" : {
+        "fields": [
+            {
+                "id": "species",
+                "label": "Species",
+                "description": "Select the organism from which the sample was obtained. Use the species-level taxonomy entry whenever possible; the submitted value should correspond to an NCBI Taxonomy term.",
+                "example": "Home sapiens",
+                "required": true,
+                "multiple": false,
+                "namespace": "NCBI Taxonomy",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "tissue",
+                "label": "Tissue",
+                "description": "Specify the tissue or anatomical structure from which the sample was collected. Select the most specific tissue term available from the Uberon for animals and PlantOntology for plants.",
+                "example": "Liver",
+                "required": false,
+                "multiple": false,
+                "namespace": "UBERON",
+                "alternativeNamespace": "Plant",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "strain",
+                "label": "Strain",
+                "description": "Enter the strain the organism if known. Use the designation commonly reported in publications or vendor documentation.",
+                "example": "C57BL/6J",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "disease",
+                "label": "Disease",
+                "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
+                "example": "Type 2 diabetes mellitus",
+                "required": false,
+                "multiple": true,
+                "namespace": "Disease",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "cellularComponent",
+                "label": "Cellular Component",
+                "description": "Indicate the cellular location from which glycans or glycoproteins were isolated or are known to reside. Select the most appropriate Gene Ontology cellular component term.",
+                "example": "Plasma membrane",
+                "required": false,
+                "multiple": true,
+                "namespace": "Cellular Component",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "developmentalStage",
+                "label": "Developmental Stage",
+                "description": "Describe the developmental, growth, or life-cycle stage of the organism at the time of sampling. Use a clear and commonly accepted stage description.",
+                "example": "Adult",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describe any exposure of the sample or organism to ionizing or non-ionizing radiation before collection. Include radiation type and dose when available.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical",
+                        "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
+                        "example": "Additional 25 mM glucose added to culture media",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "Drug",
+                        "label": "Drug",
+                        "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "biological_sample_background_alteration" : {
+        "fields": [
+            {
+                "id": "species",
+                "label": "Species",
+                "description": "Select the organism from which the sample was obtained. Use the species-level taxonomy entry whenever possible; the submitted value should correspond to an NCBI Taxonomy term.",
+                "example": "Home sapiens",
+                "required": true,
+                "multiple": false,
+                "namespace": "NCBI Taxonomy",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "tissue",
+                "label": "Tissue",
+                "description": "Specify the tissue or anatomical structure from which the sample was collected. Select the most specific tissue term available from the Uberon for animals and PlantOntology for plants.",
+                "example": "Liver",
+                "required": false,
+                "multiple": false,
+                "namespace": "UBERON",
+                "alternativeNamespace": "Plant",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "strain",
+                "label": "Strain",
+                "description": "Enter the strain the organism if known. Use the designation commonly reported in publications or vendor documentation.",
+                "example": "C57BL/6J",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "disease",
+                "label": "Disease",
+                "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
+                "example": "Type 2 diabetes mellitus",
+                "required": false,
+                "multiple": true,
+                "namespace": "Disease",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "cellularComponent",
+                "label": "Cellular Component",
+                "description": "Indicate the cellular location from which glycans or glycoproteins were isolated or are known to reside. Select the most appropriate Gene Ontology cellular component term.",
+                "example": "Plasma membrane",
+                "required": false,
+                "multiple": true,
+                "namespace": "Cellular Component",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "developmentalStage",
+                "label": "Developmental Stage",
+                "description": "Describe the developmental, growth, or life-cycle stage of the organism at the time of sampling. Use a clear and commonly accepted stage description.",
+                "example": "Adult",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "variant",
+                "label": "Variant",
+                "description": "Enter the name or identifier of the organism variant being studied. Use the designation reported in publications, stock centers, or laboratory records so the variant can be traced to its underlying genetic alterations.",
+                "example": "Mgat5-/- mouse",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "cellline",
+                "label": "Cell line",
+                "description": "Select the cell line from Cellosaurus whenever available. If a modified or derivative cell line was used, choose the corresponding Cellosaurus entry or provide an approved 'other' value when necessary.",
+                "example": "HEK293",
+                "required": false,
+                "multiple": false,
+                "namespace": "Cellosaurus",
+                "allowOther": true,
+                "type": "autocomplete"
+            },
+            {
+                "id": "geneticBackgroundAlteration",
+                "label": "Genetic background alteration",
+                "description": "Describe each natural or engineered genetic alteration that could affect glycan composition or glycosylation. Add a separate entry for every relevant modification present in the sample.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele designation or textual description of the genetic alteration. Use the nomenclature commonly employed in your organism model or publication.",
+                        "example": "rt(2/P)",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the functional consequence of the genetic alteration using the controlled vocabulary. Choose the term that best reflects the expected effect on gene or protein function.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin"]
+                    },
+                    {
+                        "id": "gene",
+                        "label": "Gene",
+                        "description": "Enter the name of the gene affected by the alteration. Use the standard gene symbol recognized for the organism being studied.",
+                        "example": "Mgat5",
+                        "required": true,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "species",
+                        "label": "Species",
+                        "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
+                        "example": "Home sapiens",
+                        "required": true,
+                        "multiple": false,
+                        "namespace": "NCBI Taxonomy",
+                        "allowOther": false,
+                        "type": "autocomplete"
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Provide the position and sequence change when describing a mutation within a gene. Use a standard mutation notation whenever possible to allow unambiguous interpretation.",
+                        "example": "G66D",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describe any exposure of the sample or organism to ionizing or non-ionizing radiation before collection. Include radiation type and dose when available.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical", 
+                        "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
+                        "example": "Additional 25 mM glucose added to culture media",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "Drug",
+                        "label": "Drug",
+                        "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "protein_mutation": {
+        "fields": [
+            {
+                "id": "species",
+                "label": "Species",
+                "description": "Select the organism from which the sample was obtained. Use the species-level taxonomy entry whenever possible; the submitted value should correspond to an NCBI Taxonomy term.",
+                "example": "Home sapiens",
+                "required": true,
+                "multiple": false,
+                "namespace": "NCBI Taxonomy",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "tissue",
+                "label": "Tissue",
+                "description": "Specify the tissue or anatomical structure from which the sample was collected. Select the most specific tissue term available from the Uberon for animals and PlantOntology for plants.",
+                "example": "Liver",
+                "required": false,
+                "multiple": false,
+                "namespace": "UBERON",
+                "alternativeNamespace": "Plant",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "strain",
+                "label": "Strain",
+                "description": "Enter the strain the organism if known. Use the designation commonly reported in publications or vendor documentation.",
+                "example": "C57BL/6J",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "disease",
+                "label": "Disease",
+                "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
+                "example": "Type 2 diabetes mellitus",
+                "required": false,
+                "multiple": true,
+                "namespace": "Disease",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "cellularComponent",
+                "label": "Cellular Component",
+                "description": "Indicate the cellular location from which glycans or glycoproteins were isolated or are known to reside. Select the most appropriate Gene Ontology cellular component term.",
+                "example": "Plasma membrane",
+                "required": false,
+                "multiple": true,
+                "namespace": "Cellular Component",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "developmentalStage",
+                "label": "Developmental Stage",
+                "description": "Describe the developmental, growth, or life-cycle stage of the organism at the time of sampling. Use a clear and commonly accepted stage description.",
+                "example": "Adult",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "analyzedProteinMutation",
+                "label": "Analyzed protein mutation",
+                "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele or construct designation associated with the protein variant, if one exists. Use the terminology reported in publications, strain records, plasmid documentation, or laboratory notebooks.",
+                        "example": "HER2-N571Q",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Enter the protein sequence change using standard amino acid mutation notation. The entry should identify the original residue, its position, and the replacement residue.",
+                        "example": "N66K",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the protein alteration occurred naturally or was intentionally introduced. This distinguishes endogenous variants from engineered mutations used in mechanistic or functional studies.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describe any exposure of the sample or organism to ionizing or non-ionizing radiation before collection. Include radiation type and dose when available.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical", 
+                        "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
+                        "example": "Additional 25 mM glucose added to culture media",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "Drug",
+                        "label": "Drug",
+                        "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "protein_mutation_background_alteration" : {
+        "fields": [
+            {
+                "id": "species",
+                "label": "Species",
+                "description": "Select the organism from which the sample was obtained. Use the species-level taxonomy entry whenever possible; the submitted value should correspond to an NCBI Taxonomy term.",
+                "example": "Home sapiens",
+                "required": true,
+                "multiple": false,
+                "namespace": "NCBI Taxonomy",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "tissue",
+                "label": "Tissue",
+                "description": "Specify the tissue or anatomical structure from which the sample was collected. Select the most specific tissue term available from the Uberon for animals and PlantOntology for plants.",
+                "example": "Liver",
+                "required": false,
+                "multiple": false,
+                "namespace": "UBERON",
+                "alternativeNamespace": "Plant",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "strain",
+                "label": "Strain",
+                "description": "Enter the strain the organism if known. Use the designation commonly reported in publications or vendor documentation.",
+                "example": "C57BL/6J",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "disease",
+                "label": "Disease",
+                "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
+                "example": "Type 2 diabetes mellitus",
+                "required": false,
+                "multiple": true,
+                "namespace": "Disease",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "cellularComponent",
+                "label": "Cellular Component",
+                "description": "Indicate the cellular location from which glycans or glycoproteins were isolated or are known to reside. Select the most appropriate Gene Ontology cellular component term.",
+                "example": "Plasma membrane",
+                "required": false,
+                "multiple": true,
+                "namespace": "Cellular Component",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "developmentalStage",
+                "label": "Developmental Stage",
+                "description": "Describe the developmental, growth, or life-cycle stage of the organism at the time of sampling. Use a clear and commonly accepted stage description.",
+                "example": "Adult",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "analyzedProteinMutation",
+                "label": "Analyzed protein mutation",
+                "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele or construct designation associated with the protein variant, if one exists. Use the terminology reported in publications, strain records, plasmid documentation, or laboratory notebooks.",
+                        "example": "HER2-N571Q",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Enter the protein sequence change using standard amino acid mutation notation. The entry should identify the original residue, its position, and the replacement residue.",
+                        "example": "N66K",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the protein alteration occurred naturally or was intentionally introduced. This distinguishes endogenous variants from engineered mutations used in mechanistic or functional studies.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "geneticBackgroundAlteration",
+                "label": "Genetic background alteration",
+                "description": "Describe each natural or engineered genetic alteration that could affect glycan composition or glycosylation. Add a separate entry for every relevant modification present in the sample.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele designation or textual description of the genetic alteration. Use the nomenclature commonly employed in your organism model or publication.",
+                        "example": "rt(2/P)",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the functional consequence of the genetic alteration using the controlled vocabulary. Choose the term that best reflects the expected effect on gene or protein function.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin"]
+                    },
+                    {
+                        "id": "gene",
+                        "label": "Gene",
+                        "description": "Enter the name of the gene affected by the alteration. Use the standard gene symbol recognized for the organism being studied.",
+                        "example": "Mgat5",
+                        "required": true,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "species",
+                        "label": "Species",
+                        "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
+                        "example": "Home sapiens",
+                        "required": true,
+                        "multiple": false,
+                        "namespace": "NCBI Taxonomy",
+                        "allowOther": false,
+                        "type": "autocomplete"
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Provide the position and sequence change when describing a mutation within a gene. Use a standard mutation notation whenever possible to allow unambiguous interpretation.",
+                        "example": "G66D",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describe any exposure of the sample or organism to ionizing or non-ionizing radiation before collection. Include radiation type and dose when available.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical", 
+                        "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
+                        "example": "Additional 25 mM glucose added to culture media",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "Drug",
+                        "label": "Drug",
+                        "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "expressed_protein" : {
+        "fields": [
+            {
+                "id": "species",
+                "label": "Origin species of protein",
+                "description": "Specify the species from which the protein sequence originates, regardless of where it was expressed. This should correspond to the native source organism of the gene or protein being studied.",
+                "example": "Home sapiens",
+                "required": true,
+                "multiple": false,
+                "namespace": "NCBI Taxonomy",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "strain",
+                "label": "Strain of origin species",
+                "description": "If known, provide the strain, isolate, or genetic background from which the protein sequence was derived. This is particularly useful for microbial proteins and proteins from genetically distinct model organisms.",
+                "example": "K-12 MG1655",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "analyzedProteinMutation",
+                "label": "Analyzed protein mutation",
+                "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele or construct designation associated with the protein variant, if one exists. Use the terminology reported in publications, strain records, plasmid documentation, or laboratory notebooks.",
+                        "example": "HER2-N571Q",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Enter the protein sequence change using standard amino acid mutation notation. The entry should identify the original residue, its position, and the replacement residue.",
+                        "example": "N66K",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the protein alteration occurred naturally or was intentionally introduced. This distinguishes endogenous variants from engineered mutations used in mechanistic or functional studies.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "expressionSystem",
+                "label": "Expression System",
+                "type": "complex",
+                "required": true,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "species",
+                        "label": "Origin species of protein",
+                        "description": "Specify the species used as the expression host. Select the organism in which the recombinant protein was produced using an NCBI Taxonomy term.",
+                        "example": "Cricetulus griseus",
+                        "required": true,
+                        "multiple": false,
+                        "namespace": "NCBI Taxonomy",
+                        "allowOther": false,
+                        "type": "autocomplete"
+                    },
+                    {
+                        "id": "strain",
+                        "label": "Strain",
+                        "description": "Provide the strain of the expression host when applicable. This field is particularly relevant for bacterial, yeast, and other microbial expression systems.",
+                        "example": "BL21(DE3)",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "variant",
+                        "label": "Variant",
+                        "description": "Specify the variant or genetically modified version of the host organism used for protein expression. Include commonly used engineering designations that may affect protein production or glycosylation.",
+                        "example": "Mgat1-deficient",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "cellline",
+                        "label": "Cell line",
+                        "description": "Select the cell line used to express the protein. Use the corresponding Cellosaurus entry when available; for engineered derivatives, choose the most specific cell line designation possible.",
+                        "example": "CHO-K1",
+                        "required": false,
+                        "multiple": false,
+                        "namespace": "Cellosaurus",
+                        "allowOther": true,
+                        "type": "autocomplete"
+                    }
+                   
+                ]
+            },
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describe any exposure of the sample or organism to ionizing or non-ionizing radiation before collection. Include radiation type and dose when available.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical", 
+                        "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
+                        "example": "Additional 25 mM glucose added to culture media",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "Drug",
+                        "label": "Drug",
+                        "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "expressed_protein_altered_system" : {
+        "fields": [
+            {
+                "id": "species",
+                "label": "Origin species of protein",
+                "description": "Specify the species from which the protein sequence originates, regardless of where it was expressed. This should correspond to the native source organism of the gene or protein being studied.",
+                "example": "Home sapiens",
+                "required": true,
+                "multiple": false,
+                "namespace": "NCBI Taxonomy",
+                "allowOther": false,
+                "type": "autocomplete"
+            },
+            {
+                "id": "strain",
+                "label": "Strain of origin species",
+                "description": "If known, provide the strain, isolate, or genetic background from which the protein sequence was derived. This is particularly useful for microbial proteins and proteins from genetically distinct model organisms.",
+                "example": "K-12 MG1655",
+                "required": false,
+                "multiple": false,
+                "type": "text"
+            },
+            {
+                "id": "analyzedProteinMutation",
+                "label": "Analyzed protein mutation",
+                "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele or construct designation associated with the protein variant, if one exists. Use the terminology reported in publications, strain records, plasmid documentation, or laboratory notebooks.",
+                        "example": "HER2-N571Q",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Enter the protein sequence change using standard amino acid mutation notation. The entry should identify the original residue, its position, and the replacement residue.",
+                        "example": "N66K",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the protein alteration occurred naturally or was intentionally introduced. This distinguishes endogenous variants from engineered mutations used in mechanistic or functional studies.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "expressionSystem",
+                "label": "Expression System",
+                "type": "complex",
+                "required": true,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "species",
+                        "label": "Origin species of protein",
+                        "description": "Specify the species used as the expression host. Select the organism in which the recombinant protein was produced using an NCBI Taxonomy term.",
+                        "example": "Cricetulus griseus",
+                        "required": true,
+                        "multiple": false,
+                        "namespace": "NCBI Taxonomy",
+                        "allowOther": false,
+                        "type": "autocomplete"
+                    },
+                    {
+                        "id": "strain",
+                        "label": "Strain",
+                        "description": "Provide the strain of the expression host when applicable. This field is particularly relevant for bacterial, yeast, and other microbial expression systems.",
+                        "example": "BL21(DE3)",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "variant",
+                        "label": "Variant",
+                        "description": "Specify the variant or genetically modified version of the host organism used for protein expression. Include commonly used engineering designations that may affect protein production or glycosylation.",
+                        "example": "Mgat1-deficient",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "cellline",
+                        "label": "Cell line",
+                        "description": "Select the cell line used to express the protein. Use the corresponding Cellosaurus entry when available; for engineered derivatives, choose the most specific cell line designation possible.",
+                        "example": "CHO-K1",
+                        "required": false,
+                        "multiple": false,
+                        "namespace": "Cellosaurus",
+                        "allowOther": true,
+                        "type": "autocomplete"
+                    }
+                   
+                ]
+            },
+            {
+                "id": "geneticBackgroundAlteration",
+                "label": "Genetic background alteration",
+                "description": "Describe each natural or engineered genetic alteration that could affect glycan composition or glycosylation. Add a separate entry for every relevant modification present in the sample.",
+                "type": "complex",
+                "required": true,
+                "multiple": true,
+                "fields": [
+                    {
+                        "id": "allele",
+                        "label": "Allele",
+                        "description": "Provide the allele designation or textual description of the genetic alteration. Use the nomenclature commonly employed in your organism model or publication.",
+                        "example": "rt(2/P)",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "molecularPhenotype",
+                        "label": "Molecular Phenotype",
+                        "description": "Specify the functional consequence of the genetic alteration using the controlled vocabulary. Choose the term that best reflects the expected effect on gene or protein function.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin"]
+                    },
+                    {
+                        "id": "gene",
+                        "label": "Gene",
+                        "description": "Enter the name of the gene affected by the alteration. Use the standard gene symbol recognized for the organism being studied.",
+                        "example": "Mgat5",
+                        "required": true,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "species",
+                        "label": "Species",
+                        "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
+                        "example": "Home sapiens",
+                        "required": true,
+                        "multiple": false,
+                        "namespace": "NCBI Taxonomy",
+                        "allowOther": false,
+                        "type": "autocomplete"
+                    },
+                    {
+                        "id": "mutantPosition",
+                        "label": "Mutant position",
+                        "description": "Provide the position and sequence change when describing a mutation within a gene. Use a standard mutation notation whenever possible to allow unambiguous interpretation.",
+                        "example": "G66D",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    },
+                    {
+                        "id": "mutantOrigin",
+                        "label": "Mutant Origin",
+                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
+                        "required": true,
+                        "multiple": false,
+                        "allowOther": false,
+                        "type": "select",
+                        "options": ["targeted", "spontanous"]
+                    },
+                    {
+                        "id": "technique",
+                        "label": "Technique",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
+                        "required": true,
+                        "multiple": true,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                    }
+                ]
+            },
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describe any exposure of the sample or organism to ionizing or non-ionizing radiation before collection. Include radiation type and dose when available.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical", 
+                        "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
+                        "example": "Additional 25 mM glucose added to culture media",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "Drug",
+                        "label": "Drug",
+                        "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "synthetic" : {
+
+    },
+    "general": [
+        {
+            "id": "contributor",
+            "label": "Contributor",
+            "description": "List the people and software tools that contributed to generating, processing, analyzing, or curating the dataset. Include all major contributors and assign the role that best describes their involvement.",
+            "url": "",
+            "required": true,
+            "multiple": false,
+            "type": "contributor"
+        },
+        {
+            "id": "experimentalTechnique",
+            "label": "Experimental Technique",
+            "description": "Select all experimental techniques used to generate the reported data. Include both acquisition and analytical methods when multiple techniques were part of the workflow.",
+            "url":"",
+            "required": true,
+            "multiple": true,
+            "options": ["MS", "MS/MS", "LC-MS/MS", "LC-MS", "CE-MS", "CE-MS/MS", "CE", "HPLC", "GC", "GC-MS"],
+            "allowOther": true,
+            "type": "select"
+        },
+        {
+            "id": "publication",
+            "label": "Publication",
+            "description": "Provide the PubMed ID (PMID) or DOI of the publication describing this dataset. Use the primary publication associated with the reported experiment whenever available.",
+            "required": false,
+            "multiple": false,
+            "type": "publication"
+        },
+        {
+            "id": "comment",
+            "label": "Comment",
+            "description": "Add any additional information that may help others understand, interpret, or reproduce the experiment. Use this field for details that are not captured elsewhere in the submission form.",
+            "required": false,
+            "multiple": false,
+            "type": "text"
+        }
+    ]
+}

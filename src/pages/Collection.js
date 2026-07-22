@@ -20,6 +20,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArticleIcon from '@mui/icons-material/Article';
 import ContributorTable from "../components/ContributorTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import SampleTypeSelector from "../components/SampleTypeSelector";
+import DynamicMetadataForm from "../components/DynamicMetadataForm";
+import metadata from '../data/metadata.json';
 
 let idCounter = 1000;
 
@@ -124,6 +127,7 @@ const Collection = (props) => {
 
     const steps = ["Select metadata", "Enter values"];
 
+
     const [selectedMetadataItems, setSelectedMetadataItems] = useState([]);
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -150,6 +154,13 @@ const Collection = (props) => {
             setIsVisible(false);
         }
     };
+
+    // new metadata 
+    const [sampleType, setSampleType] = useState("");
+    const [enableGlyTableMakerMetadata, setEnableGlyTableMakerMetadata] = useState(false);
+    const [activeStep2, setActiveStep2] = useState(0);
+    const [metadataValues, setMetadataValues] = React.useState({});
+    const steps2 = ["Sample Type", "Sample Specific Metadata", "General Information"];
 
     useEffect(() => {
         props.authCheckAgent();
@@ -863,6 +874,36 @@ const Collection = (props) => {
         return false;
     }
 
+
+    function getStepContent2 (stepIndex) {
+        switch (stepIndex) {
+            case 0:
+                return (
+                <SampleTypeSelector
+                    datasetType={collectionType} 
+                    value={sampleType}
+                    onChange={setSampleType}
+                />
+                )
+            case 1:
+                return (
+                <DynamicMetadataForm
+                    fields={metadata[sampleType].fields}
+                    values={metadataValues}
+                    onChange={setMetadataValues}
+                />)
+            case 2:
+                return (
+                <DynamicMetadataForm
+                    fields={metadata["general"]}
+                    values={metadataValues}
+                    onChange={setMetadataValues}
+                />)
+
+        }
+
+    }
+
     function getStepContent (stepIndex) {
         switch (stepIndex) {
             case 0:
@@ -898,6 +939,14 @@ const Collection = (props) => {
                 );
             case 1:
                 return (
+                    oldMetadataEdit()
+                );
+                
+        }
+    }
+
+    function oldMetadataEdit () {
+        return (
                     <>
                     {enableMultiValueSelect && multiValueSelectIndex !== -1 && multiValueDialog()} 
                     {selectedMetadataItems.map ((dId, index) => {
@@ -1031,8 +1080,7 @@ const Collection = (props) => {
                     </Row>
                     </>}
                     </>
-                );
-        }
+        );
     }
 
     function multiValueDialog () {
@@ -1124,8 +1172,27 @@ const Collection = (props) => {
         );
     }
 
+    function getGlyTableMakerNavigationButtons() {
+        return (
+          <div className="text-center">
+            {<Button disabled={activeStep2 === 0} onClick={handleBack2} className="gg-btn-blue gg-ml-20 gg-mr-20">
+              Back
+            </Button>
+            }
+            {activeStep2 < steps2.length - 1 &&
+            <Button variant="contained" className="gg-btn-blue gg-ml-20" onClick={handleNext2}>
+               Next
+            </Button>}
+          </div>
+        );
+    }
+
     const handleBack = () => {
         setActiveStep(prevActiveStep => prevActiveStep - 1);
+    };
+
+    const handleBack2 = () => {
+        setActiveStep2(prevActiveStep => prevActiveStep - 1);
     };
 
     const sortMetadata = (metadataItems) => {
@@ -1247,6 +1314,10 @@ const Collection = (props) => {
         handleMetadataSelectionChange (selectedMetadataItems, selectedMetadataValue, null, metadataItemKey);
     }
 
+    const handleNext2 = () => {
+        setActiveStep2(prevActiveStep => prevActiveStep + 1);
+    }
+
     function getStepLabel(stepIndex) {
         switch (stepIndex) {
           case 0:
@@ -1256,6 +1327,39 @@ const Collection = (props) => {
           default:
             return "Unknown step " + stepIndex ;
         }
+    }
+
+    function getNewStepLabel(stepIndex) {
+        switch (stepIndex) {
+          case 0:
+            return "Select sample type";
+          case 1:
+            return "Enter values for each metadata";
+          case 2:
+            return "Enter general information";
+          default:
+            return "Unknown step " + stepIndex ;
+        }
+    }
+
+    const addNewMetadataForm = () => {
+        return (
+            <>
+                <TextAlert alertInput={textAlertInputMetadata}/>
+                <Stepper className="steper-responsive5 text-center" activeStep={activeStep2} alternativeLabel>
+                  {steps2.map(label => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+              <h5 className="text-center gg-blue mt-4 mb-4">{getNewStepLabel(activeStep2)}</h5>
+              {getGlyTableMakerNavigationButtons()}
+              <div className="mt-4 mb-4">
+                {getStepContent2(activeStep2, validate)}
+              </div>
+            </>
+        )
     }
 
     const addMetadataForm = () => {
@@ -1514,6 +1618,11 @@ const Collection = (props) => {
         setUserProfile(userArray);
         setSoftwareProfile(softwareArray);
         
+    }
+
+    async function handleAddNewMetadata () {
+        setTextAlertInputMetadata ({"show": false, "id": ""});
+        //TODO implement
     }
 
     async function handleAddMetadata () {
@@ -2378,6 +2487,57 @@ const Collection = (props) => {
                      
                 </Dialog>
             )}
+
+            {enableGlyTableMakerMetadata && (
+                <Dialog
+                    maxWidth="xl"
+                    fullWidth="true"
+                    aria-labelledby="parent-modal-title"
+                    aria-describedby="parent-modal-description"
+                    scroll="paper"
+                    centered
+                    open={enableGlyTableMakerMetadata}
+                    onClose={(event, reason) => {
+                        if (reason && reason === "backdropClick")
+                            return;
+                        setEnableGlyTableMakerMetadata(false)
+                    }}
+                >
+                    <DialogTitle id="parent-modal-title">
+                        <Typography id="parent-modal-title" variant="h6" component="h2">
+                        Add GlyTableMaker Metadata
+                        </Typography>
+                    </DialogTitle>
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setEnableGlyTableMakerMetadata(false)}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        >
+                    <CloseIcon />
+                    </IconButton>
+                    <DialogContent dividers ref={metadataDialogRef}>
+                        <Typography id="parent-modal-description" sx={{ mt: 2 }}>
+                        {addNewMetadataForm()}
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        {getGlyTableMakerNavigationButtons()}
+                        <Button className="gg-btn-outline-reg"
+                            onClick={()=> {
+                                setActiveStep(0);
+                                setEnableGlyTableMakerMetadata(false);
+                            }}>Cancel</Button>
+                        <Button className="gg-btn-blue-reg"
+                            onClick={()=>handleAddNewMetadata()}>Add</Button>
+                    </DialogActions>
+                     
+                </Dialog>
+            )}
             <Form>
                 <Form.Group
                   as={Row}
@@ -2572,8 +2732,8 @@ const Collection = (props) => {
                             setSelectedMetadataValue([]);
                             collectionType === "GLYCAN" ? setGlygenMandatoryMetadata() : setGlycoproteomicsMandatoryMetadata();
                             setGlygen(true);
-                            setActiveStep(1);
-                            setEnableAddMetadata(true);
+                            setActiveStep2(0);
+                            setEnableGlyTableMakerMetadata(true);
                          }
                         }>
                          Add GlyTableMaker Metadata
