@@ -1192,7 +1192,11 @@ const Collection = (props) => {
     };
 
     const handleBack2 = () => {
-        setActiveStep2(prevActiveStep => prevActiveStep - 1);
+        if (sampleType === "synthetic" && activeStep2 == 2) {
+            setActiveStep2(0);
+        } else {
+            setActiveStep2(prevActiveStep => prevActiveStep - 1);
+        }
     };
 
     const sortMetadata = (metadataItems) => {
@@ -1315,7 +1319,11 @@ const Collection = (props) => {
     }
 
     const handleNext2 = () => {
-        setActiveStep2(prevActiveStep => prevActiveStep + 1);
+        if (sampleType === "synthetic" && activeStep2 === 0) {
+            setActiveStep2(2);
+        } else {
+            setActiveStep2(prevActiveStep => prevActiveStep + 1);
+        }
     }
 
     function getStepLabel(stepIndex) {

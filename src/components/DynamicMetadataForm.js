@@ -14,6 +14,7 @@ import {
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import MultiAutoComplete from "./MultiAutoComplete";
 import MultiselectTextInput from "./MultiSelectTextInput";
+import { Col, Row } from "react-bootstrap";
 
 export default function DynamicMetadataForm({
   fields,
@@ -69,53 +70,14 @@ export default function DynamicMetadataForm({
     );
 
     //
-    // MULTI VALUE TEXT
-    //
-    if (field.type === "text" && field.multiple) {
-      return (
-        <FormControl fullWidth variant="outlined">
-          {label}
-
-          <TextField
-            size="small"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addMultiValue(field.id, e.target.value.trim());
-                e.target.value = "";
-              }
-            }}
-            placeholder="Press Enter to add value"
-          />
-
-          <Stack
-            direction="row"
-            spacing={1}
-            mt={1}
-            flexWrap="wrap"
-          >
-            {(values[field.id] || []).map((value) => (
-              <Chip
-                key={value}
-                label={value}
-                onDelete={() =>
-                  removeMultiValue(field.id, value)
-                }
-              />
-            ))}
-          </Stack>
-          </FormControl>
-      );
-    }
-
-    //
     // MULTI VALUE AUTOCOMPLETE
     //
     if (field.type === "autocomplete") {
       return (
         <FormControl fullWidth variant="outlined">
-          {label}
-
+          <Row>
+          <Col xs={2} sm={3}> {label} </Col>
+          <Col xs={10} sm={9}>
           <MultiAutoComplete
             inputValue={values[field.id]}
             fieldId={field.id}
@@ -128,15 +90,19 @@ export default function DynamicMetadataForm({
             error={error}
             errorText="not valid"
           />
+          </Col>
+          </Row>
         </FormControl>
+      
       );
     }
 
     if (field.type === "select") {
       return (
         <FormControl fullWidth variant="outlined">
-          {label}
-
+          <Row>
+          <Col xs={2} sm={3}> {label} </Col>
+          <Col xs={10} sm={9}>
           <MultiselectTextInput
             inputValue={values[field.id]}
             fieldId={field.id}
@@ -146,8 +112,13 @@ export default function DynamicMetadataForm({
             setInputValue={updateValue}
             options={field.options}
           />
+          </Col></Row>
         </FormControl>
       );
+    }
+
+    if (field.type === "complex") {
+      return <></>
     }
 
     //
@@ -155,14 +126,18 @@ export default function DynamicMetadataForm({
     //
     return (
       <FormControl fullWidth variant="outlined">
-        {label}
+        <Row>
+        <Col xs={2} sm={3}> {label} </Col>
+        <Col xs={10} sm={9}>
         <TextField
           size="small"
+          fullWidth
           value={values[field.id] || ""}
           onChange={(e) =>
             updateValue(field.id, e.target.value)
           }
         />
+        </Col></Row>
       </FormControl>
     );
   };

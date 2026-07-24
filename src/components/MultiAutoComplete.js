@@ -1,10 +1,11 @@
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Chip, TextField } from "@mui/material";
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { getAuthorizationHeader, getJson } from "../utils/api";
 
 export default function MultiAutoComplete (props) {
     const [options, setOptions] = useState([]);
+    const [searchInput, setSearchInput] = useState(""); 
     const inputValueRef = useRef (props.inputValue);
     inputValueRef.current = props.inputValue;
 
@@ -30,17 +31,17 @@ export default function MultiAutoComplete (props) {
 	 * useEffect to get typeahead data from api.
 	 **/
 	React.useEffect(() => {
-		if (!props.inputValue || props.inputValue.trim() === '') {
+		if (!searchInput || searchInput.trim() === '') {
 			setOptions([]);
 			return undefined;
 		}
-		if (props.inputValue) {
-			getTypeAhead(props.namespace, props.inputValue).then((response) => inputValueRef.current && inputValueRef.current.trim() !== '' ? Array.isArray(response.data.data) ? setOptions(response.data.data) : setOptions([]) : setOptions([]))
+		if (searchInput) {
+			getTypeAhead(props.namespace, searchInput).then((response) => searchInput && searchInput.trim() !== '' ? Array.isArray(response.data.data) ? setOptions(response.data.data) : setOptions([]) : setOptions([]))
 			.catch(function (error) {});
 		}
 
 		return;
-	}, [props.inputValue, props.namespace]);
+	}, [searchInput, props.inputValue, props.namespace]);
 
 return (
     <Autocomplete
@@ -48,6 +49,9 @@ return (
         disabled={props.disabled}
         multiple={props.multiple}
         value={props.inputValue}
+        onInputChange={(event, newInputValue) => {
+            setSearchInput(newInputValue);
+        }}
         onClose={(event, reason) => {
             console.log("closing reason " + reason );
             /*if (options[index].length === 0) return;
@@ -59,7 +63,7 @@ return (
         }}
         isOptionEqualToValue={(option, value) => (option === value)}
         options={options}
-        onInputChange={handleChange}
+        onChange={handleChange}
         getOptionLabel={(option) => option}
         style={{ width: '100%' }}
         classes={{
@@ -67,6 +71,14 @@ return (
           inputRoot: "auto-input-root",
           input: "input-auto",
         }}
+        renderValue={(value, getItemProps) =>
+          value.map((option, index) => {
+            const { key, ...itemProps } = getItemProps({ index });
+            return (
+              <Chip variant="outlined" label={option} key={key} {...itemProps} />
+            );
+          })
+        }
         renderInput={(params) => (
             <TextField {...params} 
                 variant='outlined'

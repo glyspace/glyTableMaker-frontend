@@ -212,7 +212,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin"]
+                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin", "other"]
                     },
                     {
                         "id": "gene",
@@ -261,7 +261,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
@@ -393,7 +393,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "Other"]
                     },
                     {
                         "id": "mutantPosition",
@@ -422,7 +422,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
@@ -554,7 +554,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "other"]
                     },
                     {
                         "id": "mutantPosition",
@@ -583,7 +583,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
@@ -612,7 +612,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin"]
+                        "options": ["knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin", "other"]
                     },
                     {
                         "id": "gene",
@@ -661,7 +661,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
@@ -750,7 +750,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "Other"]
                     },
                     {
                         "id": "mutantPosition",
@@ -779,7 +779,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
@@ -918,7 +918,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph"]
+                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "Other"]
                     },
                     {
                         "id": "mutantPosition",
@@ -947,7 +947,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
@@ -1026,7 +1026,7 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin"]
+                        "options": ["knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin", "other"]
                     },
                     {
                         "id": "gene",
@@ -1075,7 +1075,7 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp"]
+                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
                     }
                 ]
             },
