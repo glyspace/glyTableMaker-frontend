@@ -15,6 +15,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import MultiAutoComplete from "./MultiAutoComplete";
 import MultiselectTextInput from "./MultiSelectTextInput";
 import { Col, Row } from "react-bootstrap";
+import ComplexFieldTable from "./ComplexFieldTable";
 
 export default function DynamicMetadataForm({
   fields,
@@ -118,7 +119,60 @@ export default function DynamicMetadataForm({
     }
 
     if (field.type === "complex") {
-      return <></>
+      return ( <>
+      {label}
+      <ComplexFieldTable
+        field={field}
+        value={values[field.id] || []}
+        onChange={(rows) =>
+          updateValue(field.id, rows)
+        }
+      />
+      </>);
+    }
+
+    // MULTI TEXT
+    if (field.type === "text" && field.multiple) {
+      return (
+        <>
+        <Row>
+        <Col xs={2} sm={3}> {label} </Col>
+        <Col xs={10} sm={9}>
+
+        <TextField
+            fullWidth
+            size="small"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addMultiValue(field.id, e.target.value.trim());
+                e.target.value = "";
+              }
+            }}
+            placeholder="Press Enter to add value"
+          />
+
+          <Stack
+            direction="row"
+            spacing={1}
+            mt={1}
+            flexWrap="wrap"
+          >
+            {(values[field.id] || []).map((value) => (
+              <Chip
+                key={value}
+                label={value}
+                onDelete={() =>
+                  removeMultiValue(field.id, value)
+                }
+              />
+            ))}
+          </Stack>
+
+        </Col>
+        </Row>
+        </>
+      );
     }
 
     //
