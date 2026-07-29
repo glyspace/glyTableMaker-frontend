@@ -160,7 +160,8 @@ const Collection = (props) => {
     const [enableGlyTableMakerMetadata, setEnableGlyTableMakerMetadata] = useState(false);
     const [activeStep2, setActiveStep2] = useState(0);
     const [metadataValues, setMetadataValues] = React.useState({});
-    const steps2 = ["Sample Type", "Sample Specific Metadata", "General Information"];
+    const steps2 = ["Sample Type", "Sample Specific Metadata", "Sample Specific Metadata - Modifications", "General Information"];
+    const [metadataDialogTitle, setMetadataDialogTitle] = useState("GlyTableMaker Metadata");
 
     useEffect(() => {
         props.authCheckAgent();
@@ -874,6 +875,14 @@ const Collection = (props) => {
         return false;
     }
 
+    function getFieldsForSection (section, fields) {
+        var filteredFields = [];
+        fields.map ((field, index) => {
+            if (section == 1 && !field.secondSection) filteredFields.push(field);
+            if (section == 2 && field.secondSection) filteredFields.push(field);
+        }); 
+        return filteredFields; 
+    }
 
     function getStepContent2 (stepIndex) {
         switch (stepIndex) {
@@ -882,17 +891,25 @@ const Collection = (props) => {
                 <SampleTypeSelector
                     datasetType={collectionType} 
                     value={sampleType}
+                    titleChange={setMetadataDialogTitle}
                     onChange={setSampleType}
                 />
                 )
             case 1:
                 return (
                 <DynamicMetadataForm
-                    fields={metadata[sampleType].fields}
+                    fields={getFieldsForSection(1, metadata[sampleType].fields)}
                     values={metadataValues}
                     onChange={setMetadataValues}
                 />)
             case 2:
+                return (
+                <DynamicMetadataForm
+                    fields={getFieldsForSection(2, metadata[sampleType].fields)}
+                    values={metadataValues}
+                    onChange={setMetadataValues}
+                />)
+            case 3:
                 return (
                 <DynamicMetadataForm
                     fields={metadata["general"]}
@@ -1192,8 +1209,10 @@ const Collection = (props) => {
     };
 
     const handleBack2 = () => {
-        if (sampleType === "synthetic" && activeStep2 == 2) {
+        if (sampleType === "synthetic" && activeStep2 == 3) {
             setActiveStep2(0);
+        } else if (sampleType == "biological_sample" && activeStep2 == 3) {
+            setActiveStep2(1);
         } else {
             setActiveStep2(prevActiveStep => prevActiveStep - 1);
         }
@@ -1320,7 +1339,9 @@ const Collection = (props) => {
 
     const handleNext2 = () => {
         if (sampleType === "synthetic" && activeStep2 === 0) {
-            setActiveStep2(2);
+            setActiveStep2(3);
+        } else if (sampleType === "biological_sample" && activeStep2 === 1) {
+            setActiveStep2(3);
         } else {
             setActiveStep2(prevActiveStep => prevActiveStep + 1);
         }
@@ -1361,8 +1382,6 @@ const Collection = (props) => {
                   </Step>
                 ))}
               </Stepper>
-              <h5 className="text-center gg-blue mt-4 mb-4">{getNewStepLabel(activeStep2)}</h5>
-              {getGlyTableMakerNavigationButtons()}
               <div className="mt-4 mb-4">
                 {getStepContent2(activeStep2, validate)}
               </div>
@@ -2513,7 +2532,7 @@ const Collection = (props) => {
                 >
                     <DialogTitle id="parent-modal-title">
                         <Typography id="parent-modal-title" variant="h6" component="h2">
-                        Add GlyTableMaker Metadata
+                        {metadataDialogTitle}
                         </Typography>
                     </DialogTitle>
                     <IconButton

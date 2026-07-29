@@ -174,6 +174,7 @@
                 "example": "Mgat5-/- mouse",
                 "required": false,
                 "multiple": false,
+                "secondSection": true,
                 "type": "text"
             },
             {
@@ -185,6 +186,7 @@
                 "multiple": false,
                 "namespace": "Cellosaurus",
                 "allowOther": true,
+                "secondSection": true,
                 "type": "autocomplete"
             },
             {
@@ -194,6 +196,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",
@@ -375,6 +378,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",
@@ -536,6 +540,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",
@@ -594,6 +599,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",
@@ -732,6 +738,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",
@@ -792,7 +799,7 @@
                 "fields": [
                     {
                         "id": "species",
-                        "label": "Origin species of protein",
+                        "label": "Species",
                         "description": "Specify the species used as the expression host. Select the organism in which the recombinant protein was produced using an NCBI Taxonomy term.",
                         "example": "Cricetulus griseus",
                         "required": true,
@@ -900,6 +907,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",
@@ -1008,6 +1016,7 @@
                 "type": "complex",
                 "required": true,
                 "multiple": true,
+                "secondSection": true,
                 "fields": [
                     {
                         "id": "allele",

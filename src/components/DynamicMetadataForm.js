@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Chip,
@@ -14,8 +14,9 @@ import {
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import MultiAutoComplete from "./MultiAutoComplete";
 import MultiselectTextInput from "./MultiSelectTextInput";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import ComplexFieldTable from "./ComplexFieldTable";
+import MultiTextInput from "./MultiTextInput";
 
 export default function DynamicMetadataForm({
   fields,
@@ -109,6 +110,7 @@ export default function DynamicMetadataForm({
             fieldId={field.id}
             required={field.required}
             multiple={field.multiple}
+            allowOther={field.allowOther}
             placeholder="Select"
             setInputValue={updateValue}
             options={field.options}
@@ -138,37 +140,29 @@ export default function DynamicMetadataForm({
         <Row>
         <Col xs={2} sm={3}> {label} </Col>
         <Col xs={10} sm={9}>
-
-        <TextField
-            fullWidth
-            size="small"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addMultiValue(field.id, e.target.value.trim());
-                e.target.value = "";
-              }
+            <MultiTextInput 
+              field={field}
+              inputValue={values[field.id] || []}
+              setInputValue={updateValue}
+            />
+            {field.example && (
+        <Tooltip 
+            disableTouchListener
+            interactive
+            arrow
+            placement={"bottom-start"}
+            classes={{ tooltip: "gg-tooltip" }}
+            title="Click to insert example.">
+          <Button
+            className={"example-btn"}
+            style={{ fontSize: "12px" }}
+            onClick={() => {
+              updateValue(field.id, [field.example]);
             }}
-            placeholder="Press Enter to add value"
-          />
-
-          <Stack
-            direction="row"
-            spacing={1}
-            mt={1}
-            flexWrap="wrap"
           >
-            {(values[field.id] || []).map((value) => (
-              <Chip
-                key={value}
-                label={value}
-                onDelete={() =>
-                  removeMultiValue(field.id, value)
-                }
-              />
-            ))}
-          </Stack>
-
+            {field.example}
+          </Button>
+        </Tooltip>)}
         </Col>
         </Row>
         </>
@@ -191,6 +185,24 @@ export default function DynamicMetadataForm({
             updateValue(field.id, e.target.value)
           }
         />
+        {field.example && (
+        <Tooltip 
+            disableTouchListener
+            interactive
+            arrow
+            placement={"bottom-start"}
+            classes={{ tooltip: "gg-tooltip" }}
+            title="Click to insert example.">
+          <Button
+            className={"example-btn"}
+            variant="link"
+            onClick={() => {
+              updateValue(field.id, field.example);
+            }}
+          >
+            {field.example}
+          </Button>
+        </Tooltip>)}
         </Col></Row>
       </FormControl>
     );

@@ -18,6 +18,7 @@ import DynamicMetadataForm from "./DynamicMetadataForm";
 export default function ComplexRowDialog({
   open,
   row,
+  parent,
   fields,
   onClose,
   onChange,
@@ -69,7 +70,7 @@ export default function ComplexRowDialog({
       fullWidth
     >
       <DialogTitle>
-        Perturbation
+        {parent.label}
       </DialogTitle>
 
       <DialogContent>

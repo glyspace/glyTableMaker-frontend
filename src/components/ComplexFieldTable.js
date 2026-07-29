@@ -100,9 +100,13 @@ export default function ComplexFieldTable({
             <TableRow key={index}>
               {field.fields.map((subField) => (
                 <TableCell key={subField.id}>
-                  {Array.isArray(row[subField.id])
-                    ? row[subField.id].join(", ")
-                    : row[subField.id]}
+                    {Array.isArray(row[subField.id]) ? (
+                        row[subField.id].map((item, index) => (
+                            <div key={index}>{item}</div>
+                        ))
+                        ) : (
+                        row[subField.id]
+                        )}
                 </TableCell>
               ))}
 
@@ -129,7 +133,7 @@ export default function ComplexFieldTable({
         </TableBody>
       </Table>
 
-      {field.multiple && (
+      {(field.multiple || value.length === 0) && (
       <Button
         startIcon={<AddIcon />}
         variant="outlined"
@@ -143,6 +147,7 @@ export default function ComplexFieldTable({
       <ComplexRowDialog
         open={open}
         row={currentRow}
+        parent={field}
         fields={field.fields}
         onClose={() => setOpen(false)}
         onChange={setCurrentRow}
