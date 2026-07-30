@@ -14,7 +14,7 @@ const Composition = (props) => {
         { show: false, id: "" }
     );
     const [compositionString, setCompositionString] = useState ("");
-    const [compositionType, setCompositionType] = useState(null);
+    const [compositionType, setCompositionType] = useState("BASE");
     const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
 
     const [monoList, setMonoList] = useState([]);
