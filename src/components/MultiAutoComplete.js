@@ -13,7 +13,6 @@ export default function MultiAutoComplete (props) {
     const [enableMultiValueSelect, setEnableMultiValueSelect] = useState(false);
     const [selectedCanonical, setSelectedCanonical] = useState(null);
     const [canonicalForm, setCanonicalForm] = useState([]);
-    const [selectedValue, setSelectedValue] = useState(null);
 
     /**
 	 * Function to handle change event for input text.
@@ -22,9 +21,10 @@ export default function MultiAutoComplete (props) {
 	 * @param {string} reason event reason.
 	 **/
 	const handleChange = async (event, value, reason) => {
-		if (!(event === null && value === "" && reason === "reset")){
+        console.log("Reason" + reason);
+		/*if (!(event === null && value === "" && reason === "reset")){
 			props.setInputValue(props.fieldId, value);
-		} 
+		} */
         if (reason === "selectOption") {
             if (props.multiple) {
                 if (reason === "removeOption") {
@@ -40,7 +40,14 @@ export default function MultiAutoComplete (props) {
                 );
 
                 if (!canonical) {
-                    return;
+                    if (!props.allowOther) {
+                        const updated = [
+                            ...value.slice(0, value.length - 1)];
+                        props.setInputValue(props.fieldId, updated);
+                        return;
+                    } else {
+                        return;
+                    }
                 }
 
                 const updated = [
@@ -60,6 +67,8 @@ export default function MultiAutoComplete (props) {
                 props.namespace,
                 value
             );
+
+            if (!canonical) return;
 
             if (canonical) {
                 props.setInputValue(
@@ -154,7 +163,7 @@ export default function MultiAutoComplete (props) {
         const matches = response.data?.data;
 
         if (!matches || matches.length === 0) {
-            return value;
+           return value;
         }
 
         if (matches.length === 1) {
@@ -196,14 +205,14 @@ return (
         freeSolo
         disabled={props.disabled}
         multiple={props.multiple}
-        value={props.inputValue}
+        value={props.inputValue ?? (props.multiple ? [] : null)}
         onInputChange={onInputChange}
         onClose={(event, reason) => {
             console.log("closing reason " + reason );
-            if ((reason === "selectOption" || reason === "blur")) {
+           /* if ((reason === "selectOption" || reason === "blur")) {
                 getCanonicalForm (props.namespace, 
                     reason === "selectOption" ? event.target.textContent : event.target.value);
-            }
+            }*/
         }}
         isOptionEqualToValue={(option, value) => (option === value)}
         options={options}
@@ -241,6 +250,7 @@ MultiAutoComplete.propTypes = {
   namespace: PropTypes.string,
   disabled: PropTypes.bool,
   multiple: PropTypes.bool,
+  allowOther: PropTypes.bool,
   required: PropTypes.bool,
   setInputValue: PropTypes.func,
   error: PropTypes.func,

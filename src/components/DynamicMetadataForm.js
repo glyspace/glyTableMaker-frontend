@@ -128,6 +128,7 @@ export default function DynamicMetadataForm({
             fieldId={field.id}
             required={field.required}
             multiple={field.multiple}
+            allowOther={field.allowOther}
             namespace={field.namespace}
             placeholder="Start typing"
             disabled={false}
@@ -235,51 +236,65 @@ export default function DynamicMetadataForm({
         {selectedPublication && 
         <Box>
           <Typography sx={{ p: 2 }}>
-                              <div>
-                              <h6 style={{ marginBottom: "3px" }}>
-                              <strong>{selectedPublication.title}</strong>
-                              </h6>
-                          </div>
-          
-                          <div style={{ textAlign: "left", paddingLeft: "35px" }}>
-                              <div>{selectedPublication.authors}</div>
-                              <div>
-                              {selectedPublication.journal} <span>&nbsp;</span>({selectedPublication.year})
-                              </div>
-                              <div>
-                              <FontAwesomeIcon icon={["fas", "book-open"]} size="sm" title="Book" />
-          
-                              {selectedPublication.pubmedId && 
-                              <>
-                              <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
-                              <a
-                                  href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                              >
-                                  {selectedPublication.pubmedId}
-                              </a>
-                              </>
-                              }
-                              {selectedPublication.doiId && 
-                              <>
-                              <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
-                              <a
-                                  href={`https://doi.org/${selectedPublication.doiId}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                              >
-                                  {selectedPublication.doiId}
-                              </a>
-                              </>
-                              }
-                              </div>
-                          </div>
-                          </Typography>
+          <div>
+              <h6 style={{ marginBottom: "3px" }}>
+              <strong>{selectedPublication.title}</strong>
+              </h6>
+          </div>
+
+          <div style={{ textAlign: "left", paddingLeft: "35px" }}>
+              <div>{selectedPublication.authors}</div>
+              <div>
+              {selectedPublication.journal} <span>&nbsp;</span>({selectedPublication.year})
+              </div>
+              <div>
+              <FontAwesomeIcon icon={["fas", "book-open"]} size="sm" title="Book" />
+
+              {selectedPublication.pubmedId && 
+              <>
+              <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
+              <a
+                  href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+              >
+                  {selectedPublication.pubmedId}
+              </a>
+              </>
+              }
+              {selectedPublication.doiId && 
+              <>
+              <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
+              <a
+                  href={`https://doi.org/${selectedPublication.doiId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+              >
+                  {selectedPublication.doiId}
+              </a>
+              </>
+              }
+              </div>
+          </div>
+          </Typography>
         </Box>}
       </FormControl>
       );
     }
+
+   /* if (field.type === "contributor") {
+      return (
+        <>
+          <ContributorTable 
+              setContributor={setContributor} 
+              user={userProfile} 
+              software={softwareProfile} 
+              contributor={contributor}
+              error={validMetadata[index]}
+              validationMessage={validMetadata[index] ? validationMessage[index] : ""}/>
+        </>
+      );
+    }*/
 
     //
     // SINGLE TEXT

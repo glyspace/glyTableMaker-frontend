@@ -848,6 +848,7 @@ input[type="check" i] {
   border-width: 0 !important;
   padding: 0 !important;
   vertical-align: inherit !important;
+  background: inherit !important;
 }
 
 

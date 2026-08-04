@@ -1649,7 +1649,9 @@ const Collection = (props) => {
 
     async function handleAddNewMetadata () {
         setTextAlertInputMetadata ({"show": false, "id": ""});
-        //TODO implement
+        console.log("metadata values: " + metadataValues);
+        //TODO generate expected metadata object (where to put the datatypes etc?)
+        setEnableGlyTableMakerMetadata(false);
     }
 
     async function handleAddMetadata () {
