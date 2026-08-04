@@ -1284,26 +1284,40 @@ const Collection = (props) => {
         searchParams += "&filters=" + encodeURI(JSON.stringify([{"id": "tags", "value": selectedTag}]));
 
         setShowLoading(true);
-    
         getJson (url + "?" + searchParams, getAuthorizationHeader()).then ( (json) => {
-          isGlycan ? setSelectedGlycans(json.data.data.objects) : setSelectedGlycoproteins (json.data.data.objects);
-          const selected=[];
-          json.data.data.objects.forEach ((item) => {
-            if (isGlycan && (!item.glytoucanID || item.glytoucanID.length === 0)) {
-                // error, not allowed to select this for the collection
-                setTextAlertInput ({"show": true, 
-                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + item.glycanId + " is not added."
-                });
-                ScrollToTop();
-            } else {
-                selected.push (item);
+            if (isGlycan) {
+                const previous = userSelection.glycans && userSelection.glycans.length ? [...userSelection.glycans] : [];
+                json.data.data.objects.forEach ((glycan) => {
+                    if (!glycan.glytoucanID || glycan.glytoucanID.length === 0) {
+                        // error, not allowed to select this for the collection
+                        setTextAlertInput ({"show": true, 
+                            "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycanId + " is not added."
+                        });
+                        ScrollToTop();
+                    } else {
+                        const found = previous.find ((item) => item.glycanId === glycan.glycanId);
+                        if (!found) {
+                            previous.push (glycan);
+                        }
+                    }
+                })
+                setSelectedGlycans(previous);
+                setUserSelection({"glycans": previous});
+            } else { // glycoproteins
+                const previous = userSelection.glycoproteins && userSelection.glycoproteins.length ? [...userSelection.glycoproteins] : [];
+                json.data.data.objects.forEach ((glycoprotein) => {
+                    const found = previous.find ((item) => item.id === glycoprotein.id);
+                    if (!found) {
+                        previous.push (glycoprotein);
+                    }
+                    
+                })
+                setSelectedGlycoproteins(previous);
+                setUserSelection({"glycoproteins" : previous});
             }
-          });
-
-          isGlycan ? setUserSelection({"glycans": selected}) : setUserSelection({"glycoproteins" : selected});
-          setIsDirty(true);
-          setShowLoading(false);
-          isGlycan ? setShowTagSelection (false) : setShowGlycoproteinTagSelection (false);
+            setIsDirty(true);
+            setShowLoading(false);
+            isGlycan ? setShowTagSelection (false) : setShowGlycoproteinTagSelection (false);
         }).catch (function(error) {
           if (error && error.response && error.response.data) {
               setTextAlertInput ({"show": true, "message": error.response.data.message });
