@@ -1,8 +1,5 @@
 import React from "react";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -11,7 +8,6 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function SampleTypeSelector({
   datasetType,

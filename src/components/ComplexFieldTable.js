@@ -2,26 +2,17 @@ import React, { useState } from "react";
 
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   IconButton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  TextField,
-  Typography,
-  Chip,
-  Stack
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MultiAutoComplete from "./MultiAutoComplete";
 import ComplexRowDialog from "./ComplexRowDialog";
 
 export default function ComplexFieldTable({

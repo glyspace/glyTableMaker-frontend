@@ -1,17 +1,16 @@
 import React, { useReducer, useState } from "react";
 import {
   Box,
-  Chip,
   Grid,
   IconButton,
-  Stack,
   TextField,
   Tooltip,
   Typography,
-  Autocomplete,
   FormControl,
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import MultiAutoComplete from "./MultiAutoComplete";
 import MultiselectTextInput from "./MultiSelectTextInput";
 import { Button, Col, Row } from "react-bootstrap";
@@ -23,10 +22,12 @@ import { Loading } from "./Loading";
 import { axiosError } from "../utils/axiosError";
 import { getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ContributorTable from "./ContributorTable";
 
 export default function DynamicMetadataForm({
   fields,
   values,
+  contributorValue,
   onChange,
 }) {
 
@@ -43,6 +44,9 @@ export default function DynamicMetadataForm({
 
   const [selectedPublication, setSelectedPublication] = useState(null);
   const [publicationCache, setPublicationCache] = useState({});
+  const [showContributorTable, setShowContributorTable] = useState(false);
+  const [editContributor, setEditContributor] = useState (false);
+  const [contributorString, setContributorString] = useState(contributorValue ?? "");
 
   const error = (errorMessage) => {
     setTextAlertInput(errorMessage);
@@ -53,27 +57,30 @@ export default function DynamicMetadataForm({
       ...values,
       [fieldId]: value,
     });
+    // handle special cases here. if species is getting updated, need to set to a state variable so that the tissue namespace can use it
+    // XOR handling as well
   };
 
-
-  const addMultiValue = (fieldId, newValue) => {
-    if (!newValue) return;
-
-    const current = values[fieldId] || [];
-
-    if (!current.includes(newValue)) {
-      updateValue(fieldId, [...current, newValue]);
-    }
-  };
-
-  const removeMultiValue = (fieldId, valueToRemove) => {
-    const current = values[fieldId] || [];
-
-    updateValue(
-      fieldId,
-      current.filter((v) => v !== valueToRemove)
-    );
-  };
+  const handleContributorChange = (contrib) => {
+    var c = "";
+    if (contrib.user && contrib.user.length > 0) {
+      c += contrib.user[0].name;
+      if (contrib.user.length > 1) {
+        c+= " and " + (contrib.user.length - 1);
+        c+= " other(s) are involved";
+      }
+    } 
+    if (contrib.software && contrib.software.length > 0) {
+      if (c.length !== 0) c+= "; ";
+      c += contrib.software[0].name;
+      if (contrib.software.length > 1) {
+        c+= " and " + (contrib.software.length - 1);
+        c+= " tool(s)";
+      }
+    } 
+    setContributorString (c);
+    updateValue("contributor", contrib);
+  }
 
   const getPublication = (pubId, event) => {
       if (publicationCache[pubId]) {
@@ -85,7 +92,11 @@ export default function DynamicMetadataForm({
           getJson ("api/util/getpublication?identifier=" + pubId).then (({ data }) => {
               if (data.data) {
                   setSelectedPublication(data.data);
-                  publicationCache[pubId] = data.data;
+                  setPublicationCache(prev => ({
+                    ...prev,
+                    pubId: data.data
+                    }));
+                  //publicationCache[pubId] = data.data;
                   setShowLoading(false);
               }
           }).catch(function(error) {
@@ -282,19 +293,33 @@ export default function DynamicMetadataForm({
       );
     }
 
-   /* if (field.type === "contributor") {
+    if (field.type === "contributor") {
       return (
-        <>
-          <ContributorTable 
-              setContributor={setContributor} 
-              user={userProfile} 
-              software={softwareProfile} 
-              contributor={contributor}
-              error={validMetadata[index]}
-              validationMessage={validMetadata[index] ? validationMessage[index] : ""}/>
-        </>
+        <Row>
+        <Col xs={2} sm={3}> {label} </Col>
+        <Col xs={8} sm={7}>
+        <TextField 
+            size="small"
+            fullWidth
+            inputProps={{ readOnly: true }}
+            value={contributorString} variant="outlined"/>
+        </Col>
+        <Col xs={2} sm={1}>
+        <Box>
+          <Tooltip title="View contributor information">
+            <IconButton color="primary" onClick={(event) => {setEditContributor(false); setShowContributorTable(true)}}>
+              <VisibilityOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Change contributor information">
+            <IconButton color="primary" onClick={(event) => {setEditContributor(true); setShowContributorTable(true)}}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        </Col></Row>
       );
-    }*/
+    }
 
     //
     // SINGLE TEXT
@@ -350,6 +375,15 @@ export default function DynamicMetadataForm({
         </Grid>
       ))}
     </Grid>
+    {showContributorTable && 
+          <ContributorTable 
+              open={showContributorTable}
+              onClose={() => setShowContributorTable(false)}
+              setContributor={handleContributorChange} 
+              contributor={values["contributor"]}
+              edit={editContributor}
+          />
+    }
     </>
   );
 }

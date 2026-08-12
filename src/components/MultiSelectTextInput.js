@@ -1,9 +1,6 @@
-import React, { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import PropTypes from "prop-types";
-import { Col, Row } from "react-bootstrap";
-import { Typography } from "@mui/material";
 
 /**
  * Multiselect text input component.

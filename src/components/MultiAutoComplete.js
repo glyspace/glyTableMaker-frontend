@@ -92,9 +92,9 @@ export default function MultiAutoComplete (props) {
                     aria-describedby="multivaluee-modal-description"
                     scroll="paper"
                     
-                    sx={{ //You can copy the code below in your theme
+                    sx={{ 
                         '& .MuiBackdrop-root': {
-                          backgroundColor: 'transparent' // Try to remove this to see the result
+                          backgroundColor: 'transparent' 
                         }
                       }}
                     open={enableMultiValueSelect}
