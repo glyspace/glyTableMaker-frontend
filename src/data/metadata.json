@@ -67,6 +67,7 @@
             {
                 "id": "perturbation",
                 "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
                 "type": "complex",
                 "required": false,
                 "multiple": false,
@@ -191,7 +192,8 @@
             },
             {
                 "id": "geneticBackgroundAlteration",
-                "label": "Genetic background alteration",
+                "label": "Genetic Background Alteration",
+                "title": "How was origin of the biological sample altered?",
                 "description": "Describe each natural or engineered genetic alteration that could affect glycan composition or glycosylation. Add a separate entry for every relevant modification present in the sample.",
                 "type": "complex",
                 "required": true,
@@ -271,6 +273,7 @@
             {
                 "id": "perturbation",
                 "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
                 "type": "complex",
                 "required": false,
                 "multiple": false,
@@ -373,7 +376,8 @@
             },
             {
                 "id": "analyzedProteinMutation",
-                "label": "Analyzed protein mutation",
+                "label": "Analyzed Protein Mutation",
+                "title": "How was the analyzed protein altered?",
                 "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
                 "type": "complex",
                 "required": true,
@@ -433,6 +437,7 @@
             {
                 "id": "perturbation",
                 "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
                 "type": "complex",
                 "required": false,
                 "multiple": false,
@@ -535,7 +540,8 @@
             },
             {
                 "id": "analyzedProteinMutation",
-                "label": "Analyzed protein mutation",
+                "label": "Analyzed Protein Mutation",
+                "title": "How was the analyzed protein altered?",
                 "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
                 "type": "complex",
                 "required": true,
@@ -594,7 +600,8 @@
             },
             {
                 "id": "geneticBackgroundAlteration",
-                "label": "Genetic background alteration",
+                "label": "Genetic Background Alteration",
+                "title": "How was origin of the biological sample altered?",
                 "description": "Describe each natural or engineered genetic alteration that could affect glycan composition or glycosylation. Add a separate entry for every relevant modification present in the sample.",
                 "type": "complex",
                 "required": true,
@@ -674,6 +681,7 @@
             {
                 "id": "perturbation",
                 "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
                 "type": "complex",
                 "required": false,
                 "multiple": false,
@@ -733,7 +741,8 @@
             },
             {
                 "id": "analyzedProteinMutation",
-                "label": "Analyzed protein mutation",
+                "label": "Analyzed Protein Mutation",
+                "title": "How was the analyzed protein altered?",
                 "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
                 "type": "complex",
                 "required": true,
@@ -843,6 +852,7 @@
             {
                 "id": "perturbation",
                 "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
                 "type": "complex",
                 "required": false,
                 "multiple": false,
@@ -902,7 +912,8 @@
             },
             {
                 "id": "analyzedProteinMutation",
-                "label": "Analyzed protein mutation",
+                "label": "Analyzed Protein Mutation",
+                "title": "How was the analyzed protein altered?",
                 "description": "Describe each amino acid change, deletion, insertion, or engineered modification present in the analyzed protein. Add a separate entry for each protein alteration that may affect protein function, glycosylation, or glycan occupancy.",
                 "type": "complex",
                 "required": true,
@@ -968,7 +979,7 @@
                 "fields": [
                     {
                         "id": "species",
-                        "label": "Origin species of protein",
+                        "label": "Species",
                         "description": "Specify the species used as the expression host. Select the organism in which the recombinant protein was produced using an NCBI Taxonomy term.",
                         "example": "Cricetulus griseus",
                         "required": true,
@@ -1011,7 +1022,8 @@
             },
             {
                 "id": "geneticBackgroundAlteration",
-                "label": "Genetic background alteration",
+                "label": "Genetic Background Alteration",
+                "title": "How was origin of the biological sample altered?",
                 "description": "Describe each natural or engineered genetic alteration that could affect glycan composition or glycosylation. Add a separate entry for every relevant modification present in the sample.",
                 "type": "complex",
                 "required": true,
@@ -1091,6 +1103,7 @@
             {
                 "id": "perturbation",
                 "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
                 "type": "complex",
                 "required": false,
                 "multiple": false,

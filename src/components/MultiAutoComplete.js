@@ -83,6 +83,19 @@ export default function MultiAutoComplete (props) {
         setSearchInput(value);
     }
 
+    const getIdFromUri = (uri) => {
+        if (!uri) return "";
+
+        // Species URIs like ...?id=9606
+        const idMatch = uri.match(/id=([^&]+)/);
+        if (idMatch) {
+            return idMatch[1];
+        }
+
+        // Other namespaces: take text after last '/'
+        return uri.substring(uri.lastIndexOf("/") + 1);
+    };
+
     function multiValueDialog () {
         return (
             <Dialog
@@ -121,10 +134,14 @@ export default function MultiAutoComplete (props) {
                         {canonicalForm.map ((val, i) => {
                             return <FormControlLabel 
                                 value={val.label} 
+                                id={val.uri}
                                 control={<Radio />} 
-                                label={val.label}
+                                label={`${getIdFromUri(val.uri)} - ${val.label}`}
                                 onChange={(event) => {
-                                    setSelectedCanonical (event.target.value);
+                                    setSelectedCanonical ({
+                                        name: val.label,
+                                        id: getIdFromUri(val.uri)
+                                        });
                                 }} />
                         })}
                         </RadioGroup>
@@ -133,7 +150,9 @@ export default function MultiAutoComplete (props) {
                     <DialogActions>
                         <Button className="gg-btn-blue-reg"
                             onClick={()=> {
-                                const canonical = selectedCanonical || canonicalForm[0].label;
+                                const canonical = selectedCanonical || {
+                                                        name: canonicalForm[0].label,
+                                                        id: getIdFromUri(canonicalForm[0].uri)};
                                 if (props.multiple) {
                                     const current = [...props.inputValue];
                                     current[current.length - 1] = canonical;
@@ -163,11 +182,11 @@ export default function MultiAutoComplete (props) {
         const matches = response.data?.data;
 
         if (!matches || matches.length === 0) {
-           return value;
+           return { "name": value, id: null};
         }
 
         if (matches.length === 1) {
-            return matches[0].label;
+            return { "name": matches[0].label, "id" : getIdFromUri (matches[0].uri)};
         }
 
         // open dialog if multiple
@@ -214,10 +233,11 @@ return (
                     reason === "selectOption" ? event.target.textContent : event.target.value);
             }*/
         }}
-        isOptionEqualToValue={(option, value) => (option === value)}
+        isOptionEqualToValue={(option, value) => option?.id === value?.id}
         options={options}
         onChange={handleChange}
-        getOptionLabel={(option) => option}
+        getOptionLabel={(option) => typeof option === "string" ? option
+                : option?.name || ""}
         style={{ width: '100%' }}
         classes={{
           option: "auto-option",
@@ -228,7 +248,7 @@ return (
           value.map((option, index) => {
             const { key, ...itemProps } = getItemProps({ index });
             return (
-              <Chip variant="outlined" label={option} key={key} {...itemProps} />
+              <Chip variant="outlined" label={option.name} key={key} {...itemProps} />
             );
           })
         }

@@ -28,6 +28,7 @@ export default function DynamicMetadataForm({
   fields,
   values,
   contributorValue,
+  onContributorChange,
   onChange,
 }) {
 
@@ -46,7 +47,7 @@ export default function DynamicMetadataForm({
   const [publicationCache, setPublicationCache] = useState({});
   const [showContributorTable, setShowContributorTable] = useState(false);
   const [editContributor, setEditContributor] = useState (false);
-  const [contributorString, setContributorString] = useState(contributorValue ?? "");
+  const [contributorString, setContributorString] = useState(contributorValue);
 
   const error = (errorMessage) => {
     setTextAlertInput(errorMessage);
@@ -78,7 +79,7 @@ export default function DynamicMetadataForm({
         c+= " tool(s)";
       }
     } 
-    setContributorString (c);
+    onContributorChange(c);
     updateValue("contributor", contrib);
   }
 
@@ -120,7 +121,7 @@ export default function DynamicMetadataForm({
               <HelpOutlineIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>
-          {field.label}
+          {field.title ? field.title : field.label}
           {field.required && (
             <span style={{ color: "red" }}> *</span>
           )}
@@ -302,7 +303,7 @@ export default function DynamicMetadataForm({
             size="small"
             fullWidth
             inputProps={{ readOnly: true }}
-            value={contributorString} variant="outlined"/>
+            value={contributorValue} variant="outlined"/>
         </Col>
         <Col xs={2} sm={1}>
         <Box>
