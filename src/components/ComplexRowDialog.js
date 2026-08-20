@@ -15,6 +15,8 @@ export default function ComplexRowDialog({
   row,
   parent,
   fields,
+  errors,
+  clearError,
   onClose,
   onChange,
   onSave
@@ -34,6 +36,8 @@ export default function ComplexRowDialog({
         <DynamicMetadataForm
             fields={fields}
             values={row}
+            errors={errors}
+            clearError={clearError}
             onChange={onChange}
         />
       </DialogContent>

@@ -91,7 +91,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "Drug",
+                        "id": "drug",
                         "label": "Drug",
                         "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
                         "example": "Doxorubicin, 1 µM for 24 hours",
@@ -229,7 +229,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "species",
+                        "id": "mutantSpecies",
                         "label": "Species",
                         "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
                         "example": "Home sapiens",
@@ -297,7 +297,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "Drug",
+                        "id": "drug",
                         "label": "Drug",
                         "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
                         "example": "Doxorubicin, 1 µM for 24 hours",
@@ -461,7 +461,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "Drug",
+                        "id": "drug",
                         "label": "Drug",
                         "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
                         "example": "Doxorubicin, 1 µM for 24 hours",
@@ -537,6 +537,26 @@
                 "required": false,
                 "multiple": false,
                 "type": "text"
+            },
+            {
+                "id": "variant",
+                "label": "Variant",
+                "description": "Name of the variant that was studied. In theory the name/ID should be resolvable to the provide the detailed genetic alterations. Realistically this will not be possible across all species.",
+                "required": false,
+                "multiple": false,
+                "secondSection": true,
+                "type": "text"
+            },
+            {
+                "id": "cellline",
+                "label": "Cell line",
+                "description": "Id of (modified) cell line. We are using Cellosaurus as controlled dictionary for this field.",
+                "required": false,
+                "multiple": false,
+                "namespace": "Cellosaurus",
+                "allowOther": true,
+                "secondSection": true,
+                "type": "autocomplete"
             },
             {
                 "id": "analyzedProteinMutation",
@@ -637,7 +657,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "species",
+                        "id": "mutantSpecies",
                         "label": "Species",
                         "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
                         "example": "Home sapiens",
@@ -705,7 +725,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "Drug",
+                        "id": "drug",
                         "label": "Drug",
                         "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
                         "example": "Doxorubicin, 1 µM for 24 hours",
@@ -720,7 +740,7 @@
     "expressed_protein" : {
         "fields": [
             {
-                "id": "species",
+                "id": "speciesOrigin",
                 "label": "Origin species of protein",
                 "description": "Specify the species from which the protein sequence originates, regardless of where it was expressed. This should correspond to the native source organism of the gene or protein being studied.",
                 "example": "Home sapiens",
@@ -731,7 +751,7 @@
                 "type": "autocomplete"
             },
             {
-                "id": "strain",
+                "id": "strainOrigin",
                 "label": "Strain of origin species",
                 "description": "If known, provide the strain, isolate, or genetic background from which the protein sequence was derived. This is particularly useful for microbial proteins and proteins from genetically distinct model organisms.",
                 "example": "K-12 MG1655",
@@ -807,7 +827,7 @@
                 "multiple": false,
                 "fields": [
                     {
-                        "id": "species",
+                        "id": "speciesExpression",
                         "label": "Species",
                         "description": "Specify the species used as the expression host. Select the organism in which the recombinant protein was produced using an NCBI Taxonomy term.",
                         "example": "Cricetulus griseus",
@@ -818,7 +838,7 @@
                         "type": "autocomplete"
                     },
                     {
-                        "id": "strain",
+                        "id": "strainExpression",
                         "label": "Strain",
                         "description": "Provide the strain of the expression host when applicable. This field is particularly relevant for bacterial, yeast, and other microbial expression systems.",
                         "example": "BL21(DE3)",
@@ -827,7 +847,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "variant",
+                        "id": "variantExpression",
                         "label": "Variant",
                         "description": "Specify the variant or genetically modified version of the host organism used for protein expression. Include commonly used engineering designations that may affect protein production or glycosylation.",
                         "example": "Mgat1-deficient",
@@ -836,7 +856,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "cellline",
+                        "id": "celllineExpression",
                         "label": "Cell line",
                         "description": "Select the cell line used to express the protein. Use the corresponding Cellosaurus entry when available; for engineered derivatives, choose the most specific cell line designation possible.",
                         "example": "CHO-K1",
@@ -876,7 +896,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "Drug",
+                        "id": "drug",
                         "label": "Drug",
                         "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
                         "example": "Doxorubicin, 1 µM for 24 hours",
@@ -891,7 +911,7 @@
     "expressed_protein_altered_system" : {
         "fields": [
             {
-                "id": "species",
+                "id": "speciesOrigin",
                 "label": "Origin species of protein",
                 "description": "Specify the species from which the protein sequence originates, regardless of where it was expressed. This should correspond to the native source organism of the gene or protein being studied.",
                 "example": "Home sapiens",
@@ -902,7 +922,7 @@
                 "type": "autocomplete"
             },
             {
-                "id": "strain",
+                "id": "strainOrigin",
                 "label": "Strain of origin species",
                 "description": "If known, provide the strain, isolate, or genetic background from which the protein sequence was derived. This is particularly useful for microbial proteins and proteins from genetically distinct model organisms.",
                 "example": "K-12 MG1655",
@@ -978,7 +998,7 @@
                 "multiple": false,
                 "fields": [
                     {
-                        "id": "species",
+                        "id": "speciesExpression",
                         "label": "Species",
                         "description": "Specify the species used as the expression host. Select the organism in which the recombinant protein was produced using an NCBI Taxonomy term.",
                         "example": "Cricetulus griseus",
@@ -989,7 +1009,7 @@
                         "type": "autocomplete"
                     },
                     {
-                        "id": "strain",
+                        "id": "strainExpression",
                         "label": "Strain",
                         "description": "Provide the strain of the expression host when applicable. This field is particularly relevant for bacterial, yeast, and other microbial expression systems.",
                         "example": "BL21(DE3)",
@@ -998,7 +1018,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "variant",
+                        "id": "variantExpression",
                         "label": "Variant",
                         "description": "Specify the variant or genetically modified version of the host organism used for protein expression. Include commonly used engineering designations that may affect protein production or glycosylation.",
                         "example": "Mgat1-deficient",
@@ -1007,7 +1027,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "cellline",
+                        "id": "celllineExpression",
                         "label": "Cell line",
                         "description": "Select the cell line used to express the protein. Use the corresponding Cellosaurus entry when available; for engineered derivatives, choose the most specific cell line designation possible.",
                         "example": "CHO-K1",
@@ -1059,7 +1079,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "species",
+                        "id": "mutantSpecies",
                         "label": "Species",
                         "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
                         "example": "Home sapiens",
@@ -1127,7 +1147,7 @@
                         "type": "text"
                     },
                     {
-                        "id": "Drug",
+                        "id": "drug",
                         "label": "Drug",
                         "description": "Record any drug treatment administered to the organism, tissue, or cells before sample collection. Include the drug name and, if available, concentration or dosage.",
                         "example": "Doxorubicin, 1 µM for 24 hours",

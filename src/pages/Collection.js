@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { getAuthorizationHeader, getBlob, getCartoonSetting, getJson, loadCartoons, postJson } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getCartoonSetting, getContributorString, getJson, loadCartoons, postJson } from "../utils/api";
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
-import { Box, Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Popover, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { Box, Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Popover, Step, StepLabel, Stepper, Tooltip, Typography } from "@mui/material";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row, Modal} from "react-bootstrap";
 import TextAlert from "../components/TextAlert";
@@ -18,7 +18,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SampleTypeSelector from "../components/SampleTypeSelector";
 import DynamicMetadataForm from "../components/DynamicMetadataForm";
 import metadata from '../data/metadata.json';
-import { VpnLock } from "@mui/icons-material";
+import ComplexFieldTable from "../components/ComplexFieldTable";
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import ContributorTable from "../components/ContributorTable";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -59,7 +61,7 @@ const Collection = (props) => {
         description: "",
         glycans: [],
         glycoproteins: [],
-        metadata: [],
+        metadataValues: {},
         type: collectionType,
     };
 
@@ -128,6 +130,14 @@ const Collection = (props) => {
     const [metadataValues, setMetadataValues] = React.useState({});
     const steps2 = ["Sample Type", "Sample Specific Metadata", "Sample Specific Metadata - Modifications", "General Information"];
     const [metadataDialogTitle, setMetadataDialogTitle] = useState("GlyTableMaker Metadata");
+    const [selectedMetadataField, setSelectedMetadataField] = useState(null);
+    const [selectedMetadataDetail, setSelectedMetadataDetail] = useState(null);
+    const [metadataDetailOpen, setMetadataDetailOpen] = useState(false);
+    const [validationErrors, setValidationErrors] = useState();
+    const [showContributorTable, setShowContributorTable] = useState(false);
+    const [editContributor, setEditContributor] = useState (false);
+
+    const fieldMap = buildFieldMap();
 
     useEffect(() => {
         props.authCheckAgent();
@@ -163,6 +173,43 @@ const Collection = (props) => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [isDirty]);
+
+    function buildFieldMap() {
+
+        const map = {};
+
+        Object.keys(metadata).forEach(section => {
+            if (metadata[section]?.fields) {
+                metadata[section].fields.forEach(field => {
+                    map[field.id] = field;
+                });
+            }
+
+            if (Array.isArray(metadata[section])) {
+                metadata[section].forEach(field => {
+                    map[field.id] = field;
+                });
+            }
+        });
+
+        return map;
+    }
+
+    function metadataToTableRows(metadataValues) {
+        return Object.entries(userSelection.metadataValues || {}).map(
+            ([key, value], index) => ({
+                metadataId: index,
+                key,
+                name: fieldMap[key]?.label ?? key,
+                field: fieldMap[key],
+                value
+            })
+        );
+    }
+
+    const metadataRows = useMemo(() => {
+        return metadataToTableRows(userSelection.metadataValues || {});
+    }, [userSelection.metadataValues]);
 
    //const blocker = useBlocker(isDirty);
    // usePrompt("Are you sure you want to leave? You have changes that were not submitted yet!", isDirty) 
@@ -233,36 +280,11 @@ const Collection = (props) => {
                     }));
                 var c = getContributorString(contrib);
                 setContributor(c);
-               // set default contributor string
-               // fill in the defaults
-              /* let c = user.role + ":" + user.name + " (" + user.email + (user.organization && user.organization.length !== 0? ", " + user.organization : "") + ")";
-               c += "|" + tableMakerSoftware.role + ":" + tableMakerSoftware.name + " (" + tableMakerSoftware.url + ")";
-               setContributor(c);*/
             }
             
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
           });
-    }
-
-    function getContributorString (contrib) {
-        var c = "";
-        if (contrib.user && contrib.user.length > 0) {
-            c += contrib.user[0].name;
-            if (contrib.user.length > 1) {
-                c+= " and " + (contrib.user.length - 1);
-                c+= " other(s) are involved";
-            }
-        } 
-        if (contrib.software && contrib.software.length > 0) {
-            if (c.length !== 0) c+= "; ";
-            c += contrib.software[0].name;
-            if (contrib.software.length > 1) {
-                c+= " and " + (contrib.software.length - 1);
-                c+= " tool(s)";
-            }
-        }
-        return c;
     }
 
     function getStatusList() {
@@ -286,6 +308,8 @@ const Collection = (props) => {
         getJson ("api/data/getcollection/" + collectionId, getAuthorizationHeader())
             .then ((json) => {
                 setUserSelection (json.data.data);
+                setMetadataValues (json.data.data.metadataValues ?? {});
+                setSampleType (json.data.data.sampleType?.toLowerCase());
                 if (json.data.data.glycans) {
                     setSelectedGlycans (json.data.data.glycans);
                     setCollectionType ("GLYCAN");
@@ -375,14 +399,6 @@ const Collection = (props) => {
             return;
         }
 
-        /*const metadata = [];
-        userSelection.metadata.map ((m) => {
-            if (m.new || isCopy) {
-                m.metadataId = null;
-            }
-            metadata.push(m);
-        });*/
-
         const collection = { 
             collectionId: collectionId && !isCopy ? collectionId : null,
             name: userSelection.name,
@@ -390,8 +406,8 @@ const Collection = (props) => {
             glycans: userSelection.glycans,
             glycoproteins: userSelection.glycoproteins,
             type: collectionType,
-            metadata: userSelection.metadata,
-            sampleType: sampleType
+            metadataValues: userSelection.metadataValues,
+            metadataType: sampleType
         }
         
         setShowLoading(true);
@@ -500,7 +516,45 @@ const Collection = (props) => {
         [],
     );
 
-    
+    function getComplexFieldSummary (field, value) {
+        var displayValue = "";
+        if (field.id === "perturbation") {
+            if (value?.length > 0) {
+                const perturbation = value[0];
+
+                const drugCount = perturbation.drug?.length || 0;
+                const chemicalCount = perturbation.chemical?.length || 0;
+                const radiationCount = perturbation.radiation?.length || 0;
+
+                displayValue =
+                    `${drugCount} drug(s), ` +
+                    `${chemicalCount} chemical(s), ` +
+                    `${radiationCount} radiation(s)`;
+            }
+        } else if (field.id === "geneticBackgroundAlteration") {
+            displayValue = value
+                .map(v =>
+                    `${v.gene}${
+                        v.mutantPosition ? ` (${v.mutantPosition})` : ""
+                    }`
+                )
+                .join(", ");
+        } else if (field.id === "analyzedProteinMutation") {
+            displayValue = value
+                .map(v =>
+                    `${v.molecularPhenotype}${
+                        v.mutantPosition ? ` (${v.mutantPosition})` : ""
+                    }`
+                )
+                .join(", ");
+        } else if (field.id === "expressionSystem") {
+            displayValue = value.species.name;
+        } else {
+            return JSON.stringify (value);
+        }
+
+        return displayValue;
+    }
 
     const metadatacolumns = useMemo(
     () => [
@@ -515,8 +569,8 @@ const Collection = (props) => {
             size: 500,
             Cell: ({ renderedCellValue, row }) => {
 
-                const { fieldType, value } = row.original;
-                if (fieldType === "publication") {
+                const { field, value } = row.original;
+                if (field && field.type === "publication") {
                     return <>
                      <span>{renderedCellValue}</span>
                      <IconButton
@@ -529,30 +583,65 @@ const Collection = (props) => {
                     </IconButton>
                     </>
                 }
-                else if (fieldType === "contributor") {
-                    return getContributorString(value);
-                }
-                else if (fieldType === "complex") {
+                else if (field && field.type === "contributor") {
                     return (
-                        <Button
-                        size="sm"
-                        onClick={() => {
-                            /*setSelectedMetadataName(row.original.name);
-                            setSelectedMetadataDetail(value);
-                            setMetadataDetailOpen(true);*/
-                        }}
-                        >
-                        View Details
-                        </Button>
+                        <>
+                        {<span>{getContributorString(value)}</span>}
+                        <Tooltip title="View contributor information">
+                            <IconButton color="primary" onClick={(event) => {
+                                setEditContributor(false); 
+                                setShowContributorTable(true)}}>
+                            <VisibilityOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                        </>
+                    );
+                }
+                else if (field && field.type === "complex") {
+                    return (
+                        <>
+                        {<span>{getComplexFieldSummary (field, value)}</span>}
+                        <Tooltip title="View details">
+                            <IconButton color="primary" onClick={(event) => {
+                                setSelectedMetadataField(field);
+                                setSelectedMetadataDetail(value);
+                                setMetadataDetailOpen(true);
+                                }}>
+                            <VisibilityOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                        </>
                     );
                 }
 
                 if (Array.isArray(value)) {
-                    return value.join(", ");
+                    if (field && field.type === "autocomplete") {
+                        return value.map((item, index) => {
+                            if (item.uri) {
+                                return (
+                                    <>
+                                    {item.name}{" "}
+                                    (
+                                    <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.id}</a>
+                                    )</>
+                                )
+                            }
+                            return item.name + " (" + item.id + ")";
+                        });
+                    } else return value.join(", ");
                 }
 
-                if (typeof value === "object" && value?.label) {
-                    return value.label;
+                if (typeof value === "object" && value?.name) {
+                    if (value.uri) {
+                        return (
+                            <>
+                            {value.name}{" "}
+                            (
+                            <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}</a>
+                            )</>
+                        )
+                    }
+                    return value.name + " (" + value.id + ")";
                 }
 
                 return String(value ?? "");
@@ -562,74 +651,8 @@ const Collection = (props) => {
     []
     );
 
-    function buildFieldMap() {
-
-        const map = {};
-
-        Object.keys(metadata).forEach(section => {
-            if (metadata[section]?.fields) {
-                metadata[section].fields.forEach(field => {
-                    map[field.id] = field;
-                });
-            }
-
-            if (Array.isArray(metadata[section])) {
-                metadata[section].forEach(field => {
-                    map[field.id] = field;
-                });
-            }
-        });
-
-        return map;
-    }
-
-    const fieldMap = buildFieldMap();
-
-    function metadataToTableRows(metadataValues) {
-        return Object.entries(userSelection.metadata || {}).map(
-            ([key, value], index) => ({
-                metadataId: index,
-                key,
-                name: fieldMap[key]?.label ?? key,
-                fieldType: fieldMap[key]?.type,
-                value
-            })
-        );
-        
-        /*
-        Object.entries(metadataValues).map(([key, value], index) => {
-            let displayValue = value;
-            if (Array.isArray(value)) {
-                displayValue = value.map(v =>
-                    typeof v === "object"
-                        ? (v.name && v.id ? v.name + ": " + v.id 
-                            : getComplexValueString(key, v))
-                        : v
-                ).join(", ");
-            }
-            else if (typeof value === "object" && value !== null) {
-                if (value.name) {
-                    displayValue = value.name;
-                    if (value.id) displayValue += ": " + value.id; 
-                } else {
-                    displayValue = getComplexValueString(key, value);
-                }
-            }
-
-            return {
-                metadataId: index,
-                name: fieldMap[key]?.label ?? key,
-                value: value
-            };
-        });*/
-    }
-
-    const metadataRows = useMemo(() => {
-        return metadataToTableRows(userSelection.metadata || {});
-    }, [userSelection.metadata]);
 
     
-
     const saveColumnVisibilityChanges = (columnVisibility) => {
         if (!collectionType || collectionType === "GLYCAN")
             saveColumnVisibility (columnVisibility, "GLYCANINCOLLECTION");
@@ -711,7 +734,6 @@ const Collection = (props) => {
         );
     };
 
-
     function getFieldsForSection (section, fields) {
         var filteredFields = [];
         fields.map ((field, index) => {
@@ -737,23 +759,29 @@ const Collection = (props) => {
                 <DynamicMetadataForm
                     fields={getFieldsForSection(1, metadata[sampleType].fields)}
                     values={metadataValues}
+                    errors={validationErrors}
                     onChange={setMetadataValues}
+                    clearError={clearValidationError}
                 />)
             case 2:
                 return (
                 <DynamicMetadataForm
                     fields={getFieldsForSection(2, metadata[sampleType].fields)}
                     values={metadataValues}
+                    errors={validationErrors}
                     onChange={setMetadataValues}
+                    clearError={clearValidationError}
                 />)
             case 3:
                 return (
                 <DynamicMetadataForm
                     fields={metadata["general"]}
                     values={metadataValues}
+                    errors={validationErrors}
                     contributorValue={contributor}
                     onContributorChange={setContributor}
                     onChange={setMetadataValues}
+                    clearError={clearValidationError}
                 />)
 
         }
@@ -776,6 +804,17 @@ const Collection = (props) => {
     }
 
     const handleBack2 = () => {
+        if (activeStep2 === 3) {
+            // validate before going back
+            const errors = validateMetadata(
+                metadata["general"],
+                metadataValues
+            );
+            if (Object.keys(errors).length > 0) {
+                setValidationErrors(errors);
+                return;
+            }
+        }
         if (sampleType === "synthetic" && activeStep2 === 3) {
             setActiveStep2(0);
         } else if (sampleType === "biological_sample" && activeStep2 === 3) {
@@ -786,6 +825,18 @@ const Collection = (props) => {
     };
 
     const handleNext2 = () => {
+        if (activeStep2 !== 0) {
+            const errors = validateMetadata(
+                getFieldsForSection((activeStep2), metadata[sampleType].fields),
+                metadataValues
+            );
+
+            if (Object.keys(errors).length > 0) {
+                setValidationErrors(errors);
+                return;
+            }
+        }
+
         if (sampleType === "synthetic" && activeStep2 === 0) {
             setActiveStep2(3);
         } else if (sampleType === "biological_sample" && activeStep2 === 1) {
@@ -807,7 +858,7 @@ const Collection = (props) => {
                 ))}
               </Stepper>
               <div className="mt-4 mb-4">
-                {getStepContent2(activeStep2, validate)}
+                {getStepContent2(activeStep2)}
               </div>
             </>
         )
@@ -973,11 +1024,60 @@ const Collection = (props) => {
     }
 
     async function handleAddNewMetadata () {
+        setValidationErrors({});
+
+        const errors = validateMetadata(
+            metadata[sampleType].fields,
+            metadataValues
+        );
+
+        const generalErrors = validateMetadata(
+            metadata["general"],
+            metadataValues
+        );
+
+        const allErrors = {...errors,...generalErrors};
+
+        if (Object.keys(allErrors).length > 0) {
+            setValidationErrors(allErrors);
+            return;
+        }
+
         setTextAlertInputMetadata ({"show": false, "id": ""});
-        setUserSelection ({"metadata": metadataValues});
+        setUserSelection ({"metadataValues": metadataValues});
         setEnableGlyTableMakerMetadata(false);
         setIsDirty(true);
     }
+
+    function validateMetadata(fields, values) {
+        const errors = {};
+
+        fields.forEach(field => {
+            const value = values[field.id];
+
+            if (field.required) {
+                const empty =
+                    value === undefined ||
+                    value === null ||
+                    value === "" ||
+                    (Array.isArray(value) && value.length === 0);
+
+                if (empty) {
+                    errors[field.id] = `${field.label} is required`;
+                }
+            }
+        });
+
+        return errors;
+    }
+
+    const clearValidationError = (fieldId) => {
+        setValidationErrors(prev => {
+            const updated = { ...prev };
+            delete updated[fieldId];
+            return updated;
+        });
+    };
 
     const handleChangeDownloadForm = e => {
         const name = e.target.name;
@@ -1211,6 +1311,33 @@ const Collection = (props) => {
                 title={"Download Glycans"}
                 body={downloadForm()}
             />
+
+            <Dialog
+                open={metadataDetailOpen}
+                onClose={() => setMetadataDetailOpen(false)}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogTitle>
+                    {selectedMetadataField?.label}
+                </DialogTitle>
+
+                <DialogContent>
+                    <ComplexFieldTable
+                        field={selectedMetadataField}
+                        value={selectedMetadataDetail}
+                        readOnly={true}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            {showContributorTable && 
+                <ContributorTable 
+                    open={showContributorTable}
+                    onClose={() => setShowContributorTable(false)}
+                    contributor={metadataValues["contributor"]}
+                />
+            }
 
             {selectedPublication && 
             <Popover

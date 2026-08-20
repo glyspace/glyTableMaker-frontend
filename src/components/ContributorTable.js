@@ -365,7 +365,7 @@ const ContributorTable = (props) => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Delete">
-          <IconButton color="error" onClick={() => deleteRow(row)}>
+          <IconButton color="error" disabled={!props.edit} onClick={() => deleteRow(row)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -437,7 +437,7 @@ const ContributorTable = (props) => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Delete">
-          <IconButton disabled={row.id === 1} color="error" onClick={() => deleteSoftwareRow(row)}>
+          <IconButton disabled={row.id === 1 || !props.edit} color="error" onClick={() => deleteSoftwareRow(row)}>
             <DeleteIcon/>
           </IconButton>
         </Tooltip>
@@ -539,25 +539,6 @@ const getContributorForm = () => {
 
 const handleContributorChange = (values, softwareValues) => {
   var contrib= {"user" : values, "software": softwareValues};
-  
-/*  values && values.map ((value) => {
-    if (contrib.length != 0) { // not the first one
-      contrib += "|";
-    }
-    contrib += value.role + ":" + value.name.trim();
-    contrib += value.email || value.organization ? " (" : "";
-    contrib += value.email ? value.email: "";
-    contrib += value.organization ? (value.email ? ", " + value.organization : value.organization) : "";
-    contrib += value.email || value.organization ? ")" : "";
-  });
-  softwareValues && softwareValues.map ((value) => {
-    if (contrib.length != 0) { // not the first one
-      contrib += "|";
-    }
-    contrib += value.role + ":" + value.name;
-    contrib += value.url ? " (" + value.url + ")" : "";
-  });*/
-
   props.setContributor && props.setContributor(contrib);
   props.onClose && props.onClose();
 }
@@ -588,8 +569,11 @@ return (
         <TextAlert alertInput={textAlertInput}/>
         <DialogContent dividers>{getContributorForm()}</DialogContent>
         <DialogActions>
+          {props.edit && 
+            <>
             <Button className="gg-btn-outline-reg" onClick={handleClose}>Cancel</Button>
             <Button className="gg-btn-blue-reg" disabled={!props.edit} onClick={handleSaveData}>SAVE</Button>
+            </>}
         </DialogActions>
     </Dialog>
   </React.Fragment>

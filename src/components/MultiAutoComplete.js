@@ -140,7 +140,8 @@ export default function MultiAutoComplete (props) {
                                 onChange={(event) => {
                                     setSelectedCanonical ({
                                         name: val.label,
-                                        id: getIdFromUri(val.uri)
+                                        id: getIdFromUri(val.uri),
+                                        uri: val.uri
                                         });
                                 }} />
                         })}
@@ -152,7 +153,8 @@ export default function MultiAutoComplete (props) {
                             onClick={()=> {
                                 const canonical = selectedCanonical || {
                                                         name: canonicalForm[0].label,
-                                                        id: getIdFromUri(canonicalForm[0].uri)};
+                                                        id: getIdFromUri(canonicalForm[0].uri),
+                                                        uri: canonicalForm[0].uri};
                                 if (props.multiple) {
                                     const current = [...props.inputValue];
                                     current[current.length - 1] = canonical;
@@ -182,11 +184,11 @@ export default function MultiAutoComplete (props) {
         const matches = response.data?.data;
 
         if (!matches || matches.length === 0) {
-           return { "name": value, id: null};
+           return { "name": value, id: null, uri: null};
         }
 
         if (matches.length === 1) {
-            return { "name": matches[0].label, "id" : getIdFromUri (matches[0].uri)};
+            return { "name": matches[0].label, "id" : getIdFromUri (matches[0].uri), "uri" : matches[0].uri };
         }
 
         // open dialog if multiple
@@ -255,7 +257,9 @@ return (
         renderInput={(params) => (
             <TextField {...params} 
                 variant='outlined'
-                placeholder={props.placeholder} />
+                placeholder={props.placeholder} 
+                error={!!props.errorText}
+                helperText={props.errorText}/>
         )}
     />
     </>);

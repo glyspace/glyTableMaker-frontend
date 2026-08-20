@@ -8,6 +8,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -18,10 +19,13 @@ import ComplexRowDialog from "./ComplexRowDialog";
 export default function ComplexFieldTable({
   field,
   value = [],
-  onChange
+  errors,
+  onChange, 
+  readOnly=false
 }) {
   const [open, setOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [rowErrors, setRowErrors] = useState({});
 
   const createEmptyRow = () => {
     const row = {};
@@ -38,12 +42,14 @@ export default function ComplexFieldTable({
   );
 
   const handleAdd = () => {
+    setRowErrors({});
     setEditIndex(null);
     setCurrentRow(createEmptyRow());
     setOpen(true);
   };
 
   const handleEdit = (index) => {
+    setRowErrors({});
     setEditIndex(index);
     setCurrentRow(
       JSON.parse(JSON.stringify(value[index]))
@@ -57,7 +63,42 @@ export default function ComplexFieldTable({
     onChange(rows);
   };
 
+  const validateRow = () => {
+    const errors = {};
+
+    field.fields.forEach(subField => {
+        const value = currentRow[subField.id];
+
+        const empty =
+            value == null ||
+            value === "" ||
+            (Array.isArray(value) && value.length === 0);
+
+        if (subField.required && empty) {
+            errors[subField.id] =
+                `${subField.label} is required`;
+        }
+    });
+
+    return errors;
+  };
+
+  const clearRowError = (fieldId) => {
+    setRowErrors(prev => {
+        const updated = { ...prev };
+        delete updated[fieldId];
+        return updated;
+    });
+  };
+
   const handleSave = () => {
+    const errors = validateRow();
+    if (Object.keys(errors).length > 0) {
+      setRowErrors(errors);
+      return;
+    }
+    
+    setRowErrors({});
     const rows = [...value];
 
     if (editIndex === null) {
@@ -70,8 +111,41 @@ export default function ComplexFieldTable({
     setOpen(false);
   };
 
+  const renderValue = (value) => {
+    if (value == null) return "";
+
+    if (Array.isArray(value)) {
+      return value.map((item, index) => (
+        <div key={index}>{renderValue(item)}</div>
+      ));
+    }
+
+    if (typeof value === "object") {
+      if (value.name && value.id) {
+        if (value.uri) {
+          return (
+            <>
+              {value.name}{" "}
+              (
+              <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}</a>
+              )</>
+          )
+        }
+        return value.name + " (" + value.id + ")";
+      } 
+      return value.label || value.name || JSON.stringify(value);
+    }
+
+    return value;
+  };
+
   return (
     <>
+      {errors && (
+        <Typography color="error" sx={{ mt: 1 }}>
+            {errors}
+        </Typography>
+      )}
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -80,9 +154,9 @@ export default function ComplexFieldTable({
                 {subField.label}
               </TableCell>
             ))}
-            <TableCell width={120}>
-              Actions
-            </TableCell>
+            {!readOnly && (
+              <TableCell>Actions</TableCell>
+            )}
           </TableRow>
         </TableHead>
 
@@ -91,16 +165,11 @@ export default function ComplexFieldTable({
             <TableRow key={index}>
               {field.fields.map((subField) => (
                 <TableCell key={subField.id}>
-                    {Array.isArray(row[subField.id]) ? (
-                        row[subField.id].map((item, index) => (
-                            <div key={index}>{item}</div>
-                        ))
-                        ) : (
-                        row[subField.id]
-                        )}
+                    {renderValue(row[subField.id])}
                 </TableCell>
               ))}
 
+              {!readOnly && (
               <TableCell>
                 <IconButton
                   onClick={() =>
@@ -118,13 +187,14 @@ export default function ComplexFieldTable({
                 >
                   <DeleteIcon />
                 </IconButton>
-              </TableCell>
+              </TableCell>)}
             </TableRow>
           ))}
         </TableBody>
       </Table>
 
-      {(field.multiple || value.length === 0) && (
+      {!readOnly && 
+      (field.multiple || value.length === 0) && (
       <Button
         startIcon={<AddIcon />}
         variant="outlined"
@@ -140,6 +210,8 @@ export default function ComplexFieldTable({
         row={currentRow}
         parent={field}
         fields={field.fields}
+        errors={rowErrors}
+        clearError={clearRowError}
         onClose={() => setOpen(false)}
         onChange={setCurrentRow}
         onSave={handleSave}

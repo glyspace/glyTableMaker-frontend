@@ -20,18 +20,19 @@ import TextAlert from "./TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { Loading } from "./Loading";
 import { axiosError } from "../utils/axiosError";
-import { getJson } from "../utils/api";
+import { getContributorString, getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ContributorTable from "./ContributorTable";
 
 export default function DynamicMetadataForm({
   fields,
   values,
+  errors,
   contributorValue,
   onContributorChange,
   onChange,
+  clearError
 }) {
-
   const [showLoading, setShowLoading] = useState(false);
   const [alertDialogInput, setAlertDialogInput] = useReducer(
           (state, newState) => ({ ...state, ...newState }),
@@ -47,38 +48,26 @@ export default function DynamicMetadataForm({
   const [publicationCache, setPublicationCache] = useState({});
   const [showContributorTable, setShowContributorTable] = useState(false);
   const [editContributor, setEditContributor] = useState (false);
-  const [contributorString, setContributorString] = useState(contributorValue);
 
-  const error = (errorMessage) => {
-    setTextAlertInput(errorMessage);
-  }
+  const [selectedSpecies, setSelectedSpecies] = useState(null);
+
+  const plant = []; //TODO decide what constitutes plant species
   
   const updateValue = (fieldId, value) => {
     onChange({
       ...values,
       [fieldId]: value,
     });
-    // handle special cases here. if species is getting updated, need to set to a state variable so that the tissue namespace can use it
-    // XOR handling as well
+
+    if (clearError) clearError(fieldId);
+
+    if (fieldId === "species") {
+      setSelectedSpecies(value);
+    } 
   };
 
   const handleContributorChange = (contrib) => {
-    var c = "";
-    if (contrib.user && contrib.user.length > 0) {
-      c += contrib.user[0].name;
-      if (contrib.user.length > 1) {
-        c+= " and " + (contrib.user.length - 1);
-        c+= " other(s) are involved";
-      }
-    } 
-    if (contrib.software && contrib.software.length > 0) {
-      if (c.length !== 0) c+= "; ";
-      c += contrib.software[0].name;
-      if (contrib.software.length > 1) {
-        c+= " and " + (contrib.software.length - 1);
-        c+= " tool(s)";
-      }
-    } 
+    var c = getContributorString(contrib);
     onContributorChange(c);
     updateValue("contributor", contrib);
   }
@@ -141,12 +130,11 @@ export default function DynamicMetadataForm({
             required={field.required}
             multiple={field.multiple}
             allowOther={field.allowOther}
-            namespace={field.namespace}
+            namespace={field.id === "tissue" && selectedSpecies !== null && selectedSpecies.id && plant.includes (selectedSpecies.id) ? field.alternativeNamespce : field.namespace}
             placeholder="Start typing"
             disabled={false}
             setInputValue={updateValue}
-            error={error}
-            errorText="not valid"
+            errorText={errors?.[field.id]}
           />
           </Col>
           </Row>
@@ -170,6 +158,7 @@ export default function DynamicMetadataForm({
             placeholder="Select"
             setInputValue={updateValue}
             options={field.options}
+            errorText={errors?.[field.id]}
           />
           </Col></Row>
         </FormControl>
@@ -182,6 +171,7 @@ export default function DynamicMetadataForm({
       <ComplexFieldTable
         field={field}
         value={values[field.id] || []}
+        errors={errors?.[field.id]}
         onChange={(rows) =>
           updateValue(field.id, rows)
         }
@@ -197,6 +187,7 @@ export default function DynamicMetadataForm({
         <Col xs={10} sm={9}>
             <MultiTextInput 
               field={field}
+              errorText={errors?.[field.id]}
               inputValue={values[field.id] || []}
               setInputValue={updateValue}
             />
@@ -234,6 +225,8 @@ export default function DynamicMetadataForm({
           size="small"
           fullWidth
           value={values[field.id] || ""}
+          error={!!errors?.[field.id]}
+          helperText={errors?.[field.id]}
           onChange={(e) => {
             if (e.target.value === "") setSelectedPublication(null);
             updateValue(field.id, e.target.value);
@@ -303,6 +296,8 @@ export default function DynamicMetadataForm({
             size="small"
             fullWidth
             inputProps={{ readOnly: true }}
+            error={!!errors?.[field.id]}
+            helperText={errors?.[field.id]}
             value={contributorValue} variant="outlined"/>
         </Col>
         <Col xs={2} sm={1}>
@@ -334,6 +329,8 @@ export default function DynamicMetadataForm({
           size="small"
           fullWidth
           value={values[field.id] || ""}
+          error={!!errors?.[field.id]}
+          helperText={errors?.[field.id]}
           onChange={(e) =>
             updateValue(field.id, e.target.value)
           }

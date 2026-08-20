@@ -42,6 +42,8 @@ export default function MultiTextInput (props) {
                   {...params}
                   variant='outlined'
                   placeholder="Enter values (click Enter to add multiple)"
+                  error={!!props.errorText}
+                  helperText={props.errorText}
                 />
               )}
             />

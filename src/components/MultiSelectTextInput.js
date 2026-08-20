@@ -38,6 +38,8 @@ export default function MultiselectTextInput(props) {
             {...params}
             variant="outlined"
             placeholder={props.placeholder}
+            error={!!props.errorText}
+            helperText={props.errorText}
           />
         )}
       />
@@ -51,5 +53,6 @@ MultiselectTextInput.propTypes = {
   options: PropTypes.array,
   setInputValue: PropTypes.func,
   multiple: PropTypes.bool,
-  fieldId: PropTypes.string
+  fieldId: PropTypes.string,
+  errorText: PropTypes.string
 };
