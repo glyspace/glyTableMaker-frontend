@@ -407,7 +407,7 @@ const Collection = (props) => {
             glycoproteins: userSelection.glycoproteins,
             type: collectionType,
             metadataValues: userSelection.metadataValues,
-            metadataType: sampleType
+            sampleType: sampleType.toUpperCase()
         }
         
         setShowLoading(true);
@@ -423,7 +423,7 @@ const Collection = (props) => {
           }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 setError(true);
-                setTextAlertInputMetadata ({"show": true, "message": error.response.data["message"]});
+                setTextAlertInput ({"show": true, "message": error.response.data["message"]});
             } else {
                 axiosError(error, null, setAlertDialogInput);
             }
