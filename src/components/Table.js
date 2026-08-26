@@ -58,7 +58,18 @@ const Table = (props) => {
       const updated = [];
     
       for (const row of rows) {
-        for (const col of row.columns) { 
+        if (row.glytoucanId) {
+            await getCartoonById(row.glytoucanId).then ((json) => {
+                updated.push({
+                ...row,
+                cartoon: json.data.data, 
+                });
+            }).catch(function(error) {
+                  console.log ("could not get the cartoon " + error);
+                  updated.push({...row });
+            });
+        }
+       /* for (const col of row.columns) { 
           if (col.glycoproteinColumn === "GlyTouCanID" || col.glycanColumn === "GlytoucanID") {
             await getCartoonById(col.value).then ((json) => {
                 updated.push({
@@ -71,7 +82,7 @@ const Table = (props) => {
             });
             break;
           }
-        }
+        }*/
       }
     
       return updated;

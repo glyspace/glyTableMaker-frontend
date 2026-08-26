@@ -21,6 +21,7 @@ import metadata from '../data/metadata.json';
 import ComplexFieldTable from "../components/ComplexFieldTable";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ContributorTable from "../components/ContributorTable";
+import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -516,45 +517,7 @@ const Collection = (props) => {
         [],
     );
 
-    function getComplexFieldSummary (field, value) {
-        var displayValue = "";
-        if (field.id === "perturbation") {
-            if (value?.length > 0) {
-                const perturbation = value[0];
-
-                const drugCount = perturbation.drug?.length || 0;
-                const chemicalCount = perturbation.chemical?.length || 0;
-                const radiationCount = perturbation.radiation?.length || 0;
-
-                displayValue =
-                    `${drugCount} drug(s), ` +
-                    `${chemicalCount} chemical(s), ` +
-                    `${radiationCount} radiation(s)`;
-            }
-        } else if (field.id === "geneticBackgroundAlteration") {
-            displayValue = value
-                .map(v =>
-                    `${v.gene}${
-                        v.mutantPosition ? ` (${v.mutantPosition})` : ""
-                    }`
-                )
-                .join(", ");
-        } else if (field.id === "analyzedProteinMutation") {
-            displayValue = value
-                .map(v =>
-                    `${v.molecularPhenotype}${
-                        v.mutantPosition ? ` (${v.mutantPosition})` : ""
-                    }`
-                )
-                .join(", ");
-        } else if (field.id === "expressionSystem") {
-            displayValue = value.species.name;
-        } else {
-            return JSON.stringify (value);
-        }
-
-        return displayValue;
-    }
+    
 
     const metadatacolumns = useMemo(
     () => [
@@ -567,9 +530,22 @@ const Collection = (props) => {
             accessorKey: 'value',
             header: 'Value',
             size: 500,
-            Cell: ({ renderedCellValue, row }) => {
+            Cell: ({ renderedCellValue, row }) => (
+                <MetadataValueRenderer
+                    field={row.original.field}
+                    value={row.original.value}
+                    publicationCache={publicationCache}
+                    setPublicationCache={setPublicationCache}
+                    setShowLoading={setShowLoading}
+                    setTextAlertInput={setTextAlertInput}
+                    setAlertDialogInput={setAlertDialogInput}
+                    axiosError={axiosError}
+                />
+            )
 
-                const { field, value } = row.original;
+               /* const { field, value } = row.original;
+                
+
                 if (field && field.type === "publication") {
                     return <>
                      <span>{renderedCellValue}</span>
@@ -645,7 +621,7 @@ const Collection = (props) => {
                 }
 
                 return String(value ?? "");
-            }
+            }*/
         }
     ],
     []

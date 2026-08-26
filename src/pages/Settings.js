@@ -273,7 +273,7 @@ const Settings = (props) => {
             }
         },
         "DATASETMETADATA" : {
-            "GLYTOUCANID" : {
+            "glytoucanId" : {
                 "label" : "GlyTouCan ID",
                 "visible" : true,
             },
@@ -375,11 +375,11 @@ const Settings = (props) => {
             }
         },
         "DATASETGLYCOPROTEINMETADATA" : {
-            "UNIPROTID": {
+            "uniProtId": {
                 "label" : 'UniProtKB Accession',
                 "visible" : true,
             },
-            "GLYTOUCANID" : {
+            "glytoucanId" : {
                 "label" : "GlyTouCan ID",
                 "visible" : true,
             },
@@ -387,19 +387,19 @@ const Settings = (props) => {
                 "label" : "Image",
                 "visible" : true,
             }, 
-            "AMINOACID" : {
+            "aminoAcid" : {
                 "label" : "Amino Acid",
                 "visible" : true,
             },
-            "SITE" : {
+            "site" : {
                 "label" : "Site/Position",
                 "visible" : true,
             },
-            "GLYCOSYLATIONTYPE" : {
+            "glycosylationType" : {
                 "label" : "Glycosylation Type",
                 "visible" : true,
             },
-            "GLYCOSYLATIONSUBTYPE" : {
+            "glycosylationSubType" : {
                 "label" : "Glycosylation Subtype",
                 "visible" : true,
             },

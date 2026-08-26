@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getAuthorizationHeader, getBlob, getJson, postJson, postToAndGetBlob } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getContributorString, getJson, postJson, postToAndGetBlob } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
@@ -18,13 +18,16 @@ import { Tooltip } from "@mui/material";
 import TextAlert from "../components/TextAlert";
 import VersionAlert from "../components/VersionAlert";
 import { PublicationTable } from "../components/PublicationTable";
-import { render } from "@testing-library/react";
 import glygenLogo from "../images/GlyGen logo.png";
+import metadata from '../data/metadata.json';
+import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
 
     const navigate = useNavigate();
+
+    const [publicationCache, setPublicationCache] = useState({});
 
     const [dataset, setDataset] = useState();
     const [descOpen, setDescOpen] = useState(false);
@@ -179,47 +182,38 @@ const PublicDataset = (props) => {
         return doi.length > 10 && !pubOpen ? `${doi.substring(0, 10)}...` : pubOpen ? `${doi}` : doi;
     };
 
-    const getCellValue = (row, columnName, id, uri) => {
-      var value = "";
-      row.columns.forEach ((col) => {
-        if (col.glycanColumn) {
-          if (col.glycanColumn === columnName) {
-            value = col.value;
-          }
-        } else if (col.glycoproteinColumn) {
-          if (col.glycoproteinColumn === columnName) {
-            value = col.value;
-          }
-        } else if (col.datatype) {
-          if (col.datatype.name === columnName) {
-            if (id) {
-              value = col.valueId;
-            } else if (uri) {
-              value =  col.valueUri;
-            } else { 
-              value =  col.value;
-            }
-          }
-        }
-      });
+    const getCellValue = (row, columnName) => row?.metadata?.[columnName] ?? null;
 
-      return value;
-    }
+    const getFieldDefinition = (sampleType,fieldId) => {
+      const sampleFields = metadata?.[sampleType]?.fields || [];
+
+      let field = sampleFields.find(
+        f => f.id === fieldId
+      );
+
+      if (field) {
+        return field;
+      }
+
+      return (
+        metadata.general?.find(f => f.id === fieldId) || null
+      );
+    };
 
     const proteinColumns = useMemo (
       () => [
         {
-          accessorFn: (row) => getCellValue (row, 'UniProtID'),
+          accessorKey: 'uniProtId',
           header: 'UniProtKB Accession',
-          id: 'UNIPROTID',
+          id: 'uniProtId',
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://www.uniprot.org/uniprotkb/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}</a>
         },
         {
-          accessorFn: (row) => getCellValue (row, 'GlyTouCanID'),
+          accessorKey: 'glytoucanId',
           header: 'GlyTouCan ID',
-          id: 'GLYTOUCANID',
+          id: 'glytoucanId',
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}</a>
@@ -240,222 +234,214 @@ const PublicDataset = (props) => {
                                 }}/>
         },
         {
-          accessorFn: (row) => getCellValue (row, 'AminoAcid'),
+          accessorKey: 'aminoAcid',
           header: 'Amino Acid',
-          id: 'AMINOACID',
+          id: 'aminoAcid',
           size: 50,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Site'),
+          accessorKey: 'site',
           header: 'Site/Position',
-          id: 'SITE',
+          id: 'site',
           size: 50,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'GlycosylationType'),
+          accessorKey: 'glycosylationType',
           header: 'Glycosylation Type',
-          id: 'GLYCOSYLATIONTYPE',
+          id: 'glycosylationType',
           size: 50,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'GlycosylationSubtype'),
+          accessorKey: 'glycosylationSubType',
           header: 'Glycosylation Subtype',
-          id: 'GLYCOSYLATIONSUBTYPE',
+          id: 'glycosylationSubType',
           size: 50,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Evidence'),
-          id: "2",
-          header: 'Evidence',
-          Cell: ({ cell }) => {
-            if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          size: 100,
+          accessorKey: 'sampleType',
+          header: 'Sample Type',
+          id: 'sampleType',
+          size: 50,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Species'),
+          accessorFn: (row) => getCellValue (row, 'publication'),
+          id: "2",
+          header: 'Publication',
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(), "publication")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+            )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'species'),
           header: 'Species',
           id: "3",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"species")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Species', true),
-          header: 'Species ID',
-          id: "3-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Strain'),
+          accessorFn: (row) => getCellValue (row, 'strain'),
           header: 'Strain',
           id: "4",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"strain")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Tissue'),
+          accessorFn: (row) => getCellValue (row, 'tissue'),
           header: 'Tissue',
           id: "5",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"tissue")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Tissue', true),
-          header: 'Tissue ID',
-          id: "5-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Cell line ID'),
+          accessorFn: (row) => getCellValue (row, 'cellline'),
           header: 'Cell line',
           id: "6",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellline")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
-          header: 'Cell line ID',
-          id: "6-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Disease'),
+          accessorFn: (row) => getCellValue (row, 'disease'),
           header: 'Disease',
           id: "7",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Disease', true),
-          header: 'Disease ID',
-          Cell: ({ cell }) => {
-            if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          id: "7-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
-          header: 'Functional annotation/Keyword',
-          id: "11",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Experimental technique'),
+          accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
           header: 'Experimental technique',
           id: "12",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Cellular Component'),
+          accessorFn: (row) => getCellValue (row, 'cellularComponent'),
           header: 'Cellular Component',
           id: "18",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellularComponent")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
-          header: 'Cellular Component ID',
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          id: "18-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Contributor'),
+          accessorFn: (row) => getCellValue (row, 'contributor'),
           header: 'Contributor',
           id: "16",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"contributor")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Comment'),
+          accessorFn: (row) => getCellValue (row, 'comment'),
           header: 'Comment',
           id: "17",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"comment")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         }
       ],
       [],
@@ -464,9 +450,9 @@ const PublicDataset = (props) => {
     const columns = useMemo (
       () => [
         {
-          accessorFn: (row) => getCellValue (row, 'GlytoucanID'),
+          accessorKey: 'glytoucanId',
           header: 'GlyTouCan ID',
-          id: 'GLYTOUCANID',
+          id: 'glytoucanId',
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}</a>
@@ -487,239 +473,220 @@ const PublicDataset = (props) => {
                 }}/>,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Evidence'),
+          accessorFn: (row) => getCellValue (row, 'publication'),
           id: "2",
-          header: 'Evidence',
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
+          header: 'Publication',
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"publication")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Species'),
+          accessorFn: (row) => getCellValue (row, 'species'),
           header: 'Species',
           id: "3",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"species")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Species', true),
-          header: 'Species ID',
-          id: "3-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Strain'),
+          accessorFn: (row) => getCellValue (row, 'strain'),
           header: 'Strain',
           id: "4",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"strain")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Tissue'),
+          accessorFn: (row) => getCellValue (row, 'tissue'),
           header: 'Tissue',
           id: "5",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"tissue")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Tissue', true),
-          header: 'Tissue ID',
-          id: "5-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Cell line ID'),
+          accessorFn: (row) => getCellValue (row, 'cellline'),
           header: 'Cell line',
           id: "6",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellline")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Cell line ID', true),
-          header: 'Cell line ID',
-          id: "6-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Disease'),
+          accessorFn: (row) => getCellValue (row, 'disease'),
           header: 'Disease',
           id: "7",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Disease', true),
-          header: 'Disease ID',
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          id: "7-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Glycan dictionary term ID'),
-          header: 'Glycan dictionary term ID',
-          id: "8",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'has_abundance'),
-          header: 'has_abundance',
-          id: "9",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'has_expression'),
-          header: 'has_expression',
-          id: "10",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Functional annotation/Keyword'),
-          header: 'Functional annotation/Keyword',
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          id: "11",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Experimental technique'),
-          header: 'Experimental technique',Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
+          accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
+          header: 'Experimental technique',
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
           id: "12",
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Variant (Fly, yeast, mouse)'),
+          accessorFn: (row) => getCellValue (row, 'variant'),
           header: 'Variant (Fly, yeast, mouse)',
           id: "13",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"variant")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype'),
-          header: 'Organismal/cellular Phenotype',
-          id: "14",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Organismal/cellular Phenotype', true),
-          header: 'Organismal/cellular Phenotype ID',
-          id: "14-ID",
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Molecular Phenotype'),
+          accessorFn: (row) => getCellValue (row, 'molecularPhenotype'),
           header: 'Molecular Phenotype',
           id: "15",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"molecularPhenotype")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Cellular Component'),
+          accessorFn: (row) => getCellValue (row, 'cellularComponent'),
           header: 'Cellular Component',
           id: "18",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellularComponent")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
           size: 100,
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Cellular Component', true),
-          header: 'Cellular Component ID',
-          id: "18-ID",
-          Cell: ({ cell }) => {
-             if (cell.getValue() === null) {
-              return <></>
-            } else {
-              const items = cell.getValue().split('|'); // Split the string by '|'
-              return (
-                <>
-                  {items.map((item, index) => (
-                    <div key={index}>{item}</div> // Render each item in a separate div (or other element)
-                  ))}
-                </>
-              );
-            }
-          },
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'Contributor'),
+          accessorFn: (row) => getCellValue (row, 'contributor'),
           header: 'Contributor',
           id: "16",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"contributor")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
         },
         {
-          accessorFn: (row) => getCellValue (row, 'Comment'),
+          accessorFn: (row) => getCellValue (row, 'comment'),
           header: 'Comment',
           id: "17",
           size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"comment")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
         }
       ],
       [],
@@ -791,9 +758,8 @@ const PublicDataset = (props) => {
                       : `api/public/getdatasetdata?type=GLYCOPROTEIN&datasetid=${datasetId}`}
               detailPanel={false}
               enableRowActions={false}
-              enableSorting={false}
-              initialSortColumn="UNIPROTID"
-              rowId="UNIPROTID"
+              initialSortColumn="uniProtId"
+              rowId="uniProtId"
               columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
               saveColumnVisibilityChanges={saveColumnVisibilityChanges}
           />
@@ -806,9 +772,8 @@ const PublicDataset = (props) => {
                       : `api/public/getdatasetdata?type=GLYCAN&datasetid=${datasetId}`}
             detailPanel={false}
             enableRowActions={false}
-            enableSorting={false}
-            initialSortColumn="GLYTOUCANID"
-            rowId="GLYTOUCANID"
+            initialSortColumn="glytoucanId"
+            rowId="glytoucanId"
             columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
             saveColumnVisibilityChanges={saveColumnVisibilityChanges}
         />}
