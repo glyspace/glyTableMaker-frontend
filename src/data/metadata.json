@@ -1,5 +1,5 @@
 {
-    "biological_sample" : {
+    "biological_sample": {
         "fields": [
             {
                 "id": "species",
@@ -10,7 +10,8 @@
                 "multiple": false,
                 "namespace": "NCBI Taxonomy",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 3
             },
             {
                 "id": "tissue",
@@ -22,7 +23,8 @@
                 "namespace": "UBERON",
                 "alternativeNamespace": "Plant",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 5
             },
             {
                 "id": "strain",
@@ -31,7 +33,8 @@
                 "example": "C57BL/6J",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 4
             },
             {
                 "id": "disease",
@@ -42,7 +45,8 @@
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 7
             },
             {
                 "id": "cellularComponent",
@@ -53,7 +57,8 @@
                 "multiple": true,
                 "namespace": "Cellular Component",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 18
             },
             {
                 "id": "developmentalStage",
@@ -62,7 +67,8 @@
                 "example": "Adult",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 19
             },
             {
                 "id": "perturbation",
@@ -79,7 +85,8 @@
                         "example": "5 Gy gamma irradiation",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 30
                     },
                     {
                         "id": "chemical",
@@ -88,7 +95,8 @@
                         "example": "Additional 25 mM glucose added to culture media",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 31
                     },
                     {
                         "id": "drug",
@@ -97,13 +105,15 @@
                         "example": "Doxorubicin, 1 µM for 24 hours",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 32
                     }
-                ]
+                ],
+                "datatype": 22
             }
         ]
     },
-    "biological_sample_background_alteration" : {
+    "biological_sample_background_alteration": {
         "fields": [
             {
                 "id": "species",
@@ -114,7 +124,8 @@
                 "multiple": false,
                 "namespace": "NCBI Taxonomy",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 3
             },
             {
                 "id": "tissue",
@@ -126,7 +137,8 @@
                 "namespace": "UBERON",
                 "alternativeNamespace": "Plant",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 5
             },
             {
                 "id": "strain",
@@ -135,7 +147,8 @@
                 "example": "C57BL/6J",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 4
             },
             {
                 "id": "disease",
@@ -146,7 +159,8 @@
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 7
             },
             {
                 "id": "cellularComponent",
@@ -157,7 +171,8 @@
                 "multiple": true,
                 "namespace": "Cellular Component",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 18
             },
             {
                 "id": "developmentalStage",
@@ -166,7 +181,8 @@
                 "example": "Adult",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 19
             },
             {
                 "id": "variant",
@@ -176,7 +192,8 @@
                 "required": false,
                 "multiple": false,
                 "secondSection": true,
-                "type": "text"
+                "type": "text",
+                "datatype": 13
             },
             {
                 "id": "cellline",
@@ -188,7 +205,8 @@
                 "namespace": "Cellosaurus",
                 "allowOther": true,
                 "secondSection": true,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 6
             },
             {
                 "id": "geneticBackgroundAlteration",
@@ -207,7 +225,8 @@
                         "example": "rt(2/P)",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -217,7 +236,15 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["Knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin", "other"]
+                        "options": [
+                            "Knockout",
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph",
+                            "knockin"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "gene",
@@ -226,7 +253,8 @@
                         "example": "Mgat5",
                         "required": true,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 29
                     },
                     {
                         "id": "mutantSpecies",
@@ -234,10 +262,15 @@
                         "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
                         "example": "Home sapiens",
                         "required": true,
+                        "requiredWhen": {
+                            "field": "molecularPhenotype",
+                            "value": "knockin"
+                        },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
                         "allowOther": false,
-                        "type": "autocomplete"
+                        "type": "autocomplete",
+                        "datatype": 3
                     },
                     {
                         "id": "mutantPosition",
@@ -246,7 +279,8 @@
                         "example": "G66D",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -256,7 +290,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -266,9 +304,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 21
             },
             {
                 "id": "perturbation",
@@ -285,16 +331,18 @@
                         "example": "5 Gy gamma irradiation",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 30
                     },
                     {
                         "id": "chemical",
-                        "label": "Chemical", 
+                        "label": "Chemical",
                         "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
                         "example": "Additional 25 mM glucose added to culture media",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 31
                     },
                     {
                         "id": "drug",
@@ -303,9 +351,11 @@
                         "example": "Doxorubicin, 1 µM for 24 hours",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 32
                     }
-                ]
+                ],
+                "datatype": 22
             }
         ]
     },
@@ -320,7 +370,8 @@
                 "multiple": false,
                 "namespace": "NCBI Taxonomy",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 3
             },
             {
                 "id": "tissue",
@@ -332,7 +383,8 @@
                 "namespace": "UBERON",
                 "alternativeNamespace": "Plant",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 5
             },
             {
                 "id": "strain",
@@ -341,7 +393,8 @@
                 "example": "C57BL/6J",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 4
             },
             {
                 "id": "disease",
@@ -352,7 +405,8 @@
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 7
             },
             {
                 "id": "cellularComponent",
@@ -363,7 +417,8 @@
                 "multiple": true,
                 "namespace": "Cellular Component",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 18
             },
             {
                 "id": "developmentalStage",
@@ -372,7 +427,8 @@
                 "example": "Adult",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 19
             },
             {
                 "id": "analyzedProteinMutation",
@@ -391,7 +447,8 @@
                         "example": "HER2-N571Q",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -401,7 +458,13 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "Other"]
+                        "options": [
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "mutantPosition",
@@ -410,7 +473,8 @@
                         "example": "N66K",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -420,7 +484,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -430,9 +498,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 20
             },
             {
                 "id": "perturbation",
@@ -449,16 +525,18 @@
                         "example": "5 Gy gamma irradiation",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 30
                     },
                     {
                         "id": "chemical",
-                        "label": "Chemical", 
+                        "label": "Chemical",
                         "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
                         "example": "Additional 25 mM glucose added to culture media",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 31
                     },
                     {
                         "id": "drug",
@@ -467,13 +545,15 @@
                         "example": "Doxorubicin, 1 µM for 24 hours",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 32
                     }
-                ]
+                ],
+                "datatype": 22
             }
         ]
     },
-    "protein_mutation_background_alteration" : {
+    "protein_mutation_background_alteration": {
         "fields": [
             {
                 "id": "species",
@@ -484,7 +564,8 @@
                 "multiple": false,
                 "namespace": "NCBI Taxonomy",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 3
             },
             {
                 "id": "tissue",
@@ -496,7 +577,8 @@
                 "namespace": "UBERON",
                 "alternativeNamespace": "Plant",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 5
             },
             {
                 "id": "strain",
@@ -505,7 +587,8 @@
                 "example": "C57BL/6J",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 4
             },
             {
                 "id": "disease",
@@ -516,7 +599,8 @@
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 7
             },
             {
                 "id": "cellularComponent",
@@ -527,7 +611,8 @@
                 "multiple": true,
                 "namespace": "Cellular Component",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 18
             },
             {
                 "id": "developmentalStage",
@@ -536,7 +621,8 @@
                 "example": "Adult",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 19
             },
             {
                 "id": "variant",
@@ -545,7 +631,8 @@
                 "required": false,
                 "multiple": false,
                 "secondSection": true,
-                "type": "text"
+                "type": "text",
+                "datatype": 13
             },
             {
                 "id": "cellline",
@@ -556,7 +643,8 @@
                 "namespace": "Cellosaurus",
                 "allowOther": true,
                 "secondSection": true,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 6
             },
             {
                 "id": "analyzedProteinMutation",
@@ -575,7 +663,8 @@
                         "example": "HER2-N571Q",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -585,7 +674,13 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "other"]
+                        "options": [
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "mutantPosition",
@@ -594,7 +689,8 @@
                         "example": "N66K",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -604,7 +700,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -614,9 +714,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 20
             },
             {
                 "id": "geneticBackgroundAlteration",
@@ -635,7 +743,8 @@
                         "example": "rt(2/P)",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -645,7 +754,15 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin", "other"]
+                        "options": [
+                            "knockout",
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph",
+                            "knockin"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "gene",
@@ -654,7 +771,8 @@
                         "example": "Mgat5",
                         "required": true,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 29
                     },
                     {
                         "id": "mutantSpecies",
@@ -662,10 +780,15 @@
                         "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
                         "example": "Home sapiens",
                         "required": true,
+                        "requiredWhen": {
+                            "field": "molecularPhenotype",
+                            "value": "knockin"
+                        },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
                         "allowOther": false,
-                        "type": "autocomplete"
+                        "type": "autocomplete",
+                        "datatype": 3
                     },
                     {
                         "id": "mutantPosition",
@@ -674,7 +797,8 @@
                         "example": "G66D",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -684,7 +808,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -694,9 +822,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 21
             },
             {
                 "id": "perturbation",
@@ -713,16 +849,18 @@
                         "example": "5 Gy gamma irradiation",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 30
                     },
                     {
                         "id": "chemical",
-                        "label": "Chemical", 
+                        "label": "Chemical",
                         "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
                         "example": "Additional 25 mM glucose added to culture media",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 31
                     },
                     {
                         "id": "drug",
@@ -731,13 +869,15 @@
                         "example": "Doxorubicin, 1 µM for 24 hours",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 32
                     }
-                ]
+                ],
+                "datatype": 22
             }
         ]
     },
-    "expressed_protein" : {
+    "expressed_protein": {
         "fields": [
             {
                 "id": "speciesOrigin",
@@ -748,7 +888,8 @@
                 "multiple": false,
                 "namespace": "NCBI Taxonomy",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 3
             },
             {
                 "id": "strainOrigin",
@@ -757,7 +898,8 @@
                 "example": "K-12 MG1655",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 4
             },
             {
                 "id": "analyzedProteinMutation",
@@ -776,7 +918,8 @@
                         "example": "HER2-N571Q",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -786,7 +929,13 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "Other"]
+                        "options": [
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "mutantPosition",
@@ -795,7 +944,8 @@
                         "example": "N66K",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -805,7 +955,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -815,9 +969,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 20
             },
             {
                 "id": "expressionSystem",
@@ -866,8 +1028,8 @@
                         "allowOther": true,
                         "type": "autocomplete"
                     }
-                   
-                ]
+                ],
+                "datatype": 23
             },
             {
                 "id": "perturbation",
@@ -884,16 +1046,18 @@
                         "example": "5 Gy gamma irradiation",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 30
                     },
                     {
                         "id": "chemical",
-                        "label": "Chemical", 
+                        "label": "Chemical",
                         "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
                         "example": "Additional 25 mM glucose added to culture media",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 31
                     },
                     {
                         "id": "drug",
@@ -902,13 +1066,15 @@
                         "example": "Doxorubicin, 1 µM for 24 hours",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 32
                     }
-                ]
+                ],
+                "datatype": 22
             }
         ]
     },
-    "expressed_protein_altered_system" : {
+    "expressed_protein_altered_system": {
         "fields": [
             {
                 "id": "speciesOrigin",
@@ -919,7 +1085,8 @@
                 "multiple": false,
                 "namespace": "NCBI Taxonomy",
                 "allowOther": false,
-                "type": "autocomplete"
+                "type": "autocomplete",
+                "datatype": 3
             },
             {
                 "id": "strainOrigin",
@@ -928,7 +1095,8 @@
                 "example": "K-12 MG1655",
                 "required": false,
                 "multiple": false,
-                "type": "text"
+                "type": "text",
+                "datatype": 4
             },
             {
                 "id": "analyzedProteinMutation",
@@ -947,7 +1115,8 @@
                         "example": "HER2-N571Q",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -957,7 +1126,13 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["gain of function", "loss of function", "Hypermorph", "Hypomorph", "Other"]
+                        "options": [
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "mutantPosition",
@@ -966,7 +1141,8 @@
                         "example": "N66K",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -976,7 +1152,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -986,9 +1166,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 20
             },
             {
                 "id": "expressionSystem",
@@ -1037,8 +1225,8 @@
                         "allowOther": true,
                         "type": "autocomplete"
                     }
-                   
-                ]
+                ],
+                "datatype": 23
             },
             {
                 "id": "geneticBackgroundAlteration",
@@ -1057,7 +1245,8 @@
                         "example": "rt(2/P)",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 24
                     },
                     {
                         "id": "molecularPhenotype",
@@ -1067,7 +1256,15 @@
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["knockout", "gain of function", "loss of function", "Hypermorph", "Hypomorph", "knockin", "other"]
+                        "options": [
+                            "knockout",
+                            "gain of function",
+                            "loss of function",
+                            "Hypermorph",
+                            "Hypomorph",
+                            "knockin"
+                        ],
+                        "datatype": 25
                     },
                     {
                         "id": "gene",
@@ -1076,7 +1273,8 @@
                         "example": "Mgat5",
                         "required": true,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 29
                     },
                     {
                         "id": "mutantSpecies",
@@ -1084,10 +1282,15 @@
                         "description": "For knock-in experiments involving a gene from another organism, specify the source species of the inserted gene. Select the organism using an NCBI Taxonomy term.",
                         "example": "Home sapiens",
                         "required": true,
+                        "requiredWhen": {
+                            "field": "molecularPhenotype",
+                            "value": "knockin"
+                        },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
                         "allowOther": false,
-                        "type": "autocomplete"
+                        "type": "autocomplete",
+                        "datatype": 3
                     },
                     {
                         "id": "mutantPosition",
@@ -1096,7 +1299,8 @@
                         "example": "G66D",
                         "required": false,
                         "multiple": false,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 26
                     },
                     {
                         "id": "mutantOrigin",
@@ -1106,7 +1310,11 @@
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
-                        "options": ["targeted", "spontanous"]
+                        "options": [
+                            "targeted",
+                            "spontanous"
+                        ],
+                        "datatype": 27
                     },
                     {
                         "id": "technique",
@@ -1116,9 +1324,17 @@
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
-                        "options": ["X-Ray", "Chemical", "Transposon", "UV", "Crisp", "Other"]
+                        "options": [
+                            "X-Ray",
+                            "Chemical",
+                            "Transposon",
+                            "UV",
+                            "Crisp"
+                        ],
+                        "datatype": 28
                     }
-                ]
+                ],
+                "datatype": 21
             },
             {
                 "id": "perturbation",
@@ -1135,16 +1351,18 @@
                         "example": "5 Gy gamma irradiation",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 30
                     },
                     {
                         "id": "chemical",
-                        "label": "Chemical", 
+                        "label": "Chemical",
                         "description": "List chemicals or media additives to which the sample was exposed prior to collection. Include concentration and treatment duration when known.",
                         "example": "Additional 25 mM glucose added to culture media",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 31
                     },
                     {
                         "id": "drug",
@@ -1153,15 +1371,15 @@
                         "example": "Doxorubicin, 1 µM for 24 hours",
                         "required": false,
                         "multiple": true,
-                        "type": "text"
+                        "type": "text",
+                        "datatype": 32
                     }
-                ]
+                ],
+                "datatype": 22
             }
         ]
     },
-    "synthetic" : {
-
-    },
+    "synthetic": {},
     "general": [
         {
             "id": "contributor",
@@ -1170,18 +1388,31 @@
             "url": "",
             "required": true,
             "multiple": false,
-            "type": "contributor"
+            "type": "contributor",
+            "datatype": 16
         },
         {
             "id": "experimentalTechnique",
             "label": "Experimental Technique",
             "description": "Select all experimental techniques used to generate the reported data. Include both acquisition and analytical methods when multiple techniques were part of the workflow.",
-            "url":"",
+            "url": "",
             "required": true,
             "multiple": true,
-            "options": ["MS", "MS/MS", "LC-MS/MS", "LC-MS", "CE-MS", "CE-MS/MS", "CE", "HPLC", "GC", "GC-MS"],
+            "options": [
+                "MS",
+                "MS/MS",
+                "LC-MS/MS",
+                "LC-MS",
+                "CE-MS",
+                "CE-MS/MS",
+                "CE",
+                "HPLC",
+                "GC",
+                "GC-MS"
+            ],
             "allowOther": true,
-            "type": "select"
+            "type": "select",
+            "datatype": 12
         },
         {
             "id": "publication",
@@ -1189,7 +1420,8 @@
             "description": "Provide the PubMed ID (PMID) or DOI of the publication describing this dataset. Use the primary publication associated with the reported experiment whenever available.",
             "required": false,
             "multiple": false,
-            "type": "publication"
+            "type": "publication",
+            "datatype": 2
         },
         {
             "id": "comment",
@@ -1197,7 +1429,8 @@
             "description": "Add any additional information that may help others understand, interpret, or reproduce the experiment. Use this field for details that are not captured elsewhere in the submission form.",
             "required": false,
             "multiple": false,
-            "type": "text"
+            "type": "text",
+            "datatype": 17
         }
     ]
 }

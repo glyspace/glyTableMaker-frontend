@@ -1025,13 +1025,26 @@ const Collection = (props) => {
         setIsDirty(true);
     }
 
+    const isFieldRequired = (field, values) => {
+        if (field.requiredWhen) {
+            const dependentValue = values[field.requiredWhen.field];
+            return dependentValue === field.requiredWhen.value;
+        }
+
+        if (field.required) {
+            return true;
+        }
+
+        return false;
+    };
+
     function validateMetadata(fields, values) {
         const errors = {};
 
         fields.forEach(field => {
             const value = values[field.id];
 
-            if (field.required) {
+            if (isFieldRequired(field, values)) {
                 const empty =
                     value === undefined ||
                     value === null ||

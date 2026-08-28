@@ -25,24 +25,20 @@ export default function MultiAutoComplete (props) {
 		/*if (!(event === null && value === "" && reason === "reset")){
 			props.setInputValue(props.fieldId, value);
 		} */
+
+        if (reason === "clear" || reason === "removeOption") {
+            props.setInputValue(props.fieldId, value);
+            return;
+        }
         if (reason === "selectOption") {
             if (props.multiple) {
-                if (reason === "removeOption") {
-                    props.setInputValue(props.fieldId, value);
-                    return;
-                }
-
                 const newestValue = value[value.length - 1];
 
-                const canonical = await getCanonicalForm(
-                    props.namespace,
-                    newestValue
-                );
+                const canonical = await getCanonicalForm(props.namespace, newestValue);
 
                 if (!canonical) {
                     if (!props.allowOther) {
-                        const updated = [
-                            ...value.slice(0, value.length - 1)];
+                        const updated = [...value.slice(0, value.length - 1)];
                         props.setInputValue(props.fieldId, updated);
                         return;
                     } else {
@@ -50,31 +46,15 @@ export default function MultiAutoComplete (props) {
                     }
                 }
 
-                const updated = [
-                    ...value.slice(0, value.length - 1),
-                    canonical
-                ];
-
-                props.setInputValue(
-                    props.fieldId,
-                    updated
-                );
-
+                const updated = [...value.slice(0, value.length - 1),canonical];
+                props.setInputValue(props.fieldId, updated);
                 return;
             }
 
-            const canonical = await getCanonicalForm(
-                props.namespace,
-                value
-            );
-
+            const canonical = await getCanonicalForm(props.namespace, value);
             if (!canonical) return;
-
             if (canonical) {
-                props.setInputValue(
-                    props.fieldId,
-                    canonical
-                );
+                props.setInputValue(props.fieldId, canonical);
             }
         }
 	};

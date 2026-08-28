@@ -63,6 +63,18 @@ export default function ComplexFieldTable({
     onChange(rows);
   };
 
+  const isFieldRequired = (field, values) => {
+        if (field.requiredWhen) {
+            const dependentValue = values[field.requiredWhen.field];
+            return dependentValue === field.requiredWhen.value;
+        }
+
+        if (field.required) {
+            return true;
+        }
+    }
+       
+
   const validateRow = () => {
     const errors = {};
 
@@ -74,7 +86,7 @@ export default function ComplexFieldTable({
             value === "" ||
             (Array.isArray(value) && value.length === 0);
 
-        if (subField.required && empty) {
+        if (isFieldRequired(subField, currentRow) && empty) {
             errors[subField.id] =
                 `${subField.label} is required`;
         }
