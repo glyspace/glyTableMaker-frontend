@@ -482,6 +482,55 @@ const PublishDataset = (props) => {
         let nextSelectedCollections = [...colList];
         let nextPublications = [...pubList];
         nextSelectedCollections.forEach ((collection) => {
+            if (collection.metadataValues) {
+                var publicationIdentifier = collection.metadataValues["publication"];
+                if (Array.isArray(publicationIdentifier)) {
+                    publicationIdentifier.forEach ((pub) => {
+                        if (publicationCache[pub]) {
+                            const found = nextPublications.find ((p) => (p.pubmedId === pub || p.doiId === pub));
+                            if (!found) {
+                                nextPublications.push (publicationCache[pub]);
+                            }
+                            setPublications([...nextPublications]);
+                        }
+                        else {
+                            // get the publication details
+                            getJson ("api/util/getpublication?identifier=" + pub).then (({ data }) => {
+                                publicationCache[pub] = data.data;
+                                const found = nextPublications.find ((p) => p.id === data.data.id);
+                                if (!found) {
+                                    nextPublications.push (data.data);
+                                }
+                                setPublications([...nextPublications]);
+                            }).catch(function(error) {
+                                axiosError(error, null, setAlertDialogInput);
+                            });
+                        }
+                    })
+                } else {
+                    if (publicationCache[publicationIdentifier]) {
+                        const found = nextPublications.find ((p) => (p.pubmedId === publicationIdentifier || p.doiId === publicationIdentifier));
+                        if (!found) {
+                            nextPublications.push (publicationCache[publicationIdentifier]);
+                        }
+                        setPublications([...nextPublications]);
+                    }
+                    else {
+                        // get the publication details
+                        getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
+                            publicationCache[publicationIdentifier] = data.data;
+                            const found = nextPublications.find ((p) => p.id === data.data.id);
+                            if (!found) {
+                                nextPublications.push (data.data);
+                            }
+                            setPublications([...nextPublications]);
+                        }).catch(function(error) {
+                            axiosError(error, null, setAlertDialogInput);
+                        });
+                    }
+                }
+
+            }
             if (collection.metadata) {
                 collection.metadata.forEach ((metadata) => {
                     if (metadata.type.datatypeId === 2 || metadata.type.name === "Evidence") {
