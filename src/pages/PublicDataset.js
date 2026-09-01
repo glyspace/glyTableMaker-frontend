@@ -1,26 +1,27 @@
 import { useNavigate, useParams } from "react-router-dom";
 import DialogAlert from "../components/DialogAlert";
 import FeedbackWidget from "../components/FeedbackWidget";
-import { getAuthorizationHeader, getBlob, getContributorString, getJson, postJson, postToAndGetBlob } from "../utils/api";
+import { getAuthorizationHeader, getBlob, getJson, postJson } from "../utils/api";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import { GrantsOnDataset } from "../components/GrantsOnDataset";
 import { PubOnDataset } from "../components/PubOnDataset";
-import { Button, Card, Col, Form, Image, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
 import { Table as BootstrapTable } from "react-bootstrap";
 import { FormLabel, Title } from "../components/FormControls";
 import { Loading } from "../components/Loading";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import "./PublicDataset.css";
 import Table from "../components/Table";
-import { Tooltip } from "@mui/material";
+import { Checkbox, FormControlLabel, FormGroup, Popover, Tooltip } from "@mui/material";
 import TextAlert from "../components/TextAlert";
 import VersionAlert from "../components/VersionAlert";
 import { PublicationTable } from "../components/PublicationTable";
 import glygenLogo from "../images/GlyGen logo.png";
 import metadata from '../data/metadata.json';
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
+import { MRT_ShowHideColumnsMenu } from "material-react-table";
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -34,7 +35,7 @@ const PublicDataset = (props) => {
     const [notesOpen, setNotesOpen] = useState(false);
     const [pubOpen, setPubOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    //const [errorMessage, setErrorMessage] = useState("");
 
     const [selectedVersion, setSelectedVersion] = useState("");
     const [listVersions, setListVersions] = useState ([]);
@@ -55,7 +56,6 @@ const PublicDataset = (props) => {
     const [showVersionLog, setShowVersionLog] = useState(false);
     const [datasetType, setDatasetType] = useState("GLYCAN");
 
-    const [useApiImage, setUseApiImage] = useState(true);
 
     useEffect(() => {
         if (datasetId) {
@@ -105,7 +105,8 @@ const PublicDataset = (props) => {
             }
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
-                setErrorMessage(error.response.data.message);
+                setTextAlertInput ({"show": true, "message": error.response.data.message });
+                //setErrorMessage(error.response.data.message);
                 setIsLoading(false);
                 return;
             } else {
@@ -206,6 +207,7 @@ const PublicDataset = (props) => {
           accessorKey: 'uniProtId',
           header: 'UniProtKB Accession',
           id: 'uniProtId',
+          enableHiding: false, 
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://www.uniprot.org/uniprotkb/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}</a>
@@ -214,6 +216,7 @@ const PublicDataset = (props) => {
           accessorKey: 'glytoucanId',
           header: 'GlyTouCan ID',
           id: 'glytoucanId',
+          enableHiding: false, 
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}</a>
@@ -223,7 +226,6 @@ const PublicDataset = (props) => {
           accessorFn: (row) => row.cartoon,
           header: 'Image',
           id: 'cartoon',
-          size: 150,
           enableColumnFilter: false,
           enableSorting: false,
           Cell: ({ cell }) => <img 
@@ -234,33 +236,18 @@ const PublicDataset = (props) => {
                                 }}/>
         },
         {
-          accessorKey: 'aminoAcid',
-          header: 'Amino Acid',
-          id: 'aminoAcid',
+          accessorFn: (row) => row.aminoAcid + row.site,
+          header: 'Residue',
+          id: 'residue',
           size: 50,
         },
         {
-          accessorKey: 'site',
-          header: 'Site/Position',
-          id: 'site',
-          size: 50,
-        },
-        {
-          accessorKey: 'glycosylationType',
+          accessorFn: (row) => {
+            var subType = row.glycosylationSubType && row.glycosylationSubType !== "" ? ", " + row.glycosylationSubType : "";
+            return row.glycosylationType + subType;
+          },
           header: 'Glycosylation Type',
           id: 'glycosylationType',
-          size: 50,
-        },
-        {
-          accessorKey: 'glycosylationSubType',
-          header: 'Glycosylation Subtype',
-          id: 'glycosylationSubType',
-          size: 50,
-        },
-        {
-          accessorKey: 'sampleType',
-          header: 'Sample Type',
-          id: 'sampleType',
           size: 50,
         },
         {
@@ -280,6 +267,12 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
             )
+        },
+        {
+          accessorKey: 'sampleType',
+          header: 'Sample Type',
+          id: 'sampleType',
+          size: 50,
         },
         {
           accessorFn: (row) => getCellValue (row, 'species'),
@@ -318,6 +311,43 @@ const PublicDataset = (props) => {
           )
         },
         {
+          accessorFn: (row) => getCellValue (row, 'expressionSystem'),
+          header: 'Expression System',
+          id: "23",
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"expressionSystem")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'disease'),
+          header: 'Disease',
+          id: "7",
+          enableSorting: false,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
+          size: 100,
+        },
+        {
           accessorFn: (row) => getCellValue (row, 'tissue'),
           header: 'Tissue',
           id: "5",
@@ -354,30 +384,12 @@ const PublicDataset = (props) => {
           )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'disease'),
-          header: 'Disease',
-          id: "7",
+          accessorFn: (row) => getCellValue (row, 'variant'),
+          header: 'Variant',
+          id: "13",
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
-              value={cell.getValue()}
-              publicationCache={publicationCache}
-              setPublicationCache={setPublicationCache}
-              setShowLoading={setIsLoading}
-              setTextAlertInput={setTextAlertInput}
-              setAlertDialogInput={setAlertDialogInput}
-              axiosError={axiosError}
-            />
-          ),
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
-          header: 'Experimental technique',
-          id: "12",
-          Cell: ({ row, cell }) => (
-            <MetadataValueRenderer
-              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
               value={cell.getValue()}
               publicationCache={publicationCache}
               setPublicationCache={setPublicationCache}
@@ -406,6 +418,97 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'developmentalStage'),
+          header: 'Developmental Stage',
+          id: "19",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"developmentalStage")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'geneticBackgroundAlteration'),
+          header: 'Genetic Background Alteration',
+          id: "21",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"geneticBackgroundAlteration")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'analyzedProteinMutation'),
+          header: 'Protein modification',
+          id: "20",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"analyzedProteinMutation")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'perturbation'),
+          header: 'Perturbation',
+          id: "22",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"perturbation")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
+          header: 'Experimental technique',
+          id: "12",
+          enableSorting: false,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
+          size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'contributor'),
@@ -442,6 +545,39 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           )
+        },
+        {
+          id: 'other',
+          header: 'Other',
+          enableHiding: false,       // this column itself can't be hidden
+          enableColumnActions: false,
+          enableSorting: false,
+          enableColumnFilter: false,
+          size: 150,
+          muiTableBodyCellProps: {
+            sx: { padding: 0 },
+          },
+          Cell: ({ table }) => {
+            const [anchorEl, setAnchorEl] = useState(null);
+
+            const hideableColumns = table.getAllLeafColumns().filter(col => col.getCanHide());
+            const hiddenCount = hideableColumns.filter(col => !col.getIsVisible()).length;
+
+            if (hiddenCount === 0) return null;
+
+            return (
+              <>
+                <Button variant="contained" size="small" className="gg-blue" onClick={(e) => setAnchorEl(e.currentTarget)}>
+                  {hiddenCount} column{hiddenCount > 1 ? 's' : ''} not shown
+                </Button>
+                <MRT_ShowHideColumnsMenu
+                  anchorEl={anchorEl}
+                  setAnchorEl={setAnchorEl}
+                  table={table}
+                />
+              </>
+            );
+          },
         }
       ],
       [],
@@ -453,6 +589,7 @@ const PublicDataset = (props) => {
           accessorKey: 'glytoucanId',
           header: 'GlyTouCan ID',
           id: 'glytoucanId',
+          enableHiding: false, 
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}</a>
@@ -461,7 +598,6 @@ const PublicDataset = (props) => {
           accessorFn: (row) => row.cartoon,
           header: 'Image',
           id: 'cartoon',
-          size: 150,
           enableColumnFilter: false,
           enableSorting: false,
           Cell: ({ cell, row }) => 
@@ -491,6 +627,12 @@ const PublicDataset = (props) => {
           size: 100,
         },
         {
+          accessorKey: 'sampleType',
+          header: 'Sample Type',
+          id: 'sampleType',
+          size: 50,
+        },
+        {
           accessorFn: (row) => getCellValue (row, 'species'),
           header: 'Species',
           id: "3",
@@ -525,6 +667,25 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'disease'),
+          header: 'Disease',
+          id: "7",
+          enableSorting: false,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
+          size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'tissue'),
@@ -563,44 +724,8 @@ const PublicDataset = (props) => {
           )
         },
         {
-          accessorFn: (row) => getCellValue (row, 'disease'),
-          header: 'Disease',
-          id: "7",
-          Cell: ({ row, cell }) => (
-            <MetadataValueRenderer
-              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
-              value={cell.getValue()}
-              publicationCache={publicationCache}
-              setPublicationCache={setPublicationCache}
-              setShowLoading={setIsLoading}
-              setTextAlertInput={setTextAlertInput}
-              setAlertDialogInput={setAlertDialogInput}
-              axiosError={axiosError}
-            />
-          ),
-          size: 100,
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
-          header: 'Experimental technique',
-          Cell: ({ row, cell }) => (
-            <MetadataValueRenderer
-              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
-              value={cell.getValue()}
-              publicationCache={publicationCache}
-              setPublicationCache={setPublicationCache}
-              setShowLoading={setIsLoading}
-              setTextAlertInput={setTextAlertInput}
-              setAlertDialogInput={setAlertDialogInput}
-              axiosError={axiosError}
-            />
-          ),
-          id: "12",
-          size: 100,
-        },
-        {
           accessorFn: (row) => getCellValue (row, 'variant'),
-          header: 'Variant (Fly, yeast, mouse)',
+          header: 'Variant',
           id: "13",
           size: 100,
           Cell: ({ row, cell }) => (
@@ -615,24 +740,6 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           ),
-        },
-        {
-          accessorFn: (row) => getCellValue (row, 'molecularPhenotype'),
-          header: 'Molecular Phenotype',
-          id: "15",
-          size: 100,
-          Cell: ({ row, cell }) => (
-            <MetadataValueRenderer
-              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"molecularPhenotype")}
-              value={cell.getValue()}
-              publicationCache={publicationCache}
-              setPublicationCache={setPublicationCache}
-              setShowLoading={setIsLoading}
-              setTextAlertInput={setTextAlertInput}
-              setAlertDialogInput={setAlertDialogInput}
-              axiosError={axiosError}
-            />
-          )
         },
         {
           accessorFn: (row) => getCellValue (row, 'cellularComponent'),
@@ -650,6 +757,79 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           ),
+          size: 100,
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'developmentalStage'),
+          header: 'Developmental Stage',
+          id: "19",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"developmentalStage")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'geneticBackgroundAlteration'),
+          header: 'Genetic Background Alteration',
+          id: "21",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"geneticBackgroundAlteration")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+        {
+          accessorFn: (row) => getCellValue (row, 'perturbation'),
+          header: 'Perturbation',
+          id: "22",
+          size: 100,
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"perturbation")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          )
+        },
+         {
+          accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
+          header: 'Experimental technique',
+          Cell: ({ row, cell }) => (
+            <MetadataValueRenderer
+              field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
+              value={cell.getValue()}
+              publicationCache={publicationCache}
+              setPublicationCache={setPublicationCache}
+              setShowLoading={setIsLoading}
+              setTextAlertInput={setTextAlertInput}
+              setAlertDialogInput={setAlertDialogInput}
+              axiosError={axiosError}
+            />
+          ),
+          id: "12",
+          enableSorting: false,
           size: 100,
         },
         {
@@ -687,6 +867,40 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           ),
+        },
+        {
+          id: 'other',
+          header: 'Other',
+          enableHiding: false,       // this column itself can't be hidden
+          enableColumnActions: false,
+          enableSorting: false,
+          enableColumnFilter: false,
+          size: 150,
+          muiTableBodyCellProps: {
+            sx: { padding: 0 },
+          },
+          Cell: ({ table }) => {
+            const [anchorEl, setAnchorEl] = useState(null);
+
+            const hideableColumns = table.getAllLeafColumns().filter(col => col.getCanHide());
+            const hiddenCount = hideableColumns.filter(col => !col.getIsVisible()).length;
+
+            if (hiddenCount === 0) return null;
+
+            return (
+              <>
+                <Button variant="contained" size="small" className="gg-blue" 
+                    onClick={(e) => setAnchorEl(e.currentTarget)}>
+                  {hiddenCount} column{hiddenCount > 1 ? 's' : ''} not shown
+                </Button>
+                <MRT_ShowHideColumnsMenu
+                  anchorEl={anchorEl}
+                  setAnchorEl={setAnchorEl}
+                  table={table}
+                />
+              </>
+            );
+          },
         }
       ],
       [],
@@ -762,6 +976,30 @@ const PublicDataset = (props) => {
               rowId="uniProtId"
               columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
               saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+              columnVisibility={{
+                uniProtId: true,
+                glytoucanId: true,
+                cartoon: true,
+                residue: true,
+                glycosylationType: false,
+                "2": true,        // Publication
+                sampleType: false, // hidden by default
+                "3": true,         // Species
+                "4": false,        // Strain — hidden by default
+                "23": true,       // Expression System
+                "7": true,         // Disease
+                "5": true,         // Tissue
+                "6": true,         // Cellline 
+                "13": false,       // Variant - - hidden by default
+                "18": false,       // Cellular Component - hidden by default
+                "19": false,       // Developmental Stage - hidden by default
+                "21": false,       // genetic background - hidden by default
+                "20": false,       // anlyzed protein mutation - hidden by default
+                "22": false,       // perturbation - hidden by default
+                "12": false,       // experimental technique - hidden by default
+                "16": false,       // contributor - hidden by default
+                "17": false,       // comment - hidden by default
+              }}
           />
         }
         {datasetType && datasetType === "GLYCAN" &&
@@ -776,6 +1014,25 @@ const PublicDataset = (props) => {
             rowId="glytoucanId"
             columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
             saveColumnVisibilityChanges={saveColumnVisibilityChanges}
+            columnVisibility={{
+                glytoucanId: true,
+                cartoon: true,
+                "2": true,        // Publication
+                sampleType: false, // hidden by default
+                "3": true,         // Species
+                "4": false,        // Strain — hidden by default
+                "7": true,         // Disease
+                "5": true,         // Tissue
+                "6": true,         // Cellline 
+                "13": false,       // Variant - - hidden by default
+                "18": false,       // Cellular Component - hidden by default
+                "19": false,       // Developmental Stage - hidden by default
+                "21": false,       // genetic background - hidden by default
+                "22": false,       // perturbation - hidden by default
+                "12": false,       // experimental technique - hidden by default
+                "16": false,       // contributor - hidden by default
+                "17": false,       // comment - hidden by default
+              }}
         />}
         </>)
     }
@@ -892,7 +1149,7 @@ const PublicDataset = (props) => {
           setIsLoading(false);
       }).catch (function(error) {
           if (error && error.response && error.response.data) {
-              setErrorMessage(error.response.data.message);
+              setTextAlertInput({"show": true, "message":error.response.data.message});
               setIsLoading(false);
               return;
           } else {

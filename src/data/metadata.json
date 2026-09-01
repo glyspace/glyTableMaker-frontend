@@ -1399,6 +1399,7 @@
             "required": true,
             "multiple": true,
             "options": [
+                "MALDI-TOF-TOF",
                 "MS",
                 "MS/MS",
                 "LC-MS/MS",

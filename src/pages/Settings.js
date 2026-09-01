@@ -7,7 +7,6 @@ import { Alert, Box, Container, FormControlLabel, FormGroup, Slider, Switch, Too
 import { FormLabel, PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import compositionMarks from '../data/compositiontype.json';
-import { faListNumeric } from "@fortawesome/free-solid-svg-icons";
 
 const Settings = (props) => {
 
@@ -282,96 +281,64 @@ const Settings = (props) => {
                 "visible" : true,
             }, 
             "2" : {
-                "label" : "Evidence",
+                "label" : "Publication",
                 "visible" : true,
+            },
+            "sampleType": {
+                "label" : "Sample Type",
+                "visible": false,
             },
             "3": {
                 "label" : "Species",
                 "visible": true,
             },
-            "3-ID": {
-                "label" : "Species ID",
-                "visible": true,
-            },
             "4" : {
                 "label" : "Strain",
-                "visible": true,
+                "visible": false,
+            },
+            "7" : {
+                "label" : "Disease",
+                "visible" : true,
             },
             "5" : {
                 "label" : "Tissue",
-                "visible" : true,
-            },
-            "5-ID" : {
-                "label" : "Tissue ID",
                 "visible" : true,
             },
             "6" : {
                 "label" : "Cell line",
                 "visible" : true,
             }, 
-            "6-ID" : {
-                "label" : "Cell line ID",
-                "visible" : true,
-            }, 
-            "7" : {
-                "label" : "Disease",
-                "visible" : true,
-            },
-            "7-ID" : {
-                "label" : "Disease ID",
-                "visible" : true,
-            },
-            "8": {
-                "label" : "Glycan dictionary term ID",
-                "visible": true,
-            },
-            "9" : {
-                "label" : "has_abundance",
-                "visible": true,
-            },
-            "10" : {
-                "label" : "has_expression",
-                "visible": true,
-            },
-            "11" : {
-                "label" : "Functional annotation/Keyword",
-                "visible" : true,
-            },
-            "12" : {
-                "label" : "Experimental technique",
-                "visible" : true,
-            }, 
             "13" : {
-                "label" : "Variant (Fly, yeast, mouse)",
-                "visible" : true,
-            },
-            "14": {
-                "label" : "Organismal/cellular Phenotype",
-                "visible": true,
-            },
-            "14-ID": {
-                "label" : "Organismal/cellular Phenotype ID",
-                "visible": true,
-            },
-            "15" : {
-                "label" : "Molecular Phenotype",
-                "visible": true,
-            },
-            "18-ID" : {
-                "label" : "Cellular Component ID",
-                "visible": true,
+                "label" : "Variant",
+                "visible" : false,
             },
             "18": {
                 "label" : "Cellular Component",
-                "visible": true,
+                "visible": false,
             },
+            "19" : {
+                "label" : "Developmental Stage",
+                "visible" : false,
+            }, 
+            "21" : {
+                "label" : "Genetic Background Alteration",
+                "visible" : false,
+            }, 
+            "22" : {
+                "label" : "Perturbation",
+                "visible" : false,
+            }, 
+            "12" : {
+                "label" : "Experimental technique",
+                "visible" : false,
+            }, 
             "16" : {
                 "label" : "Contributor",
-                "visible": true,
+                "visible": false,
             },
             "17" : {
                 "label" : "Comment",
-                "visible": true,
+                "visible": false,
             }
         },
         "DATASETGLYCOPROTEINMETADATA" : {
@@ -387,66 +354,70 @@ const Settings = (props) => {
                 "label" : "Image",
                 "visible" : true,
             }, 
-            "aminoAcid" : {
-                "label" : "Amino Acid",
-                "visible" : true,
-            },
-            "site" : {
-                "label" : "Site/Position",
-                "visible" : true,
-            },
             "glycosylationType" : {
                 "label" : "Glycosylation Type",
-                "visible" : true,
+                "visible" : false,
             },
-            "glycosylationSubType" : {
-                "label" : "Glycosylation Subtype",
+            "residue" : {
+                "label" : "Residue",
                 "visible" : true,
             },
             "2" : {
-                "label" : "Evidence",
+                "label" : "Publication",
                 "visible" : true,
+            },
+            "sampleType": {
+                "label" : "Sample Type",
+                "visible": false,
             },
             "3": {
                 "label" : "Species",
                 "visible": true,
             },
-            "3-ID": {
-                "label" : "Species ID",
-                "visible": true,
-            },
             "4" : {
                 "label" : "Strain",
+                "visible": false,
+            },
+            "23": {
+                "label" : "Expression System",
                 "visible": true,
+            },
+            "7" : {
+                "label" : "Disease",
+                "visible" : true,
             },
             "5" : {
                 "label" : "Tissue",
-                "visible" : true,
-            },
-            "5-ID" : {
-                "label" : "Tissue ID",
                 "visible" : true,
             },
             "6" : {
                 "label" : "Cell line",
                 "visible" : true,
             }, 
-            "6-ID" : {
-                "label" : "Cell line ID",
-                "visible" : true,
+            "13" : {
+                "label" : "Variant",
+                "visible" : false,
             }, 
-            "7" : {
-                "label" : "Disease",
-                "visible" : true,
+            "18": {
+                "label" : "Cellular Component",
+                "visible": true,
             },
-            "7-ID" : {
-                "label" : "Disease ID",
-                "visible" : true,
-            },
-            "11" : {
-                "label" : "Functional annotation/Keyword",
-                "visible" : true,
-            },
+            "19" : {
+                "label" : "Developmental Stage",
+                "visible" : false,
+            }, 
+            "21" : {
+                "label" : "Genetic Background Alteration",
+                "visible" : false,
+            }, 
+            "20" : {
+                "label" : "Protein modification",
+                "visible" : false,
+            }, 
+            "22" : {
+                "label" : "Perturbation",
+                "visible" : false,
+            }, 
             "12" : {
                 "label" : "Experimental technique",
                 "visible" : true,
@@ -459,14 +430,7 @@ const Settings = (props) => {
                 "label" : "Comment",
                 "visible": true,
             }, 
-            "18-ID" : {
-                "label" : "Cellular Component ID",
-                "visible": true,
-            },
-            "18": {
-                "label" : "Cellular Component",
-                "visible": true,
-            },
+            
         }
     });   // map containing column visibility for each table type
 
