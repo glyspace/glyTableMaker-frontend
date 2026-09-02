@@ -280,7 +280,7 @@ const Settings = (props) => {
                 "label" : "Image",
                 "visible" : true,
             }, 
-            "2" : {
+            "publication" : {
                 "label" : "Publication",
                 "visible" : true,
             },
@@ -288,58 +288,58 @@ const Settings = (props) => {
                 "label" : "Sample Type",
                 "visible": false,
             },
-            "3": {
+            "species": {
                 "label" : "Species",
                 "visible": true,
             },
-            "4" : {
+            "strain" : {
                 "label" : "Strain",
                 "visible": false,
             },
-            "7" : {
+            "disease" : {
                 "label" : "Disease",
                 "visible" : true,
             },
-            "5" : {
+            "tissue" : {
                 "label" : "Tissue",
                 "visible" : true,
             },
-            "6" : {
+            "cellline" : {
                 "label" : "Cell line",
                 "visible" : true,
             }, 
-            "13" : {
+            "variant" : {
                 "label" : "Variant",
                 "visible" : false,
-            },
-            "18": {
+            }, 
+            "celluarComponent": {
                 "label" : "Cellular Component",
-                "visible": false,
+                "visible": true,
             },
-            "19" : {
+            "developmentalStage" : {
                 "label" : "Developmental Stage",
                 "visible" : false,
             }, 
-            "21" : {
+            "geneticBackgroundAlteration" : {
                 "label" : "Genetic Background Alteration",
                 "visible" : false,
             }, 
-            "22" : {
+            "perturbation" : {
                 "label" : "Perturbation",
                 "visible" : false,
             }, 
-            "12" : {
+            "experimentalTechnique" : {
                 "label" : "Experimental technique",
-                "visible" : false,
+                "visible" : true,
             }, 
-            "16" : {
+            "contributor" : {
                 "label" : "Contributor",
-                "visible": false,
+                "visible": true,
             },
-            "17" : {
+            "comment" : {
                 "label" : "Comment",
-                "visible": false,
-            }
+                "visible": true,
+            }, 
         },
         "DATASETGLYCOPROTEINMETADATA" : {
             "uniProtId": {
@@ -362,7 +362,7 @@ const Settings = (props) => {
                 "label" : "Residue",
                 "visible" : true,
             },
-            "2" : {
+            "publication" : {
                 "label" : "Publication",
                 "visible" : true,
             },
@@ -370,63 +370,63 @@ const Settings = (props) => {
                 "label" : "Sample Type",
                 "visible": false,
             },
-            "3": {
+            "species": {
                 "label" : "Species",
                 "visible": true,
             },
-            "4" : {
+            "strain" : {
                 "label" : "Strain",
                 "visible": false,
             },
-            "23": {
+            "expressionSystem": {
                 "label" : "Expression System",
                 "visible": true,
             },
-            "7" : {
+            "disease" : {
                 "label" : "Disease",
                 "visible" : true,
             },
-            "5" : {
+            "tissue" : {
                 "label" : "Tissue",
                 "visible" : true,
             },
-            "6" : {
+            "cellline" : {
                 "label" : "Cell line",
                 "visible" : true,
             }, 
-            "13" : {
+            "variant" : {
                 "label" : "Variant",
                 "visible" : false,
             }, 
-            "18": {
+            "celluarComponent": {
                 "label" : "Cellular Component",
                 "visible": true,
             },
-            "19" : {
+            "developmentalStage" : {
                 "label" : "Developmental Stage",
                 "visible" : false,
             }, 
-            "21" : {
+            "geneticBackgroundAlteration" : {
                 "label" : "Genetic Background Alteration",
                 "visible" : false,
             }, 
-            "20" : {
+            "analyzedProtainMutation" : {
                 "label" : "Protein modification",
                 "visible" : false,
             }, 
-            "22" : {
+            "perturbation" : {
                 "label" : "Perturbation",
                 "visible" : false,
             }, 
-            "12" : {
+            "experimentalTechnique" : {
                 "label" : "Experimental technique",
                 "visible" : true,
             }, 
-            "16" : {
+            "contributor" : {
                 "label" : "Contributor",
                 "visible": true,
             },
-            "17" : {
+            "comment" : {
                 "label" : "Comment",
                 "visible": true,
             }, 

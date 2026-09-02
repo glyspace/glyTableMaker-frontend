@@ -252,7 +252,7 @@ const PublicDataset = (props) => {
         },
         {
           accessorFn: (row) => getCellValue (row, 'publication'),
-          id: "2",
+          id: "publication",
           header: 'Publication',
           size: 100,
           Cell: ({ row, cell }) => (
@@ -277,7 +277,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'species'),
           header: 'Species',
-          id: "3",
+          id: "species",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -295,7 +295,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'strain'),
           header: 'Strain',
-          id: "4",
+          id: "strain",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -313,7 +313,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'expressionSystem'),
           header: 'Expression System',
-          id: "23",
+          id: "expressinSystem",
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"expressionSystem")}
@@ -331,7 +331,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'disease'),
           header: 'Disease',
-          id: "7",
+          id: "disease",
           enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -350,7 +350,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'tissue'),
           header: 'Tissue',
-          id: "5",
+          id: "tissue",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -368,7 +368,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'cellline'),
           header: 'Cell line',
-          id: "6",
+          id: "cellline",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -386,7 +386,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'variant'),
           header: 'Variant',
-          id: "13",
+          id: "variant",
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"disease")}
@@ -404,7 +404,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'cellularComponent'),
           header: 'Cellular Component',
-          id: "18",
+          id: "cellularComponent",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -422,7 +422,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'developmentalStage'),
           header: 'Developmental Stage',
-          id: "19",
+          id: "developmentalStage",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -440,7 +440,8 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'geneticBackgroundAlteration'),
           header: 'Genetic Background Alteration',
-          id: "21",
+          id: "geneticBackgroundAlteration",
+          enableSorting: false,
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -458,8 +459,9 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'analyzedProteinMutation'),
           header: 'Protein modification',
-          id: "20",
+          id: "analyzedProteinMutation",
           size: 100,
+          enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"analyzedProteinMutation")}
@@ -476,7 +478,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'perturbation'),
           header: 'Perturbation',
-          id: "22",
+          id: "perturbation",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -494,7 +496,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
           header: 'Experimental technique',
-          id: "12",
+          id: "experimentalTechnique",
           enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -513,7 +515,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'contributor'),
           header: 'Contributor',
-          id: "16",
+          id: "contributor",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -531,7 +533,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'comment'),
           header: 'Comment',
-          id: "17",
+          id: "comment",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -610,7 +612,7 @@ const PublicDataset = (props) => {
         },
         {
           accessorFn: (row) => getCellValue (row, 'publication'),
-          id: "2",
+          id: "publication",
           header: 'Publication',
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -635,7 +637,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'species'),
           header: 'Species',
-          id: "3",
+          id: "species",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -653,7 +655,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'strain'),
           header: 'Strain',
-          id: "4",
+          id: "strain",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -671,7 +673,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'disease'),
           header: 'Disease',
-          id: "7",
+          id: "disease",
           enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -690,7 +692,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'tissue'),
           header: 'Tissue',
-          id: "5",
+          id: "tissue",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -708,7 +710,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'cellline'),
           header: 'Cell line',
-          id: "6",
+          id: "cellline",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -726,7 +728,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'variant'),
           header: 'Variant',
-          id: "13",
+          id: "variant",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -744,7 +746,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'cellularComponent'),
           header: 'Cellular Component',
-          id: "18",
+          id: "cellularComponent",
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellularComponent")}
@@ -762,7 +764,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'developmentalStage'),
           header: 'Developmental Stage',
-          id: "19",
+          id: "developmentalStage",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -780,7 +782,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'geneticBackgroundAlteration'),
           header: 'Genetic Background Alteration',
-          id: "21",
+          id: "geneticBackgroundAlteration",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -798,7 +800,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'perturbation'),
           header: 'Perturbation',
-          id: "22",
+          id: "perturbation",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -828,14 +830,14 @@ const PublicDataset = (props) => {
               axiosError={axiosError}
             />
           ),
-          id: "12",
+          id: "experimentalTechnique",
           enableSorting: false,
           size: 100,
         },
         {
           accessorFn: (row) => getCellValue (row, 'contributor'),
           header: 'Contributor',
-          id: "16",
+          id: "contributor",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -853,7 +855,7 @@ const PublicDataset = (props) => {
         {
           accessorFn: (row) => getCellValue (row, 'comment'),
           header: 'Comment',
-          id: "17",
+          id: "comment",
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -972,7 +974,11 @@ const PublicDataset = (props) => {
                       : `api/public/getdatasetdata?type=GLYCOPROTEIN&datasetid=${datasetId}`}
               detailPanel={false}
               enableRowActions={false}
-              initialSortColumn="uniProtId"
+              initialSortColumn={[
+                { id: 'uniProtId', desc: false },
+                { id: 'glytoucanId', desc: false },
+                { id: 'residue', desc: false },
+              ]}
               rowId="uniProtId"
               columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
               saveColumnVisibilityChanges={saveColumnVisibilityChanges}
@@ -982,23 +988,23 @@ const PublicDataset = (props) => {
                 cartoon: true,
                 residue: true,
                 glycosylationType: false,
-                "2": true,        // Publication
+                "publication": true,        // Publication
                 sampleType: false, // hidden by default
-                "3": true,         // Species
-                "4": false,        // Strain — hidden by default
-                "23": true,       // Expression System
-                "7": true,         // Disease
-                "5": true,         // Tissue
-                "6": true,         // Cellline 
-                "13": false,       // Variant - - hidden by default
-                "18": false,       // Cellular Component - hidden by default
-                "19": false,       // Developmental Stage - hidden by default
-                "21": false,       // genetic background - hidden by default
-                "20": false,       // anlyzed protein mutation - hidden by default
-                "22": false,       // perturbation - hidden by default
-                "12": false,       // experimental technique - hidden by default
-                "16": false,       // contributor - hidden by default
-                "17": false,       // comment - hidden by default
+                "species": true,         // Species
+                "strain": false,        // Strain — hidden by default
+                "expressionSystem": true,       // Expression System
+                "disease": true,         // Disease
+                "tissue": true,         // Tissue
+                "cellline": true,         // Cellline 
+                "variant": false,
+                "cellularComponent": false,       // Cellular Component - hidden by default
+                "developmentalStage": false,       // Developmental Stage - hidden by default
+                "geneticBackgroundAlteration": false,       // genetic background - hidden by default
+                "analyzedProteinMutation": false,       // anlyzed protein mutation - hidden by default
+                "perturbation": false,       // perturbation - hidden by default
+                "experimentalTechnique": false,       // experimental technique - hidden by default
+                "contributor": false,       // contributor - hidden by default
+                "comment": false,       // comment - hidden by default
               }}
           />
         }
@@ -1010,28 +1016,28 @@ const PublicDataset = (props) => {
                       : `api/public/getdatasetdata?type=GLYCAN&datasetid=${datasetId}`}
             detailPanel={false}
             enableRowActions={false}
-            initialSortColumn="glytoucanId"
             rowId="glytoucanId"
+            initialSortColumn="glytoucanId"
             columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETMETADATA"
             saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             columnVisibility={{
                 glytoucanId: true,
                 cartoon: true,
-                "2": true,        // Publication
+                "publication": true,        // Publication
                 sampleType: false, // hidden by default
-                "3": true,         // Species
-                "4": false,        // Strain — hidden by default
-                "7": true,         // Disease
-                "5": true,         // Tissue
-                "6": true,         // Cellline 
-                "13": false,       // Variant - - hidden by default
-                "18": false,       // Cellular Component - hidden by default
-                "19": false,       // Developmental Stage - hidden by default
-                "21": false,       // genetic background - hidden by default
-                "22": false,       // perturbation - hidden by default
-                "12": false,       // experimental technique - hidden by default
-                "16": false,       // contributor - hidden by default
-                "17": false,       // comment - hidden by default
+                "species": true,         // Species
+                "strain": false,        // Strain — hidden by default
+                "disease": true,         // Disease
+                "tissue": true,         // Tissue
+                "cellline": true,         // Cellline 
+                "variant": false,
+                "cellularComponent": false,       // Cellular Component - hidden by default
+                "developmentalStage": false,       // Developmental Stage - hidden by default
+                "geneticBackgroundAlteration": false,       // genetic background - hidden by default
+                "perturbation": false,       // perturbation - hidden by default
+                "experimentalTechnique": false,       // experimental technique - hidden by default
+                "contributor": false,       // contributor - hidden by default
+                "comment": false,  
               }}
         />}
         </>)

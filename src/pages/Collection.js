@@ -22,6 +22,7 @@ import ComplexFieldTable from "../components/ComplexFieldTable";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ContributorTable from "../components/ContributorTable";
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
+import { render } from "@testing-library/react";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -533,7 +534,7 @@ const Collection = (props) => {
             Cell: ({ renderedCellValue, row }) => (
                 <MetadataValueRenderer
                     field={row.original.field}
-                    value={row.original.value}
+                    value={renderedCellValue}
                     publicationCache={publicationCache}
                     setPublicationCache={setPublicationCache}
                     setShowLoading={setShowLoading}
@@ -542,86 +543,6 @@ const Collection = (props) => {
                     axiosError={axiosError}
                 />
             )
-
-               /* const { field, value } = row.original;
-                
-
-                if (field && field.type === "publication") {
-                    return <>
-                     <span>{renderedCellValue}</span>
-                     <IconButton
-                        aria-label="show publication details"
-                        onClick={(e) =>  {
-                            getPublication(renderedCellValue, e);
-                        }}
-                        >
-                    <ArticleIcon />
-                    </IconButton>
-                    </>
-                }
-                else if (field && field.type === "contributor") {
-                    return (
-                        <>
-                        {<span>{getContributorString(value)}</span>}
-                        <Tooltip title="View contributor information">
-                            <IconButton color="primary" onClick={(event) => {
-                                setEditContributor(false); 
-                                setShowContributorTable(true)}}>
-                            <VisibilityOutlinedIcon />
-                            </IconButton>
-                        </Tooltip>
-                        </>
-                    );
-                }
-                else if (field && field.type === "complex") {
-                    return (
-                        <>
-                        {<span>{getComplexFieldSummary (field, value)}</span>}
-                        <Tooltip title="View details">
-                            <IconButton color="primary" onClick={(event) => {
-                                setSelectedMetadataField(field);
-                                setSelectedMetadataDetail(value);
-                                setMetadataDetailOpen(true);
-                                }}>
-                            <VisibilityOutlinedIcon />
-                            </IconButton>
-                        </Tooltip>
-                        </>
-                    );
-                }
-
-                if (Array.isArray(value)) {
-                    if (field && field.type === "autocomplete") {
-                        return value.map((item, index) => {
-                            if (item.uri) {
-                                return (
-                                    <>
-                                    {item.name}{" "}
-                                    (
-                                    <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.id}</a>
-                                    )</>
-                                )
-                            }
-                            return item.name + " (" + item.id + ")";
-                        });
-                    } else return value.join(", ");
-                }
-
-                if (typeof value === "object" && value?.name) {
-                    if (value.uri) {
-                        return (
-                            <>
-                            {value.name}{" "}
-                            (
-                            <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}</a>
-                            )</>
-                        )
-                    }
-                    return value.name + " (" + value.id + ")";
-                }
-
-                return String(value ?? "");
-            }*/
         }
     ],
     []

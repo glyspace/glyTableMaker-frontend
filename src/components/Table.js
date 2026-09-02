@@ -42,7 +42,15 @@ const Table = (props) => {
     //table state
     const [columnFilters, setColumnFilters] = useState(props.columnFilters ?? []);
     const [globalFilter, setGlobalFilter] = useState('');
-    const [sorting, setSorting] = useState(props.initialSortColumn ? [{"id":props.initialSortColumn,"desc":true}] : []);
+    const [sorting, setSorting] = useState(() => {
+      if (Array.isArray(props.initialSortColumn)) {
+        return props.initialSortColumn;
+      }
+      if (props.initialSortColumn) {
+        return [{ id: props.initialSortColumn, desc: false }];
+      }
+      return [];
+    });
     const [pagination, setPagination] = useState({
         pageIndex: 0,
         pageSize: 10,
