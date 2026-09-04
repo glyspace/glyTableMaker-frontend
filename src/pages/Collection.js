@@ -19,7 +19,7 @@ import SampleTypeSelector from "../components/SampleTypeSelector";
 import DynamicMetadataForm from "../components/DynamicMetadataForm";
 import metadata from '../data/metadata.json';
 import ComplexFieldTable from "../components/ComplexFieldTable";
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContributorTable from "../components/ContributorTable";
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
 import { render } from "@testing-library/react";
@@ -1281,24 +1281,24 @@ const Collection = (props) => {
                     {selectedPublication.pubmedId && 
                     <>
                     <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
-                    <a
-                        href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
+                    <a href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         {selectedPublication.pubmedId}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                     </a>
                     </>
                     }
                     {selectedPublication.doiId && 
                     <>
                     <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
-                    <a
-                        href={`https://doi.org/${selectedPublication.doiId}`}
+                    <a href={`https://doi.org/${selectedPublication.doiId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         {selectedPublication.doiId}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                     </a>
                     </>
                     }

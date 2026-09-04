@@ -6,7 +6,7 @@ import { getAuthorizationHeader, getJson } from "../utils/api";
 import { Box } from "@mui/material";
 import "../pages/PublicDataset.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const PublicationTable = props => {
 
@@ -118,20 +118,20 @@ const PublicationTable = props => {
                                 {row.original.pubmedId ? 
                                 <>
                                 <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
-                                <a
-                                href={`https://pubmed.ncbi.nlm.nih.gov/${row.original.pubmedId}`}
+                                <a href={`https://pubmed.ncbi.nlm.nih.gov/${row.original.pubmedId}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 >
                                 {row.original.pubmedId}
+                                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                                 </a> </> : <>
                                 <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
-                                <a
-                                href={`https://doi.org/${row.original.doiId}`}
+                                <a href={`https://doi.org/${row.original.doiId}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 >
                                 {row.original.doiId}
+                                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                                 </a>
                                 </>}
                             </div>

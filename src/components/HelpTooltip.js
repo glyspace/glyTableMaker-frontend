@@ -5,6 +5,7 @@ import Image from "react-bootstrap/Image";
 import PropTypes from "prop-types";
 import Grid from '@mui/material/Grid';
 import { Link } from "react-router-dom";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 /**
  * HelpTooltip component for showing text, link.
@@ -37,6 +38,7 @@ const HelpTooltip = (props) => {
 					)}
 					{!props.relativeURL ? <a href={props.url} target="_blank" rel="noopener noreferrer">
 						{props.urlText}
+						<OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
 					</a> : <Link to={props.url}>{props.urlText}</Link>}
 				</React.Fragment>
 			}>

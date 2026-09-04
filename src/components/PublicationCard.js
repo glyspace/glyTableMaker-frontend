@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table } from "react-bootstrap";
 import { Tooltip } from "@mui/material";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const PublicationCard = props => {
   return (
@@ -28,21 +29,21 @@ const PublicationCard = props => {
                   {props.pubmedId ?
                   <> 
                   <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
-                  <a
-                    href={`https://pubmed.ncbi.nlm.nih.gov/${props.pubmedId}`}
+                  <a href={`https://pubmed.ncbi.nlm.nih.gov/${props.pubmedId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {props.pubmedId}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a></> : 
                   <>
                   <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
-                  <a
-                    href={`https://doi.org/${props.doiId}`}
+                  <a href={`https://doi.org/${props.doiId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {props.doiId}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a>
                   </> }
                 </div>

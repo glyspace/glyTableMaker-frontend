@@ -14,7 +14,7 @@ import { Loading } from "../components/Loading";
 import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import "./PublicDataset.css";
 import Table from "../components/Table";
-import { Checkbox, FormControlLabel, FormGroup, Popover, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import TextAlert from "../components/TextAlert";
 import VersionAlert from "../components/VersionAlert";
 import { PublicationTable } from "../components/PublicationTable";
@@ -22,6 +22,7 @@ import glygenLogo from "../images/GlyGen logo.png";
 import metadata from '../data/metadata.json';
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
 import { MRT_ShowHideColumnsMenu } from "material-react-table";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const PublicDataset = (props) => {
     let { datasetId } = useParams();
@@ -201,6 +202,49 @@ const PublicDataset = (props) => {
       );
     };
 
+    function buildResidue(aminoAcid, site) {
+      if (!aminoAcid || !site) return (aminoAcid || '') + (site || '');
+
+      const delimiterRegex = /[-|]/;
+      const hasDelimiter = delimiterRegex.test(aminoAcid) || delimiterRegex.test(site);
+
+      if (!hasDelimiter) {
+        return aminoAcid + site;
+      }
+
+      // figure out which delimiter is actually in use
+      const aaDelim = aminoAcid.match(delimiterRegex)?.[0];
+      const siteDelim = site.match(delimiterRegex)?.[0];
+      const delimiter = aaDelim || siteDelim;
+
+      const aaParts = aminoAcid.split(/[-|]/).map(p => p.trim());
+      const siteParts = site.split(/[-|]/).map(p => p.trim());
+
+      if (aaParts.length !== siteParts.length) {
+        // mismatched counts — can't pair reliably, fall back to raw concat
+        console.warn('Residue mismatch: aminoAcid/site have different multi-value counts', { aminoAcid, site });
+        return aminoAcid + site;
+      }
+
+      return aaParts.map((aa, i) => aa + siteParts[i]).join(delimiter);
+    }
+
+    function getHiddenCount (hiddenColumns, row) {
+      var s = hiddenColumns.length > 1 ? 's' : '';
+      const notShown = hiddenColumns.length + " column" + s + " hidden";
+      var numberFilledIn = 0;
+      hiddenColumns.map ((col, index) => {
+        if (col.id === "sampleType") {
+          numberFilledIn ++;
+        } else {
+          if (row.original.metadata[col.id]) {
+            numberFilledIn ++;
+          }
+        }
+      })
+      return notShown + " " + numberFilledIn + " with values"; 
+    }
+
     const proteinColumns = useMemo (
       () => [
         {
@@ -210,7 +254,8 @@ const PublicDataset = (props) => {
           enableHiding: false, 
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://www.uniprot.org/uniprotkb/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
-                        {renderedCellValue}</a>
+                        {renderedCellValue}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/></a>
         },
         {
           accessorKey: 'glytoucanId',
@@ -219,7 +264,8 @@ const PublicDataset = (props) => {
           enableHiding: false, 
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
-                        {renderedCellValue}</a>
+                        {renderedCellValue}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/></a>
           
         },
         {
@@ -236,7 +282,7 @@ const PublicDataset = (props) => {
                                 }}/>
         },
         {
-          accessorFn: (row) => row.aminoAcid + row.site,
+          accessorFn: (row) => buildResidue(row.aminoAcid, row.site),
           header: 'Residue',
           id: 'residue',
           size: 50,
@@ -406,6 +452,7 @@ const PublicDataset = (props) => {
           header: 'Cellular Component',
           id: "cellularComponent",
           size: 100,
+          enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellularComponent")}
@@ -441,6 +488,7 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'geneticBackgroundAlteration'),
           header: 'Genetic Background Alteration',
           id: "geneticBackgroundAlteration",
+          enableColumnFilter: false,
           enableSorting: false,
           size: 100,
           Cell: ({ row, cell }) => (
@@ -461,6 +509,7 @@ const PublicDataset = (props) => {
           header: 'Protein modification',
           id: "analyzedProteinMutation",
           size: 100,
+          enableColumnFilter: false,
           enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -480,6 +529,8 @@ const PublicDataset = (props) => {
           header: 'Perturbation',
           id: "perturbation",
           size: 100,
+          enableColumnFilter: false,
+          enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"perturbation")}
@@ -517,6 +568,8 @@ const PublicDataset = (props) => {
           header: 'Contributor',
           id: "contributor",
           size: 100,
+          enableColumnFilter: false,
+          enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"contributor")}
@@ -559,18 +612,18 @@ const PublicDataset = (props) => {
           muiTableBodyCellProps: {
             sx: { padding: 0 },
           },
-          Cell: ({ table }) => {
+          Cell: ({ table, row }) => {
             const [anchorEl, setAnchorEl] = useState(null);
 
             const hideableColumns = table.getAllLeafColumns().filter(col => col.getCanHide());
-            const hiddenCount = hideableColumns.filter(col => !col.getIsVisible()).length;
+            const hiddenColumns = hideableColumns.filter(col => !col.getIsVisible());
 
-            if (hiddenCount === 0) return null;
+            if (hiddenColumns.length === 0) return null;
 
             return (
               <>
                 <Button variant="contained" size="small" className="gg-blue" onClick={(e) => setAnchorEl(e.currentTarget)}>
-                  {hiddenCount} column{hiddenCount > 1 ? 's' : ''} not shown
+                  {getHiddenCount (hiddenColumns, row)}
                 </Button>
                 <MRT_ShowHideColumnsMenu
                   anchorEl={anchorEl}
@@ -594,7 +647,8 @@ const PublicDataset = (props) => {
           enableHiding: false, 
           size: 50,
           Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
-                        {renderedCellValue}</a>
+                        {renderedCellValue}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/></a>
         },
         {
           accessorFn: (row) => row.cartoon,
@@ -747,6 +801,7 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'cellularComponent'),
           header: 'Cellular Component',
           id: "cellularComponent",
+          enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"cellularComponent")}
@@ -783,6 +838,8 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'geneticBackgroundAlteration'),
           header: 'Genetic Background Alteration',
           id: "geneticBackgroundAlteration",
+          enableColumnFilter: false,
+          enableSorting: false,
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -801,6 +858,8 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'perturbation'),
           header: 'Perturbation',
           id: "perturbation",
+          enableColumnFilter: false,
+          enableSorting: false,
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -818,6 +877,7 @@ const PublicDataset = (props) => {
          {
           accessorFn: (row) => getCellValue (row, 'experimentalTechnique'),
           header: 'Experimental technique',
+          enableSorting: false,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
               field={getFieldDefinition(row.original.sampleType.toLowerCase(),"experimentalTechnique")}
@@ -838,6 +898,8 @@ const PublicDataset = (props) => {
           accessorFn: (row) => getCellValue (row, 'contributor'),
           header: 'Contributor',
           id: "contributor",
+          enableColumnFilter: false,
+          enableSorting: false,
           size: 100,
           Cell: ({ row, cell }) => (
             <MetadataValueRenderer
@@ -881,19 +943,19 @@ const PublicDataset = (props) => {
           muiTableBodyCellProps: {
             sx: { padding: 0 },
           },
-          Cell: ({ table }) => {
+          Cell: ({ table, row }) => {
             const [anchorEl, setAnchorEl] = useState(null);
 
             const hideableColumns = table.getAllLeafColumns().filter(col => col.getCanHide());
-            const hiddenCount = hideableColumns.filter(col => !col.getIsVisible()).length;
+            const hiddenColumns = hideableColumns.filter(col => !col.getIsVisible());
 
-            if (hiddenCount === 0) return null;
+            if (hiddenColumns.length === 0) return null;
 
             return (
               <>
                 <Button variant="contained" size="small" className="gg-blue" 
                     onClick={(e) => setAnchorEl(e.currentTarget)}>
-                  {hiddenCount} column{hiddenCount > 1 ? 's' : ''} not shown
+                  {getHiddenCount (hiddenColumns, row)}
                 </Button>
                 <MRT_ShowHideColumnsMenu
                   anchorEl={anchorEl}
@@ -976,8 +1038,8 @@ const PublicDataset = (props) => {
               enableRowActions={false}
               initialSortColumn={[
                 { id: 'uniProtId', desc: false },
-                { id: 'glytoucanId', desc: false },
                 { id: 'residue', desc: false },
+                { id: 'glytoucanId', desc: false },
               ]}
               rowId="uniProtId"
               columnsettingsws="api/setting/getcolumnsettings?tablename=DATASETGLYCOPROTEINMETADATA"
@@ -1086,7 +1148,7 @@ const PublicDataset = (props) => {
               <div>
               <strong>Software Name: </strong>
               <a href={submitterinfo.software.url} target={"_blank"} rel="noopener noreferrer">
-              {submitterinfo.software.name}</a>
+              {submitterinfo.software.name}<OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/></a>
               </div>
               :
               <div>
@@ -1098,24 +1160,24 @@ const PublicDataset = (props) => {
               <strong>Software Publication: </strong>
               {submitterinfo.software.publication.includes ("/") ?    // DOI
                   <>
-                  <a
-                    href={`https://doi.org/${submitterinfo.software.publication}`}
+                  <a href={`https://doi.org/${submitterinfo.software.publication}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {getPublication(submitterinfo.software.publication)}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a>
                   <button className={"more-less"} onClick={() => setPubOpen(!pubOpen)}>
                       {submitterinfo.software.publication.length > 10 && !pubOpen ? `more` : pubOpen ? `less` : ``}
                     </button>
                     </>
                :   // PMID
-                <a
-                    href={`https://pubmed.ncbi.nlm.nih.gov/${submitterinfo.software.publication}`}
+                <a href={`https://pubmed.ncbi.nlm.nih.gov/${submitterinfo.software.publication}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {submitterinfo.software.publication}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a>
               }                  
               </div>}
@@ -1245,7 +1307,9 @@ const PublicDataset = (props) => {
                     <Title title="License" />
                     <div className="text-center">
                       <a href={dataset.license.url} target="_blank" rel="noopener noreferrer">
-                        {dataset.license.name}</a>
+                        {dataset.license.name}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                        </a>
                       {/**  <a href={dataset.license.url} target="_blank" rel="noopener noreferrer">
                         <Image src={licenseLogo} className="licenseIcons" />
                       </a> */}

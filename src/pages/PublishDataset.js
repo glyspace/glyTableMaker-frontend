@@ -17,6 +17,7 @@ import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { PublicationTable } from "../components/PublicationTable";
 import { PublicationCard } from "../components/PublicationCard";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 let idCounter = 1000;
 
@@ -441,12 +442,12 @@ const PublishDataset = (props) => {
                   className="gg-align-center mb-3"
                 >
                   <Col xs={12} lg={12}>
-                  <a
-                    href={selectedLicense.url}
+                  <a href={selectedLicense.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {selectedLicense.url}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a>
                   </Col>
                 </Form.Group>

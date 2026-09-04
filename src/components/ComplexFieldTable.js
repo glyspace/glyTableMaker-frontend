@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import {
   Button,
@@ -14,6 +14,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ComplexRowDialog from "./ComplexRowDialog";
 
 export default function ComplexFieldTable({
@@ -139,7 +140,9 @@ export default function ComplexFieldTable({
             <>
               {value.name}{" "}
               (
-              <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}</a>
+              <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}
+                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+              </a>
               )</>
           )
         }

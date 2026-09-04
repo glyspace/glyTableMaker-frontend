@@ -10,6 +10,7 @@ import { deleteJson, getAuthorizationHeader, getJson, postJson } from "../utils/
 import TextAlert from "../components/TextAlert";
 import { axiosError } from "../utils/axiosError";
 import { UserTable } from "../components/UserTable";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const UserManagement = (props) => {
 
@@ -135,6 +136,7 @@ const UserManagement = (props) => {
                             rel="noopener noreferrer" 
                             aria-label="Visit organization" 
                             size="small" >
+                                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                             <InfoIcon />
                         </IconButton>
                     </Tooltip>

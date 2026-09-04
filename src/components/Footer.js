@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import "../App.css";
 import useCustomStyles from "../utils/useCustomStyles";
 import { useTheme } from "@emotion/react";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const styles = (theme) => ({
   navbarText: {
@@ -46,22 +47,23 @@ export default function Footer() {
             <Box display="flex" className="box-footer">
                 <Navbar.Text className={classes.navbarText}>
                   GlyGen is supported and funded by the{" "}
-                  <a
-                    href="https://www.nigms.nih.gov/"
+                  <a href="https://www.nigms.nih.gov/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={classes.link}
                   >
-                    National Institute of General Medical Sciences{" "}
+                    National Institute of General Medical Sciences
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                    {" "}
                   </a>
                   under the grant #{" "}
-                  <a
-                    href="https://reporter.nih.gov/project-details/10494610"
+                  <a href="https://reporter.nih.gov/project-details/10494610"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={classes.link}
                   >
                     1R24GM146616&nbsp;-&nbsp;01
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a>
                 </Navbar.Text>
              

@@ -6,6 +6,7 @@ import { useState } from "react";
 import ArticleIcon from '@mui/icons-material/Article';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ComplexFieldTable from "./ComplexFieldTable";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 export function MetadataValueRenderer({
     field,
@@ -104,24 +105,24 @@ export function MetadataValueRenderer({
                 {selectedPublication.pubmedId && 
                 <>
                 <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
-                <a
-                    href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
+                <a href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     {selectedPublication.pubmedId}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                 </a>
                 </>
                 }
                 {selectedPublication.doiId && 
                 <>
                 <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
-                <a
-                    href={`https://doi.org/${selectedPublication.doiId}`}
+                <a href={`https://doi.org/${selectedPublication.doiId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     {selectedPublication.doiId}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                 </a>
                 </>
                 }
@@ -193,7 +194,9 @@ export function MetadataValueRenderer({
                         <>
                         {item.name}{" "}
                         (
-                        <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.id}</a>
+                        <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.id}
+                            <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                        </a>
                         )</>
                     )
                 }
@@ -208,7 +211,9 @@ export function MetadataValueRenderer({
                 <>
                 {value.name}{" "}
                 (
-                <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}</a>
+                <a href={value.uri} target="_blank" rel="noopener noreferrer">{value.id}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                </a>
                 )</>
             )
         }

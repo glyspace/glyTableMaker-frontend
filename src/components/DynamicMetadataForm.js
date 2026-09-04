@@ -17,12 +17,12 @@ import { Button, Col, Row } from "react-bootstrap";
 import ComplexFieldTable from "./ComplexFieldTable";
 import MultiTextInput from "./MultiTextInput";
 import TextAlert from "./TextAlert";
-import DialogAlert from "../components/DialogAlert";
 import { Loading } from "./Loading";
 import { axiosError } from "../utils/axiosError";
 import { getContributorString, getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ContributorTable from "./ContributorTable";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 export default function DynamicMetadataForm({
   fields,
@@ -258,24 +258,24 @@ export default function DynamicMetadataForm({
               {selectedPublication.pubmedId && 
               <>
               <span style={{ paddingLeft: "15px" }}>PMID:&nbsp;</span>
-              <a
-                  href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
+              <a href={`https://pubmed.ncbi.nlm.nih.gov/${selectedPublication.pubmedId}`}
                   target="_blank"
                   rel="noopener noreferrer"
               >
                   {selectedPublication.pubmedId}
+                  <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
               </a>
               </>
               }
               {selectedPublication.doiId && 
               <>
               <span style={{ paddingLeft: "15px" }}>DOI:&nbsp;</span>
-              <a
-                  href={`https://doi.org/${selectedPublication.doiId}`}
+              <a href={`https://doi.org/${selectedPublication.doiId}`}
                   target="_blank"
                   rel="noopener noreferrer"
               >
                   {selectedPublication.doiId}
+                  <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
               </a>
               </>
               }
