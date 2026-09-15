@@ -829,6 +829,7 @@ const Table = (props) => {
                     name="reason"
                     placeholder="Reason for retraction"
                     value={reason}
+                    maxLength={255}
                     onChange={handleChange}
                     required
                     className={"custom-text-fields"}

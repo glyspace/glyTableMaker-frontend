@@ -102,6 +102,7 @@ const Tag = (props) => {
                     <Form.Control
                         type="text"
                         name="tag"
+                        maxLength={255}
                         disabled={existing}
                         placeholder={props.addButton ? "Enter new tag and click Add" : "Enter new tag"}
                         isInvalid={props.validate}

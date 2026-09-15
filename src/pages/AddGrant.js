@@ -110,7 +110,9 @@ const AddGrant = props => {
         <Form.Group as={Row} controlId="grantNumber" className="gg-align-center mb-3">
           <Col xs={12} lg={9}>
             <FormLabel label="Grant Number"/>
-            <Form.Control type="text" name="identifier" value={grant.identifier} onChange={handleChange} />
+            <Form.Control type="text" name="identifier" value={grant.identifier} 
+              maxLength={255}
+              onChange={handleChange} />
           </Col>
         </Form.Group>
 
@@ -118,6 +120,7 @@ const AddGrant = props => {
           <Col xs={12} lg={9}>
             <FormLabel label="Grant Title" />
             <Form.Control type="text" 
+              maxLength={255}
               name="title" value={grant.title} onChange={handleChange} />
           </Col>
         </Form.Group>
@@ -125,7 +128,9 @@ const AddGrant = props => {
         <Form.Group as={Row} controlId="url" className="gg-align-center mb-3">
           <Col xs={12} lg={9}>
             <FormLabel label="URL" />
-            <Form.Control type="url" name="url" value={grant.url} onChange={handleChange} />
+            <Form.Control type="url" name="url" value={grant.url} 
+                maxLength={255}
+                onChange={handleChange} />
             <Feedback message={"Enter valid URL"} />
           </Col>
         </Form.Group>

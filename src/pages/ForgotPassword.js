@@ -65,6 +65,8 @@ const ForgotPassword = () => {
                     placeholder=" "
                     value={userInput.username}
                     onChange={handleChange}
+                    minLength={5}
+                    maxLength={20}
                     required
                     className={"custom-text-fields"}
                   />

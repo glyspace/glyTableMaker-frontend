@@ -1524,6 +1524,7 @@ const Collection = (props) => {
                       value={userSelection.name}
                       onChange={handleChange}
                       required={true}
+                      maxLength={255}
                       isInvalid={validate}
                     />
                     <Feedback message="Name is required"></Feedback>
@@ -1547,7 +1548,7 @@ const Collection = (props) => {
                       onChange={handleChange}
                       required={false}
                       isInvalid={validate}
-                      maxLength={5000}
+                      maxLength={4000}
                     />
                 </Col>
                 </Form.Group>

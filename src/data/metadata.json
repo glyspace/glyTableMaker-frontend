@@ -229,22 +229,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the functional consequence of the genetic alteration using the controlled vocabulary. Choose the term that best reflects the expected effect on gene or protein function.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
                             "Knockout",
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph",
-                            "knockin"
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "gene",
@@ -263,8 +310,8 @@
                         "example": "Home sapiens",
                         "required": true,
                         "requiredWhen": {
-                            "field": "molecularPhenotype",
-                            "value": "knockin"
+                            "field": "geneticVariation",
+                            "value": "Knock-in"
                         },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
@@ -291,7 +338,8 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
+                            "targeted mutagenesis",
+                            "random mutagenesis",
                             "spontanous"
                         ],
                         "datatype": 27
@@ -451,20 +499,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph"
+                            "Knockout",
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "mutantPosition",
@@ -485,7 +582,8 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
+                            "targeted mutagenesis",
+                            "random mutagenesis",
                             "spontanous"
                         ],
                         "datatype": 27
@@ -667,20 +765,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph"
+                            "Knockout",
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "mutantPosition",
@@ -701,7 +848,8 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
+                            "targeted mutagenesis",
+                            "random mutagenesis",
                             "spontanous"
                         ],
                         "datatype": 27
@@ -747,22 +895,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the functional consequence of the genetic alteration using the controlled vocabulary. Choose the term that best reflects the expected effect on gene or protein function.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "knockout",
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph",
-                            "knockin"
+                            "Knockout",
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "gene",
@@ -781,8 +976,8 @@
                         "example": "Home sapiens",
                         "required": true,
                         "requiredWhen": {
-                            "field": "molecularPhenotype",
-                            "value": "knockin"
+                            "field": "geneticVariation",
+                            "value": "Knock-in"
                         },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
@@ -809,7 +1004,8 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
+                            "targeted mutagenesis",
+                            "random mutagenesis",
                             "spontanous"
                         ],
                         "datatype": 27
@@ -922,20 +1118,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph"
+                            "Knockout",
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "mutantPosition",
@@ -956,8 +1201,9 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
-                            "spontanous"
+                            "targeted mutagenesis",
+                            "random mutagenesis",
+                           "spontanous"
                         ],
                         "datatype": 27
                     },
@@ -1119,20 +1365,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the expected functional consequence of the protein alteration. Choose the term that best reflects how the mutation affects protein activity, stability, trafficking, or glycosylation.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph"
+                            "Knockout",
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "mutantPosition",
@@ -1153,8 +1448,9 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
-                            "spontanous"
+                            "targeted mutagenesis",
+                            "random mutagenesis",
+                           "spontanous"
                         ],
                         "datatype": 27
                     },
@@ -1249,22 +1545,69 @@
                         "datatype": 24
                     },
                     {
-                        "id": "molecularPhenotype",
-                        "label": "Molecular Phenotype",
-                        "description": "Specify the functional consequence of the genetic alteration using the controlled vocabulary. Choose the term that best reflects the expected effect on gene or protein function.",
+                        "id": "geneticVariation",
+                        "label": "Genetic variation",
+                        "description": "This field describes the nature of the engineered or naturally occurring genetic change itself, independent of its biological consequences. It captures what was physically altered in the genome. The field should describe the structural modification rather than the expected phenotype.",
                         "required": true,
                         "multiple": false,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "knockout",
-                            "gain of function",
-                            "loss of function",
-                            "Hypermorph",
-                            "Hypomorph",
-                            "knockin"
+                            "Knockout",
+                            "Knock-in",
+                            "Point mutation", 
+                            "Missense mutation", 
+                            "Nonsense mutation", 
+                            "Frameshift mutation", 
+                            "Deletion", 
+                            "Insertion", 
+                            "Duplication", 
+                            "Inversion", 
+                            "Gene replacement", 
+                            "Conditional allele", 
+                            "Transgene insertion", 
+                            "Reporter insertion", 
+                            "Tag insertion"
                         ],
                         "datatype": 25
+                    },
+                    {
+                        "id": "variationType",
+                        "label": "Variation Type",
+                        "description": "This field describes the expected impact of the alteration on gene or protein function. It captures whether activity is increased, decreased, abolished, or unchanged relative to wild type. This is often an inferred consequence based on experimental evidence or biological knowledge rather than the mutation type itself.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Loss of function", 
+                            "Gain of function", 
+                            "Partial loss of function", 
+                            "Increased function", 
+                            "Decreased function", 
+                            "No detectable functional change", 
+                            "Unknown"
+                        ],
+                        "datatype": 35
+                    },
+                    {
+                        "id": "alleleType",
+                        "label": "Allele Type",
+                        "description": "This field captures the degree of gene activity associated with an allele relative to wild type. It provides finer granularity than simple gain- or loss-of-function classifications and is widely used in classical genetics. These terms are especially useful for characterizing partial-function mutants.",
+                        "required": false,
+                        "multiple": false,
+                        "allowOther": true,
+                        "type": "select",
+                        "options": [
+                            "Amorph (null)", 
+                            "Hypomorph", 
+                            "Hypermorph", 
+                            "Neomorph", 
+                            "Antimorph", 
+                            "Wild-type equivalent",
+                            "Unknown"
+                        ],
+                        "datatype": 36
                     },
                     {
                         "id": "gene",
@@ -1283,8 +1626,8 @@
                         "example": "Home sapiens",
                         "required": true,
                         "requiredWhen": {
-                            "field": "molecularPhenotype",
-                            "value": "knockin"
+                            "field": "geneticVariation",
+                            "value": "Knock-in"
                         },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
@@ -1311,7 +1654,8 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "targeted",
+                            "targeted mutagenesis",
+                            "random mutagenesis",
                             "spontanous"
                         ],
                         "datatype": 27

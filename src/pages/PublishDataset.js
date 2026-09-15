@@ -468,6 +468,7 @@ const PublishDataset = (props) => {
                     name="comment"
                     placeholder="Enter description of version changes"
                     value={comment}
+                    maxLength={4000}
                     onChange={handleCommentChange}
                     required
                     className={"custom-text-fields"}
@@ -928,6 +929,7 @@ const PublishDataset = (props) => {
                       name="name"
                       placeholder="Enter name of the dataset"
                       value={userSelection.name}
+                      maxLength={255}
                       onChange={handleChange}
                       required={true}
                       isInvalid={validate}
@@ -953,7 +955,7 @@ const PublishDataset = (props) => {
                       onChange={handleChange}
                       required={false}
                       isInvalid={validate}
-                      maxLength={5000}
+                      maxLength={4000}
                     />
                 </Col>
                 </Form.Group>

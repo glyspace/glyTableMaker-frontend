@@ -282,6 +282,7 @@ const AddCoC = (props) => {
                     <Form.Control
                       type="text"
                       name="name"
+                      maxLength={255}
                       placeholder="Enter name of the collection"
                       value={userSelection.name}
                       onChange={handleChange}
@@ -309,7 +310,7 @@ const AddCoC = (props) => {
                       onChange={handleChange}
                       required={false}
                       isInvalid={validate}
-                      maxLength={5000}
+                      maxLength={4000}
                     />
                 </Col>
                 </Form.Group>
