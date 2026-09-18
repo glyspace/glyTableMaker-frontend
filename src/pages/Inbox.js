@@ -194,9 +194,11 @@ const Inbox = props => {
               <Card>
                 <Card.Body>   
                     {selectedMessage && (
-                <Dialog open={openViewMessage} onClose={handleCloseViewMessage} maxWidth="sm" fullWidth>
+                <Dialog open={openViewMessage} onClose={handleCloseViewMessage} 
+                    scroll="paper"
+                    maxWidth="sm" fullWidth>
                 <DialogTitle>{selectedMessage.title}</DialogTitle>
-                <DialogContent>
+                <DialogContent dividers>
                     <Row>
                         <Col>
                             <FormLabel label="Message:"/>
@@ -264,10 +266,10 @@ const Inbox = props => {
                 <DialogActions>
                     {selectedMessage.type === "Transfer Request" && 
                     <>
-                    <Button onClick={() => {transferDataset(selectedMessage.metadata.datasetHash, true)}}>Accept</Button>
-                    <Button style={{marginRight: "100px"}} onClick={() => {transferDataset(selectedMessage.metadata.datasetHash, false)}}>Reject</Button>
+                    <Button className="gg-btn-blue-sm" onClick={() => {transferDataset(selectedMessage.metadata.datasetHash, true)}}>Accept</Button>
+                    <Button className="gg-btn-blue-sm" style={{marginRight: "100px"}} onClick={() => {transferDataset(selectedMessage.metadata.datasetHash, false)}}>Reject</Button>
                     </>}
-                    <Button onClick={handleCloseViewMessage}>Close</Button>
+                    <Button className="gg-btn-blue-sm" onClick={handleCloseViewMessage}>Close</Button>
                 </DialogActions>
                 </Dialog>)}
 

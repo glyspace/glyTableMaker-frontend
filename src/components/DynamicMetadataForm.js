@@ -23,6 +23,7 @@ import { getContributorString, getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ContributorTable from "./ContributorTable";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { isFieldEmpty, getExclusivityPartners, getXorPartners } from "../utils/metadataExclusivity";
 
 export default function DynamicMetadataForm({
   fields,
@@ -31,7 +32,8 @@ export default function DynamicMetadataForm({
   contributorValue,
   onContributorChange,
   onChange,
-  clearError
+  clearError,
+  xorGroups
 }) {
   const [showLoading, setShowLoading] = useState(false);
   const [alertDialogInput, setAlertDialogInput] = useReducer(
@@ -101,6 +103,19 @@ export default function DynamicMetadataForm({
       }
   }
 
+  const isDisabledByExclusivity = (fieldId) => {
+    const { partners } = getXorPartners(fieldId, xorGroups) || {};
+    if (!partners) return false;
+    return partners.some((partnerId) => !isFieldEmpty(values[partnerId]));
+  };
+
+  const getXorMessage = (fieldId) => {
+    const { partners, message } = getXorPartners(fieldId, xorGroups) || {};
+    if (!partners) return null;
+    const blockedBy = partners.some((partnerId) => !isFieldEmpty(values[partnerId]));
+    return blockedBy ? message : null;
+  };
+
   const renderField = (field) => {
     const label = (
       <>
@@ -119,6 +134,7 @@ export default function DynamicMetadataForm({
     );
 
     if (field.type === "autocomplete") {
+      const disabledByExclusivity = isDisabledByExclusivity(field.id);
       return (
         <FormControl fullWidth variant="outlined">
           <Row>
@@ -132,9 +148,9 @@ export default function DynamicMetadataForm({
             allowOther={field.allowOther}
             namespace={field.id === "tissue" && selectedSpecies !== null && selectedSpecies.id && plant.includes (selectedSpecies.id) ? field.alternativeNamespce : field.namespace}
             placeholder="Start typing"
-            disabled={false}
+            disabled={disabledByExclusivity}
             setInputValue={updateValue}
-            errorText={errors?.[field.id]}
+            errorText={errors?.[field.id] || getXorMessage(field.id)}
           />
           </Col>
           </Row>
@@ -320,6 +336,7 @@ export default function DynamicMetadataForm({
     //
     // SINGLE TEXT
     //
+    const disabledByExclusivity = isDisabledByExclusivity(field.id);
     return (
       <FormControl fullWidth variant="outlined">
         <Row>
@@ -328,9 +345,10 @@ export default function DynamicMetadataForm({
         <TextField
           size="small"
           fullWidth
+          disabled={disabledByExclusivity}
           value={values[field.id] || ""}
           error={!!errors?.[field.id]}
-          helperText={errors?.[field.id]}
+          helperText={errors?.[field.id] || getXorMessage(field.id)}
           onChange={(e) =>
             updateValue(field.id, e.target.value)
           }

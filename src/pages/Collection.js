@@ -23,6 +23,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContributorTable from "../components/ContributorTable";
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
 import { render } from "@testing-library/react";
+import { validateXorGroups } from "../utils/metadataExclusivity";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -649,6 +650,8 @@ const Collection = (props) => {
                     value={sampleType}
                     titleChange={setMetadataDialogTitle}
                     onChange={setSampleType}
+                    clearError={clearValidationError}
+                    xorGroups={metadata.xorGroups}
                 />
                 )
             case 1:
@@ -659,6 +662,7 @@ const Collection = (props) => {
                     errors={validationErrors}
                     onChange={setMetadataValues}
                     clearError={clearValidationError}
+                    xorGroups={metadata.xorGroups}
                 />)
             case 2:
                 return (
@@ -668,6 +672,7 @@ const Collection = (props) => {
                     errors={validationErrors}
                     onChange={setMetadataValues}
                     clearError={clearValidationError}
+                    xorGroups={metadata.xorGroups}
                 />)
             case 3:
                 return (
@@ -679,6 +684,7 @@ const Collection = (props) => {
                     onContributorChange={setContributor}
                     onChange={setMetadataValues}
                     clearError={clearValidationError}
+                    xorGroups={metadata.xorGroups}
                 />)
 
         }
@@ -705,7 +711,8 @@ const Collection = (props) => {
             // validate before going back
             const errors = validateMetadata(
                 metadata["general"],
-                metadataValues
+                metadataValues,
+                metadata.xorGroups
             );
             if (Object.keys(errors).length > 0) {
                 setValidationErrors(errors);
@@ -725,7 +732,8 @@ const Collection = (props) => {
         if (activeStep2 !== 0) {
             const errors = validateMetadata(
                 getFieldsForSection((activeStep2), metadata[sampleType].fields),
-                metadataValues
+                metadataValues,
+                metadata.xorGroups
             );
 
             if (Object.keys(errors).length > 0) {
@@ -925,12 +933,14 @@ const Collection = (props) => {
 
         const errors = validateMetadata(
             metadata[sampleType].fields,
-            metadataValues
+            metadataValues,
+            metadata.xorGroups
         );
 
         const generalErrors = validateMetadata(
             metadata["general"],
-            metadataValues
+            metadataValues,
+            metadata.xorGroups
         );
 
         const allErrors = {...errors,...generalErrors};
@@ -959,7 +969,7 @@ const Collection = (props) => {
         return false;
     };
 
-    function validateMetadata(fields, values) {
+    function validateMetadata(fields, values, xorGroups) {
         const errors = {};
 
         fields.forEach(field => {
@@ -977,6 +987,9 @@ const Collection = (props) => {
                 }
             }
         });
+
+        const xorErrors = validateXorGroups(values, xorGroups);
+        Object.assign(errors, xorErrors);
 
         return errors;
     }
@@ -1226,13 +1239,14 @@ const Collection = (props) => {
                 open={metadataDetailOpen}
                 onClose={() => setMetadataDetailOpen(false)}
                 maxWidth="lg"
+                scroll="paper"
                 fullWidth
             >
                 <DialogTitle>
                     {selectedMetadataField?.label}
                 </DialogTitle>
 
-                <DialogContent>
+                <DialogContent dividers>
                     <ComplexFieldTable
                         field={selectedMetadataField}
                         value={selectedMetadataDetail}

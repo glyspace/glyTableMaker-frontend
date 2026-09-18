@@ -873,6 +873,7 @@ const Glycoprotein = (props) => {
               {showGlycanSelection && (
                 <Dialog
                     maxWidth="lg"
+                    scroll="paper"
                     fullWidth="true"
                     open={showGlycanSelection}
                     onClose={handleClose}

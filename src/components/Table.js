@@ -585,7 +585,7 @@ const Table = (props) => {
             </Tooltip>)}
             {props.showDownload && (
               <Tooltip title="Export">
-              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => download(props.download + row.original[props.rowId])}>
                 <ExitToAppIcon />
               </IconButton>
             </Tooltip>)
@@ -748,19 +748,19 @@ const Table = (props) => {
             </Tooltip>
             }
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
+              <IconButton color="primary" onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
             {props.showDownload && (
               <Tooltip title="Export">
-              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => download(props.download + row.original[props.rowId])}>
                 <ExitToAppIcon />
               </IconButton>
             </Tooltip>)

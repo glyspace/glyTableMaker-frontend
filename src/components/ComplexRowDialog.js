@@ -26,13 +26,14 @@ export default function ComplexRowDialog({
     <Dialog
       open={open}
       maxWidth="md"
+      scroll="paper"
       fullWidth
     >
       <DialogTitle>
         {parent.label}
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent dividers>
         <DynamicMetadataForm
             fields={fields}
             values={row}

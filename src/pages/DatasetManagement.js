@@ -139,10 +139,10 @@ const DatasetManagement = (props) => {
               <Card>
                 <Card.Body>  
 
-               <Dialog open={openGlygenErrorDialog} onClose={handleCloseGlygenErrorDialog} maxWidth="sm" fullWidth>
+               <Dialog open={openGlygenErrorDialog} onClose={handleCloseGlygenErrorDialog} maxWidth="sm" scroll="paper" fullWidth>
                 <DialogTitle>Excluded Records</DialogTitle>
 
-                <DialogContent>
+                <DialogContent dividers>
                     {glygenError.excluded_records.length === 0 ? (
                     <p>No excluded records</p>
                     ) : (

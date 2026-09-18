@@ -251,7 +251,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -521,7 +522,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -787,7 +789,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -917,7 +920,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -1140,7 +1144,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -1387,7 +1392,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -1567,7 +1573,8 @@
                             "Conditional allele", 
                             "Transgene insertion", 
                             "Reporter insertion", 
-                            "Tag insertion"
+                            "Tag insertion",
+                            "Unknown"
                         ],
                         "datatype": 25
                     },
@@ -1776,6 +1783,16 @@
             "multiple": false,
             "type": "text",
             "datatype": 17
+        }
+    ],
+    "xorGroups": [
+        {
+            "fields": ["variant", "cellline"],
+            "message": "Enter either a variant or a cell line, not both."
+        },
+        {
+            "fields": ["variantExpression", "celllineExpression"],
+            "message": "Enter either a variant or a cell line, not both."
         }
     ]
 }

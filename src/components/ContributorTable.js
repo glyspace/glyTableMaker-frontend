@@ -548,6 +548,7 @@ return (
     <Dialog
       maxWidth="lg"
       fullWidth="true"
+      scroll="paper"
       open={props.open}
       onClose={handleClose}
       aria-labelledby="child-modal-title"

@@ -166,6 +166,7 @@ export function MetadataValueRenderer({
             </Tooltip>
             <Dialog
                 open={complexOpen}
+                scroll="paper"
                 onClose={() => setComplexOpen(false)}
                 maxWidth="lg"
                 fullWidth
@@ -174,7 +175,7 @@ export function MetadataValueRenderer({
                     {selectedMetadataField?.label}
                 </DialogTitle>
 
-                <DialogContent>
+                <DialogContent dividers>
                     <ComplexFieldTable
                         field={selectedMetadataField}
                         value={selectedMetadataDetail}
