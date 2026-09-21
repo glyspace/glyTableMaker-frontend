@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Table, Modal } from "react-bootstrap";
 import { AddGrant } from "./AddGrant";
 import { Loading } from "../components/Loading";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const Grants = props => {
   const [showLoading, setShowLoading] = useState(false);
@@ -71,6 +72,7 @@ const Grants = props => {
               {grant.url ? 
               <a href={grant.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{grant.title}</strong>
+                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
               </a> : <strong>{grant.title}</strong>
             }
             </h5>
@@ -81,7 +83,9 @@ const Grants = props => {
               <Col md={3}>{grant.fundingOrganization}</Col>
               <Col>
               {grant.title === "" && grant.url ? 
-              <a href={grant.url} target={"_blank"} rel="noopener noreferrer"><strong>{grant.identifier}</strong></a> :
+              <a href={grant.url} target={"_blank"} rel="noopener noreferrer"><strong>{grant.identifier}</strong>
+              <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+              </a> :
               <strong>{grant.identifier}</strong>
               }</Col>
             </Row>
@@ -110,6 +114,7 @@ const Grants = props => {
             {grant.url ? 
               <a href={grant.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{grant.title}</strong>
+                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
               </a> : <strong>{grant.title}</strong>
             }
             </Col>
@@ -122,7 +127,9 @@ const Grants = props => {
               <Col md={3}>{grant.fundingOrganization}</Col>
               <Col>
               {grant.title === "" && grant.url ? 
-              <a href={grant.url} target={"_blank"} rel="noopener noreferrer"><strong>{grant.identifier}</strong></a> :
+              <a href={grant.url} target={"_blank"} rel="noopener noreferrer"><strong>{grant.identifier}</strong>
+              <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+              </a> :
               <strong>{grant.identifier}</strong>
               }</Col>
             </Row>

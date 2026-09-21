@@ -66,7 +66,7 @@ const items = [
   { label: stringConstants.sidebar.collection, id: "Col", route: stringConstants.routes.collection},
   { label: stringConstants.sidebar.collectioncollection, id: "ColCol", route: stringConstants.routes.collectioncollection },
   { label: stringConstants.sidebar.metadata, id: "Metadata", route: stringConstants.routes.metadata},
-  { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker},
+  { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker, disabled:true},
   { label: stringConstants.sidebar.repository, id: "Repository", route: stringConstants.routes.repository},
 ];  
 

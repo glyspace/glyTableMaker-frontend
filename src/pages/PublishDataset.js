@@ -17,6 +17,7 @@ import { DatabasesOnDataset } from "../components/DatabasesOnDataset";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { PublicationTable } from "../components/PublicationTable";
 import { PublicationCard } from "../components/PublicationCard";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 let idCounter = 1000;
 
@@ -441,12 +442,12 @@ const PublishDataset = (props) => {
                   className="gg-align-center mb-3"
                 >
                   <Col xs={12} lg={12}>
-                  <a
-                    href={selectedLicense.url}
+                  <a href={selectedLicense.url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {selectedLicense.url}
+                    <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                   </a>
                   </Col>
                 </Form.Group>
@@ -467,6 +468,7 @@ const PublishDataset = (props) => {
                     name="comment"
                     placeholder="Enter description of version changes"
                     value={comment}
+                    maxLength={4000}
                     onChange={handleCommentChange}
                     required
                     className={"custom-text-fields"}
@@ -482,6 +484,55 @@ const PublishDataset = (props) => {
         let nextSelectedCollections = [...colList];
         let nextPublications = [...pubList];
         nextSelectedCollections.forEach ((collection) => {
+            if (collection.metadataValues) {
+                var publicationIdentifier = collection.metadataValues["publication"];
+                if (Array.isArray(publicationIdentifier)) {
+                    publicationIdentifier.forEach ((pub) => {
+                        if (publicationCache[pub]) {
+                            const found = nextPublications.find ((p) => (p.pubmedId === pub || p.doiId === pub));
+                            if (!found) {
+                                nextPublications.push (publicationCache[pub]);
+                            }
+                            setPublications([...nextPublications]);
+                        }
+                        else {
+                            // get the publication details
+                            getJson ("api/util/getpublication?identifier=" + pub).then (({ data }) => {
+                                publicationCache[pub] = data.data;
+                                const found = nextPublications.find ((p) => p.id === data.data.id);
+                                if (!found) {
+                                    nextPublications.push (data.data);
+                                }
+                                setPublications([...nextPublications]);
+                            }).catch(function(error) {
+                                axiosError(error, null, setAlertDialogInput);
+                            });
+                        }
+                    })
+                } else {
+                    if (publicationCache[publicationIdentifier]) {
+                        const found = nextPublications.find ((p) => (p.pubmedId === publicationIdentifier || p.doiId === publicationIdentifier));
+                        if (!found) {
+                            nextPublications.push (publicationCache[publicationIdentifier]);
+                        }
+                        setPublications([...nextPublications]);
+                    }
+                    else {
+                        // get the publication details
+                        getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
+                            publicationCache[publicationIdentifier] = data.data;
+                            const found = nextPublications.find ((p) => p.id === data.data.id);
+                            if (!found) {
+                                nextPublications.push (data.data);
+                            }
+                            setPublications([...nextPublications]);
+                        }).catch(function(error) {
+                            axiosError(error, null, setAlertDialogInput);
+                        });
+                    }
+                }
+
+            }
             if (collection.metadata) {
                 collection.metadata.forEach ((metadata) => {
                     if (metadata.type.datatypeId === 2 || metadata.type.name === "Evidence") {
@@ -878,6 +929,7 @@ const PublishDataset = (props) => {
                       name="name"
                       placeholder="Enter name of the dataset"
                       value={userSelection.name}
+                      maxLength={255}
                       onChange={handleChange}
                       required={true}
                       isInvalid={validate}
@@ -903,7 +955,7 @@ const PublishDataset = (props) => {
                       onChange={handleChange}
                       required={false}
                       isInvalid={validate}
-                      maxLength={5000}
+                      maxLength={4000}
                     />
                 </Col>
                 </Form.Group>

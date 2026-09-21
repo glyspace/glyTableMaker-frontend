@@ -62,7 +62,7 @@ const Collections = (props) => {
         enableSorting: false,
       },
       {
-        accessorFn: (row) => row.metadata ? row.metadata.length : 0,
+        accessorFn: (row) => row.metadataValues ? Object.keys(row.metadataValues).length : 0,
         header: '# Metadata Columns',
         id: 'metadata',
         size: 30,

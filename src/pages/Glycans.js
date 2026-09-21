@@ -22,6 +22,7 @@ import { ConfirmationModal } from '../components/ConfirmationModal';
 import FeedbackWidget from "../components/FeedbackWidget";
 import TextAlert from '../components/TextAlert';
 import { postJson } from '../utils/api';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const Glycans = (props) => {
   const [infoError, setInfoError] = useState("");
@@ -100,7 +101,9 @@ const Glycans = (props) => {
         header: 'GlyTouCan ID',
         size: 50,
         Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
-                        {renderedCellValue}</a>
+                        {renderedCellValue}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                        </a>
       },
       {
         accessorKey: 'status',

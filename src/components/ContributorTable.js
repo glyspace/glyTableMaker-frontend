@@ -12,7 +12,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -33,10 +32,8 @@ const ContributorTable = (props) => {
   //keep track of rows that have been edited
   const [editedData, setEditedData] = useState({});
   const [editedSoftwareData, setEditedSoftwareData] = useState({});
-  const [data, setData] = useState(props.user ? props.user : []);
-  const [softwareData, setSoftwareData] = useState(props.software ? props.software : []);
-  const [contributorOpen, setContributorOpen] = useState(false);
-  const [contributor, setContributor] = useState(props.contributor ?? null);
+  const [data, setData] = useState(props.contributor && props.contributor.user ? props.contributor.user : []);
+  const [softwareData, setSoftwareData] = useState(props.contributor && props.contributor.software ? props.contributor.software : []);
 
   const roles = [ "createdBy", "contributedBy", "authoredBy", "curatedBy"];
   const softwareRoles = ["importedFrom","retrievedFrom", "createdWith"];
@@ -268,16 +265,11 @@ const ContributorTable = (props) => {
     [editedSoftwareData, validationSoftwareErrors],
   );
 
- 
-  const handleOpen = () => {
-    setContributorOpen(true);
-  };
-
   const handleClose = (event, reason) => {
       if (reason && reason === "backdropClick")
           return;
       setTextAlertInput({"show": false, id: ""});
-      setContributorOpen(false);
+      props.onClose && props.onClose (event, reason);
   };
 
   //CREATE action
@@ -373,7 +365,7 @@ const ContributorTable = (props) => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Delete">
-          <IconButton color="error" onClick={() => deleteRow(row)}>
+          <IconButton color="error" disabled={!props.edit} onClick={() => deleteRow(row)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -400,6 +392,7 @@ const ContributorTable = (props) => {
     renderTopToolbarCustomActions: ({ table }) => (
       <Button
         variant="contained"
+        disabled={!props.edit}
         onClick={() => {
           table.setCreatingRow(true); //simplest way to open the create row modal with no default values
           //or you can pass in a row object to set default values with the `createRow` helper function
@@ -444,7 +437,7 @@ const ContributorTable = (props) => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Delete">
-          <IconButton disabled={row.id === 1} color="error" onClick={() => deleteSoftwareRow(row)}>
+          <IconButton disabled={row.id === 1 || !props.edit} color="error" onClick={() => deleteSoftwareRow(row)}>
             <DeleteIcon/>
           </IconButton>
         </Tooltip>
@@ -471,6 +464,7 @@ const ContributorTable = (props) => {
     renderTopToolbarCustomActions: ({ table }) => (
       <Button
         variant="contained"
+        disabled={!props.edit}
         onClick={() => {
           table.setCreatingRow(true); //simplest way to open the create row modal with no default values
           //or you can pass in a row object to set default values with the `createRow` helper function
@@ -544,44 +538,18 @@ const getContributorForm = () => {
 }
 
 const handleContributorChange = (values, softwareValues) => {
-  var contrib= "";
-  values && values.map ((value) => {
-    if (contrib.length != 0) { // not the first one
-      contrib += "|";
-    }
-    contrib += value.role + ":" + value.name.trim();
-    contrib += value.email || value.organization ? " (" : "";
-    contrib += value.email ? value.email: "";
-    contrib += value.organization ? (value.email ? ", " + value.organization : value.organization) : "";
-    contrib += value.email || value.organization ? ")" : "";
-  });
-  softwareValues && softwareValues.map ((value) => {
-    if (contrib.length != 0) { // not the first one
-      contrib += "|";
-    }
-    contrib += value.role + ":" + value.name;
-    contrib += value.url ? " (" + value.url + ")" : "";
-  });
-
-  setContributor(contrib);
+  var contrib= {"user" : values, "software": softwareValues};
   props.setContributor && props.setContributor(contrib);
-  setContributorOpen(false);
+  props.onClose && props.onClose();
 }
 
 return (
   <React.Fragment>
-    <TextField 
-         style={{marginRight:"10px", width: '80%'}} 
-         onClick={handleOpen} 
-         inputProps={{ readOnly: true }}
-         error={props.error} 
-         helperText={props.validationMessage}
-         value={contributor} variant="outlined"/>
-    <Button className="gg-btn-blue-reg mt-2" onClick={handleOpen}>Edit</Button>
     <Dialog
       maxWidth="lg"
       fullWidth="true"
-      open={contributorOpen}
+      scroll="paper"
+      open={props.open}
       onClose={handleClose}
       aria-labelledby="child-modal-title"
       aria-describedby="child-modal-description"
@@ -602,8 +570,11 @@ return (
         <TextAlert alertInput={textAlertInput}/>
         <DialogContent dividers>{getContributorForm()}</DialogContent>
         <DialogActions>
+          {props.edit && 
+            <>
             <Button className="gg-btn-outline-reg" onClick={handleClose}>Cancel</Button>
-            <Button className="gg-btn-blue-reg" onClick={handleSaveData}>SAVE</Button>
+            <Button className="gg-btn-blue-reg" disabled={!props.edit} onClick={handleSaveData}>SAVE</Button>
+            </>}
         </DialogActions>
     </Dialog>
   </React.Fragment>

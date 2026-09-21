@@ -42,7 +42,15 @@ const Table = (props) => {
     //table state
     const [columnFilters, setColumnFilters] = useState(props.columnFilters ?? []);
     const [globalFilter, setGlobalFilter] = useState('');
-    const [sorting, setSorting] = useState(props.initialSortColumn ? [{"id":props.initialSortColumn,"desc":true}] : []);
+    const [sorting, setSorting] = useState(() => {
+      if (Array.isArray(props.initialSortColumn)) {
+        return props.initialSortColumn;
+      }
+      if (props.initialSortColumn) {
+        return [{ id: props.initialSortColumn, desc: false }];
+      }
+      return [];
+    });
     const [pagination, setPagination] = useState({
         pageIndex: 0,
         pageSize: 10,
@@ -58,9 +66,8 @@ const Table = (props) => {
       const updated = [];
     
       for (const row of rows) {
-        for (const col of row.columns) { 
-          if (col.glycoproteinColumn === "GlyTouCanID" || col.glycanColumn === "GlytoucanID") {
-            await getCartoonById(col.value).then ((json) => {
+        if (row.glytoucanId) {
+            await getCartoonById(row.glytoucanId).then ((json) => {
                 updated.push({
                 ...row,
                 cartoon: json.data.data, 
@@ -69,8 +76,6 @@ const Table = (props) => {
                   console.log ("could not get the cartoon " + error);
                   updated.push({...row });
             });
-            break;
-          }
         }
       }
     
@@ -580,7 +585,7 @@ const Table = (props) => {
             </Tooltip>)}
             {props.showDownload && (
               <Tooltip title="Export">
-              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => download(props.download + row.original[props.rowId])}>
                 <ExitToAppIcon />
               </IconButton>
             </Tooltip>)
@@ -743,19 +748,19 @@ const Table = (props) => {
             </Tooltip>
             }
             {props.showEdit && (<Tooltip title="Edit">
-              <IconButton onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
+              <IconButton color="primary" onClick={() => props.edit ? navigate(props.edit + row.original[props.rowId]): editRow(row.original)}>
                 <EditIcon />
               </IconButton>
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
             {props.showDownload && (
               <Tooltip title="Export">
-              <IconButton onClick={() => download(props.download + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => download(props.download + row.original[props.rowId])}>
                 <ExitToAppIcon />
               </IconButton>
             </Tooltip>)
@@ -824,6 +829,7 @@ const Table = (props) => {
                     name="reason"
                     placeholder="Reason for retraction"
                     value={reason}
+                    maxLength={255}
                     onChange={handleChange}
                     required
                     className={"custom-text-fields"}

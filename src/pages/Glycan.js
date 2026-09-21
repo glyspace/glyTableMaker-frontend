@@ -346,7 +346,7 @@ const Glycan = (props) => {
               >
             <CloseIcon />
           </IconButton>
-          <DialogContent>
+          <DialogContent dividers>
                  <Loading show={showLoading}></Loading>
                  <div className="gg-align-center mb-3">
                   <MaterialReactTable table={compositionTable} />

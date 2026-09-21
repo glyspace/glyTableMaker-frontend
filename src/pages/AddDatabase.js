@@ -39,6 +39,7 @@ const AddDatabase = props => {
             <Form.Control 
                 type="text" 
                 name="name" 
+                maxLength={255}
                 required 
                 value={database.name} onChange={handleChange} />
           </Col>
@@ -47,14 +48,18 @@ const AddDatabase = props => {
         <Form.Group as={Row} controlId="identifier" className="gg-align-center mb-3">
           <Col xs={12} lg={9}>
             <FormLabel label="Identifier in Database" />
-            <Form.Control type="text" name="identifier" value={database.identifier} onChange={handleChange} />
+            <Form.Control type="text" name="identifier" value={database.identifier} 
+              maxLength={255}
+              onChange={handleChange} />
           </Col>
         </Form.Group>
 
         <Form.Group as={Row} controlId="url" className="gg-align-center mb-3">
           <Col xs={12} lg={9}>
             <FormLabel label="URL" />
-            <Form.Control type="url" name="url" value={database.url} onChange={handleChange} />
+            <Form.Control type="url" name="url" value={database.url} 
+                maxLength={255}
+                onChange={handleChange} />
             <Feedback message={"Enter valid URL"} />
           </Col>
         </Form.Group>

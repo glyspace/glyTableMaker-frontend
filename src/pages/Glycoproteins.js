@@ -12,6 +12,7 @@ import stringConstants from '../data/stringConstants.json';
 import { getAuthorizationHeader, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 import { Link, useNavigate } from "react-router-dom";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const Glycoproteins = (props) => {
 
@@ -38,7 +39,9 @@ const Glycoproteins = (props) => {
             header: 'UniProtKB Accession',
             size: 50,
             Cell: ({renderedCellValue, row}) => <a href={"https://www.uniprot.org/uniprotkb/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
-                        {renderedCellValue}</a>
+                        {renderedCellValue}
+                        <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                        </a>
           },
           {
             accessorKey: 'sequenceVersion', 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Table, Modal } from "react-bootstrap";
 import { Loading } from "../components/Loading";
 import { AddDatabase } from "./AddDatabase";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const Databases = props => {
   const [showLoading, setShowLoading] = useState(false);
@@ -65,6 +66,7 @@ const Databases = props => {
             <h5>
               <a href={database.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{database.name}</strong>
+                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
               </a>
             </h5>
           </div>
@@ -97,6 +99,7 @@ const Databases = props => {
             <Col md={3}>
               <a href={database.url} target={"_blank"} rel="noopener noreferrer">
                 <strong>{database.name}</strong>
+                <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
               </a>
             </Col>
           </Row>

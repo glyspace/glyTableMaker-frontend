@@ -873,6 +873,7 @@ const Glycoprotein = (props) => {
               {showGlycanSelection && (
                 <Dialog
                     maxWidth="lg"
+                    scroll="paper"
                     fullWidth="true"
                     open={showGlycanSelection}
                     onClose={handleClose}
@@ -1066,6 +1067,7 @@ const Glycoprotein = (props) => {
                                 <Form.Control
                                     type="text"
                                     name="name"
+                                    maxLength={255}
                                     placeholder="Enter a name for glycoprotein"
                                     value={userSelection.name}
                                     onChange={handleChange}

@@ -296,3 +296,23 @@ export function CustomToggle({ children, eventKey }) {
       </FontAwesomeIcon>
   );
 }
+
+export function getContributorString (contrib) {
+      var c = "";
+      if (contrib.user && contrib.user.length > 0) {
+          c += contrib.user[0].name;
+          if (contrib.user.length > 1) {
+              c+= " and " + (contrib.user.length - 1);
+              c+= " other(s) are involved";
+          }
+      } 
+      if (contrib.software && contrib.software.length > 0) {
+          if (c.length !== 0) c+= "; ";
+          c += contrib.software[0].name;
+          if (contrib.software.length > 1) {
+              c+= " and " + (contrib.software.length - 1);
+              c+= " tool(s)";
+          }
+      }
+      return c;
+  }
