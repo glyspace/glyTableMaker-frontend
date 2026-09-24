@@ -39,6 +39,10 @@ export default function SampleTypeSelector({
       return "Expressed protein in altered expression system";
     } else if (id === "synthetic") {
       return "Synthetic";
+    } else if (id === "other") {
+      return "Other";
+    } else if (id === "envrionmental_sample") {
+      return "Environmental Sample";
     } else return "";
   }
 
@@ -122,6 +126,16 @@ export default function SampleTypeSelector({
         value="synthetic"
         control={<Radio />}
         label="Synthetic"
+      />
+      <FormControlLabel
+        value="environmental_sample"
+        control={<Radio />}
+        label="Environmental Sample"
+      />
+      <FormControlLabel
+        value="other"
+        control={<Radio />}
+        label="Other"
       />
     </div>
   </RadioGroup>

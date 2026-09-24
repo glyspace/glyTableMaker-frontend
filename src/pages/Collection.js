@@ -13,7 +13,6 @@ import { ConfirmationModal } from "../components/ConfirmationModal";
 import { ScrollToTop } from "../components/ScrollToTop";
 import FeedbackWidget from "../components/FeedbackWidget";
 import CloseIcon from '@mui/icons-material/Close';
-import ArticleIcon from '@mui/icons-material/Article';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SampleTypeSelector from "../components/SampleTypeSelector";
 import DynamicMetadataForm from "../components/DynamicMetadataForm";
@@ -22,7 +21,6 @@ import ComplexFieldTable from "../components/ComplexFieldTable";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContributorTable from "../components/ContributorTable";
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
-import { render } from "@testing-library/react";
 import { validateXorGroups } from "../utils/metadataExclusivity";
 
 const Collection = (props) => {
@@ -719,7 +717,7 @@ const Collection = (props) => {
                 return;
             }
         }
-        if (sampleType === "synthetic" && activeStep2 === 3) {
+        if ((sampleType === "synthetic" || sampleType === "other" || sampleType === "environmental_sample") && activeStep2 === 3) {
             setActiveStep2(0);
         } else if (sampleType === "biological_sample" && activeStep2 === 3) {
             setActiveStep2(1);
@@ -742,7 +740,7 @@ const Collection = (props) => {
             }
         }
 
-        if (sampleType === "synthetic" && activeStep2 === 0) {
+        if ((sampleType === "synthetic" || sampleType === "other" || sampleType === "environmental_sample") && activeStep2 === 0) {
             setActiveStep2(3);
         } else if (sampleType === "biological_sample" && activeStep2 === 1) {
             setActiveStep2(3);
@@ -957,9 +955,11 @@ const Collection = (props) => {
     }
 
     const isFieldRequired = (field, values) => {
-        if (field.requiredWhen) {
+        if (field.requiredWhen && field.requiredWhen.field) {
             const dependentValue = values[field.requiredWhen.field];
             return dependentValue === field.requiredWhen.value;
+        } else if (field.requiredWhen && field.requiredWhen.sampleType) {
+            return field.requiredWhen.sampleType.includes(sampleType);
         }
 
         if (field.required) {
@@ -972,7 +972,7 @@ const Collection = (props) => {
     function validateMetadata(fields, values, xorGroups) {
         const errors = {};
 
-        fields.forEach(field => {
+        fields && fields.forEach(field => {
             const value = values[field.id];
 
             if (isFieldRequired(field, values)) {
@@ -1485,7 +1485,8 @@ const Collection = (props) => {
                     onClose={(event, reason) => {
                         if (reason && reason === "backdropClick")
                             return;
-                        setEnableGlyTableMakerMetadata(false)
+                        setEnableGlyTableMakerMetadata(false);
+                        setValidationErrors({});
                     }}
                 >
                     <DialogTitle id="parent-modal-title">
@@ -1495,7 +1496,10 @@ const Collection = (props) => {
                     </DialogTitle>
                     <IconButton
                         aria-label="close"
-                        onClick={() => setEnableGlyTableMakerMetadata(false)}
+                        onClick={() => {
+                            setEnableGlyTableMakerMetadata(false);
+                            setValidationErrors({});
+                        }}
                         sx={{
                             position: 'absolute',
                             right: 8,
@@ -1516,6 +1520,7 @@ const Collection = (props) => {
                             onClick={()=> {
                                 setActiveStep2(0);
                                 setEnableGlyTableMakerMetadata(false);
+                                setValidationErrors({});
                             }}>Cancel</Button>
                         <Button className="gg-btn-blue-reg"
                             onClick={()=>handleAddNewMetadata()}>Add</Button>

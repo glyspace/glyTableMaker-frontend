@@ -23,7 +23,8 @@ import { getContributorString, getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ContributorTable from "./ContributorTable";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { isFieldEmpty, getExclusivityPartners, getXorPartners } from "../utils/metadataExclusivity";
+import { isFieldEmpty, getXorPartners } from "../utils/metadataExclusivity";
+import DialogAlert from "./DialogAlert";
 
 export default function DynamicMetadataForm({
   fields,
@@ -379,6 +380,11 @@ export default function DynamicMetadataForm({
   return (
     <>
     <TextAlert alertInput={textAlertInput}/>
+    <DialogAlert
+      alertInput={alertDialogInput}
+      setOpen={input => {
+          setAlertDialogInput({ show: input });
+    }}/>
     <Loading show={showLoading}></Loading>
     <Grid 
         container
