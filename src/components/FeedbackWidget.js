@@ -63,8 +63,6 @@ const FeedbackWidget = (props) => {
       message: message,
     };
 
-    const body = JSON.stringify(formData);
-
     postJson ("api/util/sendfeedback", formData).then ( (data) => {
       feedbackSuccess(data);
     }).catch (function(error) {
@@ -332,6 +330,8 @@ const FeedbackWidget = (props) => {
                   )}
                 </Col>
               </Row>
+
+              <OutlinedInput type="text" name="website" style={{display:"none"}} tabindex="-1" autocomplete="off" />
 
               <div className={`alert-success ${contactUsResponseMessage ? "alert" : ""}`}>
                 <strong>{contactUsResponseMessage}</strong>
