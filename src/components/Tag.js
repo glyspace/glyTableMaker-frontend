@@ -62,8 +62,7 @@ const Tag = (props) => {
             <Form.Group
                 as={Row}
                 controlId="tag"
-                className="mb-3"
-            >
+                className="mb-3">
                 <Col xs={2} lg={1}>
                     <Form.Check
                         type="radio"

@@ -198,10 +198,10 @@ export function MetadataValueRenderer({
                         <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.id}
                             <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
                         </a>
-                        )</>
+                        ){" "}</>
                     )
                 }
-                return item.name + " (" + item.id + ")";
+                return item.name + (item.id ? " (" + item.id + ")" : "");
             });
         } else return value.join(", ");
     }
@@ -218,7 +218,7 @@ export function MetadataValueRenderer({
                 )</>
             )
         }
-        return value.name + " (" + value.id + ")";
+        return value.name + (value.id ? " (" + value.id + ")" : "");
     }
 
     return String(value ?? "");

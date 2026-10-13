@@ -992,7 +992,7 @@ const PublicDataset = (props) => {
       // download csv file
       setIsLoading(true);
       setTextAlertInput({"show": false, id: ""});
-      let url = "api/public/downloadtablefordataset/"+datasetId+"?version="+selectedVersion+"&filename=GlygenDataset-" + datasetId;
+      let url = "api/public/downloadtablefordataset/"+datasetId+"?version="+selectedVersion+"&filename=GlyGenDataset-" + datasetId;
       getBlob (url).then ( (data) => {
           const contentDisposition = data.headers.get("content-disposition");
           const fileNameIndex = contentDisposition.indexOf("filename=") + 10;

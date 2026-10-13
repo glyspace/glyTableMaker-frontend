@@ -250,7 +250,7 @@
             {
                 "id": "phenotype",
                 "label": "Phenotype",
-                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, or disease-related.",
+                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, molecular, or disease-related.",
                 "example": "impaired growth",
                 "required": false,
                 "multiple": true,
@@ -278,21 +278,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.", 
@@ -301,22 +286,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -329,13 +338,40 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -357,7 +393,7 @@
                         "required": true,
                         "requiredWhen": {
                             "field": "geneticVariation",
-                            "value": "Knock-in"
+                            "value": "Insertion"
                         },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
@@ -374,11 +410,34 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -540,7 +599,7 @@
             {
                 "id": "phenotype",
                 "label": "Phenotype",
-                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, or disease-related.",
+                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, molecular, or disease-related.",
                 "example": "impaired growth",
                 "required": false,
                 "multiple": true,
@@ -568,21 +627,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.",
@@ -591,22 +635,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -614,18 +682,45 @@
                         "id": "variationType",
                         "label": "Functional Effect on Gene Product",
                         "description": "Describes the biological effect of the genetic alteration on the activity of the encoded gene product. This field captures whether the alteration causes a loss, partial loss, gain, or acquisition of a new function, independent of the underlying genetic change. Use 'No Functional Effect Detected' when no measurable functional change has been reported, or 'Function Unknown' when the effect has not been determined.",
-                        "required": false,
+                        "required": true,
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -639,21 +734,43 @@
                         "type": "text",
                         "datatype": 26
                     },
-                    
                     {
                         "id": "technique",
                         "label": "Technique",
-                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
                         "required": true,
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -837,7 +954,7 @@
             {
                 "id": "phenotype",
                 "label": "Phenotype",
-                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, or disease-related.",
+                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, molecular, or disease-related.",
                 "example": "impaired growth",
                 "required": false,
                 "multiple": true,
@@ -865,21 +982,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.",
@@ -888,22 +990,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -911,18 +1037,45 @@
                         "id": "variationType",
                         "label": "Functional Effect on Gene Product",
                         "description": "Describes the biological effect of the genetic alteration on the activity of the encoded gene product. This field captures whether the alteration causes a loss, partial loss, gain, or acquisition of a new function, independent of the underlying genetic change. Use 'No Functional Effect Detected' when no measurable functional change has been reported, or 'Function Unknown' when the effect has not been determined.",
-                        "required": false,
+                        "required": true,
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -936,21 +1089,43 @@
                         "type": "text",
                         "datatype": 26
                     },
-                    
                     {
                         "id": "technique",
                         "label": "Technique",
-                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
                         "required": true,
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -978,21 +1153,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.", 
@@ -1001,22 +1161,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -1029,13 +1213,40 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -1057,7 +1268,7 @@
                         "required": true,
                         "requiredWhen": {
                             "field": "geneticVariation",
-                            "value": "Knock-in"
+                            "value": "Insertion"
                         },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
@@ -1074,11 +1285,34 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -1193,7 +1427,7 @@
             {
                 "id": "phenotype",
                 "label": "Phenotype",
-                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, or disease-related.",
+                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, molecular, or disease-related.",
                 "example": "impaired growth",
                 "required": false,
                 "multiple": true,
@@ -1221,21 +1455,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.",
@@ -1244,22 +1463,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -1267,18 +1510,45 @@
                         "id": "variationType",
                         "label": "Functional Effect on Gene Product",
                         "description": "Describes the biological effect of the genetic alteration on the activity of the encoded gene product. This field captures whether the alteration causes a loss, partial loss, gain, or acquisition of a new function, independent of the underlying genetic change. Use 'No Functional Effect Detected' when no measurable functional change has been reported, or 'Function Unknown' when the effect has not been determined.",
-                        "required": false,
+                        "required": true,
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -1292,21 +1562,43 @@
                         "type": "text",
                         "datatype": 26
                     },
-                    
                     {
                         "id": "technique",
                         "label": "Technique",
-                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
                         "required": true,
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -1471,7 +1763,7 @@
             {
                 "id": "phenotype",
                 "label": "Phenotype",
-                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, or disease-related.",
+                "description": "Describes an observable phenotype associated with the genetic alteration, protein mutation, or biological background. Phenotypes may be morphological, developmental, physiological, behavioral, cellular, molecular, or disease-related.",
                 "example": "impaired growth",
                 "required": false,
                 "multiple": true,
@@ -1499,21 +1791,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.",
@@ -1522,22 +1799,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -1545,18 +1846,45 @@
                         "id": "variationType",
                         "label": "Functional Effect on Gene Product",
                         "description": "Describes the biological effect of the genetic alteration on the activity of the encoded gene product. This field captures whether the alteration causes a loss, partial loss, gain, or acquisition of a new function, independent of the underlying genetic change. Use 'No Functional Effect Detected' when no measurable functional change has been reported, or 'Function Unknown' when the effect has not been determined.",
-                        "required": false,
+                        "required": true,
                         "multiple": false,
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -1570,21 +1898,43 @@
                         "type": "text",
                         "datatype": 26
                     },
-                    
                     {
                         "id": "technique",
                         "label": "Technique",
-                        "description": "Specify the method used to generate or identify the protein alteration. Include all relevant techniques if multiple methods contributed to creation of the mutant protein.",
+                        "description": "Specify the method used to generate the genetic alteration. Include all relevant techniques if multiple approaches contributed to the final genotype.",
                         "required": true,
                         "multiple": true,
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -1662,21 +2012,6 @@
                         "datatype": 24
                     },
                     {
-                        "id": "mutantOrigin",
-                        "label": "Mutation Origin",
-                        "description": "Indicate whether the mutation arose naturally/spontaneously or was intentionally introduced. This helps distinguish engineered models from naturally occurring variants.",
-                        "required": true,
-                        "multiple": false,
-                        "allowOther": false,
-                        "type": "select",
-                        "options": [
-                            "targeted mutagenesis",
-                            "random mutagenesis",
-                            "spontanous"
-                        ],
-                        "datatype": 27
-                    },
-                    {
                         "id": "geneticVariation",
                         "label": "Genomic Alteration Type",
                         "description": "Describes the type of DNA sequence change affecting the gene or protein. This field captures the structural nature of the variant, such as a substitution, insertion, deletion, or frameshift, independent of how it was generated or its biological effect. Use 'Unknown' if the exact sequence alteration has not been reported.", 
@@ -1685,22 +2020,46 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "Knockout",
-                            "Knock-in",
-                            "Point mutation", 
-                            "Missense mutation", 
-                            "Nonsense mutation", 
-                            "Frameshift mutation", 
-                            "Deletion", 
-                            "Insertion", 
-                            "Duplication", 
-                            "Inversion", 
-                            "Gene replacement", 
-                            "Conditional allele", 
-                            "Transgene insertion", 
-                            "Reporter insertion", 
-                            "Tag insertion",
-                            "Unknown"
+                            { 
+                                "label" : "Single Nucleotide Variant",
+                                "description" : "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001483"
+                            },
+                            { 
+                                "label" : "Insertion",
+                                "description" : "The sequence of one or more nucleotides added between two adjacent nucleotides in the sequence.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000667"
+                            },
+                            { 
+                                "label" : "Deletion",
+                                "description" : "The point at which one or more contiguous nucleotides were excised.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000159"
+                            },
+                            { 
+                                "label" : "Duplication",
+                                "description" : "An insertion which derives from, or is identical in sequence to, nucleotides present at a known location in the genome.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0000035"
+                            },
+                            { 
+                                "label" : "Copy Number Change",
+                                "description" : "A sequence variant where copies of a feature (CNV) are either increased or decreased.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001563"
+                            },
+                            { 
+                                "label" : "Rearrangement",
+                                "description" : "An alteration of the genome that leads to a change in the structure of one or more chromosomes.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001785"
+                            },
+                            { 
+                                "label" : "Gene Fusion",
+                                "description" : "A sequence variant whereby a two genes have become joined.",
+                                "uri": "http://purl.obolibrary.org/obo/SO_0001565"
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "A genomic alteration is known or suspected but the alteration type is not reported."
+                               
+                            }
                         ],
                         "datatype": 25
                     },
@@ -1713,13 +2072,40 @@
                         "allowOther": false,
                         "type": "select",
                         "options": [
-                            "Loss of function", 
-                            "Gain of function", 
-                            "Partial loss of function", 
-                            "Increased function", 
-                            "Decreased function", 
-                            "No detectable functional change", 
-                            "Unknown"
+                            { 
+                                "label" : "Loss of Function (amorph)",
+                                "description" : "The gene product has substantially reduced or absent normal activity.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000688"
+                            },
+                            { 
+                                "label" : "Partial Loss of Function (hypomorph)",
+                                "description" : "The gene product retains some normal activity but functions below wild-type levels.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000690"
+                            },
+                            { 
+                                "label" : "Gain of Function (hypermorph)",
+                                "description" : "The gene product exhibits increased activity relative to the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000696"
+                            },
+                            { 
+                                "label" : "Novel Function (neomorph)",
+                                "description" : "The gene product acquires a new activity or biological function not present in the wild type.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000697"
+                            },
+                            { 
+                                "label" : "Dominant Negative Effect (antimorph)",
+                                "description" : "The altered gene product interferes with the function of the normal gene product.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000695"
+                            },
+                            { 
+                                "label" : "No Functional Effect Detected (wild-type)",
+                                "description" : "No measurable change in function has been observed.",
+                                "uri": "http://purl.obolibrary.org/obo/FBcv_0000294"
+                            },
+                            { 
+                                "label" : "Function Unknown",
+                                "description" : "The functional consequence has not been determined or reported."
+                            }
                         ],
                         "datatype": 35
                     },
@@ -1741,7 +2127,7 @@
                         "required": true,
                         "requiredWhen": {
                             "field": "geneticVariation",
-                            "value": "Knock-in"
+                            "value": "Insertion"
                         },
                         "multiple": false,
                         "namespace": "NCBI Taxonomy",
@@ -1758,11 +2144,34 @@
                         "allowOther": true,
                         "type": "select",
                         "options": [
-                            "X-Ray",
-                            "Chemical",
-                            "Transposon",
-                            "UV",
-                            "Crisp"
+                            { 
+                                "label": "Natural Variation",
+                                "description" : "The alteration occurred naturally and was not intentionally introduced by investigators."
+                            },
+                            { 
+                                "label": "Targeted Genome Engineering",
+                                "description" : "The alteration was intentionally introduced using targeted genome editing or engineering methods."
+                            },
+                            { 
+                                "label": "Gene Transfer",
+                                "description" : "Genetic material was introduced into cells or organisms using a delivery method such as transfection or transduction."
+                            },
+                            { 
+                                "label": "Random Mutagenesis",
+                                "description" : "The alteration was generated through non-targeted mutagenesis methods."
+                            },
+                            { 
+                                "label": "Gene Expression Modulation",
+                                "description" : "Gene expression was experimentally increased or decreased without necessarily modifying the genomic sequence."
+                            },
+                            { 
+                                "label": "Genetic Recombination or Breeding",
+                                "description" : "The alteration was introduced or combined through sexual reproduction, genetic crosses, or recombination-based approaches."
+                            },
+                            { 
+                                "label" : "Unknown",
+                                "description" : "The method used to generate or identify the alteration is not known or not reported."
+                            }
                         ],
                         "datatype": 28
                     }
@@ -1884,17 +2293,121 @@
             "required": true,
             "multiple": true,
             "options": [
-                "MALDI-TOF-TOF",
-                "MS",
-                "MS/MS",
-                "LC-MS/MS",
-                "LC-MS",
-                "CE-MS",
-                "CE-MS/MS",
-                "CE",
-                "HPLC",
-                "GC",
-                "GC-MS"
+                {
+                    "label": "MALDI-TOF-TOF",
+                    "description": "A mass detection method where the sample (usually a large organic molecule or biomolecule) is vaporised and ionised using a high-energy pulsed laser. The sample is held in a matrix (such as crystallised dihydrobenzoic acid) to protect it from direct laser illumination and to separate the sample molecules. The ions are then characterised by two time-of-flight mass-to-charge analysers (where the ions are accelerated to the same (known) kinetic energy and the time taken for each ion to reach a detector at a known distance is measured) in sequence. The first isolates precursor ions of choice using a velocity filter, and the second detects the fragment ions.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0002339"
+                },
+                {
+                    "label": "MS",
+                    "description": "A spectroscopy in which the sample is converted into 'gaseous ions [...] which are then characterized by their mass-to-charge ratios and relative abundances'.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000470"
+                },
+                {
+                    "label": "MS/MS",
+                    "description": "A mass spectrometry involving multiple mass-selection steps, with some form of fragmentation occurring between each stage.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000575"
+                },
+                {
+                    "label": "LC-MS/MS",
+                    "description": "A method where a sample mixture is first separated by liquid chromatography before being ionised and characterised by mass-to-charge ratio and relative abundance using two mass spectrometers in series.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000701"
+                },
+                {
+                    "label": "LC-MS",
+                    "description": "A mass spectrometry in which a sample mixture is first separated by liquid chromatography.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000524"
+                },
+                {
+                    "label": "CE-MS",
+                    "description": "Any method where the sample is first separated by capillary electrophoresis, before being analysed by mass spectrometry.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000702"
+                },
+                {
+                    "label": "CE",
+                    "description": "An electrophoresis that takes place in a capillary.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0001024"
+                },
+                {
+                    "label": "HPLC",
+                    "description": "A liquidâ€“solid chromatography in which the stationary phase consists of very small particles and the inlet pressure is relatively high.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001009"
+                },
+                {
+                    "label": "GC",
+                    "description": "A column chromatography 'in which the mobile phase is a gas.'",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001002"
+                },
+                {
+                    "label": "GC-MS",
+                    "description": "A mass spectrometry in which a sample mixture is first separated by gas chromatography.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000497"
+                },
+                {
+                    "label": "Imaging MS",
+                    "description": "The collection of spatially resolved mass spectra of a sample during microscopy where a pulse laser is used to produce both ionisation and vapourisation and the sample is held in a matrix (such as dihydrobenzoic acid) to protect it from direct laser illumination and to separate the sample molecules. The spectra are used to visualise the spatial distribution of (typically) biomolecules by their molecular masses.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000053"
+                },
+                {
+                    "label": "IMS-MS",
+                    "description": "Spectrometry where the ionic species associated with the peaks in an ion mobility spectrum are identified by a mass spectrometer.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000499"
+                },
+                {
+                    "label": "IMS",
+                    "description": "Spectroscopy where the velocity of gas phase ions in an electric field is measured.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000430"
+                },
+                {
+                    "label": "Gel Electrophoresis",
+                    "description": "A separation method where colloidal particles move at different speeds according to their electrophoretic mobilities in a separation medium consisting of gel, across which an electric field is applied.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001021"
+                },
+                {
+                    "label": "1D NMR",
+                    "description": "Spectroscopy where the energy states of spin-active nuclei placed in a static magnetic field are interrogated by inducing transitions between the states via radio frequency irradiation. Each experiment consists of a sequence of radio frequency pulses with delay periods in between them, and the spectrum is obtained by plotting chemical shift vs. frequency.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000592"
+                },
+                {
+                    "label": "2D NMR",
+                    "description": "A pulsed nuclear magnetic resonance spectroscopy in which a second frequency dimension is employed to disperse the signals and reveal correlations between interacting nuclei.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000598"
+                },
+                {
+                    "label": "1H NMR",
+                    "description": "Spectroscopy where the energy states of 1H nuclei placed in a static magnetic field are interrogated by inducing transitions between the states via radio frequency irradiation. Each experiment consists of a sequence of radio frequency pulses with delay periods in between them.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000593"
+                },
+                {
+                    "label": "IMS",
+                    "description": "Spectroscopy where the velocity of gas phase ions in an electric field is measured.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000430"
+                },
+                {
+                    "label": "TOCSY",
+                    "description": "A pulsed nuclear magnetic resonance spectroscopy that reveals correlations between all nuclei of a spin-system.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000605"
+                },
+                {
+                    "label": "NOESY",
+                    "description": "A pulsed 'nuclear magnetic resonance spectroscopy based on the nuclear Overhauser [enhancement] effect' in which correlations are seen between nuclei that are spatially proximate within a molecule (6 \\AA apart).",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000607"
+                },
+                {
+                    "label": "Solid-state NMR",
+                    "description": "A pulsed nuclear magnetic resonance spectroscopy in which the response of nuclei with non-zero spin, in a solid sample, to a perturbing magnetic field is detected.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000614"
+                },
+                {
+                    "label": "X-ray Crystallography",
+                    "description": "A method for determining structure by directing a beam of X-rays at a single crystal sample and detecting the positions and intensities of the diffracted X-rays as a pattern of spots on a photographic plate. Single crystal X-ray diffraction is used for protein crystallography.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000159"
+                },
+                {
+                    "label": "Cryo-EM",
+                    "description": "Microscopy where the specimen, which is cooled in liquid ethane to 180°C, is bombarded with a finely focused (<10 nm diameter) electron beam with an acceleration voltage 50-150 kV under vacuum and the interaction of the electrons with the specimen produces transmitted, secondary, backscattered and diffracted electrons and characteristic X-rays which are detected.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0002413"
+                }
             ],
             "allowOther": true,
             "type": "select",

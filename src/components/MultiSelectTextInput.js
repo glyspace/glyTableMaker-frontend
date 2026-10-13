@@ -1,6 +1,8 @@
+import { Box, Link, Typography } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import PropTypes from "prop-types";
+import { useMemo } from "react";
 
 /**
  * Multiselect text input component.
@@ -17,13 +19,51 @@ export default function MultiselectTextInput(props) {
     props.setInputValue(props.fieldId, value);
   };
 
+  const optionMap = useMemo(() => {
+    const map = new Map();
+    (props.options || []).forEach((o) => {
+      if (typeof o === "string") map.set(o, { label: o });
+      else map.set(o.label, o);
+    });
+    return map;
+  }, [props.options]);
+
+  const optionLabels = useMemo(() => Array.from(optionMap.keys()), [optionMap]);
+
   return (
     <div>
       <Autocomplete
         freeSolo={props.allowOther}
         multiple={props.multiple}
-        options={props.options}
+        options={optionLabels}
         getOptionLabel={(option) => option}
+        renderOption={(optionProps, option) => {
+          const { key, ...rest } = optionProps;
+          const info = optionMap.get(option);
+          return (
+            <li key={key} {...rest}>
+              <Box>
+                <Typography variant="body2">{option}</Typography>
+                {info?.description && (
+                  <Typography variant="caption" color="text.secondary" display="block">
+                    {info.description}
+                  </Typography>
+                )}
+                {info?.uri && (
+                  <Link
+                    href={info.uri}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="caption"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    More info
+                  </Link>
+                )}
+              </Box>
+            </li>
+          );
+        }}
         classes={{
           option: "auto-option",
           inputRoot: "auto-input-root",

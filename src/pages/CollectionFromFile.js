@@ -1,13 +1,13 @@
 import { Container } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FormLabel, PageHeading } from "../components/FormControls";
+import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DialogAlert from "../components/DialogAlert";
 import { ResumableUploader} from "../components/ResumableUploader";
 import { Loading } from "../components/Loading";
 import stringConstants from "../data/stringConstants.json";
-import { getAuthorizationHeader, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import TextAlert from "../components/TextAlert";
 import { axiosError } from "../utils/axiosError";
 import FeedbackWidget from "../components/FeedbackWidget";
@@ -34,9 +34,51 @@ const CollectionFromFile = props => {
 
   const defaultFileType = "*/*";
   const TABLEMAKER_API = process.env.REACT_APP_API_URL;
+  const [validate, setValidate] = useState(false);
+  const [tagList, setTagList] = useState([]);
+  const [tag, setTag] = useState("");
 
   const fileDetails = {
     fileType: defaultFileType
+  };
+
+  useEffect(() => {
+      // load existing tags
+      getJson ("api/data/getglycantags", getAuthorizationHeader()).then ( (json) => {
+          setTagList(json.data.data);
+        }).catch (function(error) {
+          if (error && error.response && error.response.data) {
+              console.log("Failed to get list of existing tags");
+          } else {
+            axiosError(error, null, props.setAlertDialogInput);
+          }
+        });
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  const handleSelectionChange = e => {
+      let tag = e.target.options[e.target.selectedIndex].value;
+      if (tag !== "") {
+          setTag(tag);
+          setValidate(false);
+      }
+  }
+  
+  const handleInputChange = e => {
+      const val = e.target.value;  
+      if (val.trim().length > 1) {
+          setValidate(false);
+      }
+      //setNewValue(val);
+      setTag(val);
+  };
+
+  const [tagMode, setTagMode] = useState(tag ? "new" : "existing"); // "existing" | "new" | "keepFile"
+
+  const handleTagModeChange = (mode) => {
+    setTagMode(mode);
+    if (mode === "keepFile") setTag(null);
   };
 
   function handleSubmit(e) {
@@ -50,7 +92,7 @@ const CollectionFromFile = props => {
         fileFormat: uploadedCollectionFile.fileFormat,
     }
 
-    postJson (stringConstants.api.importcollection, 
+    postJson (stringConstants.api.importcollection + (tag && tag.length > 1 ? "?tag=" + tag : ""), 
         file, getAuthorizationHeader()).then ( (data) => {
         setShowLoading(false);
         navigate("/collections");
@@ -86,7 +128,6 @@ const CollectionFromFile = props => {
             <Card.Body>
             <TextAlert alertInput={textAlertInput}/>
               <Form noValidate onSubmit={e => handleSubmit(e)} className="mt-4 mb-4">
-
                 {/* File Upload */}
                 <Form.Group as={Row} controlId="fileUploader" className="gg-align-center mb-35">
                   <Col xs={12} lg={9}>
@@ -99,6 +140,69 @@ const CollectionFromFile = props => {
                       setUploadedFile={setUploadedCollectionFile}
                       required={true}
                     />
+                  </Col>
+                      <Col xs={12} lg={9} className="mb-2">
+                        <Row>
+                          <Col xs={1} lg={1}>
+                          <Form.Check
+                              type="radio"
+                              name="tagGroup"
+                              id="keepExistingTag"
+                              checked={tagMode === "keepFile"}
+                              onChange={() => handleTagModeChange("keepFile")}/>
+                          </Col>
+                          <Col>
+                            <FormLabel label="Keep existing glycan tags in the file"/>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col xs={12} lg={9} className="mb-3">
+                        <Row>
+                      <Col xs={2} lg={1}>
+                          <Form.Check
+                              type="radio"
+                              name="tagGroup"
+                              id="existingTag"
+                              checked={tagMode === "existing"}
+                              onChange={() => handleTagModeChange("existing")}/>
+                      </Col>
+                      <Col xs={6} lg={8}>
+                          <Form.Select
+                              disabled={tagMode !== "existing"}
+                              onChange={handleSelectionChange}>
+                              <option value="">Select</option>
+                              {tagList.map((glycanTag, index) => (
+                                  <option value={glycanTag.label} key={index}>
+                                      {glycanTag.label}
+                                  </option>
+                              ))}
+                          </Form.Select>
+                      </Col>
+                      </Row>
+                  </Col>
+                  <Col xs={12} lg={9} className="mb-3">
+                      <Row>
+                      <Col xs={2} lg={1}>
+                          <Form.Check
+                              type="radio"
+                              name="tagGroup"
+                              id="newTag"
+                              checked={tagMode === "new"}
+                              onChange={() => handleTagModeChange("new")}/>
+                      </Col>
+                      <Col xs={6} lg={8}>
+                          <Form.Control
+                              type="text"
+                              name="tag"
+                              maxLength={255}
+                              disabled={tagMode !== "new"}
+                              placeholder={"Enter new tag"}
+                              isInvalid={validate}
+                              onChange={handleInputChange}
+                          />
+                          <Feedback message="Please enter a valid tag" />
+                      </Col>
+                      </Row>
                   </Col>
                 </Form.Group>
 

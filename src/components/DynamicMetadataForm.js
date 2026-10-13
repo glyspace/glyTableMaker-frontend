@@ -13,7 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import MultiAutoComplete from "./MultiAutoComplete";
 import MultiselectTextInput from "./MultiSelectTextInput";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import ComplexFieldTable from "./ComplexFieldTable";
 import MultiTextInput from "./MultiTextInput";
 import TextAlert from "./TextAlert";
@@ -25,6 +25,7 @@ import ContributorTable from "./ContributorTable";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { isFieldEmpty, getXorPartners } from "../utils/metadataExclusivity";
 import DialogAlert from "./DialogAlert";
+import { FormLabel } from "./FormControls";
 
 export default function DynamicMetadataForm({
   fields,
@@ -117,6 +118,18 @@ export default function DynamicMetadataForm({
     return blockedBy ? message : null;
   };
 
+  const hasWildType = (value) => {
+    return value && Array.isArray(value) && value.some (v => v.name === "wild-type");
+  }
+
+  const handleWildTypeChange = (e) => {
+  if (e.target.checked) {
+    updateValue("disease", [{ name: "wild-type" }]);
+  } else {
+    updateValue("disease", []);
+  }
+};
+
   const renderField = (field) => {
     const label = (
       <>
@@ -136,24 +149,42 @@ export default function DynamicMetadataForm({
 
     if (field.type === "autocomplete") {
       const disabledByExclusivity = isDisabledByExclusivity(field.id);
+      const isWildType = field.id === "disease" && hasWildType(values[field.id]);
+      const autocompleteValue =
+        field.id === "disease"
+          ? (values[field.id] || []).filter(v => v.name !== "wild-type")
+          : values[field.id];
       return (
         <FormControl fullWidth variant="outlined">
           <Row>
           <Col xs={2} sm={3}> {label} </Col>
-          <Col xs={10} sm={9}>
+          <Col xs={field.id === "disease" ? "6" : "10"} sm={field.id === "disease" ? "4" : "9"}>
           <MultiAutoComplete
-            inputValue={values[field.id]}
+            inputValue={autocompleteValue}
             fieldId={field.id}
             required={field.required}
             multiple={field.multiple}
             allowOther={field.allowOther}
             namespace={field.id === "tissue" && selectedSpecies !== null && selectedSpecies.id && plant.includes (selectedSpecies.id) ? field.alternativeNamespce : field.namespace}
             placeholder="Start typing"
-            disabled={disabledByExclusivity}
+            disabled={disabledByExclusivity || isWildType}
             setInputValue={updateValue}
             errorText={errors?.[field.id] || getXorMessage(field.id)}
           />
           </Col>
+          {field.id === "disease" &&   
+            <Col sm={4} xs={2}>
+              <Row>
+                <Col sm={1} xs={1}>
+                    <Form.Check
+                        type="checkbox"
+                        name="wildtype"
+                        checked={hasWildType(values[field.id])}
+                        onChange={handleWildTypeChange}/> 
+                  </Col>
+                  <Col><FormLabel label="Wild-Type" /></Col>
+              </Row>
+            </Col>}
           </Row>
         </FormControl>
       
@@ -172,7 +203,7 @@ export default function DynamicMetadataForm({
             required={field.required}
             multiple={field.multiple}
             allowOther={field.allowOther}
-            placeholder="Select"
+            placeholder={field.allowOther ? "Select or Enter other value" : "Select"}
             setInputValue={updateValue}
             options={field.options}
             errorText={errors?.[field.id]}
