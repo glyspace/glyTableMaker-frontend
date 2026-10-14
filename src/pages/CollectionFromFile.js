@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Feedback, FormLabel, PageHeading } from "../components/FormControls";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import DialogAlert from "../components/DialogAlert";
@@ -21,6 +21,8 @@ const CollectionFromFile = props => {
 
   const [showLoading, setShowLoading] = useState(false);
   const [uploadedCollectionFile, setUploadedCollectionFile] = useState();
+  const location = useLocation();
+  const [collectionType, setCollectionType] = useState((location.state && location.state.collectionType) ?? "GLYCAN");
   const [alertDialogInput, setAlertDialogInput] = useReducer(
     (state, newState) => ({ ...state, ...newState }),
     { show: false, id: "" }
@@ -37,6 +39,8 @@ const CollectionFromFile = props => {
   const [validate, setValidate] = useState(false);
   const [tagList, setTagList] = useState([]);
   const [tag, setTag] = useState("");
+  const [prefix, setPrefix] = useState("");
+  const [postfix, setPostfix] = useState("");
 
   const fileDetails = {
     fileType: defaultFileType
@@ -74,6 +78,13 @@ const CollectionFromFile = props => {
       setTag(val);
   };
 
+  const handleChange = e => {
+      const val = e.target.value; 
+      const name = e.target.name;
+      if (name === "prefix") setPrefix (val);
+      else setPostfix (val); 
+  };
+
   const [tagMode, setTagMode] = useState(tag ? "new" : "existing"); // "existing" | "new" | "keepFile"
 
   const handleTagModeChange = (mode) => {
@@ -92,7 +103,13 @@ const CollectionFromFile = props => {
         fileFormat: uploadedCollectionFile.fileFormat,
     }
 
-    postJson (stringConstants.api.importcollection + (tag && tag.length > 1 ? "?tag=" + tag : ""), 
+    var url = stringConstants.api.importcollection + (tag && tag.length > 0 ? "?tag=" + tag : "");
+    if (prefix & prefix.length > 0) {
+      url += "&prefix=" + prefix;
+    } else if (postfix && postfix.length > 0) {
+      url += "&postfix=" + postfix;
+    }
+    postJson (url, 
         file, getAuthorizationHeader()).then ( (data) => {
         setShowLoading(false);
         navigate("/collections");
@@ -141,6 +158,10 @@ const CollectionFromFile = props => {
                       required={true}
                     />
                   </Col>
+                 
+                  <Col xs={12} lg={9}>
+                    <FormLabel label="Handle possible duplicate tags"/>
+                  </Col>
                       <Col xs={12} lg={9} className="mb-2">
                         <Row>
                           <Col xs={1} lg={1}>
@@ -152,7 +173,7 @@ const CollectionFromFile = props => {
                               onChange={() => handleTagModeChange("keepFile")}/>
                           </Col>
                           <Col>
-                            <FormLabel label="Keep existing glycan tags in the file"/>
+                            <Form.Label>Keep existing glycan tags in the file</Form.Label>
                           </Col>
                         </Row>
                       </Col>
@@ -204,6 +225,33 @@ const CollectionFromFile = props => {
                       </Col>
                       </Row>
                   </Col>
+                  {collectionType === "GLYCOPROTEIN" &&
+                  <Col xs={12} lg={9} className="mb-3">
+                  <Row>
+                  <Col xs={12}>
+                  <FormLabel label="Rename Glycoproteins (if necessary)"/>
+                  </Col>
+                  <Col>
+                    <FormLabel label="Prepend" className="required-asterik" />
+                    <Form.Control
+                      type="text"
+                      name="prefix"
+                      placeholder="Enter text to prepend"
+                      onChange={handleChange}
+                      maxLength={10}
+                    />
+                  </Col>
+                  <Col>
+                    <FormLabel label="Append" className="required-asterik" />
+                    <Form.Control
+                      type="text"
+                      name="postfix"
+                      placeholder="Enter text to append"
+                      onChange={handleChange}
+                      maxLength={10}
+                    />
+                  </Col>
+                  </Row></Col>}
                 </Form.Group>
 
                 <div className="text-center">

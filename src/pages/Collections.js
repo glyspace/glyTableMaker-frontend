@@ -166,8 +166,19 @@ const Collections = (props) => {
                   })}>
                 Add Glycoprotein Collection
                 </Button>
-                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.importcollection)}>
-                Import Collection From File
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.importcollection,
+                  {
+                    state: { collectionType: "GLYCAN" }
+                  }
+                )}>
+                Import Glycan Collection From File
+                </Button>
+                <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" onClick={()=> navigate(stringConstants.routes.importcollection,
+                  {
+                    state: { collectionType: "GLYCOPROTEIN" }
+                  }
+                )}>
+                Import Glycoprotein Collection From File
                 </Button>
               </div>
               <Table 
