@@ -103,11 +103,26 @@ const CollectionFromFile = props => {
         fileFormat: uploadedCollectionFile.fileFormat,
     }
 
-    var url = stringConstants.api.importcollection + (tag && tag.length > 0 ? "?tag=" + tag : "");
-    if (prefix & prefix.length > 0) {
-      url += "&prefix=" + prefix;
-    } else if (postfix && postfix.length > 0) {
-      url += "&postfix=" + postfix;
+    var url = stringConstants.api.importcollection;
+    if (tag && tag.length > 0) {
+      url += "?tag=" + tag;
+      if (prefix & prefix.length > 0) {
+        url += "&prefix=" + prefix;
+      }
+      if (postfix && postfix.length > 0) {
+        url += "&postfix=" + postfix;
+      }
+    } else {
+      if (prefix & prefix.length > 0) {
+        url += "?prefix=" + prefix;
+      } 
+      if (postfix && postfix.length > 0) {
+        if (url.includes("prefix")) {
+          url += "&postfix=" + postfix;
+        } else {
+          url += "?postfix=" + postfix;
+        }
+      }
     }
     postJson (url, 
         file, getAuthorizationHeader()).then ( (data) => {
