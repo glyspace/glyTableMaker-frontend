@@ -125,7 +125,7 @@ const Collection = (props) => {
     };
 
     // new metadata 
-    const [sampleType, setSampleType] = useState("");
+    const [sampleType, setSampleType] = useState("biological_sample");
     const [enableGlyTableMakerMetadata, setEnableGlyTableMakerMetadata] = useState(false);
     const [activeStep2, setActiveStep2] = useState(0);
     const [metadataValues, setMetadataValues] = React.useState({});
@@ -156,6 +156,14 @@ const Collection = (props) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionId]);
+
+    useEffect(() => {
+        setContributor(
+            hasContributor(metadataValues.contributor)
+            ? getContributorString(metadataValues.contributor)
+            : ""
+        );
+    }, [metadataValues.contributor]);
 
     // Block navigation inside the app when there are unsaved changes
     useEffect(() => {
@@ -259,6 +267,9 @@ const Collection = (props) => {
     } 
    });*/
 
+    const hasContributor = (c) =>
+        !!c && ((c.user && c.user.length > 0) || (c.software && c.software.length > 0));
+
     function getProfile() {
         getJson ("api/account/user/" + username, getAuthorizationHeader()).then (({ data }) => {
             if (data.data) {
@@ -275,12 +286,9 @@ const Collection = (props) => {
                softwareArray.push(tableMakerSoftware);
 
                let contrib = {"user": userArray, "software": softwareArray}
-               setMetadataValues(prev => ({
-                    ...prev,
-                    contributor: contrib
-                    }));
-                var c = getContributorString(contrib);
-                setContributor(c);
+               setMetadataValues(prev =>
+                    hasContributor(prev.contributor) ? prev : { ...prev, contributor: contrib }
+                );
             }
             
         }).catch(function(error) {
@@ -309,7 +317,12 @@ const Collection = (props) => {
         getJson ("api/data/getcollection/" + collectionId, getAuthorizationHeader())
             .then ((json) => {
                 setUserSelection (json.data.data);
-                setMetadataValues (json.data.data.metadataValues ?? {});
+                const fetched = json.data.data.metadataValues ?? {};
+                setMetadataValues(prev => ({
+                    ...fetched,
+                    contributor: !isCopy && hasContributor(fetched.contributor) ? fetched.contributor : prev.contributor
+                }));
+                //setMetadataValues (json.data.data.metadataValues ?? {});
                 setSampleType (json.data.data.sampleType?.toLowerCase());
                 if (json.data.data.glycans) {
                     setSelectedGlycans (json.data.data.glycans);
