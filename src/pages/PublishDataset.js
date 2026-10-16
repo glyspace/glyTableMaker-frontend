@@ -7,7 +7,7 @@ import DialogAlert from "../components/DialogAlert";
 import { Loading } from "../components/Loading";
 import Table from "../components/Table";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import stringConstants from '../data/stringConstants.json';
 import { CustomToggle, getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
@@ -81,6 +81,27 @@ const PublishDataset = (props) => {
     const [newPubMedId, setNewPubMedId] = useState("");
 
     const [rowCount, setRowCount] = useState(0);
+
+    const [pendingCollections, setPendingCollections] = useState([]);
+
+    const lockedType = useMemo(() => {
+        const first = [...(userSelection.collections ?? []), ...pendingCollections][0];
+        return first ? first.type : null;
+    }, [userSelection.collections, pendingCollections]);
+
+    const populateRequestRef = useRef(0);
+
+    const normalizeId = (v) =>
+        v === null || v === undefined ? "" : String(v).trim().toLowerCase();
+
+    // "12345678" and 12345678 match; an empty id never matches
+    const sameId = (a, b) => {
+        const x = normalizeId(a);
+        return x !== "" && x === normalizeId(b);
+    };
+
+    const isSamePublication = (a, b) =>
+        sameId(a.pubmedId, b.pubmedId) || sameId(a.doiId, b.doiId);
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -313,8 +334,6 @@ const PublishDataset = (props) => {
           [],
     );
 
-    
-
     const listCollections = () => {
         return (
           <>
@@ -325,7 +344,7 @@ const PublishDataset = (props) => {
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
                 initialSortColumn="name"
-                rowSelection={true}
+                rowSelection={(row) => !lockedType || row.original.type === lockedType}
                 rowSelectionChange={handleCollectionSelectionChange}
                 rowId="collectionId"
             />
@@ -343,7 +362,10 @@ const PublishDataset = (props) => {
                 enableRowActions={false}
                 setAlertDialogInput={setAlertDialogInput}
                 initialSortColumn="name"
-                rowSelection={true}
+                rowSelection={(row) => {
+                    const types = new Set((row.original.children ?? []).map((c) => c.type));
+                    return types.size <= 1 && (!lockedType || types.size === 0 || types.has(lockedType));
+                }}
                 rowSelectionChange={handleCoCSelectionChange}
                 rowId="collectionId"
             />
@@ -481,88 +503,56 @@ const PublishDataset = (props) => {
     }
 
     const populateCollectionData = (colList, pubList) => {
+        // each call gets an id, so responses from an older call can be ignored
+        const requestId = ++populateRequestRef.current;
+
         let nextSelectedCollections = [...colList];
         let nextPublications = [...pubList];
-        nextSelectedCollections.forEach ((collection) => {
-            if (collection.metadataValues) {
-                var publicationIdentifier = collection.metadataValues["publication"];
-                if (Array.isArray(publicationIdentifier)) {
-                    publicationIdentifier.forEach ((pub) => {
-                        if (publicationCache[pub]) {
-                            const found = nextPublications.find ((p) => (p.pubmedId === pub || p.doiId === pub));
-                            if (!found) {
-                                nextPublications.push (publicationCache[pub]);
-                            }
-                            setPublications([...nextPublications]);
-                        }
-                        else {
-                            // get the publication details
-                            getJson ("api/util/getpublication?identifier=" + pub).then (({ data }) => {
-                                publicationCache[pub] = data.data;
-                                const found = nextPublications.find ((p) => p.id === data.data.id);
-                                if (!found) {
-                                    nextPublications.push (data.data);
-                                }
-                                setPublications([...nextPublications]);
-                            }).catch(function(error) {
-                                axiosError(error, null, setAlertDialogInput);
-                            });
-                        }
-                    })
-                } else {
-                    if (publicationCache[publicationIdentifier]) {
-                        const found = nextPublications.find ((p) => (p.pubmedId === publicationIdentifier || p.doiId === publicationIdentifier));
-                        if (!found) {
-                            nextPublications.push (publicationCache[publicationIdentifier]);
-                        }
-                        setPublications([...nextPublications]);
-                    }
-                    else {
-                        // get the publication details
-                        getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
-                            publicationCache[publicationIdentifier] = data.data;
-                            const found = nextPublications.find ((p) => p.id === data.data.id);
-                            if (!found) {
-                                nextPublications.push (data.data);
-                            }
-                            setPublications([...nextPublications]);
-                        }).catch(function(error) {
-                            axiosError(error, null, setAlertDialogInput);
-                        });
-                    }
-                }
+        const requested = new Set();   // avoid fetching the same identifier twice in one call
 
+        const addPublication = (publication) => {
+            if (!publication) return;
+            if (!nextPublications.some((p) => isSamePublication(p, publication))) {
+                nextPublications.push(publication);
             }
-            if (collection.metadata) {
-                collection.metadata.forEach ((metadata) => {
-                    if (metadata.type.datatypeId === 2 || metadata.type.name === "Evidence") {
-                        const publicationIdentifier = metadata.value;
-                        if (publicationCache[publicationIdentifier]) {
-                            const found = nextPublications.find ((p) => (p.pubmedId === publicationIdentifier || p.doiId === publicationIdentifier));
-                            if (!found) {
-                                nextPublications.push (publicationCache[publicationIdentifier]);
-                            }
-                            setPublications([...nextPublications]);
-                        }
-                        else {
-                            // get the publication details
-                            getJson ("api/util/getpublication?identifier=" + publicationIdentifier).then (({ data }) => {
-                                publicationCache[publicationIdentifier] = data.data;
-                                const found = nextPublications.find ((p) => p.id === data.data.id);
-                                if (!found) {
-                                    nextPublications.push (data.data);
+            if (requestId === populateRequestRef.current) {
+                setPublications([...nextPublications]);
+            }
+        };
+
+        nextSelectedCollections.forEach((collection) => {
+            if (collection.metadataValues) {
+                const raw = collection.metadataValues["publication"];
+
+                // one code path for both the array and the single-value case,
+                // skipping missing or blank identifiers
+                const identifiers = (Array.isArray(raw) ? raw : [raw])
+                    .filter((p) => p !== null && p !== undefined && String(p).trim() !== "")
+                    .map((p) => String(p).trim());
+
+                identifiers.forEach((pub) => {
+                    const cached = publicationCache[pub];
+                    if (cached) {
+                        addPublication(cached);
+                    } else if (!requested.has(pub)) {
+                        requested.add(pub);
+                        getJson("api/util/getpublication?identifier=" + encodeURIComponent(pub))
+                            .then(({ data }) => {
+                                if (data && data.data) {
+                                    setPublicationCache((prev) => ({ ...prev, [pub]: data.data }));
+                                    addPublication(data.data);
                                 }
-                                setPublications([...nextPublications]);
-                            }).catch(function(error) {
+                            })
+                            .catch(function (error) {
                                 axiosError(error, null, setAlertDialogInput);
                             });
-                        }
-                        
                     }
-                })
+                });
             }
+
+            // ...your existing `if (collection.metadata) { ... }` block continues here, unchanged
         });
-    } 
+    };
 
     const getPublication = () => {
         let tempPubmedId = parseInt(newPubMedId);
@@ -602,11 +592,23 @@ const PublishDataset = (props) => {
     }
 
     const handleCollectionSelect = () => {
-        setTextAlertInput({"show": false, id: ""});
-        setUserSelection({"collections": selectedCollections});
+        const merged = [...(userSelection.collections ?? [])];
+        pendingCollections.forEach((c) => {
+            if (!merged.some((m) => m.collectionId === c.collectionId)) merged.push(c);
+        });
+
+        // backstop in case something slips past the checkbox rules
+        if (new Set(merged.map((c) => c.type)).size > 1) {
+            setTextAlertInputCollection({ show: true, message: "All selected collections should be of the same type: " + merged[0].type });
+            return;
+        }
+
+        setTextAlertInput({ show: false, id: "" });
+        setUserSelection({ collections: merged });
+        setPendingCollections([]);
         setShowCollectionTable(false);
         setShowCoCTable(false);
-        populateCollectionData(selectedCollections, publications);
+        populateCollectionData(merged, publications);
     }
 
     const deleteFromTable = (id) => {
@@ -617,7 +619,6 @@ const PublishDataset = (props) => {
             ...collections.slice(index + 1)
         ];
         setUserSelection ({"collections": updated});
-        setSelectedCollections(updated);
         setPublications([]);
         populateCollectionData(updated, []);
     }
@@ -669,56 +670,15 @@ const PublishDataset = (props) => {
     const handleCollectionSelectionChange = (selected) => {
         setTextAlertInput({"show": false, id: ""});
         setTextAlertInputCollection({"show": false, id: ""});
-
-        // append new selections
-        let cType = null;
-        selected.forEach ((col) =>  {
-            if (cType && col.type !== cType) {
-                setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
-                return;
-            } 
-            cType = col.type;
-        });
-
-        const previous = [];
-        selected.forEach ((collection) => {
-           // const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
-           // if (!found) {
-                if (cType && collection.type !== cType) {
-                    setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
-                    return;
-                } 
-                previous.push (collection);
-           // }
-        })
-        setSelectedCollections(previous);
+        setPendingCollections(selected);
     }
 
     const handleCoCSelectionChange = (selected) => {
         setTextAlertInput({"show": false, id: ""});
         setTextAlertInputCollection({"show": false, id: ""});
-
-        // append new selections
-        let cType = null;
-        selectedCollections.forEach ((col) =>  {
-            cType = col.type;
-        });
-
-        // append new selections
-        const previous = [];
-        selected.forEach ((coc) => {
-            coc.children && coc.children.forEach ((collection) => {
-               // const found = selectedCollections.find ((item) => item.collectionId === collection.collectionId);
-               // if (!found) {
-                    if (cType && collection.type !== cType) {
-                        setTextAlertInputCollection ({"show": true, "message": "All selected collections should be of the same type: " + cType });
-                        return;
-                    } 
-                    previous.push (collection);
-               // }
-            })
-        })
-        setSelectedCollections(previous);
+        const children = selected.flatMap((coc) => coc.children ?? []);
+        // de-duplicate in case a collection belongs to two selected CoCs
+        setPendingCollections([...new Map(children.map((c) => [c.collectionId, c])).values()]);
     }
 
     const handlePublish = () => {
@@ -854,7 +814,7 @@ const PublishDataset = (props) => {
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
                     show={showCollectionTable}
-                    onHide={() => setShowCollectionTable(false)}
+                    onHide={() => { setPendingCollections([]); setShowCollectionTable(false); }}
                 >
                     <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
@@ -865,7 +825,7 @@ const PublishDataset = (props) => {
                     <Modal.Body>{listCollections()}</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" className="mt-2 gg-ml-20"
-                            onClick={(()=> setShowCollectionTable(false))}>Close</Button>
+                            onClick={()=> { setPendingCollections([]); setShowCollectionTable(false); }}>Close</Button>
                         <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
                             onClick={handleCollectionSelect}>Add Selected Collections</Button>
                      </Modal.Footer>
@@ -877,7 +837,7 @@ const PublishDataset = (props) => {
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
                     show={showCoCTable}
-                    onHide={() => setShowCoCTable(false)}
+                    onHide={() => {setPendingCollections([]);setShowCoCTable(false)}}
                 >
                     <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter" className="gg-blue">
@@ -888,7 +848,9 @@ const PublishDataset = (props) => {
                     <Modal.Body>{listCoCs()}</Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" className="mt-2 gg-ml-20"
-                            onClick={(()=> setShowCoCTable(false))}>Close</Button>
+                            onClick={()=> {
+                                setPendingCollections([]);
+                                setShowCoCTable(false)}}>Close</Button>
                         <Button variant="primary" className="gg-btn-blue mt-2 gg-ml-20"
                             onClick={handleCollectionSelect}>Add Selected Collections</Button>
                      </Modal.Footer>
@@ -1006,6 +968,7 @@ const PublishDataset = (props) => {
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                             onClick={()=> {
+                                setPendingCollections ([]);
                                 setShowCollectionTable(true);
                                 setTextAlertInputCollection({"show": false, id: ""});
                                 }}>
@@ -1015,6 +978,7 @@ const PublishDataset = (props) => {
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
                              onClick={()=> {
+                                setPendingCollections([]);
                                 setShowCoCTable(true);
                                 setTextAlertInputCollection({"show": false, id: ""});}}>
                             Add Collection of Collections

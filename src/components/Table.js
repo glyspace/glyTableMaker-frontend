@@ -416,7 +416,8 @@ const Table = (props) => {
                 } 
             };
             // remove from selected if it is not in rowSelection anymore
-            selected.map ((row, index) => {
+            selected = selected.filter((row) => rowSelection[row[props.rowId]]);
+            /*selected.map ((row, index) => {
                 // if it does not exist in selected, remove it
                 var found = typeof row[props.rowId] === "number" ? 
                     rowSelection[row[props.rowId].toString()] 
@@ -424,7 +425,7 @@ const Table = (props) => {
                 if (!found) {
                     selected.splice (index, 1);
                 }
-            });
+            });*/
             setSelectedData(selected);
             props.rowSelectionChange (selected);
         }
@@ -435,6 +436,7 @@ const Table = (props) => {
         data : props.data ? props.data : data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
+        enableSelectAll: props.enableSelectAll ?? props.rowSelection,
         enableSorting: props.enableSorting ?? true,
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
@@ -541,6 +543,7 @@ const Table = (props) => {
         data: props.data ? props.data : data, //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
+        enableSelectAll: props.enableSelectAll ?? props.rowSelection,
         enableSorting: props.enableSorting ?? true,
         positionActionsColumn: 'last',
         renderRowActions: ({ row }) => (
@@ -718,6 +721,7 @@ const Table = (props) => {
         data: props.data ? props.data : [], //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableRowActions: props.enableRowActions,
         enableRowSelection: props.rowSelection,
+        enableSelectAll: props.enableSelectAll ?? props.rowSelection,
         positionActionsColumn: 'last',
         globalFilterFn: 'contains',
         renderRowActions: ({ row }) => (
@@ -892,7 +896,7 @@ Table.propTypes = {
     showDownload: PropTypes.bool, // whether to add download icon to actions
     downloadTable: PropTypes.func, // download table function to add to the toolbar
     initialSortColumn: PropTypes.string,   // required, name of the column to sort initially
-    rowSelection: PropTypes.bool,  // whether to show row selection checkboxes
+    rowSelection: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),  // whether to show row selection checkboxes
     setSelectedRows: PropTypes.func,
     rowId: PropTypes.string, // required, which field to use as the row identifier
     selected: PropTypes.object, // optional, already selected row id map
@@ -903,6 +907,7 @@ Table.propTypes = {
     deleteAll: PropTypes.bool, // whether to put deleteSelected button or not
     deleteAllws: PropTypes.string, // delete multiple items API
     rowSelectionChange: PropTypes.func, // function to handle row selection
+    enableSelectAll: PropTypes.bool // whether to allow select all for tables with selection
   };
 
 export default Table;

@@ -801,9 +801,14 @@ const Collection = (props) => {
                             previous.push (glycan);
                         }
                     }
-                })
-                setSelectedGlycans(previous);
-                setUserSelection({"glycans": previous});
+                });
+
+                loadCartoons(previous).then((updated) => {
+                    setSelectedGlycans(updated);
+                    setUserSelection({"glycans": updated});
+                });
+                //setSelectedGlycans(previous);
+                //setUserSelection({"glycans": previous});
             } else { // glycoproteins
                 const previous = userSelection.glycoproteins && userSelection.glycoproteins.length ? [...userSelection.glycoproteins] : [];
                 json.data.data.objects.forEach ((glycoprotein) => {
