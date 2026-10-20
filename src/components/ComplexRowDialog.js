@@ -19,7 +19,8 @@ export default function ComplexRowDialog({
   clearError,
   onClose,
   onChange,
-  onSave
+  onSave,
+  xorGroups
 }) {
 
   return (
@@ -40,6 +41,7 @@ export default function ComplexRowDialog({
             errors={errors}
             clearError={clearError}
             onChange={onChange}
+            xorGroups={xorGroups}
         />
       </DialogContent>
 

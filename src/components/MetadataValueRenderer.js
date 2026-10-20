@@ -225,11 +225,13 @@ export function MetadataValueRenderer({
 }
 
 function getComplexFieldSummary (field, value) {
+    const items = Array.isArray(value) ? value : (value ? [value] : []);
     var displayValue = "";
     if (field.id === "perturbation") {
-        if (value?.length > 0) {
-            const perturbation = value[0];
-
+        var perturbation;
+        if (items.length > 0) {
+            perturbation = items[0];
+        
             const drugCount = perturbation.drug?.length || 0;
             const chemicalCount = perturbation.chemical?.length || 0;
             const radiationCount = perturbation.radiation?.length || 0;
@@ -240,7 +242,7 @@ function getComplexFieldSummary (field, value) {
                 `${radiationCount} radiation(s)`;
         }
     } else if (field.id === "geneticBackgroundAlteration") {
-        displayValue = value
+        displayValue = items
             .map(v =>
                 `${v.gene}${
                     v.mutantPosition ? ` (${v.mutantPosition})` : ""
@@ -248,7 +250,7 @@ function getComplexFieldSummary (field, value) {
             )
             .join(", ");
     } else if (field.id === "analyzedProteinMutation") {
-        displayValue = value
+        displayValue = items
             .map(v =>
                 `${v.geneticVariation}${
                     v.mutantPosition ? ` (${v.mutantPosition})` : ""
@@ -256,7 +258,9 @@ function getComplexFieldSummary (field, value) {
             )
             .join(", ");
     } else if (field.id === "expressionSystem") {
-        displayValue = value.species.name;
+        if (items.length > 0) {
+            displayValue = items[0].speciesExpression?.name ?? "";
+        }
     } else {
         return JSON.stringify (value);
     }

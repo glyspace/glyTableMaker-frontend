@@ -21,19 +21,28 @@ export default function MultiAutoComplete (props) {
 	 * @param {string} reason event reason.
 	 **/
 	const handleChange = async (event, value, reason) => {
-        console.log("Reason" + reason);
-		/*if (!(event === null && value === "" && reason === "reset")){
-			props.setInputValue(props.fieldId, value);
-		} */
-
         if (reason === "clear" || reason === "removeOption") {
             props.setInputValue(props.fieldId, value);
             return;
         }
-        if (reason === "selectOption") {
-            if (props.multiple) {
-                const newestValue = value[value.length - 1];
 
+        const isFreeText = reason === "createOption" || reason === "blur";
+        if (reason === "blur") {
+            if (enableMultiValueSelect) return;
+            if (!props.multiple) {
+                // nothing new was typed, so there is nothing to look up
+                const current = props.inputValue;
+                const currentName = typeof current === "string" ? current : current?.name;
+                if (value === currentName) return;
+            }
+        }
+        if (reason === "selectOption" || isFreeText) {
+            if (props.multiple) {
+                let newestValue = value[value.length - 1];
+                if (isFreeText) {
+                    if (typeof newestValue !== "string" || newestValue.trim() === "") return;
+                    newestValue = newestValue.trim();
+                }
                 const canonical = await getCanonicalForm(props.namespace, newestValue);
 
                 if (!canonical) {
@@ -45,17 +54,22 @@ export default function MultiAutoComplete (props) {
                         return;
                     }
                 }
-
+                if (isFreeText && !props.allowOther && canonical.id === null) return;
                 const updated = [...value.slice(0, value.length - 1),canonical];
                 props.setInputValue(props.fieldId, updated);
                 return;
             }
 
-            const canonical = await getCanonicalForm(props.namespace, value);
-            if (!canonical) return;
-            if (canonical) {
-                props.setInputValue(props.fieldId, canonical);
+            let text = value;
+            if (isFreeText) {
+                if (typeof text !== "string" || text.trim() === "") return;
+                text = text.trim();
             }
+
+            const canonical = await getCanonicalForm(props.namespace, text);
+            if (!canonical) return;
+            if (isFreeText && !props.allowOther && canonical.id === null) return;
+            props.setInputValue(props.fieldId, canonical);
         }
 	};
 
@@ -136,9 +150,7 @@ export default function MultiAutoComplete (props) {
                                                         id: getIdFromUri(canonicalForm[0].uri),
                                                         uri: canonicalForm[0].uri};
                                 if (props.multiple) {
-                                    const current = [...props.inputValue];
-                                    current[current.length - 1] = canonical;
-                                    props.setInputValue(props.fieldId, current);
+                                    props.setInputValue(props.fieldId, [...(props.inputValue ?? []), canonical]);
                                 } else {
                                     props.setInputValue(props.fieldId, canonical);
                                 }
@@ -204,17 +216,11 @@ return (
     {enableMultiValueSelect && multiValueDialog()} 
     <Autocomplete
         freeSolo
+        autoSelect={!!props.allowOther}
         disabled={props.disabled}
         multiple={props.multiple}
         value={props.inputValue ?? (props.multiple ? [] : null)}
         onInputChange={onInputChange}
-        onClose={(event, reason) => {
-            console.log("closing reason " + reason );
-           /* if ((reason === "selectOption" || reason === "blur")) {
-                getCanonicalForm (props.namespace, 
-                    reason === "selectOption" ? event.target.textContent : event.target.value);
-            }*/
-        }}
         isOptionEqualToValue={(option, value) => option?.id === value?.id}
         options={options}
         onChange={handleChange}

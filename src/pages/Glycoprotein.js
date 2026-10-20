@@ -33,10 +33,7 @@ const Glycoprotein = (props) => {
     const [showLoading, setShowLoading] = useState(false);
     const [showAddSite, setShowAddSite] = useState(false);
     const [showEditSite, setShowEditSite] = useState(false);
-    const [showPosition, setShowPosition] = useState(true);
     const [showGlycanSelection, setShowGlycanSelection] = useState(false);
-    const [showStartEnd, setShowStartEnd] = useState(false);
-    const [showAlternatives, setShowAlternatives] = useState(false);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -58,8 +55,6 @@ const Glycoprotein = (props) => {
     const [gType, setGType] = useState(null);
     const [gsType, setGsType] = useState (null);
 
-    const[start, setStart] = useState(null);
-    const[end, setEnd] = useState(null);
 
     const [requiredVersion, setRequiredVersion] = useState("");
 
@@ -73,15 +68,33 @@ const Glycoprotein = (props) => {
         sites : [],
     };
 
-    const siteState = {
+    const emptyPosition = () => ({ "location": -1, "aminoAcid": "" });
+
+    const emptySite = () => ({
         siteId: null,
         type: "EXPLICIT",
         new: null,
         glycosylationSubType: "",
         glycosylationType: "",
         glycans: [],
-        positions: [{"location" : -1, "aminoAcid": ""}],
-    }
+        positions: [emptyPosition()],
+    });
+
+    const siteState = emptySite();
+
+    const buildPositions = (site) => {
+            const list = site.position && site.position.positionList;
+            if (list && list.length > 0) return list;
+            const needed = (site.type === "RANGE" || site.type === "ALTERNATIVE") ? 2 : 1;
+            return Array.from({ length: needed }, emptyPosition);
+        };
+    
+    // empty boxes are stored as -1, show nothing for them
+    const displayLocation = (loc) => (loc === null || loc === undefined || loc < 0 ? "" : loc);
+
+    const subtypesFor = (typeName) =>
+        [""].concat(typeList.filter(t => t.name === typeName).map(t => t.subtype).flat());
+
 
     const aminoacidMap = {
         "A" : "Ala",
@@ -111,6 +124,10 @@ const Glycoprotein = (props) => {
     const reducer = (state, newState) => ({ ...state, ...newState });
     const [userSelection, setUserSelection] = useReducer(reducer, initialState);
     const [siteSelection, setSiteSelection] = useReducer(reducer, siteState);
+    const showPosition = siteSelection.type !== "UNKNOWN";
+    const showStartEnd = siteSelection.type === "RANGE";
+    const showAlternatives = siteSelection.type === "ALTERNATIVE";
+
     const [selectedGlycans, setSelectedGlycans] = useState([]);
 
     useEffect(() => {
@@ -147,22 +164,7 @@ const Glycoprotein = (props) => {
                     // set the sites properly
                     let sites = [];
                     json.data.data.sites && json.data.data.sites.forEach ((site) => {
-                        let position = [];
-                        if (!site.position) {
-                            if (site.type !== "UNKNOWN") {
-                                position = [{"location" : -1, "aminoAcid": ""}]
-                            } else if (site.type === "RANGE" || site.type === "ALTERNATIVE") {
-                                position = [{"location" : -1, "aminoAcid": ""}, {"location" : -1, "aminoAcid": ""}]
-                            }
-                        } else if (!site.position.positionList) {
-                            if (site.type !== "UNKNOWN") {
-                                position = [{"location" : -1, "aminoAcid": ""}]
-                            } else if (site.type === "RANGE" || site.type === "ALTERNATIVE") {
-                                position = [{"location" : -1, "aminoAcid": ""}, {"location" : -1, "aminoAcid": ""}]
-                            }
-                        } else {
-                            position = site.position.positionList;
-                        }
+                        const position = buildPositions(site);
                         sites.push ({
                             "siteId" : site.siteId,
                             "type": site.type,
@@ -414,10 +416,7 @@ const Glycoprotein = (props) => {
             ...sites.slice(index + 1)
         ];
         setUserSelection ({"sites": updated});
-        setSiteSelection ({ "siteId": null, "new": null, "type": "EXPLICIT", "glycans": [], "glycosylationType" : "", "glycosylationSubType": "",
-            "positions": [{"location" : -1, "aminoAcid": ""}]});
-        setStart(null);
-        setEnd(null);
+        setSiteSelection (emptySite());
     }
 
     const deleteFromGlycanTable = (id) => {
@@ -431,16 +430,55 @@ const Glycoprotein = (props) => {
     }
 
     const editSite = (site) => {
-        setSiteSelection(site);
-        site.positions.map ((position, index) => {
-            if (index == 0) {
-                setStart(position.location);
-            }
-            if (index == 1) {
-                setEnd(position.location);
-            }
+        const type = site.type ?? "EXPLICIT";
+        const needed = (type === "RANGE" || type === "ALTERNATIVE") ? 2 : 1;
+        // work on copies, so cancelling the dialog leaves the saved site untouched
+        const positions = (site.positions ?? []).map ((p) => ({ ...p }));
+        while (positions.length < needed) positions.push (emptyPosition());
+ 
+        setSiteSelection({
+            ...emptySite(),
+            ...site,
+            "positions": positions,
+            // GlycanTypeTable edits these entries in place, so they need copying too, not just the array
+            "glycans": site.glycans ? site.glycans.map ((g) => ({ ...g })) : [],
         });
+        setSubtypes(subtypesFor(site.glycosylationType));
+        setGType(site.glycosylationType || null);
+        setGsType(site.glycosylationSubType || null);
         setShowEditSite(true);
+    }
+
+    const isValidLocation = (loc) => {
+        const n = Number(loc);
+        return Number.isInteger(n) && n >= 1 && !!userSelection.sequence && n <= userSelection.sequence.length;
+    }
+
+    const isPositionInvalid = (pos, index) => {
+        if (!pos || pos.location === -1 || pos.location === null || pos.location === undefined) return false;
+        if (!isValidLocation(pos.location) || pos.aminoAcid === "Invalid") return true;
+        if (siteSelection.type === "RANGE" && index === 1) {
+            const startLocation = siteSelection.positions[0].location;
+            if (isValidLocation(startLocation) && Number(pos.location) < Number(startLocation)) return true;
+        }
+        return false;
+    }
+
+    const getPositionsError = () => {
+        const type = siteSelection.type;
+        const positions = siteSelection.positions;
+        const required = (type === "RANGE" || type === "ALTERNATIVE") ? 2 : 1;
+        // an alternative site can have more than two positions, and every box that was added has to be filled in
+        const toCheck = type === "ALTERNATIVE" ? positions : positions.slice(0, required);
+
+        if (toCheck.length < required || toCheck.some ((p) => p.location === -1)) {
+            return required === 1 ? "At least one position must be specified!" : "At least two positions must be specified!";
+        }
+        if (toCheck.some ((p, i) => isPositionInvalid(p, i))) {
+            return "Positions must be valid numbers within the protein sequence" +
+                (type === "RANGE" ? ", and the end position cannot be before the start position." : ".");
+        }
+        return null;
     }
 
     const handleAddSite = () => {
@@ -454,131 +492,79 @@ const Glycoprotein = (props) => {
             }
         }
         if (showPosition) {
-            let error = true;
-            if (!showStartEnd && !showAlternatives) {
-                siteSelection.positions.forEach ((pos) => {
-                    if (pos.location > 0) error = false;
-                });
-                if (error) {
-                    setTextAlertSiteInput ({"show": true, "message": "At least one position must be specified!"});
-                    return;
-                }
-            } else {
-                // at least two positions must be specified
-                if (siteSelection.positions.length < 2) {
-                    setTextAlertSiteInput ({"show": true, "message": "At least two positions must be specified!"});
-                    return;
-                }
-                if (siteSelection.positions[0].location < 0 || siteSelection.positions[1].location < 0) {
-                    setTextAlertSiteInput ({"show": true, "message": "At least two positions must be specified!"});
-                    return;
-                }
+            const positionsError = getPositionsError();
+            if (positionsError) {
+                setTextAlertSiteInput ({"show": true, "message": positionsError});
+                return;
             }
         }
 
         if (!siteSelection.siteId) {
             // new site
-            siteSelection.siteId = newId++;
-            siteSelection.new = true;
-            sites.push (siteSelection);   
+            sites.push ({ ...siteSelection, "siteId": newId++, "new": true }); 
         } else {
             // update existing
             const index = sites.findIndex ((item) => item["siteId"] === siteSelection.siteId);
             if (index !== -1) {
-                sites[index].positions = siteSelection.positions;
-                sites[index].new = false;
-                sites[index].glycans = siteSelection.glycans;
-                sites[index].glycosylationSubType = siteSelection.glycosylationSubType;
-                sites[index].type = siteSelection.type;
-                sites[index].glycosylationType = siteSelection.glycosylationType;
+                sites[index] = {
+                    ...sites[index],
+                    "positions": siteSelection.positions,
+                    "glycans": siteSelection.glycans,
+                    "glycosylationSubType": siteSelection.glycosylationSubType,
+                    "type": siteSelection.type,
+                    "glycosylationType": siteSelection.glycosylationType,
+                };
             }
         }
         setUserSelection ({"sites": sites});
-        setSiteSelection ({ "siteId": null, "new": null, "type": "EXPLICIT", "glycans": [], "glycosylationType" : "", "glycosylationSubType": "",
-            "positions": [{"location" : -1, "aminoAcid": ""}]});
-        setStart(null);
-        setEnd(null);
+        setSiteSelection (emptySite());
         setSubtypes([""]);
+        setGType(null);
+        setGsType(null);
         setShowAddSite(false);
         setShowEditSite(false);
     }
 
     const handleTypeChange = e => {
         setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
-        const selected = e.target.options[e.target.selectedIndex].value;
-        setSiteSelection ({"type" : selected});
-        setShowPosition(selected !== "UNKNOWN");
-        setShowStartEnd(selected === "RANGE");
-        if (selected === "RANGE" || selected === "ALTERNATIVE") {
-            const positions = [...siteSelection.positions];
-            if (positions.length > 0) {
-                positions.forEach ((pos) => pos.aminoAcid = "");
-            }
-            if (positions.length < 2) {
-                positions.push ({
-                    "location": -1,
-                    "aminoAcid": "",
-                });
-            }
-            if (positions.length < 2) {
-                positions.push ({
-                    "location": -1,
-                    "aminoAcid": "",
-                });
-            }
-            setSiteSelection ({"positions" : positions});
-        } else {
-            setSiteSelection ({"positions" : [{"location" : -1, "aminoAcid": ""}]});
-        }
-        setShowAlternatives (selected === "ALTERNATIVE");
-        setStart(null);
-        setEnd(null);
+        const selected = e.target.value;
+        const needed = (selected === "RANGE" || selected === "ALTERNATIVE") ? 2 : 1;
+
+        let positions = selected === "UNKNOWN" ? [] : siteSelection.positions.map ((p) => ({ ...p }));
+        if (selected === "EXPLICIT") positions = positions.slice(0, 1);
+        if (selected === "RANGE") positions = positions.slice(0, 2);
+        while (positions.length < needed) positions.push (emptyPosition());
+
+        setSiteSelection ({"type": selected, "positions": positions});
     };
 
     const handleGlycosylationTypeChange = e => {
         setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
         const name = e.target.name;
-        const selected = e.target.options[e.target.selectedIndex].value;
-        setSiteSelection({[name] : selected});
+        const selected = e.target.value;
         if (name === "glycosylationType") {
-            var types = typeList.filter(type => type.name === e.target.value).map(type => type.subtype).flat();
-            types = [""].concat(types);
-            setSubtypes(types);
+            setSiteSelection({"glycosylationType": selected, "glycosylationSubType": ""});
+            setSubtypes(subtypesFor(selected));
             setGType (selected);
+            setGsType (null);
         } else {
+            setSiteSelection({[name] : selected});
             setGsType(selected);
         }
     }
 
     const handlePositionChange = (e, index, minValue) => {
         setTextAlertSiteInput ({"show": false, "id": "", "message": ""});
-        setValidate(false);
-        const val = e.target.value;
-        const positions = [...siteSelection.positions];
-        if (positions[index]) {
-            try {
-                const num = Number.parseInt(val);
-                if (Number.isNaN(num)) {
-                    throw new Error("Invalid number format");
-                }
-                if (num < 0 || num > userSelection.sequence.length)
-                    throw new Error("Invalid number range");
-                if (minValue && num < minValue) {
-                    throw new Error("Invalid number range");
-                }
-                positions[index].location = num;
-                positions[index].aminoAcid = getAminoAcidFromSequence(positions[index].location);
-                if (index == 0) setStart(num);
-                if (index == 1) setEnd(num);
-            } catch (error) {
-                setValidate(true);
-                if (index == 0) setStart(null);
-                if (index == 1) setEnd(null);
-                return null;
-            }
-        }
-       
-        setSiteSelection ("positions", positions);   
+        const text = e.target.value.trim();
+        // ignore anything that is not a number, the box keeps what it had
+        if (text !== "" && !/^\d+$/.test(text)) return;
+
+        const num = text === "" ? -1 : Number.parseInt(text, 10);
+        const positions = siteSelection.positions.map ((p, i) => {
+            if (i !== index) return p;
+            return { ...p, "location": num, "aminoAcid": isValidLocation(num) ? getAminoAcidFromSequence(num) : "" };
+        });
+        setSiteSelection ({"positions": positions});
     }
 
     const getAminoAcidFromSequence = (location) => {
@@ -662,7 +648,7 @@ const Glycoprotein = (props) => {
             if (!glycan.glycan.glytoucanID || glycan.glycan.glytoucanID.length === 0) {
                 // error, not allowed to select this for the collection
                 setTextAlertInput ({"show": true, 
-                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycanId + " is not added."
+                    "message": "You are not allowed to add glycans that are not registered to GlyTouCan to the collection. You may need to wait for the registration to be completed or resolve errors if there are any! Glycan " + glycan.glycan.glycanId + " is not added."
                 });
                 ScrollToTop();
             } else {
@@ -715,9 +701,9 @@ const Glycoprotein = (props) => {
                             type="text"
                             name={"position"}
                             placeholder="Enter the position"
-                            value={start}
+                            value={displayLocation(pos.location)}
                             onChange={(e)=> handlePositionChange(e, index)}
-                            isInvalid={validate}
+                            isInvalid={isPositionInvalid(pos, index)}
                             />
                             <Feedback message="Position should be a valid number within the range" />
                         </Col>
@@ -761,9 +747,9 @@ const Glycoprotein = (props) => {
                   type="text"
                   name={"position"}
                   placeholder="Enter the position"
-                  value={start}
+                  value={displayLocation(siteSelection.positions[0].location)}
                   onChange={(e)=>handlePositionChange(e, 0)}
-                  isInvalid={validate}
+                  isInvalid={isPositionInvalid(siteSelection.positions[0], 0)}
                   />
                   <Feedback message="Position should be a valid number within the range" />
               </Col>
@@ -786,10 +772,10 @@ const Glycoprotein = (props) => {
                     <Form.Control
                     type="text"
                     name={"position"}
-                    value={end}
+                    value={displayLocation(siteSelection.positions[1].location)}
                     placeholder="Enter the position"
-                    onChange={(e)=>handlePositionChange(e, 1, siteSelection.positions[0].location)}
-                    isInvalid={validate}
+                    onChange={(e)=>handlePositionChange(e, 1)}
+                    isInvalid={isPositionInvalid(siteSelection.positions[1], 1)}
                     />
                     <Feedback message="Position should be a valid number within the range" />
                 </Col>
@@ -855,7 +841,7 @@ const Glycoprotein = (props) => {
                 </Row>
                 <div style={{"textAlign": "right", "marginTop" : "10px", "marginBottom" : "10px"}}>
                 <Button variant="contained" className="gg-btn-blue mt-2 gg-ml-20" 
-                    onClick={()=> setShowGlycanSelection(true)}>
+                    onClick={()=> { setSelectedGlycans(siteSelection.glycans); setShowGlycanSelection(true); }}>
                          Add Glycan(s)
                 </Button>
                 </div>
@@ -1126,14 +1112,10 @@ const Glycoprotein = (props) => {
                         <div className="text-right mb-3">
                             <Button variant="contained" className="gg-btn-blue mt-2" 
                                 onClick={()=> {
-                                    setSiteSelection ({ "siteId": null, "new": null, "type": "EXPLICIT", "glycans": [], 
-                                        "glycosylationType" : "", "glycosylationSubType": "",
-                                        "positions": [{"location" : -1, "aminoAcid": ""}]});
-                                    setStart(null);
-                                    setEnd(null);
-                                    setShowStartEnd(false);
-                                    setShowAlternatives(false);
-                                    setShowPosition(true);
+                                    setSiteSelection (emptySite());
+                                    setSubtypes([""]);
+                                    setGType(null);
+                                    setGsType(null);
                                     setShowAddSite(true);
                                     setSelectedGlycans([]);
                                 }}>

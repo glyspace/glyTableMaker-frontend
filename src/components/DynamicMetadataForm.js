@@ -218,11 +218,12 @@ export default function DynamicMetadataForm({
       {label}
       <ComplexFieldTable
         field={field}
-        value={values[field.id] || []}
+        value={values[field.id]}
         errors={errors?.[field.id]}
-        onChange={(rows) =>
-          updateValue(field.id, rows)
+        onChange={(newValue) =>
+          updateValue(field.id, newValue)
         }
+        xorGroups={xorGroups}
       />
       </>);
     }
@@ -396,6 +397,7 @@ export default function DynamicMetadataForm({
           <Button
             className={"example-btn"}
             variant="link"
+            disabled={disabledByExclusivity}
             onClick={() => {
               updateValue(field.id, field.example);
             }}

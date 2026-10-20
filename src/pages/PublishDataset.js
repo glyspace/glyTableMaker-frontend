@@ -94,7 +94,6 @@ const PublishDataset = (props) => {
     const normalizeId = (v) =>
         v === null || v === undefined ? "" : String(v).trim().toLowerCase();
 
-    // "12345678" and 12345678 match; an empty id never matches
     const sameId = (a, b) => {
         const x = normalizeId(a);
         return x !== "" && x === normalizeId(b);

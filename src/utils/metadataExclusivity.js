@@ -2,7 +2,7 @@ export function isFieldEmpty(value) {
   if (value === null || value === undefined) return true;
   if (typeof value === "string") return value.trim() === "";
   if (Array.isArray(value)) return value.length === 0;
-  if (typeof value === "object") return !value.name && !value.id; // MultiAutoComplete canonical shape
+  if (typeof value === "object") return !value.name && !value.id; 
   return false;
 }
 

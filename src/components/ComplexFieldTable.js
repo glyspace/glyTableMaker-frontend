@@ -17,13 +17,23 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ComplexRowDialog from "./ComplexRowDialog";
 
+const toRows = (value) => {
+  if (value === null || value === undefined || value === "") return [];
+  return Array.isArray(value) ? value : [value];
+};
+
 export default function ComplexFieldTable({
   field,
   value = [],
   errors,
   onChange, 
-  readOnly=false
+  readOnly=false,
+  xorGroups
 }) {
+
+  const handleRows = (nextRows) => onChange (field.multiple ? nextRows : (nextRows[0] ?? null));
+  const rows = toRows(value);
+
   const [open, setOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [rowErrors, setRowErrors] = useState({});
@@ -53,15 +63,15 @@ export default function ComplexFieldTable({
     setRowErrors({});
     setEditIndex(index);
     setCurrentRow(
-      JSON.parse(JSON.stringify(value[index]))
+      JSON.parse(JSON.stringify(rows[index]))
     );
     setOpen(true);
   };
 
   const handleDelete = (index) => {
-    const rows = [...value];
-    rows.splice(index, 1);
-    onChange(rows);
+    const next = [...rows];
+    next.splice(index, 1);
+    handleRows(next);
   };
 
   const isFieldRequired = (field, values) => {
@@ -112,15 +122,15 @@ export default function ComplexFieldTable({
     }
     
     setRowErrors({});
-    const rows = [...value];
+    const next = [...rows];
 
     if (editIndex === null) {
-      rows.push(currentRow);
+      next.push(currentRow);
     } else {
-      rows[editIndex] = currentRow;
+      next[editIndex] = currentRow;
     }
 
-    onChange(rows);
+    handleRows(next);
     setOpen(false);
   };
 
@@ -176,7 +186,7 @@ export default function ComplexFieldTable({
         </TableHead>
 
         <TableBody>
-          {value.map((row, index) => (
+          {rows.map((row, index) => (
             <TableRow key={index}>
               {field.fields.map((subField) => (
                 <TableCell key={subField.id}>
@@ -209,7 +219,7 @@ export default function ComplexFieldTable({
       </Table>
 
       {!readOnly && 
-      (field.multiple || value.length === 0) && (
+      (field.multiple || rows.length === 0) && (
       <Button
         startIcon={<AddIcon />}
         variant="outlined"
@@ -230,6 +240,7 @@ export default function ComplexFieldTable({
         onClose={() => setOpen(false)}
         onChange={setCurrentRow}
         onSave={handleSave}
+        xorGroups={xorGroups}
       />
     </>
   );

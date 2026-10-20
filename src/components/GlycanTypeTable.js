@@ -159,15 +159,15 @@ const GlycanTypeTable = (props) => {
             },
         },
         columns,
-        data: props.data ? props.data : [], //data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+        data: props.data ? props.data : [], 
         getRowId: (row) => row[props.rowId],
-        editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
+        editDisplayMode: 'table', 
         enableEditing: true,
         enableRowActions: props.enableRowActions,
         renderRowActions: ({ row }) => (
           <Box sx={{ display: 'flex', gap: '1rem' }}>
             <Tooltip title="Delete">
-              <IconButton color="error" onClick={() => props.delete && props.delete(row.original[props.rowId])}>
+              <IconButton color="error" onClick={() => props.delete && props.delete(row.original.glycan?.glycanId ?? row.original[props.rowId])}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
