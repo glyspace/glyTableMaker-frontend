@@ -162,7 +162,6 @@ export default function MultiAutoComplete (props) {
         )
     }
 
-
     async function getCanonicalForm(namespace, value) {
         const response = await postJson(
             "api/util/getcanonicalform?namespace=" +

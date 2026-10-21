@@ -69,6 +69,11 @@ const PublicDataset = (props) => {
         getJson (stringConstants.api.getpublicdataset + "/" + datasetId).then ((data) => {
             if (data.data.data.removed) {
               // do not display the data
+              setIsLoading(false);
+              const details = "When: " + new Date(data.data.data.retraction.retractionDate).toLocaleString() 
+                        + "\nReason: " + data.data.data.retraction.reason;
+              setRetractionData ([{"retracted": true, "title" : "This dataset has been removed!", 
+                                  "description" : "Details (if any): \n" + details}]);
               return;
             }
             setDataset (data.data.data);

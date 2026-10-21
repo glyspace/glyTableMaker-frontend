@@ -232,14 +232,20 @@ function getComplexFieldSummary (field, value) {
         if (items.length > 0) {
             perturbation = items[0];
         
-            const drugCount = perturbation.drug?.length || 0;
-            const chemicalCount = perturbation.chemical?.length || 0;
-            const radiationCount = perturbation.radiation?.length || 0;
+            const counts = [
+                [perturbation.drug?.length || 0, "drug(s)"],
+                [perturbation.chemical?.length || 0, "chemical(s)"],
+                [perturbation.radiation?.length || 0, "radiation(s)"],
+                [perturbation.nutrient?.length || 0, "nutrient(s)"],
+                [perturbation.condition?.length || 0, "condition(s)"],
+                [perturbation.pathogen?.length || 0, "pathogen(s)"],
+                [perturbation.other?.length > 0 ? 1 : 0, "other(s)"],
+            ];
 
-            displayValue =
-                `${drugCount} drug(s), ` +
-                `${chemicalCount} chemical(s), ` +
-                `${radiationCount} radiation(s)`;
+            displayValue = counts
+                .filter(([count]) => count > 0)
+                .map(([count, label]) => `${count} ${label}`)
+                .join(", ") || "No perturbation";
         }
     } else if (field.id === "geneticBackgroundAlteration") {
         displayValue = items

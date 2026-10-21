@@ -21,7 +21,7 @@ import ComplexFieldTable from "../components/ComplexFieldTable";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContributorTable from "../components/ContributorTable";
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
-import { validateXorGroups } from "../utils/metadataExclusivity";
+import { pruneEmptyValues, validateXorGroups } from "../utils/metadatautils";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -420,7 +420,7 @@ const Collection = (props) => {
             glycans: userSelection.glycans,
             glycoproteins: userSelection.glycoproteins,
             type: collectionType,
-            metadataValues: userSelection.metadataValues,
+            metadataValues: pruneEmptyValues([...metadata[sampleType].fields, ...metadata["general"]], userSelection.metadataValues),
             sampleType: sampleType.toUpperCase()
         }
         
@@ -967,7 +967,11 @@ const Collection = (props) => {
         }
 
         setTextAlertInputMetadata ({"show": false, "id": ""});
-        setUserSelection ({"metadataValues": metadataValues});
+        const cleaned = pruneEmptyValues(
+            [...metadata[sampleType].fields, ...metadata["general"]],
+            metadataValues
+        );
+        setUserSelection ({"metadataValues": cleaned});
         setEnableGlyTableMakerMetadata(false);
         setIsDirty(true);
     }

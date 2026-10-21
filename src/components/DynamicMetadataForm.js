@@ -23,7 +23,7 @@ import { getContributorString, getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ContributorTable from "./ContributorTable";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { isFieldEmpty, getXorPartners } from "../utils/metadataExclusivity";
+import { isFieldEmpty, getXorPartners, pruneEmptyValues } from "../utils/metadatautils";
 import DialogAlert from "./DialogAlert";
 import { FormLabel } from "./FormControls";
 

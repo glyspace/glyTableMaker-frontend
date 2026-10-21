@@ -247,7 +247,7 @@ const CollectionFromFile = props => {
                   <FormLabel label="Rename Glycoproteins (if necessary)"/>
                   </Col>
                   <Col>
-                    <FormLabel label="Prepend" className="required-asterik" />
+                    <FormLabel label="Prepend"/>
                     <Form.Control
                       type="text"
                       name="prefix"
@@ -257,7 +257,7 @@ const CollectionFromFile = props => {
                     />
                   </Col>
                   <Col>
-                    <FormLabel label="Append" className="required-asterik" />
+                    <FormLabel label="Append"/>
                     <Form.Control
                       type="text"
                       name="postfix"
