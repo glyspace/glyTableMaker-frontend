@@ -193,7 +193,7 @@ export default function DynamicMetadataForm({
         <FormControl fullWidth variant="outlined">
           <Row>
           <Col xs={2} sm={3}> {label} </Col>
-          <Col xs={field.id === "disease" ? "7" : "10"} sm={field.id === "disease" ? "5" : "9"}>
+          <Col xs={field.id === "disease" ? "8" : "10"} sm={field.id === "disease" ? "7" : "9"}>
           <MultiAutoComplete
             inputValue={autocompleteValue}
             fieldId={field.id}
@@ -208,7 +208,7 @@ export default function DynamicMetadataForm({
           />
           </Col>
           {field.id === "disease" &&   
-            <Col sm={3} xs={1}>
+            <Col sm={2} xs={1}>
                 <Col>
                 <Row>
                 <Col sm={1} xs={1}>
@@ -339,6 +339,7 @@ export default function DynamicMetadataForm({
                   <Button
                     className={"example-btn"}
                     style={{ fontSize: "12px" }}
+                    disabled = {isUnknown}
                     onClick={() => {
                       updateValue(field.id, [field.example]);
                     }}
