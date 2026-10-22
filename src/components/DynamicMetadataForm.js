@@ -118,17 +118,50 @@ export default function DynamicMetadataForm({
     return blockedBy ? message : null;
   };
 
-  const hasWildType = (value) => {
-    return value && Array.isArray(value) && value.some (v => v.name === "wild-type");
+  const hasNone = (value) => {
+    return value && Array.isArray(value) && value.some (v => v.name === "None");
   }
 
-  const handleWildTypeChange = (e) => {
-  if (e.target.checked) {
-    updateValue("disease", [{ name: "wild-type" }]);
-  } else {
-    updateValue("disease", []);
+  const hasNotApplicable = (value) => {
+    return value && Array.isArray(value) && value.some (v => v.name === "Not Applicable");
   }
-};
+
+  const hasUnknownAutoComplete = (value) => {
+    return value && Array.isArray(value) && value.some (v => v.name === "Unknown");
+  }
+
+  const hasUnknownText = (value) => {
+    if (value) {
+      if (Array.isArray(value)) return value.some (v => v === "Unknown");
+      else return value === "Unknown";
+    }
+    return false;
+  }
+
+  const handleCheckboxChange = (e, field) => {
+    const name = e.target.name;
+    if (e.target.checked) {
+      let val = undefined;
+      if (name === "none") {
+        val = "None";
+      } else if (name === "na") {
+        val = "Not Applicable";
+      } else if (name === "unknown") {
+        val = "Unknown";
+      }
+      if (field.type === "autocomplete" && field.multiple) {
+        updateValue(field.id, [{ "name": val }]);
+      } else if (field.type === "autocomplete" && !field.multiple) {
+        updateValue(field.id, { "name": val });
+      } else if (field.type === "text" && field.multiple) {
+        updateValue(field.id, [val]);
+      } else if (field.type === "text" && !field.multiple) {
+        updateValue(field.id, val);   
+      }
+    } else if (field.multiple) {
+      updateValue(field.id, []);
+    } else updateValue(field.id, null);
+  };
 
   const renderField = (field) => {
     const label = (
@@ -149,16 +182,18 @@ export default function DynamicMetadataForm({
 
     if (field.type === "autocomplete") {
       const disabledByExclusivity = isDisabledByExclusivity(field.id);
-      const isWildType = field.id === "disease" && hasWildType(values[field.id]);
+      const isNone = field.id === "disease" && hasNone(values[field.id]);
+      const isNA = field.id === "disease" && hasNotApplicable(values[field.id]);
+      const isUnknown = field.unknown && hasUnknownAutoComplete(values[field.id]);
       const autocompleteValue =
-        field.id === "disease"
-          ? (values[field.id] || []).filter(v => v.name !== "wild-type")
+        field.id === "disease || field.unknown"
+          ? (values[field.id] || []).filter(v => v.name !== "None" && v.name !== "Unknown" && v.name !== "Not applicable")
           : values[field.id];
       return (
         <FormControl fullWidth variant="outlined">
           <Row>
           <Col xs={2} sm={3}> {label} </Col>
-          <Col xs={field.id === "disease" ? "6" : "10"} sm={field.id === "disease" ? "4" : "9"}>
+          <Col xs={field.id === "disease" ? "7" : "10"} sm={field.id === "disease" ? "5" : "9"}>
           <MultiAutoComplete
             inputValue={autocompleteValue}
             fieldId={field.id}
@@ -167,23 +202,49 @@ export default function DynamicMetadataForm({
             allowOther={field.allowOther}
             namespace={field.id === "tissue" && selectedSpecies !== null && selectedSpecies.id && plant.includes (selectedSpecies.id) ? field.alternativeNamespce : field.namespace}
             placeholder="Start typing"
-            disabled={disabledByExclusivity || isWildType}
+            disabled={disabledByExclusivity || isNone || isNA || isUnknown}
             setInputValue={updateValue}
             errorText={errors?.[field.id] || getXorMessage(field.id)}
           />
           </Col>
           {field.id === "disease" &&   
-            <Col sm={4} xs={2}>
-              <Row>
+            <Col sm={3} xs={1}>
+                <Col>
+                <Row>
                 <Col sm={1} xs={1}>
                     <Form.Check
                         type="checkbox"
-                        name="wildtype"
-                        checked={hasWildType(values[field.id])}
-                        onChange={handleWildTypeChange}/> 
+                        name="none"
+                        checked={hasNone(values[field.id])}
+                        onChange={(e) => handleCheckboxChange(e, field)}/>
                   </Col>
-                  <Col><FormLabel label="Wild-Type" /></Col>
-              </Row>
+                  <Col><FormLabel label="No disease" /></Col>
+                </Row>
+                </Col>
+                <Col>
+                <Row>
+                <Col sm={1} xs={1}>
+                    <Form.Check
+                        type="checkbox"
+                        name="na"
+                        checked={hasNotApplicable(values[field.id])}
+                        onChange={(e) => handleCheckboxChange(e, field)}/>
+                  </Col>
+                  <Col><FormLabel label="Not applicable" /></Col>
+                </Row>
+                </Col>
+                <Col>
+                <Row>
+                <Col sm={1} xs={1}>
+                    <Form.Check
+                        type="checkbox"
+                        name="unknown"
+                        checked={hasUnknownAutoComplete(values[field.id])}
+                        onChange={(e) => handleCheckboxChange(e, field)}/>
+                  </Col>
+                  <Col><FormLabel label="Unknown" /></Col>
+                </Row>
+                </Col>
             </Col>}
           </Row>
         </FormControl>
@@ -229,36 +290,63 @@ export default function DynamicMetadataForm({
     }
 
     if (field.type === "text" && field.multiple) {
+      const isUnknown = field.unknown && hasUnknownText(values[field.id]);
+      const textValue =
+        field.unknown
+          ? (values[field.id] || []).filter(v => v !== "Unknown")
+          : values[field.id];
       return (
         <>
         <Row>
-        <Col xs={2} sm={3}> {label} </Col>
-        <Col xs={10} sm={9}>
+          <Col xs={2} sm={3}> {label} </Col>
+          <Col xs={field.unknown ? "8" : "10"} sm={field.unknown ? "7" : "9"}>
             <MultiTextInput 
               field={field}
               errorText={errors?.[field.id]}
-              inputValue={values[field.id] || []}
+              inputValue={textValue}
+              disabled = {isUnknown}
               setInputValue={updateValue}
             />
-            {field.example && (
-        <Tooltip 
-            disableTouchListener
-            interactive
-            arrow
-            placement={"bottom-start"}
-            classes={{ tooltip: "gg-tooltip" }}
-            title="Click to insert example.">
-          <Button
-            className={"example-btn"}
-            style={{ fontSize: "12px" }}
-            onClick={() => {
-              updateValue(field.id, [field.example]);
-            }}
-          >
-            {field.example}
-          </Button>
-        </Tooltip>)}
-        </Col>
+          </Col>
+          {field.unknown &&   
+            <Col sm={2} xs={1}>
+                <Col>
+                <Row>
+                <Col sm={1} xs={1}>
+                    <Form.Check
+                        type="checkbox"
+                        name="unknown"
+                        checked={hasUnknownText(values[field.id])}
+                        onChange={(e) => handleCheckboxChange(e, field)}/> 
+                  </Col>
+                  <Col><FormLabel label="Unknown" /></Col>
+                </Row>
+                </Col>
+              </Col>
+            }
+          </Row>
+          <Row>
+            <Col xs={2} sm={3}></Col>
+            <Col>
+              {field.example && (
+                <Tooltip 
+                    disableTouchListener
+                    interactive
+                    arrow
+                    placement={"bottom-start"}
+                    classes={{ tooltip: "gg-tooltip" }}
+                    title="Click to insert example.">
+                  <Button
+                    className={"example-btn"}
+                    style={{ fontSize: "12px" }}
+                    onClick={() => {
+                      updateValue(field.id, [field.example]);
+                    }}
+                  >
+                    {field.example}
+                  </Button>
+                </Tooltip>)}
+          </Col>
         </Row>
         </>
       );

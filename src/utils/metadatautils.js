@@ -74,3 +74,16 @@ export function validateXorGroups(values, xorGroups) {
 
   return violations;
 }
+
+export function getIdFromUri (uri) {
+        if (!uri) return "";
+
+        // Species URIs like ...?id=9606
+        const idMatch = uri.match(/id=([^&]+)/);
+        if (idMatch) {
+            return idMatch[1];
+        }
+
+        // Other namespaces: take text after last '/'
+        return uri.substring(uri.lastIndexOf("/") + 1);
+    };

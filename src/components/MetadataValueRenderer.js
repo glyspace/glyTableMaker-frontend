@@ -203,6 +203,21 @@ export function MetadataValueRenderer({
                 }
                 return item.name + (item.id ? " (" + item.id + ")" : "");
             });
+        } else if (field && field.type ==="select" && field.storeAsObject) {
+            return value.map((item, index) => {
+                if (item.uri) {
+                    return (
+                        <>
+                        {item.name}{" "}
+                        (
+                        <a href={item.uri} target="_blank" rel="noopener noreferrer">{item.id}
+                            <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
+                        </a>
+                        ){" "}</>
+                    )
+                }
+                return item.name + (item.id ? " (" + item.id + ")" : "");
+            });
         } else return value.join(", ");
     }
 

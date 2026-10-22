@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { Button } from "react-bootstrap";
+import { getIdFromUri } from "../utils/metadatautils";
 
 export default function MultiAutoComplete (props) {
     const [options, setOptions] = useState([]);
@@ -76,19 +77,6 @@ export default function MultiAutoComplete (props) {
     const onInputChange = (event, value, reason) => {
         setSearchInput(value);
     }
-
-    const getIdFromUri = (uri) => {
-        if (!uri) return "";
-
-        // Species URIs like ...?id=9606
-        const idMatch = uri.match(/id=([^&]+)/);
-        if (idMatch) {
-            return idMatch[1];
-        }
-
-        // Other namespaces: take text after last '/'
-        return uri.substring(uri.lastIndexOf("/") + 1);
-    };
 
     function multiValueDialog () {
         return (
