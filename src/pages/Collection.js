@@ -145,7 +145,7 @@ const Collection = (props) => {
         //getCategories();
         getStatusList();
         getGlycanTags();
-        getProfile();
+        //getProfile();
         window.addEventListener("scroll", toggleSaveVisibility);
     }, []);
 

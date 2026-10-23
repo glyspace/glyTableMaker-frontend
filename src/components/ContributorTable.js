@@ -23,10 +23,8 @@ import helpText from '../data/helpText.json';
 import { isValidURL } from '../utils/api';
 import TextAlert from "../components/TextAlert";
 
-let peopleId = 2;
-let softwareId = 2;
-
 const ContributorTable = (props) => {
+  const viewOnly = props.viewOnly ?? !props.edit;
   const [validationErrors, setValidationErrors] = useState({});
   const [validationSoftwareErrors, setValidationSoftwareErrors] = useState({});
   //keep track of rows that have been edited
@@ -279,7 +277,7 @@ const ContributorTable = (props) => {
       setValidationErrors(newValidationErrors);
       return;
     }
-    values["id"] = peopleId++;
+    values["id"] = Math.max(1, ...data.map((d) => Number(d.id) || 0)) + 1;
     setValidationErrors({});
     const nextData = [...data, values];
     setData(nextData);
@@ -294,7 +292,7 @@ const ContributorTable = (props) => {
       setValidationSoftwareErrors(newValidationErrors);
       return;
     }
-    values["id"] = softwareId++;
+    values["id"] = Math.max(1, ...softwareData.map((d) => Number(d.id) || 0)) + 1;
     setValidationSoftwareErrors({});
     const nextData = [...softwareData, values];
     setSoftwareData(nextData);
@@ -330,6 +328,7 @@ const ContributorTable = (props) => {
       setTextAlertInput ({"show": true, "message": "You have unsaved changes. Save or Cancel them before saving the contributor information"});
       return;
     }
+    if (props.beforeSave && !props.beforeSave()) return;
     handleContributorChange (data, softwareData);
     setEditedData({});
     setEditedSoftwareData({})
@@ -350,8 +349,9 @@ const ContributorTable = (props) => {
     data: data,
     createDisplayMode: 'row', // ('modal', and 'custom' are also available)
     editDisplayMode: 'cell', // ('modal', 'row', 'cell', and 'custom' are also
-    enableEditing: (row) => (row.id !== 1),
+    enableEditing: viewOnly ? false : (row) => (row.id !== 1),
     enableRowActions: true,
+    enableTopToolbar: !viewOnly,
     positionActionsColumn: 'last',
     positionCreatingRow: 'bottom',
     getRowId: (row) => row.id,
@@ -423,8 +423,9 @@ const ContributorTable = (props) => {
     data: softwareData,
     createDisplayMode: 'row', // ('modal', and 'custom' are also available)
     editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also
-    enableEditing: (row) => (row.id !== 1),
+    enableEditing: viewOnly ? false : (row) => (row.id !== 1),
     enableRowActions: true,
+    enableTopToolbar: !viewOnly,
     positionActionsColumn: 'last',
     getRowId: (row) => row.id,
     muiTableContainerProps: {
@@ -554,7 +555,7 @@ return (
       aria-labelledby="child-modal-title"
       aria-describedby="child-modal-description"
     >
-        <DialogTitle>Add a Contributor</DialogTitle>
+        <DialogTitle>{props.title ?? "Add a Contributor"}</DialogTitle>
         <IconButton
             aria-label="close"
             onClick={handleClose}
@@ -568,12 +569,13 @@ return (
         <CloseIcon />
         </IconButton>
         <TextAlert alertInput={textAlertInput}/>
-        <DialogContent dividers>{getContributorForm()}</DialogContent>
+        <DialogContent dividers>{props.extraContent}{getContributorForm()}</DialogContent>
         <DialogActions>
-          {props.edit && 
-            <>
+           {viewOnly 
+            ? <Button className="gg-btn-blue-reg" onClick={handleClose}>OK</Button>
+            : <>
             <Button className="gg-btn-outline-reg" onClick={handleClose}>Cancel</Button>
-            <Button className="gg-btn-blue-reg" disabled={!props.edit} onClick={handleSaveData}>SAVE</Button>
+            <Button className="gg-btn-blue-reg" onClick={handleSaveData}>{props.saveLabel ?? "SAVE"}</Button>
             </>}
         </DialogActions>
     </Dialog>

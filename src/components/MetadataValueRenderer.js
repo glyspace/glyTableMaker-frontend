@@ -147,6 +147,8 @@ export function MetadataValueRenderer({
                     open={contributorOpen}
                     onClose={() => setContributorOpen(false)}
                     contributor={value}
+                    viewOnly={true}
+                    title="Contributor"
                 />
             </>
         );

@@ -9,8 +9,6 @@ import {
   FormControl,
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import MultiAutoComplete from "./MultiAutoComplete";
 import MultiselectTextInput from "./MultiSelectTextInput";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -21,11 +19,12 @@ import { Loading } from "./Loading";
 import { axiosError } from "../utils/axiosError";
 import { getContributorString, getJson } from "../utils/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ContributorTable from "./ContributorTable";
+import ContributorField from "./ContributorField";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { isFieldEmpty, getXorPartners, pruneEmptyValues } from "../utils/metadatautils";
 import DialogAlert from "./DialogAlert";
 import { FormLabel } from "./FormControls";
+
 
 export default function DynamicMetadataForm({
   fields,
@@ -50,8 +49,6 @@ export default function DynamicMetadataForm({
 
   const [selectedPublication, setSelectedPublication] = useState(null);
   const [publicationCache, setPublicationCache] = useState({});
-  const [showContributorTable, setShowContributorTable] = useState(false);
-  const [editContributor, setEditContributor] = useState (false);
 
   const [selectedSpecies, setSelectedSpecies] = useState(null);
 
@@ -71,8 +68,7 @@ export default function DynamicMetadataForm({
   };
 
   const handleContributorChange = (contrib) => {
-    var c = getContributorString(contrib);
-    onContributorChange(c);
+    if (onContributorChange) onContributorChange(getContributorString(contrib));
     updateValue("contributor", contrib);
   }
 
@@ -427,31 +423,13 @@ export default function DynamicMetadataForm({
 
     if (field.type === "contributor") {
       return (
-        <Row>
-        <Col xs={2} sm={3}> {label} </Col>
-        <Col xs={8} sm={7}>
-        <TextField 
-            size="small"
-            fullWidth
-            inputProps={{ readOnly: true }}
-            error={!!errors?.[field.id]}
-            helperText={errors?.[field.id]}
-            value={contributorValue} variant="outlined"/>
-        </Col>
-        <Col xs={2} sm={1}>
-        <Box>
-          <Tooltip title="View contributor information">
-            <IconButton color="primary" onClick={(event) => {setEditContributor(false); setShowContributorTable(true)}}>
-              <VisibilityOutlinedIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Change contributor information">
-            <IconButton color="primary" onClick={(event) => {setEditContributor(true); setShowContributorTable(true)}}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-        </Col></Row>
+         <ContributorField
+          label={label}
+          value={values["contributor"]}
+          error={errors?.[field.id]}
+          onChange={handleContributorChange}
+          setAlertDialogInput={setAlertDialogInput}
+        />
       );
     }
 
@@ -519,15 +497,6 @@ export default function DynamicMetadataForm({
         </Grid>
       ))}
     </Grid>
-    {showContributorTable && 
-          <ContributorTable 
-              open={showContributorTable}
-              onClose={() => setShowContributorTable(false)}
-              setContributor={handleContributorChange} 
-              contributor={values["contributor"]}
-              edit={editContributor}
-          />
-    }
     </>
   );
 }

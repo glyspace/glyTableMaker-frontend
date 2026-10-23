@@ -7,6 +7,7 @@ import { Alert, Box, Container, FormControlLabel, FormGroup, Slider, Switch, Too
 import { FormLabel, PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import compositionMarks from '../data/compositiontype.json';
+import ContributorSettings from "../components/ContributorSettings";
 
 const Settings = (props) => {
 
@@ -40,8 +41,10 @@ const Settings = (props) => {
             const imageElement = {"id": "cartoon", "text": "Glycan Cartoon Settings", "level": 1};
             const compElement = {"id" : "composition", "text": "Composition Settings", "level" : 1};
             const columnSettingElement = {"id" : "column", "text": "Column Settings", "level" : 1};
+            const contributorElement = {"id" : "contributor", "text": "Contributor Settings", "level" : 1};
             headingList.push (imageElement);
             headingList.push (compElement);
+            headingList.push (contributorElement);
             headingList.push (columnSettingElement)
             Object.keys(columnVisibility).map ((table, index) => {
                 const e = {
@@ -438,6 +441,7 @@ const Settings = (props) => {
     const [compositionTypeDescription, setCompositionTypeDescription] = useState (compositionMarks[0].description);
     const [showSuccessMessage, setShowSuccessMessage]  = useState(null);
     const [cartoonSetting, setCartoonSetting] = useState ({"display": "extended", "redEnd": "y"});
+    const [contributorSettings, setContributorSettings] = useState ([]);
 
     useEffect(()=> {
           props.authCheckAgent && props.authCheckAgent();
@@ -540,6 +544,7 @@ const Settings = (props) => {
             axiosError(error, null, setAlertDialogInput);
           });
           getOtherSettings();
+          getContributorSettings();
           getCartoonOptions();
     }, []);
 
@@ -576,6 +581,45 @@ const Settings = (props) => {
             } else {
                 setCompositionType ("BASE"); // default
             }
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
+
+    const fromServerContributorSettings = (list) =>
+        (list || []).map((s) => {
+            let contributor = { user: [], software: [] };
+            try {
+                if (s.contributor) contributor = JSON.parse(s.contributor);
+            } catch (e) {
+                console.warn("Could not parse contributor setting " + s.name, e);
+            }
+            return { id: s.id, name: s.name, isDefault: !!s.defaultSetting, contributor };
+        }).map((p, i, all) => ({ ...p, isDefault: p.isDefault && all.findIndex((x) => x.isDefault) === i })); // at most one default
+ 
+    // table row -> server entity (rows that were never saved have a string temp id -> send null)
+    const toServerContributorSettings = (profiles) =>
+        profiles.map((p) => ({
+            id: typeof p.id === "number" ? p.id : null,
+            name: p.name,
+            defaultSetting: !!p.isDefault,
+            contributor: JSON.stringify(p.contributor ?? { user: [], software: [] }),
+        }));
+ 
+    function getContributorSettings () {
+        getJson("api/setting/getallcontributorsettings", getAuthorizationHeader()).then (({ data }) => {
+            setContributorSettings(fromServerContributorSettings(data.data));
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    }
+ 
+    const saveContributorSettings = (profiles) => {
+        setShowSuccessMessage(null);
+        // the whole table is sent; the server adds, updates and removes rows to match it
+        postJson ("api/setting/updatecontributorsettings", toServerContributorSettings(profiles), getAuthorizationHeader()).then (({ data }) => {
+            setContributorSettings(fromServerContributorSettings(data.data));   // real ids; clears "unsaved changes"
+            setShowSuccessMessage("Saved the contributor settings");
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
         });
@@ -629,7 +673,7 @@ const Settings = (props) => {
             axiosError(error, null, setAlertDialogInput);
         });
 
-        var setting = {
+        setting = {
             "name" : "redEnd",
             "value" : cartoonSetting.redEnd
         };
@@ -838,6 +882,12 @@ const Settings = (props) => {
                 </div>)}
              </Card.Body>
              </Card>
+            <div id="contributor">
+                <ContributorSettings
+                    value={contributorSettings}
+                    onSave={saveContributorSettings}
+                />
+            </div>
             <div id="column">
              {columnVisibility && getColumnVisibilityCards()}
              </div>
