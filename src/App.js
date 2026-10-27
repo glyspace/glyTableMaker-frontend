@@ -78,6 +78,19 @@ function initializeReactGA() {
       }
 }
 
+function Layout({ loggedIn, logoutHandler, admin, unreadCount }) {
+  return (
+    <>
+    <div className="App">
+    <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} admin={admin} unreadCount={unreadCount}/>
+    <CssBaseline />
+    <ScrollToTopBtn />
+    <Outlet />
+    </div>
+    </>
+  )
+}
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [admin, setAdmin] = useState(false);
@@ -332,7 +345,7 @@ function App() {
   return (
     <>
       <Routes>
-      <Route element={<Layout />}>
+      <Route element={<Layout loggedIn={loggedIn} logoutHandler={logoutHandler} admin={admin} unreadCount={unreadCount} />}>
       {routes.map((element, index) => {
         return <Route key={index} path={element.path} element={
           <>
@@ -349,19 +362,6 @@ function App() {
     <Footer />
   </>
   );
-
-  function Layout() {
-    return (
-      <>
-      <div className="App">
-      <TopNavBar loggedInFlag={loggedIn} logoutHandler={logoutHandler} admin={admin} unreadCount={unreadCount}/>
-      <CssBaseline />
-      <ScrollToTopBtn />
-      <Outlet />
-      </div>
-      </>
-    )
-  }
 
   function getLoginStatus() {
     var base = process.env.REACT_APP_BASENAME;

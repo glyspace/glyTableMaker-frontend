@@ -19,6 +19,7 @@ import typeList from '../data/glycosylationTypes.json';
 import ExampleSequenceControl from "../components/ExampleSequenceControl";
 import TooltipExample from "../data/examples";
 import HelpTooltip from '../components/HelpTooltip';
+import { UnsavedChangesDialog, useUnsavedChangesWarning } from "../utils/useUnsavedChangesWarning";
 
 let newId = 500000;
 
@@ -34,6 +35,7 @@ const Glycoprotein = (props) => {
     const [showAddSite, setShowAddSite] = useState(false);
     const [showEditSite, setShowEditSite] = useState(false);
     const [showGlycanSelection, setShowGlycanSelection] = useState(false);
+    const [isDirty, setIsDirty] = useState(false);
     const [alertDialogInput, setAlertDialogInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
         { show: false, id: "" }
@@ -139,6 +141,8 @@ const Glycoprotein = (props) => {
         
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [glycoproteinId]);
+
+    const blocker = useUnsavedChangesWarning(isDirty);
 
     async function loadCartoons(glycans) {
       const updated = [];
@@ -333,10 +337,12 @@ const Glycoprotein = (props) => {
         }
 
         setUserSelection({ [name]: newValue });
+        setIsDirty(true);
     };
 
     const funcSetInputValues = (val) => {
         setUserSelection ({ ["uniprotId"]: val});
+        setIsDirty(true);
     }
 
     const handleSubmit = e => {
@@ -377,6 +383,7 @@ const Glycoprotein = (props) => {
         setShowLoading(true);
         let apiURL = glycoproteinId ? "api/data/updateglycoprotein" : "api/data/addglycoprotein";
         postJson (apiURL, glycoprotein, getAuthorizationHeader()).then ( (data) => {
+            setIsDirty(false);
             setShowLoading(false);
             navigate("/glycoproteins");
           }).catch (function(error) {
@@ -399,6 +406,7 @@ const Glycoprotein = (props) => {
         }
         getJson (url).then ((data) => {
             setUserSelection(data.data.data);
+            setIsDirty(true);
         }).catch (function(error) {
             if (error && error.response && error.response.data) {
                 setTextAlertInput ({"show": true, "message": error.response.data.message });
@@ -409,24 +417,24 @@ const Glycoprotein = (props) => {
     }
 
     const deleteFromTable = (id) => {
-        var sites = userSelection.sites;
+       /* var sites = userSelection.sites;
         const index = sites.findIndex ((item) => item["siteId"] === id);
         var updated = [
             ...sites.slice(0, index),
             ...sites.slice(index + 1)
-        ];
+        ];*/
+        const updated = userSelection.sites.filter ((item) => item["siteId"] !== id);
         setUserSelection ({"sites": updated});
         setSiteSelection (emptySite());
+        setIsDirty(true);
     }
 
     const deleteFromGlycanTable = (id) => {
-        var glycans = siteSelection.glycans;
-        const index = glycans.findIndex ((item) => item["glycanId"] === id);
-        var updated = [
-            ...glycans.slice(0, index),
-            ...glycans.slice(index + 1)
-        ];
+        const updated = siteSelection.glycans.filter (
+            (item) => (item.glycan?.glycanId ?? item.glycanId) !== id);
         setSiteSelection ({"glycans": updated});
+        setSelectedGlycans (updated); 
+        setIsDirty(true);
     }
 
     const editSite = (site) => {
@@ -517,6 +525,7 @@ const Glycoprotein = (props) => {
             }
         }
         setUserSelection ({"sites": sites});
+        setIsDirty(true);
         setSiteSelection (emptySite());
         setSubtypes([""]);
         setGType(null);
@@ -536,6 +545,7 @@ const Glycoprotein = (props) => {
         while (positions.length < needed) positions.push (emptyPosition());
 
         setSiteSelection ({"type": selected, "positions": positions});
+        setIsDirty(true);
     };
 
     const handleGlycosylationTypeChange = e => {
@@ -551,6 +561,7 @@ const Glycoprotein = (props) => {
             setSiteSelection({[name] : selected});
             setGsType(selected);
         }
+        setIsDirty(true);
     }
 
     const handlePositionChange = (e, index, minValue) => {
@@ -565,6 +576,7 @@ const Glycoprotein = (props) => {
             return { ...p, "location": num, "aminoAcid": isValidLocation(num) ? getAminoAcidFromSequence(num) : "" };
         });
         setSiteSelection ({"positions": positions});
+        setIsDirty(true);
     }
 
     const getAminoAcidFromSequence = (location) => {
@@ -584,6 +596,7 @@ const Glycoprotein = (props) => {
             "aminoAcid": "",
         });
         setSiteSelection ({"positions" : positions});
+        setIsDirty(true);
     }
 
     const handleDeletePosition = (index) => {
@@ -593,6 +606,7 @@ const Glycoprotein = (props) => {
             ...positions.slice(index + 1)
         ];
         setSiteSelection ({"positions": updated});
+        setIsDirty(true);
     }
 
     const findGlycosylationType = () => {
@@ -625,6 +639,7 @@ const Glycoprotein = (props) => {
             }
         })
         setSelectedGlycans(previous);
+        setIsDirty(true);
     }
 
     const handleGlycanTypeChange = (data) => {
@@ -658,6 +673,7 @@ const Glycoprotein = (props) => {
 
         setSiteSelection({"glycans": selected});
         setShowGlycanSelection(false);
+        setIsDirty(true);
     }
 
     const handleClose = (event, reason) => {
@@ -909,6 +925,7 @@ const Glycoprotein = (props) => {
     return (
         <>
         <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
+        <UnsavedChangesDialog blocker={blocker}/>
         <Container maxWidth="xl">
             <div className="page-container">
             <div className="scroll-to-top-save">

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useBlocker, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getAuthorizationHeader, getBlob, getCartoonSetting, getContributorString, getJson, loadCartoons, postJson } from "../utils/api";
 import { axiosError, loadDefaultImage } from "../utils/axiosError";
 import { Box, Container, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Popover, Step, StepLabel, Stepper, Tooltip, Typography } from "@mui/material";
@@ -22,6 +22,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ContributorTable from "../components/ContributorTable";
 import { MetadataValueRenderer } from "../components/MetadataValueRenderer";
 import { pruneEmptyValues, validateXorGroups } from "../utils/metadatautils";
+import { UnsavedChangesDialog, useUnsavedChangesWarning } from "../utils/useUnsavedChangesWarning";
 
 const Collection = (props) => {
     const [searchParams] = useSearchParams();
@@ -36,7 +37,7 @@ const Collection = (props) => {
     const [collectionType, setCollectionType] = useState((location.state && location.state.collectionType) ?? "GLYCAN");
 
     var base = process.env.REACT_APP_BASENAME;
-    const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
+    //const username = window.localStorage.getItem(base ? base + "_loggedinuser" : "loggedinuser");
 
     const [isDirty, setIsDirty] = useState(false);
     const [error, setError] = useState(false);
@@ -92,12 +93,12 @@ const Collection = (props) => {
     const [contributor, setContributor] = useState(null);
     const [selectedTag, setSelectedTag] = useState(null);
 
-    const tableMakerSoftware = {
+    /*const tableMakerSoftware = {
         id: 1,
         name: "GlyTableMaker",
         url: "https://glygen.ccrc.uga.edu/tablemaker",
         role: "createdWith",
-    };
+    };*/
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -107,13 +108,6 @@ const Collection = (props) => {
     const handleClick = (ref) => {
         ref.current?.scrollIntoView({behavior: 'smooth'});
     };
-
-    const scrollToDialogTop = () => {
-        metadataDialogRef.current?.scrollTo({
-            top: 0,
-            behavior: "smooth"
-          });
-    }
 
     // Show button when page is scrolled upto given distance
     const toggleSaveVisibility = () => {
@@ -166,7 +160,7 @@ const Collection = (props) => {
     }, [metadataValues.contributor]);
 
     // Block navigation inside the app when there are unsaved changes
-    useEffect(() => {
+   /* useEffect(() => {
         const handleBeforeUnload = (event) => {
             if (isDirty) {
                 const message = "You have unsaved changes. Are you sure you want to leave?";
@@ -181,7 +175,9 @@ const Collection = (props) => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
-    }, [isDirty]);
+    }, [isDirty]);*/
+
+    const blocker = useUnsavedChangesWarning(isDirty);
 
     function buildFieldMap() {
 
@@ -270,7 +266,7 @@ const Collection = (props) => {
     const hasContributor = (c) =>
         !!c && ((c.user && c.user.length > 0) || (c.software && c.software.length > 0));
 
-    function getProfile() {
+   /* function getProfile() {
         getJson ("api/account/user/" + username, getAuthorizationHeader()).then (({ data }) => {
             if (data.data) {
                const user = {
@@ -294,7 +290,7 @@ const Collection = (props) => {
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
           });
-    }
+    }*/
 
     function getStatusList() {
         getJson ("api/util/getregistrationstatuslist").then (({ data }) => {
@@ -350,37 +346,6 @@ const Collection = (props) => {
                 axiosError(error, null, setAlertDialogInput);
             }
         });
-    }
-
-    const getPublication = (pubId, event) => {
-        setAnchorEl(event.currentTarget)
-        if (publicationCache[pubId]) {
-            setSelectedPublication (publicationCache[pubId]);
-            setShowPublicationDetails(true);
-        }
-        else {
-            setShowLoading(true);
-            // get the publication details
-            getJson ("api/util/getpublication?identifier=" + pubId).then (({ data }) => {
-                if (data.data) {
-                    setSelectedPublication(data.data);
-                    setPublicationCache(prev => ({
-                        ...prev,
-                        pubId: data.data
-                    }));
-                    setShowPublicationDetails(true);
-                    setShowLoading(false);
-                }
-            }).catch(function(error) {
-                if (error && error.response && error.response.data) {
-                    setTextAlertInput ({"show": true, "message": error.response.data.message });
-                    setShowLoading(false);
-                    return;
-                } else {
-                    axiosError(error, null, setAlertDialogInput);
-                }
-            });
-        }
     }
 
     const handleChange = e => {
@@ -530,37 +495,33 @@ const Collection = (props) => {
         [],
     );
 
-    
-
     const metadatacolumns = useMemo(
-    () => [
-        {
-            accessorKey: 'name',
-            header: 'Name',
-            size: 200
-        },
-        {
-            accessorKey: 'value',
-            header: 'Value',
-            size: 500,
-            Cell: ({ renderedCellValue, row }) => (
-                <MetadataValueRenderer
-                    field={row.original.field}
-                    value={renderedCellValue}
-                    publicationCache={publicationCache}
-                    setPublicationCache={setPublicationCache}
-                    setShowLoading={setShowLoading}
-                    setTextAlertInput={setTextAlertInput}
-                    setAlertDialogInput={setAlertDialogInput}
-                    axiosError={axiosError}
-                />
-            )
-        }
-    ],
-    []
+        () => [
+            {
+                accessorKey: 'name',
+                header: 'Name',
+                size: 200
+            },
+            {
+                accessorKey: 'value',
+                header: 'Value',
+                size: 500,
+                Cell: ({ renderedCellValue, row }) => (
+                    <MetadataValueRenderer
+                        field={row.original.field}
+                        value={renderedCellValue}
+                        publicationCache={publicationCache}
+                        setPublicationCache={setPublicationCache}
+                        setShowLoading={setShowLoading}
+                        setTextAlertInput={setTextAlertInput}
+                        setAlertDialogInput={setAlertDialogInput}
+                        axiosError={axiosError}
+                    />
+                )
+            }
+        ],
+        []
     );
-
-
     
     const saveColumnVisibilityChanges = (columnVisibility) => {
         if (!collectionType || collectionType === "GLYCAN")
@@ -639,7 +600,7 @@ const Collection = (props) => {
                 columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEININCOLLECTION"
                 saveColumnVisibilityChanges={saveColumnVisibilityChanges}
             />
-            </>
+          </>
         );
     };
 
@@ -1202,6 +1163,7 @@ const Collection = (props) => {
     return (
         <>
         <FeedbackWidget setAlertDialogInput={setAlertDialogInput}/>
+        <UnsavedChangesDialog blocker={blocker}/>
         <Container maxWidth="xl">
             <div className="page-container">
             <div className="scroll-to-top-save">
@@ -1213,22 +1175,6 @@ const Collection = (props) => {
                 </Button>
             </div>
         )}
-        {/** <usePrompt message="Are you sure you want to leave? You have changes that were not submitted yet!" when={isDirty} /> */}
-        {/**blocker ? <ConfirmNavigation blocker={blocker} /> : null**/}
-        {/**blocker.state === "blocked" ? (
-                <div>
-                <p>You have unsaved changes!</p>
-                <button onClick={() => blocker.reset()}>
-                    Oh shoot - I need them keep me here!
-                </button>
-                <button onClick={() => blocker.proceed()}>
-                    I know! They don't matter - let me out of here!
-                </button>
-                </div> 
-            ) : blocker.state === "proceeding" ? (
-                <p>Navigating away with unsaved changes...</p>
-            ) : <p>Not blocked </p> */}
-
     
         </div>
              <PageHeading title={collectionId && !isCopy ? "Edit Collection" : "Add Collection"} subTitle="Please provide the information for the new collection." />

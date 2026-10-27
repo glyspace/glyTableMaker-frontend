@@ -23,7 +23,7 @@
                 "multiple": false,
                 "namespace": "UBERON",
                 "alternativeNamespace": "Plant",
-                "allowOther": false,
+                "allowOther": true,
                 "type": "autocomplete",
                 "datatype": 5
             },
@@ -2314,14 +2314,14 @@
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000575"
                 },
                 {
-                    "label": "LC-MS/MS",
-                    "description": "A method where a sample mixture is first separated by liquid chromatography before being ionised and characterised by mass-to-charge ratio and relative abundance using two mass spectrometers in series.",
-                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000701"
-                },
-                {
                     "label": "LC-MS",
                     "description": "A mass spectrometry in which a sample mixture is first separated by liquid chromatography.",
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000524"
+                },
+                {
+                    "label": "LC-MS/MS",
+                    "description": "A method where a sample mixture is first separated by liquid chromatography before being ionised and characterised by mass-to-charge ratio and relative abundance using two mass spectrometers in series.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000701"
                 },
                 {
                     "label": "CE-MS",
@@ -2329,26 +2329,11 @@
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000702"
                 },
                 {
-                    "label": "CE",
-                    "description": "An electrophoresis that takes place in a capillary.",
-                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0001024"
-                },
-                {
-                    "label": "HPLC",
-                    "description": "A liquidâ€“solid chromatography in which the stationary phase consists of very small particles and the inlet pressure is relatively high.",
-                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001009"
-                },
-                {
-                    "label": "GC",
-                    "description": "A column chromatography 'in which the mobile phase is a gas.'",
-                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001002"
-                },
-                {
                     "label": "GC-MS",
                     "description": "A mass spectrometry in which a sample mixture is first separated by gas chromatography.",
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000497"
                 },
-                {
+                 {
                     "label": "Imaging MS",
                     "description": "The collection of spatially resolved mass spectra of a sample during microscopy where a pulse laser is used to produce both ionisation and vapourisation and the sample is held in a matrix (such as dihydrobenzoic acid) to protect it from direct laser illumination and to separate the sample molecules. The spectra are used to visualise the spatial distribution of (typically) biomolecules by their molecular masses.",
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000053"
@@ -2359,9 +2344,24 @@
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000499"
                 },
                 {
+                    "label": "CE",
+                    "description": "An electrophoresis that takes place in a capillary.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0001024"
+                },
+                {
+                    "label": "HPLC",
+                    "description": "A liquid-solid chromatography in which the stationary phase consists of very small particles and the inlet pressure is relatively high.",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001009"
+                },
+                {
                     "label": "IMS",
                     "description": "Spectroscopy where the velocity of gas phase ions in an electric field is measured.",
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000430"
+                },
+                {
+                    "label": "GC",
+                    "description": "A column chromatography 'in which the mobile phase is a gas.'",
+                    "uri" : "http://purl.obolibrary.org/obo/CHMO_00001002"
                 },
                 {
                     "label": "Gel Electrophoresis",
@@ -2382,11 +2382,6 @@
                     "label": "1H NMR",
                     "description": "Spectroscopy where the energy states of 1H nuclei placed in a static magnetic field are interrogated by inducing transitions between the states via radio frequency irradiation. Each experiment consists of a sequence of radio frequency pulses with delay periods in between them.",
                     "uri" : "http://purl.obolibrary.org/obo/CHMO_0000593"
-                },
-                {
-                    "label": "IMS",
-                    "description": "Spectroscopy where the velocity of gas phase ions in an electric field is measured.",
-                    "uri" : "http://purl.obolibrary.org/obo/CHMO_0000430"
                 },
                 {
                     "label": "TOCSY",
