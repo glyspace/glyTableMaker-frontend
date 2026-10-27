@@ -833,7 +833,7 @@ const Settings = (props) => {
             </Alert>
             )}
             
-            <div id="cartoon">
+            <div style={{marginBottom: "20px"}} id="cartoon">
                 {getCartoonSettings()}
             </div>
             
@@ -882,13 +882,13 @@ const Settings = (props) => {
                 </div>)}
              </Card.Body>
              </Card>
-            <div id="contributor">
+            <div style={{marginTop: "20px"}} id="contributor">
                 <ContributorSettings
                     value={contributorSettings}
                     onSave={saveContributorSettings}
                 />
             </div>
-            <div id="column">
+            <div style={{marginTop: "20px"}} id="column">
              {columnVisibility && getColumnVisibilityCards()}
              </div>
             </div>
