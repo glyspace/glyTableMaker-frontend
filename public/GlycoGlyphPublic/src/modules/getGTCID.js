@@ -258,7 +258,7 @@ export async function getGTCID(name, glygen = false) {
     let glycoCT = jsonToGlycoCT(glycanjson); //get the glycoCT
     // build the url to query GlyTouCan
     let url = "https://api.glycosmos.org/glycanformatconverter/2.5.2/glycoct2wurcs/"
-    url += encodeURI(glycoCT);
+    url += encodeURIComponent(glycoCT);
 
     types[i].primary = (types[i].anomer == primaryanomer) ? true : false;
 

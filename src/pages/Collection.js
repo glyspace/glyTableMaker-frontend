@@ -159,24 +159,6 @@ const Collection = (props) => {
         );
     }, [metadataValues.contributor]);
 
-    // Block navigation inside the app when there are unsaved changes
-   /* useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            if (isDirty) {
-                const message = "You have unsaved changes. Are you sure you want to leave?";
-                event.returnValue = message; // Standard for most browsers
-                return message; // For some browsers
-            }
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        // Cleanup the event listener when component unmounts
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, [isDirty]);*/
-
     const blocker = useUnsavedChangesWarning(isDirty);
 
     function buildFieldMap() {
@@ -215,53 +197,6 @@ const Collection = (props) => {
     const metadataRows = useMemo(() => {
         return metadataToTableRows(userSelection.metadataValues || {});
     }, [userSelection.metadataValues]);
-
-   //const blocker = useBlocker(isDirty);
-   // usePrompt("Are you sure you want to leave? You have changes that were not submitted yet!", isDirty) 
-
-    // Block navigation with unsaved changes
-   /* let blocker = useBlocker((shouldBlock) => 
-        isDirty && shouldBlock.currentLocation.pathname != shouldBlock.nextLocation.pathname, [isDirty]
-    );
-
-    useEffect (() => {
-        if (blocker.state ===  "blocked" && !isDirty)
-            blocker.reset();
-
-    }, [blocker, isDirty]);
-
-    function ConfirmNavigation(blocker) {
-        if (blocker.state === "blocked") {
-          return (
-            <>
-              <p style={{ color: "red" }}>
-                Blocked the last navigation to {blocker.location.pathname}
-              </p>
-              <button onClick={() => blocker.proceed?.()}>Let me through</button>
-              <button onClick={() => blocker.reset?.()}>Keep me here</button>
-            </>
-          );
-        }
-      
-        if (blocker.state === "proceeding") {
-          return (
-            <p style={{ color: "orange" }}>Proceeding through blocked navigation</p>
-          );
-        }
-      
-        return <p style={{ color: "green" }}>Blocker is currently unblocked</p>;
-      }*/
-
-
-   /*useBlocker ((tx) => {
-    if (isDirty) {
-        const confirmLeave = window.confirm ("Are you sure you want to leave? You have changes that were not submitted yet!");
-        if (!confirmLeave) {
-            console.log ("blocked to stay on the page");
-            return false;
-        }    
-    } 
-   });*/
 
     const hasContributor = (c) =>
         !!c && ((c.user && c.user.length > 0) || (c.software && c.software.length > 0));
@@ -743,7 +678,7 @@ const Collection = (props) => {
 
     const fetchByTag = (url, isGlycan) => {
         let searchParams = "start=0";
-        searchParams += "&filters=" + encodeURI(JSON.stringify([{"id": "tags", "value": selectedTag}]));
+        searchParams += "&filters=" + encodeURIComponent(JSON.stringify([{"id": "tags", "value": selectedTag}]));
 
         setShowLoading(true);
         getJson (url + "?" + searchParams, getAuthorizationHeader()).then ( (json) => {

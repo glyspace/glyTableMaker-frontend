@@ -95,9 +95,9 @@ const Table = (props) => {
     
         let searchParams = "start=" + pagination.pageIndex;
         searchParams += "&size=" + pagination.pageSize;
-        searchParams += "&filters=" + encodeURI(JSON.stringify(columnFilters ?? []));
-        searchParams += "&globalFilter=" + globalFilter ?? '';
-        searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
+        searchParams += "&filters=" + encodeURIComponent(JSON.stringify(columnFilters ?? []));
+        searchParams += "&globalFilter=" + encodeURIComponent(globalFilter ?? "");
+        searchParams += '&sorting=' + encodeURIComponent(JSON.stringify(sorting ?? []));
 
         let url = props.ws;
         if (url.includes("?")) {
@@ -256,7 +256,7 @@ const Table = (props) => {
         
             var url = props.deletews + id;
             if (reason && reason.length > 0) {
-              url += "?reason=" + encodeURI(reason);
+              url += "?reason=" + encodeURIComponent(reason);
             }
             deleteJson (url, getAuthorizationHeader()).then ( (data) => {
                 setIsLoading(false);
