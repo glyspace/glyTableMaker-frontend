@@ -169,9 +169,7 @@ export default function DynamicMetadataForm({
             </IconButton>
           </Tooltip>
           {field.title ? field.title : field.label}
-          {field.required && (
-            <span style={{ color: "red" }}> *</span>
-          )}
+          {field.required && <span style={{ color: "red" }}>&nbsp;*</span>}
         </Typography>
       </>
     );
@@ -188,7 +186,7 @@ export default function DynamicMetadataForm({
       return (
         <FormControl fullWidth variant="outlined">
           <Row>
-          <Col xs={2} sm={3}> {label} </Col>
+          <Col xs={2} sm={3} md={3}> {label} </Col>
           <Col xs={field.id === "disease" ? "8" : "10"} sm={field.id === "disease" ? "7" : "9"}>
           <MultiAutoComplete
             inputValue={autocompleteValue}

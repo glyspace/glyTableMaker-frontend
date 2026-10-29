@@ -26,7 +26,7 @@ export default function ComplexRowDialog({
   return (
     <Dialog
       open={open}
-      maxWidth="md"
+      maxWidth="lg"
       scroll="paper"
       fullWidth
     >

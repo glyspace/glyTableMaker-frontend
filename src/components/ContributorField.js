@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Autocomplete,
   Box,
   Button,
   Dialog,
@@ -109,11 +110,23 @@ export default function ContributorField({
           <TextField
             size="small"
             fullWidth
-            inputProps={{ readOnly: true }}
             error={!!error}
             helperText={error}
             value={contributorString}
             variant="outlined"
+            placeholder="Click to enter contributor information"
+            onClick={() => setDialog("edit")}
+            inputProps={{
+              readOnly: true,
+              "aria-label": "Edit contributor information",
+              style: { cursor: "pointer", textOverflow: "ellipsis" },
+              onKeyDown: (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setDialog("edit");
+                }
+              },
+            }}
           />
         </Col>
         <Col xs={3} sm={3}>
@@ -154,29 +167,42 @@ export default function ContributorField({
         <DialogTitle>Switch contributor setting</DialogTitle>
         <DialogContent dividers>
           {settings && settings.length > 0 ? (
-            settings.map((s) => (
-              <Box
-                key={s.id}
-                sx={{ display: "flex", alignItems: "flex-start", cursor: "pointer", py: 0.5 }}
-                onClick={() => setSelectedId(s.id)}
-              >
-                <Radio
-                  name="switchContributorSetting"
-                  checked={selectedId === s.id}
-                  onClick={() => setSelectedId(s.id)}
-                  onChange={() => setSelectedId(s.id)}
-                />
-                <Box>
-                  <Typography variant="body1">
-                    {s.name}
-                    {s.isDefault ? " (default)" : ""}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {getContributorString(s.contributor)}
-                  </Typography>
-                </Box>
-              </Box>
-            ))
+            <>
+              <Autocomplete
+                options={settings}
+                value={settings.find((s) => s.id === selectedId) ?? null}
+                onChange={(e, option) => setSelectedId(option ? option.id : null)}
+                getOptionLabel={(s) => `${s.name}${s.isDefault ? " (default)" : ""}`}
+                isOptionEqualToValue={(a, b) => a.id === b.id}
+                disableClearable
+                openOnFocus
+                renderInput={(params) => (
+                  <TextField {...params} label="Contributor setting" margin="dense" autoFocus />
+                )}
+                renderOption={(props, s) => {
+                  const { key, ...rest } = props;      // key must not be spread into the element
+                  return (
+                    <li key={s.id} {...rest}>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="body1">
+                          {s.name}
+                          {s.isDefault ? " (default)" : ""}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "normal" }}>
+                          {getContributorString(s.contributor)}
+                        </Typography>
+                      </Box>
+                    </li>
+                  );
+                }}
+              />
+              {/* details of the chosen setting, since the input only shows its name */}
+              {selectedId != null && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
+                  {getContributorString(settings.find((s) => s.id === selectedId)?.contributor)}
+                </Typography>
+              )}
+            </>
           ) : (
             <Typography>
               You have not defined any contributor settings yet. You can add them on the Settings page.

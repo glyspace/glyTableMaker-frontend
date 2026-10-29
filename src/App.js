@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useNavigate, useLocation, Outlet, Routes, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Routes, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, matchPath } from "react-router-dom";
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { TopNavBar } from "./components/TopNavBar";
@@ -58,6 +58,7 @@ import ReactGA from 'react-ga4';
 import { OldPublicDataset } from "./pages/OldPublicDataset";
 import { UserManagement } from "./pages/UserManagement";
 import { Inbox } from "./pages/Inbox";
+import PageNotFound from "./pages/PageNotFound";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -357,6 +358,7 @@ function App() {
         </>
         } />
       })}
+      <Route path="*" element={<PageNotFound />} />
       </Route>
     </Routes>
     <Footer />
@@ -412,6 +414,10 @@ function App() {
     return true;
   }
 
+  function isKnownRoute(pathname) {
+    return routes.some(r => r.path && matchPath({ path: r.path, end: true }, pathname));
+  }
+
   function checkAuthorization(forceLogin = false) {
     var authorized = getLoginStatus();
     setLoggedIn(authorized); //async
@@ -443,7 +449,7 @@ function App() {
       }
     }
 
-    if (!authorized && (forceLogin || !loginNotRequiredPages.includes(pagename))) {
+    if (!authorized && (forceLogin || (isKnownRoute(location.pathname) && !loginNotRequiredPages.includes(pagename)))) {
       navigate("/login", {
         state: { redirectedFrom: redirectFrom }
       });

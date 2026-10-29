@@ -628,9 +628,9 @@ const Collection = (props) => {
                 return;
             }
         }
-        if ((sampleType === "synthetic" || sampleType === "other" || sampleType === "environmental_sample") && activeStep2 === 3) {
+        if ((sampleType === "synthetic" || sampleType === "other") && activeStep2 === 3) {
             setActiveStep2(0);
-        } else if (sampleType === "biological_sample" && activeStep2 === 3) {
+        } else if ((sampleType === "biological_sample" || sampleType === "environmental_sample") && activeStep2 === 3) {
             setActiveStep2(1);
         } else {
             setActiveStep2(prevActiveStep => prevActiveStep - 1);
@@ -651,9 +651,9 @@ const Collection = (props) => {
             }
         }
 
-        if ((sampleType === "synthetic" || sampleType === "other" || sampleType === "environmental_sample") && activeStep2 === 0) {
+        if ((sampleType === "synthetic" || sampleType === "other") && activeStep2 === 0) {
             setActiveStep2(3);
-        } else if (sampleType === "biological_sample" && activeStep2 === 1) {
+        } else if ((sampleType === "biological_sample" || sampleType === "environmental_sample") && activeStep2 === 1) {
             setActiveStep2(3);
         } else {
             setActiveStep2(prevActiveStep => prevActiveStep + 1);
