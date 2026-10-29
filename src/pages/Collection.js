@@ -313,6 +313,8 @@ const Collection = (props) => {
             return;
         }
 
+        let cleaned = pruneEmptyValues([...metadata[sampleType].fields, ...metadata["general"]], userSelection.metadataValues);
+        cleaned["version"] = metadata["version"];
         const collection = { 
             collectionId: collectionId && !isCopy ? collectionId : null,
             name: userSelection.name,
@@ -320,7 +322,7 @@ const Collection = (props) => {
             glycans: userSelection.glycans,
             glycoproteins: userSelection.glycoproteins,
             type: collectionType,
-            metadataValues: pruneEmptyValues([...metadata[sampleType].fields, ...metadata["general"]], userSelection.metadataValues),
+            metadataValues: cleaned,
             sampleType: sampleType.toUpperCase()
         }
         

@@ -1,5 +1,5 @@
 {
-    "version" : "1",
+    "version" : "1.0",
     "biological_sample": {
         "fields": [
             {
@@ -42,7 +42,7 @@
                 "label": "Disease",
                 "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
                 "example": "Type 2 diabetes mellitus",
-                "required": false,
+                "required": true,
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": true,
@@ -195,7 +195,7 @@
                 "label": "Disease",
                 "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
                 "example": "Type 2 diabetes mellitus",
-                "required": false,
+                "required": true,
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": true,
@@ -568,7 +568,7 @@
                 "label": "Disease",
                 "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
                 "example": "Type 2 diabetes mellitus",
-                "required": false,
+                "required": true,
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": true,
@@ -904,7 +904,7 @@
                 "label": "Disease",
                 "description": "Specify any disease or pathological condition associated with the organism or sample source. Add multiple entries if more than one disease is relevant.",
                 "example": "Type 2 diabetes mellitus",
-                "required": false,
+                "required": true,
                 "multiple": true,
                 "namespace": "Disease",
                 "allowOther": true,
@@ -2268,9 +2268,91 @@
             }
         ]
     },
+    "environmental_sample": {
+        "fields": [
+            {
+                "id": "perturbation",
+                "label": "Other perturbation",
+                "title": "Were there external perturbations that might have an effect on the provided data?",
+                "type": "complex",
+                "required": false,
+                "multiple": false,
+                "fields": [
+                    {
+                        "id": "radiation",
+                        "label": "Radiation",
+                        "description": "Describes exposure of the organism, tissue, or cells to ionizing or non-ionizing radiation prior to sample collection. Record the radiation source and dose when known.",
+                        "example": "5 Gy gamma irradiation",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text",
+                        "datatype": 30
+                    },
+                    {
+                        "id": "chemical",
+                        "label": "Chemical",
+                        "description": "Describes exposure to a chemical substance that is not primarily administered as a therapeutic drug or nutrient. Include the chemical name and exposure conditions when available.",
+                        "example": "Tunicamycin treatment",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text",
+                        "datatype": 31
+                    },
+                    {
+                        "id": "drug",
+                        "label": "Drug",
+                        "description": "Describes treatment with a pharmaceutical, therapeutic, or experimental drug prior to sample collection. Include the drug name and dosage or concentration when available.",
+                        "example": "Doxorubicin, 1 µM for 24 hours",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text",
+                        "datatype": 32
+                    },
+                    {
+                        "id": "nutrient",
+                        "label": "Nutrient Modification",
+                        "description": "Describes changes to nutrient availability, diet, or growth medium composition that may affect the biological system before sample collection. Include the modified nutrient when known.",
+                        "example": "High-glucose medium (25 mM glucose), High Fat diet",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text",
+                        "datatype": 32
+                    },
+                    {
+                        "id": "condition",
+                        "label": "Environmental and Physical Conditions",
+                        "description": "Describes exposure to environmental or physical conditions that induce a biological response prior to sample collection. Examples include changes in oxygen availability, temperature, or mechanical forces.",
+                        "example": "Hypoxia (1% O₂)",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text",
+                        "datatype": 32
+                    },
+                    {
+                        "id": "pathogen",
+                        "label": "Pathogen Exposure",
+                        "description": "Describes exposure to or infection with a virus, bacterium, fungus, parasite, or other pathogen before sample collection. Include the pathogen name when known.",
+                        "example": "Influenza A virus infection",
+                        "required": false,
+                        "multiple": true,
+                        "type": "text"
+                    },
+                    {
+                        "id": "other",
+                        "label": "Other",
+                        "description": "Describes a perturbation that does not fit any of the predefined categories. Provide a clear description of the intervention.",
+                        "example": "Liver transplant",
+                        "required": false,
+                        "multiple": false,
+                        "type": "text"
+                    }
+                ],
+                "datatype": 22
+            }
+        ]
+    },
     "synthetic": {},
     "other" : {},
-    "environmental_sample": {},
     "general": [
         {
             "id": "comment",
