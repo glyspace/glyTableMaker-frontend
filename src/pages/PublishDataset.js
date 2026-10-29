@@ -522,9 +522,6 @@ const PublishDataset = (props) => {
         nextSelectedCollections.forEach((collection) => {
             if (collection.metadataValues) {
                 const raw = collection.metadataValues["publication"];
-
-                // one code path for both the array and the single-value case,
-                // skipping missing or blank identifiers
                 const identifiers = (Array.isArray(raw) ? raw : [raw])
                     .filter((p) => p !== null && p !== undefined && String(p).trim() !== "")
                     .map((p) => String(p).trim());
@@ -548,8 +545,6 @@ const PublishDataset = (props) => {
                     }
                 });
             }
-
-            // ...your existing `if (collection.metadata) { ... }` block continues here, unchanged
         });
     };
 

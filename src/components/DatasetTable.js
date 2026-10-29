@@ -55,9 +55,9 @@ const DatasetTable = props => {
 
         let searchParams = "start=" + pagination.pageIndex;
         searchParams += "&size=" + pagination.pageSize;
-        searchParams += "&filters=" + encodeURI(JSON.stringify(columnFilters ?? []));
-        searchParams += "&globalFilter=" + globalFilter ?? '';
-        searchParams += '&sorting=' + encodeURI(JSON.stringify(sorting ?? []));
+        searchParams += "&filters=" + encodeURIComponent(JSON.stringify(columnFilters ?? []));
+        searchParams += "&globalFilter=" + encodeURIComponent(globalFilter ?? "");
+        searchParams += '&sorting=' + encodeURIComponent(JSON.stringify(sorting ?? []));
         searchParams += props.searchId ? "&searchId=" + props.searchId : "";
 
         getJson (props.ws + "?" + searchParams).then ( (json) => {

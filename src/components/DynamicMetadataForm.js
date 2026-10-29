@@ -134,6 +134,9 @@ export default function DynamicMetadataForm({
     return false;
   }
 
+  const isSpecialValue = (v) =>
+    hasNone([v]) || hasNotApplicable([v]) || hasUnknownAutoComplete([v]);
+
   const handleCheckboxChange = (e, field) => {
     const name = e.target.name;
     if (e.target.checked) {
@@ -176,12 +179,10 @@ export default function DynamicMetadataForm({
 
     if (field.type === "autocomplete") {
       const disabledByExclusivity = isDisabledByExclusivity(field.id);
-      const isNone = field.id === "disease" && hasNone(values[field.id]);
-      const isNA = field.id === "disease" && hasNotApplicable(values[field.id]);
-      const isUnknown = field.unknown && hasUnknownAutoComplete(values[field.id]);
+      const hasSpecialCheckbox = field.id === "disease" || field.unknown;
       const autocompleteValue =
-        field.id === "disease || field.unknown"
-          ? (values[field.id] || []).filter(v => v.name !== "None" && v.name !== "Unknown" && v.name !== "Not applicable")
+        hasSpecialCheckbox && Array.isArray(values[field.id])
+          ? values[field.id].filter((v) => !isSpecialValue(v))
           : values[field.id];
       return (
         <FormControl fullWidth variant="outlined">
@@ -196,7 +197,7 @@ export default function DynamicMetadataForm({
             allowOther={field.allowOther}
             namespace={field.id === "tissue" && selectedSpecies !== null && selectedSpecies.id && plant.includes (selectedSpecies.id) ? field.alternativeNamespce : field.namespace}
             placeholder="Start typing"
-            disabled={disabledByExclusivity || isNone || isNA || isUnknown}
+            disabled={disabledByExclusivity}
             setInputValue={updateValue}
             errorText={errors?.[field.id] || getXorMessage(field.id)}
           />
