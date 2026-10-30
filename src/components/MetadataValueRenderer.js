@@ -275,7 +275,7 @@ function getComplexFieldSummary (field, value) {
     } else if (field.id === "analyzedProteinMutation") {
         displayValue = items
             .map(v =>
-                `${v.geneticVariation}${
+                `${v.geneticVariation?.name}${
                     v.mutantPosition ? ` (${v.mutantPosition})` : ""
                 }`
             )

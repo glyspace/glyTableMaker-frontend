@@ -32,6 +32,7 @@ const Signup = () => {
   });
 
   const [validURL, setValidURL] = useState(true);
+  const [validSoftwareURL, setValidSoftwareURL] = useState(true);
   const [validated, setValidated] = useState(false);
   const [showError, setShowError] = useState(false);
   const [showEye, setShowEye] = useState(false);
@@ -56,7 +57,7 @@ const Signup = () => {
     const checked = e.target.checked;
     setValidURL(true);
     if (name === "software") {
-      setUserInput ({ [name] : checked});
+      setUserInput ({ "softwareRole" : checked});
       return;
     }
     if (newValue) {
@@ -70,7 +71,8 @@ const Signup = () => {
       if (name === "confirmPassword") setShowEye2(false);
     }
     if (newValue && newValue.trim().length > 0 && (name === "affiliationWebsite" || name === "softwareURL")) {
-      setValidURL(isValidURL(newValue));
+      if (name === "affilicationWebsite") setValidURL(isValidURL(newValue));
+      else if (name === "softwareURL") setValidSoftwareURL(isValidURL(newValue));
     }
   };
 
@@ -359,7 +361,7 @@ const Signup = () => {
               </Row>
               <Row>
                 <Col md={12}>
-                <Form.Group as={Row} controlId="sName">
+                <Form.Group as={Row} controlId="sPub">
                   <Col>
                     <Form.Control
                       type="text"
@@ -386,11 +388,11 @@ const Signup = () => {
                       value={userInput.softwareURL}
                       onChange={handleChange}
                       maxLength={250}
-                      isInvalid={!validURL}
+                      isInvalid={!validSoftwareURL}
                       className={"custom-text-fields"}
                     />
-                    <Feedback className={"feedback"} message="Please enter a valid software website." />
                     <Form.Label className={"label"}>Software URL</Form.Label>
+                    <Feedback className={"feedback"} message="Please enter a valid software website." />
                   </Col>
                 </Form.Group>
                 </Col>

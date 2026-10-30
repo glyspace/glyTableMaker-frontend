@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   Box,
   Grid,
@@ -53,6 +53,19 @@ export default function DynamicMetadataForm({
   const [selectedSpecies, setSelectedSpecies] = useState(null);
 
   const plant = []; //TODO decide what constitutes plant species
+
+  const diseaseField = fields.find((f) => f.id === "disease");
+  const hasDisease = !!diseaseField;
+
+  useEffect(() => {
+    if (hasDisease && isFieldEmpty(values.disease)) {
+      onChange({
+        ...values,
+        disease: diseaseField.multiple ? [{ name: "Unknown" }] : { name: "Unknown" },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasDisease]);
   
   const updateValue = (fieldId, value) => {
     onChange({
@@ -210,7 +223,7 @@ export default function DynamicMetadataForm({
                     <Form.Check
                         type="checkbox"
                         name="none"
-                        checked={hasNone(values[field.id])}
+                        checked={!!hasNone(values[field.id])}
                         onChange={(e) => handleCheckboxChange(e, field)}/>
                   </Col>
                   <Col><FormLabel label="No disease" /></Col>
@@ -222,7 +235,7 @@ export default function DynamicMetadataForm({
                     <Form.Check
                         type="checkbox"
                         name="na"
-                        checked={hasNotApplicable(values[field.id])}
+                        checked={!!hasNotApplicable(values[field.id])}
                         onChange={(e) => handleCheckboxChange(e, field)}/>
                   </Col>
                   <Col><FormLabel label="Not applicable" /></Col>
@@ -234,7 +247,7 @@ export default function DynamicMetadataForm({
                     <Form.Check
                         type="checkbox"
                         name="unknown"
-                        checked={hasUnknownAutoComplete(values[field.id])}
+                        checked={!!hasUnknownAutoComplete(values[field.id])}
                         onChange={(e) => handleCheckboxChange(e, field)}/>
                   </Col>
                   <Col><FormLabel label="Unknown" /></Col>
@@ -311,7 +324,7 @@ export default function DynamicMetadataForm({
                     <Form.Check
                         type="checkbox"
                         name="unknown"
-                        checked={hasUnknownText(values[field.id])}
+                        checked={!!hasUnknownText(values[field.id])}
                         onChange={(e) => handleCheckboxChange(e, field)}/> 
                   </Col>
                   <Col><FormLabel label="Unknown" /></Col>
