@@ -19,8 +19,10 @@ COPY . /app
 RUN npm run build
 
 # production environment
-FROM nginx:1.25.3-alpine
+# FROM nginx:1.25.3-alpine
+FROM nginxinc/nginx-unprivileged:1.25.3-alpine
 COPY --from=build /app/build /var/www
 COPY nginx.conf /etc/nginx/nginx.conf
-EXPOSE 80
+EXPOSE 8080
+
 CMD ["nginx", "-g", "daemon off;"]
