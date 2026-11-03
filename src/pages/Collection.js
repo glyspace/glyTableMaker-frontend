@@ -29,6 +29,10 @@ const Collection = (props) => {
     let collectionId = searchParams.get("collectionId");
     let isCopy = searchParams.get("isCopy");
     if (!isCopy) isCopy=false;
+
+    const copyGlycans = searchParams.get("copyGlycans") !== "false";     // default true
+    const copyMetadata = searchParams.get("copyMetadata") !== "false";
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -236,7 +240,7 @@ const Collection = (props) => {
     }
 
     function getGlycanTags() {
-        getJson ("api/data/getglycantags", getAuthorizationHeader()).then (({ data }) => {
+        getJson ("api/data/getalltags", getAuthorizationHeader()).then (({ data }) => {
             setGlycanTags(data.data);
         }).catch(function(error) {
             axiosError(error, null, setAlertDialogInput);
@@ -247,28 +251,34 @@ const Collection = (props) => {
         setShowLoading(true);
         getJson ("api/data/getcollection/" + collectionId, getAuthorizationHeader())
             .then ((json) => {
+                if (isCopy && !copyMetadata) json.data.data.metadataValues = {};
                 setUserSelection (json.data.data);
                 const fetched = json.data.data.metadataValues ?? {};
                 setMetadataValues(prev => ({
                     ...fetched,
-                    contributor: !isCopy && hasContributor(fetched.contributor) ? fetched.contributor : prev.contributor
+                    contributor: hasContributor(fetched.contributor) ? fetched.contributor : prev.contributor
                 }));
-                //setMetadataValues (json.data.data.metadataValues ?? {});
-                setSampleType (json.data.data.sampleType?.toLowerCase());
+                if (!isCopy || copyMetadata) {
+                    setSampleType (json.data.data.sampleType?.toLowerCase());
+                }
+                const keepItems = !isCopy || copyGlycans;
                 if (json.data.data.glycans) {
-                    setSelectedGlycans (json.data.data.glycans);
                     setCollectionType ("GLYCAN");
-                    loadCartoons(json.data.data.glycans).then((updated) => {
-                        setUserSelection({"glycans": updated})
-                        setSelectedGlycans(updated);
-                    });
+                    if (keepItems) {
+                        setSelectedGlycans (json.data.data.glycans);
+                        loadCartoons(json.data.data.glycans).then((updated) => {
+                            setUserSelection({"glycans": updated})
+                            setSelectedGlycans(updated);
+                        });
+                    }        
                 }
                 if (json.data.data.glycoproteins) {
-                    setSelectedGlycoproteins (json.data.data.glycoproteins);
+                    if (keepItems) setSelectedGlycoproteins (json.data.data.glycoproteins);
                     setCollectionType("GLYCOPROTEIN")
                 }
                 if (isCopy) {
-                    setUserSelection ({"name" : "", "glycans": []});
+                    setUserSelection(keepItems ? { name: "" } : { name: "", glycans: [], glycoproteins: [] });
+                    setIsDirty(true);
                 }
                 setShowLoading(false);
         }).catch (function(error) {

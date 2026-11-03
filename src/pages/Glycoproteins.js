@@ -172,7 +172,7 @@ const Glycoproteins = (props) => {
                     addtagws="api/data/addglycoproteintag/"
                     showEdit={true}
                     edit={stringConstants.routes.addglycoprotein + "?glycoproteinId="}
-                    gettagws="api/data/getglycantags"
+                    gettagws="api/data/getalltags"
                     initialSortColumn="dateCreated"
                     rowId="id"
                     columnsettingsws="api/setting/getcolumnsettings?tablename=GLYCOPROTEIN"

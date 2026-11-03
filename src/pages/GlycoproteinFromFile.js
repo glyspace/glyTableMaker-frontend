@@ -146,7 +146,7 @@ const GlycoproteinFromFile = props => {
                         <Tag validate={validate} setValidate={setValidate}
                             setTag={setTag}
                             setAlertDialogInput={setAlertDialogInput}
-                            gettagws="api/data/getglycantags"
+                            gettagws="api/data/getalltags"
                         />
                       </Col>
                       {type && type === 'bynoic' &&

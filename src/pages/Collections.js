@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useReducer, useState} from "react";
-import { Container, IconButton, Popover, Tooltip } from "@mui/material";
+import { Checkbox, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, FormGroup, IconButton, Popover, Tooltip } from "@mui/material";
 import { PageHeading } from "../components/FormControls";
 import DialogAlert from "../components/DialogAlert";
 import { Button, Card } from "react-bootstrap";
@@ -31,6 +31,26 @@ const Collections = (props) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(props.authCheckAgent, []);
+
+  const [copyTarget, setCopyTarget] = useState(null);
+  const [copyGlycans, setCopyGlycans] = useState(true);
+  const [copyMetadata, setCopyMetadata] = useState(true);
+
+  const openCopyDialog = (collection) => {
+    setCopyGlycans(true);
+    setCopyMetadata(true);
+    setCopyTarget(collection);
+  };
+
+  const confirmCopy = () => {
+    navigate(
+      stringConstants.routes.addcollection +
+        "?isCopy=true&collectionId=" + copyTarget.collectionId +
+        "&copyGlycans=" + copyGlycans +
+        "&copyMetadata=" + copyMetadata
+    );
+    setCopyTarget(null);
+  };
 
   const columns = useMemo(
     () => [
@@ -192,6 +212,7 @@ const Collections = (props) => {
                   showCopy={true}
                   showDownload={true}
                   copy={stringConstants.routes.addcollection + "?isCopy=true&collectionId="}
+                  onCopy={openCopyDialog}
                   download={stringConstants.api.downloadcollection + "/"}
                   deletews="api/data/deletecollection/"
                   initialSortColumn="name"
@@ -202,6 +223,25 @@ const Collections = (props) => {
             />
             </Card.Body>
           </Card>
+          <Dialog open={!!copyTarget} onClose={() => setCopyTarget(null)} maxWidth="xs" fullWidth>
+            <DialogTitle>Copy collection</DialogTitle>
+            <DialogContent dividers>
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox checked={copyGlycans} onChange={(e) => setCopyGlycans(e.target.checked)} />}
+                  label={copyTarget?.type === "GLYCOPROTEIN" ? "Copy glycoproteins" : "Copy glycans"}
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={copyMetadata} onChange={(e) => setCopyMetadata(e.target.checked)} />}
+                  label="Copy metadata"
+                />
+              </FormGroup>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setCopyTarget(null)}>Cancel</Button>
+              <Button variant="contained" onClick={confirmCopy}>Copy</Button>
+            </DialogActions>
+          </Dialog>
        </div>
      </Container>
     </>

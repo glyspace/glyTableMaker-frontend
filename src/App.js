@@ -59,6 +59,7 @@ import { OldPublicDataset } from "./pages/OldPublicDataset";
 import { UserManagement } from "./pages/UserManagement";
 import { Inbox } from "./pages/Inbox";
 import PageNotFound from "./pages/PageNotFound";
+import { TagManagement } from "./pages/TagManagement";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -209,6 +210,11 @@ function App() {
     {
       path: "/manageusers",
       main: () => <UserManagement authCheckAgent={checkAuthorization} />,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: "/managetags",
+      main: () => <TagManagement authCheckAgent={checkAuthorization} />,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {

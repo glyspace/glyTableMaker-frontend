@@ -33,9 +33,15 @@ const TopNavBar = (props) => {
               <LinkContainer className="gg-nav-link" to={stringConstants.routes.dashboard} exact>
                 <Nav.Link>PUBLISH</Nav.Link>
               </LinkContainer>
-              {props.admin && (
                 <NavDropdown className={"gg-dropdown-navbar gg-nav-link"} title="MANAGE" id="basic-nav-dropdown" exact="true">
-                  <LinkContainer to="/manageusers">
+                  <LinkContainer to="/managetags">
+                    <NavDropdown.Item className="gg-nav-link">
+                      Tags
+                    </NavDropdown.Item>
+                  </LinkContainer>
+                  {props.admin && (
+                    <>                  
+                    <LinkContainer to="/manageusers">
                     <NavDropdown.Item className="gg-nav-link">
                       Users
                     </NavDropdown.Item>
@@ -45,8 +51,9 @@ const TopNavBar = (props) => {
                       Datasets
                     </NavDropdown.Item>
                   </LinkContainer>
+                  </>)}
                 </NavDropdown>
-              )}
+              
               <NavDropdown className={"gg-dropdown-navbar gg-nav-link"} title="SEARCH" id="basic-nav-dropdown" exact="true">
                 {/* <LinkContainer to="/glycanSearch">
                   <NavDropdown.Item className="gg-nav-link">

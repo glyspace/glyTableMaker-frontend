@@ -62,6 +62,11 @@ const Table = (props) => {
 
     let navigate = useNavigate();
 
+    const handleCopy = (row) => {
+      if (props.onCopy) props.onCopy(row.original);
+      else navigate(props.copy + row.original[props.rowId]);
+    };
+
     async function loadDatasetCartoons(rows) {
       const updated = [];
     
@@ -459,7 +464,7 @@ const Table = (props) => {
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() => handleCopy(row)}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)
@@ -582,7 +587,7 @@ const Table = (props) => {
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() =>  handleCopy(row)}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
@@ -758,7 +763,7 @@ const Table = (props) => {
             </Tooltip>)}
             {props.showCopy && (
               <Tooltip title="Clone">
-              <IconButton color="primary" onClick={() => navigate(props.copy + row.original[props.rowId])}>
+              <IconButton color="primary" onClick={() =>  handleCopy(row)}>
                 <ContentCopyIcon />
               </IconButton>
             </Tooltip>)}
@@ -891,6 +896,7 @@ Table.propTypes = {
     edit: PropTypes.string,   // edit page
     showEdit: PropTypes.bool,   // whether to add edit icon to actions
     copy: PropTypes.string, // copy page
+    onCopy: PropTypes.func,          // optional: called with the row instead of navigating to `copy`
     showCopy: PropTypes.bool, // whether to add copy icon to actions
     download: PropTypes.string, // download action
     showDownload: PropTypes.bool, // whether to add download icon to actions

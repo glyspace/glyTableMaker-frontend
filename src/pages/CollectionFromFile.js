@@ -48,7 +48,7 @@ const CollectionFromFile = props => {
 
   useEffect(() => {
       // load existing tags
-      getJson ("api/data/getglycantags", getAuthorizationHeader()).then ( (json) => {
+      getJson ("api/data/getalltags", getAuthorizationHeader()).then ( (json) => {
           setTagList(json.data.data);
         }).catch (function(error) {
           if (error && error.response && error.response.data) {

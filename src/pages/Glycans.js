@@ -87,7 +87,7 @@ const Glycans = (props) => {
   }
 
   function getGlycanTags() {
-    getJson ("api/data/getglycantags", getAuthorizationHeader()).then (({ data }) => {
+    getJson ("api/data/getalltags", getAuthorizationHeader()).then (({ data }) => {
         setGlycanTags(data.data);
     }).catch(function(error) {
         axiosError(error, null, setAlertDialogInput);
@@ -512,7 +512,7 @@ const getDownloadReport = (reportId) => {
                   setAlertDialogInput={setAlertDialogInput}
                   deletews="api/data/deleteglycan/"
                   addtagws="api/data/addglycantag/"
-                  gettagws="api/data/getglycantags"
+                  gettagws="api/data/getalltags"
                   initialSortColumn="dateCreated"
                   rowId="glycanId"
                   detailPanel={true}

@@ -357,7 +357,7 @@ const Glycan = (props) => {
                       <Tag validate={validate} setValidate={setValidate}
                           setTag={setTag}
                           setAlertDialogInput={setAlertDialogInput}
-                          gettagws="api/data/getglycantags"
+                          gettagws="api/data/getalltags"
                       />
                     </Form.Group>
                   </Col>
@@ -466,7 +466,7 @@ const Glycan = (props) => {
                         <Tag validate={validate} setValidate={setValidate}
                             setTag={setTag}
                             setAlertDialogInput={setAlertDialogInput}
-                            gettagws="api/data/getglycantags"
+                            gettagws="api/data/getalltags"
                         />
                     </Col>
                 </Form.Group>) }
