@@ -88,6 +88,11 @@ const Glycan = (props) => {
       setSubType (select);
     };
 
+     const toLines = (text) =>
+      text.split(/\r\n|[\n\r\u000B\u000C\u0085\u2028\u2029]/)
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0);
+
     const handleSubmit = e => {
         props.authCheckAgent();
         setValidate(false);
@@ -127,7 +132,7 @@ const Glycan = (props) => {
             sequence: userSelection.sequence,
             glytoucanID: userSelection.glytoucanId,
             composition: userSelection.composition && userSelection.composition.length > 0 ? userSelection.composition : 
-                  userSelection.compositionString && userSelection.compositionString.trim().length > 0 ? userSelection.compositionString.trim().split("\n") : null,
+                  userSelection.compositionString && userSelection.compositionString.trim().length > 0 ? toLines(userSelection.compositionString) : null,
             format: userSelection.sequenceType}
         
         addGlycan(glycan, t);
