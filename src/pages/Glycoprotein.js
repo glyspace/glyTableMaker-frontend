@@ -380,10 +380,10 @@ const Glycoprotein = (props) => {
             "sites" : sites,
         }
 
+        setIsDirty(false);
         setShowLoading(true);
         let apiURL = glycoproteinId ? "api/data/updateglycoprotein" : "api/data/addglycoprotein";
         postJson (apiURL, glycoprotein, getAuthorizationHeader()).then ( (data) => {
-            setIsDirty(false);
             setShowLoading(false);
             navigate("/glycoproteins");
           }).catch (function(error) {
