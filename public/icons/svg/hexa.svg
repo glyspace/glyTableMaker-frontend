@@ -28,8 +28,5 @@ width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
     ><path d="M141 74 L74 141 L7 74 L141 74" style="fill:none; fill-rule:evenodd;"
     /></g
   ></g
-><text x="52" y="110">
-  <tspan id="counter" font-size="75px" font-family="Arial">0</tspan>
-  <title>HexA</title>
-</text></svg
+></svg
 >

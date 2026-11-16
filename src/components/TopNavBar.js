@@ -39,6 +39,16 @@ const TopNavBar = (props) => {
                       Tags
                     </NavDropdown.Item>
                   </LinkContainer>
+                  <LinkContainer to={stringConstants.routes.metadata}>
+                    <NavDropdown.Item className="gg-nav-link">
+                      {stringConstants.sidebar.metadata}
+                    </NavDropdown.Item>
+                  </LinkContainer>
+                  <LinkContainer to={stringConstants.routes.compositionformats}>
+                    <NavDropdown.Item className="gg-nav-link">
+                      Composition Formats
+                    </NavDropdown.Item>
+                  </LinkContainer>
                   {props.admin && (
                     <>                  
                     <LinkContainer to="/manageusers">

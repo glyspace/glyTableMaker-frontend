@@ -8,6 +8,49 @@ import "./Composition.css";
 import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import { axiosError } from "../utils/axiosError";
 
+const imageBase = () =>
+    window.location.origin + (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME);
+
+// where the count is drawn when composition.json has no "counter" entry for the residue
+const DEFAULT_COUNTER = { x: 52, y: 100, size: 70, fill: "white" };
+
+/**
+ * Residue picture with its count. The SVG files only hold the symbol / label; the count is drawn on top
+ * in the same 148 x 148 coordinate system the SVG uses, so it scales with the image.
+ * Position, size and colour come from the "counter" entry of the residue in composition.json.
+ */
+const ResidueImage = ({ item }) => {
+    const { mono, count } = item;
+    const counter = { ...DEFAULT_COUNTER, ...(mono.counter || {}) };
+    return (
+        <span style={{ position: "relative", display: "inline-block" }}>
+            <img
+                src={imageBase() + "/icons/svg/" + mono.image}
+                alt={mono.name}
+                title={mono.id}
+                className="comp-image"
+                style={{ display: "block" }}
+            />
+            <svg
+                viewBox="0 0 148 148"
+                aria-hidden="true"
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+            >
+                <text
+                    x={counter.x}
+                    y={counter.y}
+                    fontSize={counter.size}
+                    fill={counter.fill}
+                    fontFamily="Arial"
+                    stroke="none"
+                >
+                    {count}
+                </text>
+            </svg>
+        </span>
+    );
+};
+
 const Composition = (props) => {
     const [textAlertInput, setTextAlertInput] = useReducer(
         (state, newState) => ({ ...state, ...newState }),
@@ -79,14 +122,6 @@ const Composition = (props) => {
             + (element.count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')
         }
     
-        let svgobject = document.getElementById(element.mono.id);
-        if (svgobject) {
-            let svg =  svgobject.contentDocument;
-            if (svg) {
-                let tspan = svg.getElementById("counter");
-                tspan.textContent = element.count+"";
-            }
-        }
 
         createCompositionString(false);
         
@@ -108,14 +143,7 @@ const Composition = (props) => {
                         id={monoWithCount.mono.id + "decrement"}
                         onClick={() => changeCount (monoWithCount, false)}/>
                     {monoWithCount.mono.image ? 
-                    <object
-                        data={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/' + monoWithCount.mono.image}
-                        type="image/svg+xml"
-                        alt={monoWithCount.mono.name} 
-                        id={monoWithCount.mono.id}
-                        className="comp-image"> 
-                        {monoWithCount.mono.id}</object>
+                    <ResidueImage item={monoWithCount} />
                          : 
                     <span className="comp-text">{monoWithCount.mono.id}</span>}
                     {showName && <span className="comp-text">{monoWithCount.mono.id}</span>}
@@ -140,13 +168,7 @@ const Composition = (props) => {
                         id={monoListSecondCol[index].mono.id+ "decrement"}
                         onClick={() => changeCount (monoListSecondCol[index], false)}/>
                     {monoListSecondCol[index].mono.image ?   
-                    <object
-                        data={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/' + monoListSecondCol[index].mono.image}
-                        alt={monoListSecondCol[index].mono.name} 
-                        id={monoListSecondCol[index].mono.id}
-                        className="comp-image"> 
-                       {monoListSecondCol[index].mono.id}</object>
+                    <ResidueImage item={monoListSecondCol[index]} />
                     : 
                     <span className="comp-text">{monoListSecondCol[index].mono.id}</span> }
                     {showName && <span className="comp-text">{monoListSecondCol[index].mono.id}</span>}
@@ -171,13 +193,7 @@ const Composition = (props) => {
                         id={monoListThirdCol[index].mono.id+ "decrement"}
                         onClick={() => changeCount (monoListThirdCol[index], false)}/>
                     {monoListThirdCol[index].mono.image ?   
-                    <object
-                        data={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/' + monoListThirdCol[index].mono.image}
-                        alt={monoListThirdCol[index].mono.name} 
-                        id={monoListThirdCol[index].mono.id}
-                        className="comp-image"> 
-                        {monoListThirdCol[index].mono.id}</object>
+                    <ResidueImage item={monoListThirdCol[index]} />
                     : 
                     <span className="comp-text">{monoListThirdCol[index].mono.id}</span> }
                     {showName && <span className="comp-text">{monoListThirdCol[index].mono.id}</span>}

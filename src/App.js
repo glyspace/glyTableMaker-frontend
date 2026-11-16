@@ -60,6 +60,7 @@ import { UserManagement } from "./pages/UserManagement";
 import { Inbox } from "./pages/Inbox";
 import PageNotFound from "./pages/PageNotFound";
 import { TagManagement } from "./pages/TagManagement";
+import { CompositionFormats } from "./pages/CompositionFormats";
 
 const items = [
   { label: stringConstants.sidebar.dashboard, id: "Dashboard", route: stringConstants.routes.dashboard },
@@ -67,9 +68,8 @@ const items = [
   { label: stringConstants.sidebar.glycoprotein, id: "Glycoprotein", route: stringConstants.routes.glycoproteins},  
   { label: stringConstants.sidebar.collection, id: "Col", route: stringConstants.routes.collection},
   { label: stringConstants.sidebar.collectioncollection, id: "ColCol", route: stringConstants.routes.collectioncollection },
-  { label: stringConstants.sidebar.metadata, id: "Metadata", route: stringConstants.routes.metadata},
-  { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker, disabled:true},
   { label: stringConstants.sidebar.repository, id: "Repository", route: stringConstants.routes.repository},
+  { label: stringConstants.sidebar.tablemaker, id: "Tablemaker", route: stringConstants.routes.tablemaker, disabled:true},
 ];  
 
 function initializeReactGA() {
@@ -205,6 +205,11 @@ function App() {
     {
       path: "/managedatasets",
       main: () => <DatasetManagement authCheckAgent={checkAuthorization} />,
+      sidebar: () => <Sidebar items={sideBarData} />,
+    },
+    {
+      path: stringConstants.routes.compositionformats,
+      main: () => <CompositionFormats authCheckAgent={checkAuthorization} />,
       sidebar: () => <Sidebar items={sideBarData} />,
     },
     {

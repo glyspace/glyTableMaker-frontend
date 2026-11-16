@@ -1,188 +1,263 @@
 [ {
     "name" : "Hexose",
     "id" : "Hex",
+    "type": "HEX",
     "ignore" : false,
     "image" : "hex.svg",
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Hexose",
     "pubChemCompound" : 206
   }, {
     "name" : "Glucose",
     "id" : "Glc",
+    "type": "GLC",
     "ignore" : false,
     "image" : "glc.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Glucose",
     "pubChemCompound" : 5793
   }, {
     "name" : "Galactose",
     "id" : "Gal",
+    "type": "GAL",
     "ignore" : false,
     "image" : "gal.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Galactose",
     "pubChemCompound" : 6036
   }, {
     "name" : "Mannose",
     "id" : "Man",
+    "type": "MAN",
     "ignore" : false,
     "image" : "man.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Mannose",
     "pubChemCompound" : 18950
   }, {
     "name" : "N-acetyl Hexosamine",
     "id" : "HexNAc",
+    "type": "HEXNAC",
     "ignore" : false,
     "image" : "hexnac.svg",
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
     "pubChemCompound" : 899
   }, {
     "name" : "N-acetyl Glucosamine",
     "id" : "GlcNAc",
+    "type": "GLCNAC",
     "ignore" : false,
     "image" : "glcnac.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/N-Acetylglucosamine",
     "pubChemCompound" : 439174
   }, {
     "name" : "N-acetyl Galactosamine",
     "id" : "GalNAc",
+    "type": "GALNAC",
     "ignore" : false,
     "image" : "galnac.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/N-Acetylgalactosamine",
     "pubChemCompound" : 35717
   }, { 
     "name" : "deoxy Hexose",
     "id" : "dHex",
+    "type": "DHEX",
     "ignore" : false,
     "image" : "dhex.svg",
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Hexose#Deoxyhexoses",
     "pubChemCompound" : 840
   }, {
     "name" : "Fucose",
     "id" : "Fuc",
+    "type": "FUC",
     "ignore" : false,
     "image" : "fuc.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Fucose",
     "pubChemCompound" : 17106
   }, {
     "name" : "Deoxynonulosonate",
     "id" : "NulO",
+    "type": "NONUA3D",
     "ignore" : false,
     "image" : "nulo.svg",
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Sialic_acid",
     "pubChemCompound" : 5086735
   }, {
     "name" : "Keto-Deoxy-Nonulonic acid",
     "id" : "Kdn",
+    "type": "KDN",
     "ignore" : false,
     "image" : "kdn.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "pubChemCompound" : 13991616
   }, {
     "name" : "N-acetyl Neuraminic acid",
     "id" : "Neu5Ac",
+    "type": "NEUAC",
     "ignore" : false,
     "image" : "neu5ac.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/N-Acetylneuraminic_acid",
     "pubChemCompound" : 439197
   }, {
     "name" : "N-glycolyl Neuraminic acid",
     "id" : "Neu5Gc",
+    "type": "NEUGC",
     "ignore" : false,
     "image" : "neu5gc.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/N-Glycolylneuraminic_acid",
     "pubChemCompound" : 440001
   }, {
     "name" : "Neuraminic acid",
     "id" : "Neu",
+    "type": "NEU",
     "ignore" : false,
     "image" : "neu.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Neuraminic_acid",
     "pubChemCompound" : 513472
   }, {
     "name" : "3-Deoxy-D-manno-octulosonic acid",
     "id" : "Kdo",
+    "type": "KDO",
     "ignore" : false,
     "image" : "kdo.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/3-Deoxy-D-manno-oct-2-ulosonic_acid",
     "pubChemCompound" : 445569
   }, {
     "name" : "Hexosamine",
     "id" : "HexN",
+    "type": "HEXN",
     "ignore" : false,
     "image" : "hexn.svg",
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Hexosamines",
     "pubChemCompound" : 739
   }, {
     "name" : "Glucosamine",
     "id" : "GlcN",
+    "type": "GLCN",
     "ignore" : false,
     "image" : "glcn.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Glucosamine",
     "pubChemCompound" : 439213
   }, {
     "name" : "Hexuronic acid",
     "id" : "HexA",
+    "type": "HEXA",
     "ignore" : false,
     "image" : "hexa.svg",
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Hexuronic_acid",
     "pubChemCompound" : 104899
   }, {
     "name" : "Glucuronic acid",
     "id" : "GlcA",
+    "type": "GLCA",
     "ignore" : false,
     "image" : "glca.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Glucuronic_acid",
     "pubChemCompound" : 94715
   }, {
     "name" : "Iduronic acid",
     "id" : "IdoA",
+    "type": "IDOA",
     "ignore" : false,
     "image" : "idoa.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Iduronic_acid",
     "pubChemCompound" : 441039
   }, {
     "name" : "Pentose",
     "id" : "Pen",
+    "type": "PEN",
     "ignore" : false,
     "image" : "pent.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Pentose",
     "pubChemCompound" : 229
   }, {
     "name" : "Arabinose",
     "id" : "Ara",
+    "type": "ARA",
     "ignore" : false,
     "image" : "ara.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 65, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Arabinose",
     "pubChemCompound" : 5460291
   }, {
     "name" : "Xylose",
     "id" : "Xyl",
+    "type": "XYL",
     "ignore" : false,
     "image" : "xyl.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 65, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Xylose",
     "pubChemCompound" : 135191
   }, {
     "name" : "Ribose",
     "id" : "Rib",
+    "type": "RIB",
     "ignore" : false,
     "image" : "rib.svg",
+    "counter" : { "x" : 52, "y" : 100, "size" : 65, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Ribose",
     "pubChemCompound" : 5779
   }, {
     "name" : "Phosphate",
     "id" : "P",
+    "type": "PHOSPHATE",
     "ignore" : false,
     "image" : "phosphate.svg",
+    "counter" : { "x" : 95, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Phosphate",
     "pubChemCompound" : 1061
   }, {
     "name" : "Sulfate",
     "id" : "S",
+    "type": "SULFATE",
     "ignore" : false,
     "image" : "sulfate.svg",
+    "counter" : { "x" : 95, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Sulfate",
     "pubChemCompound" : 1117
   }, {
     "name" : "O-acetyl",
     "id" : "Ac",
+    "type": "Ac",
     "ignore" : false,
     "image" : "acetyl.svg",
+    "counter" : { "x" : 100, "y" : 100, "size" : 60, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Acetyl_group",
     "pubChemCompound" : 137849
-  } ]
+  },
+  {
+    "name" : "Methyl",
+    "id" : "Me",
+    "type": "ME",
+    "ignore" : false,
+    "image" : "methyl.svg",
+    "counter" : { "x" : 100, "y" : 100, "size" : 60, "fill" : "black" },
+    "url" : "https://en.wikipedia.org/wiki/Methyl_group",
+    "pubChemCompound" : 3034819
+  },
+  {
+    "name" : "Methyl Phosphate",
+    "id" : "PMe",
+    "type": "PME",
+    "ignore" : false,
+    "image" : "pme.svg",
+    "counter" : { "x" : 100, "y" : 100, "size" : 60, "fill" : "black" },
+    "url" : "https://pubchem.ncbi.nlm.nih.gov/compound/Methyl-Phosphate",
+    "pubChemCompound" : 12691389
+  }
+]

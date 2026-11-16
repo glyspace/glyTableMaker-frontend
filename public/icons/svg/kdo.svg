@@ -22,8 +22,5 @@ width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
     ><path d="M107.5 32.971 L141 74 L107.5 115.029 L40.5 115.029 L7 74 L40.5 32.971 L107.5 32.971 L107.5 32.971" style="fill:none; fill-rule:evenodd;"
     /></g
   ></g
-><text x="52" y="100" id="counter-text">
-  <tspan id="counter" font-size="75px" fill="white" font-family="Arial">0</tspan>
-  <title>Kdo</title>
-</text></svg
+></svg
 >

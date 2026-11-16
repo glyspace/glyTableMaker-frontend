@@ -22,8 +22,5 @@ width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
     ><path d="M74 10.2792 L89.8166 58.9576 L141 58.9576 L99.5917 89.0424 L115.4083 137.7208 L74 107.6359 L32.5917 137.7208 L48.4083 89.0424 L7 58.9576 L58.1834 58.9576 L74 10.2792 L74 10.2792" style="fill:none; fill-rule:evenodd;"
     /></g
   ></g
-><text x="52" y="100" id="counter-text">
-  <tspan id="counter" font-size="65px" fill="white" font-family="Arial">0</tspan>
-  <title>Rib</title>
-</text></svg
+></svg
 >

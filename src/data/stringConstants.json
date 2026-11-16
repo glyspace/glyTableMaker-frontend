@@ -28,7 +28,9 @@
         "upload": "/glycans/fileupload",
         "glycoproteinupload" : "/glycoproteins/fileupload",
         "repository": "/dataset/dataset/",
-        "publishdataset" : "/dataset/publishdataset"
+        "publishdataset" : "/dataset/publishdataset",
+        "compositionformats": "/compositionformats",
+        "addcompositionformat": "/addcompositionformat"
     },
     "api": {
         "statistics" : "api/data/statistics",
