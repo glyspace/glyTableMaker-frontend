@@ -74,9 +74,9 @@ const Composition = (props) => {
             let monoWithCount = {};
             monoWithCount.mono = mono;
             monoWithCount.count = 0;
-            if (mono2.length > 8) {
+            if (mono2.length > 9) {
                 mono3.push(monoWithCount);
-            } else if (mono1.length > 8){
+            } else if (mono1.length > 9){
                 mono2.push (monoWithCount);
             } else {
                 mono1.push (monoWithCount);
@@ -117,8 +117,7 @@ const Composition = (props) => {
 
         let decr = document.getElementById(element.mono.id+"decrement");
         if (decr) {
-            decr.src = window.location.origin + 
-            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME)
+            decr.src = imageBase()
             + (element.count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')
         }
     
@@ -134,9 +133,7 @@ const Composition = (props) => {
                 <Row>
                 <Col>
                     <Image
-                        src={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
-                            + (monoWithCount.count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
+                        src={imageBase() + (monoWithCount.count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
                         alt="decrementing" 
                         title="decrement"
                         className="counter-image"
@@ -145,11 +142,10 @@ const Composition = (props) => {
                     {monoWithCount.mono.image ? 
                     <ResidueImage item={monoWithCount} />
                          : 
-                    <span className="comp-text">{monoWithCount.mono.id}</span>}
-                    {showName && <span className="comp-text">{monoWithCount.mono.id}</span>}
+                    <span className="comp-image-text">{monoWithCount.mono.id}</span>}
+                    {showName && <span className="comp-name">{monoWithCount.mono.id}</span>}
                     <Image
-                        src={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
+                        src={imageBase() + '/icons/svg/increment.svg'}
                         alt="incrementing"
                         title="increment"
                         className="counter-image"
@@ -159,8 +155,7 @@ const Composition = (props) => {
                     {monoListSecondCol[index] ? 
                     <Col> 
                     <Image
-                        src={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
+                        src={imageBase()
                             + (monoListSecondCol[index].count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
                         alt="decrementing" 
                         title="decrement"
@@ -170,11 +165,10 @@ const Composition = (props) => {
                     {monoListSecondCol[index].mono.image ?   
                     <ResidueImage item={monoListSecondCol[index]} />
                     : 
-                    <span className="comp-text">{monoListSecondCol[index].mono.id}</span> }
-                    {showName && <span className="comp-text">{monoListSecondCol[index].mono.id}</span>}
+                    <span className="comp-image-text">{monoListSecondCol[index].mono.id}</span> }
+                    {showName && <span className="comp-name">{monoListSecondCol[index].mono.id}</span>}
                     <Image
-                        src={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
+                        src={imageBase() + '/icons/svg/increment.svg'}
                         alt="incrementing"
                         title="increment"
                         className="counter-image"
@@ -184,8 +178,7 @@ const Composition = (props) => {
                     {monoListThirdCol[index] ? 
                     <Col> 
                     <Image
-                        src={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) 
+                        src={imageBase()
                             + (monoListThirdCol[index].count === 0 ? '/icons/svg/decrement-gray.svg' : '/icons/svg/decrement.svg')}
                         alt="decrementing" 
                         title="decrement"
@@ -195,11 +188,10 @@ const Composition = (props) => {
                     {monoListThirdCol[index].mono.image ?   
                     <ResidueImage item={monoListThirdCol[index]} />
                     : 
-                    <span className="comp-text">{monoListThirdCol[index].mono.id}</span> }
-                    {showName && <span className="comp-text">{monoListThirdCol[index].mono.id}</span>}
+                    <span className="comp-image-text">{monoListThirdCol[index].mono.id}</span> }
+                    {showName && <span className="comp-name">{monoListThirdCol[index].mono.id}</span>}
                     <Image
-                        src={window.location.origin + 
-                            (process.env.REACT_APP_BASENAME === undefined ? "" : process.env.REACT_APP_BASENAME) + '/icons/svg/increment.svg'}
+                        src={imageBase() + '/icons/svg/increment.svg'}
                         alt="incrementing"
                         title="increment"
                         className="counter-image"

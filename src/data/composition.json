@@ -4,7 +4,7 @@
     "type": "HEX",
     "ignore" : false,
     "image" : "hex.svg",
-    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Hexose",
     "pubChemCompound" : 206
   }, {
@@ -40,7 +40,7 @@
     "type": "HEXNAC",
     "ignore" : false,
     "image" : "hexnac.svg",
-    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "black" },
     "pubChemCompound" : 899
   }, {
     "name" : "N-acetyl Glucosamine",
@@ -75,7 +75,7 @@
     "type": "FUC",
     "ignore" : false,
     "image" : "fuc.svg",
-    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "white" },
+    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "white" },
     "url" : "https://en.wikipedia.org/wiki/Fucose",
     "pubChemCompound" : 17106
   }, {
@@ -84,7 +84,7 @@
     "type": "NONUA3D",
     "ignore" : false,
     "image" : "nulo.svg",
-    "counter" : { "x" : 52, "y" : 110, "size" : 75, "fill" : "black" },
+    "counter" : { "x" : 52, "y" : 100, "size" : 75, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Sialic_acid",
     "pubChemCompound" : 5086735
   }, {
@@ -217,8 +217,9 @@
     "id" : "P",
     "type": "PHOSPHATE",
     "ignore" : false,
+    "subsituent": true,
     "image" : "phosphate.svg",
-    "counter" : { "x" : 95, "y" : 100, "size" : 65, "fill" : "black" },
+    "counter" : { "x" : 140, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Phosphate",
     "pubChemCompound" : 1061
   }, {
@@ -226,17 +227,19 @@
     "id" : "S",
     "type": "SULFATE",
     "ignore" : false,
+    "subsituent": true,
     "image" : "sulfate.svg",
-    "counter" : { "x" : 95, "y" : 100, "size" : 65, "fill" : "black" },
+    "counter" : { "x" : 140, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Sulfate",
     "pubChemCompound" : 1117
   }, {
     "name" : "O-acetyl",
     "id" : "Ac",
     "type": "Ac",
+    "subsituent": true,
     "ignore" : false,
     "image" : "acetyl.svg",
-    "counter" : { "x" : 100, "y" : 100, "size" : 60, "fill" : "black" },
+    "counter" : { "x" : 140, "y" : 100, "size" :65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Acetyl_group",
     "pubChemCompound" : 137849
   },
@@ -245,8 +248,9 @@
     "id" : "Me",
     "type": "ME",
     "ignore" : false,
+    "subsituent": true,
     "image" : "methyl.svg",
-    "counter" : { "x" : 100, "y" : 100, "size" : 60, "fill" : "black" },
+    "counter" : { "x" : 140, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://en.wikipedia.org/wiki/Methyl_group",
     "pubChemCompound" : 3034819
   },
@@ -255,8 +259,9 @@
     "id" : "PMe",
     "type": "PME",
     "ignore" : false,
+    "subsituent": true,
     "image" : "pme.svg",
-    "counter" : { "x" : 100, "y" : 100, "size" : 60, "fill" : "black" },
+    "counter" : { "x" : 145, "y" : 100, "size" : 65, "fill" : "black" },
     "url" : "https://pubchem.ncbi.nlm.nih.gov/compound/Methyl-Phosphate",
     "pubChemCompound" : 12691389
   }

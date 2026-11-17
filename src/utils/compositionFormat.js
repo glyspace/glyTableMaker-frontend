@@ -67,7 +67,7 @@ export function splitIntoColumns(items, columns = 3) {
  * Column layout of the full list, the same as the composition dialog (Composition.js):
  * the first two columns hold `size` residues each, the third one the rest.
  */
-export function splitByCapacity(items, size = 9) {
+export function splitByCapacity(items, size = 10) {
     return [items.slice(0, size), items.slice(size, size * 2), items.slice(size * 2)];
 }
 

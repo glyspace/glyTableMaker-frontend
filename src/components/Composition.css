@@ -1,5 +1,5 @@
 .comp-image {
-    width: 40px;
+    width: 65px;
     height: 40px;
 }
 
@@ -9,9 +9,29 @@
     margin-top: -30px;
 }
 
-.comp-text {
-    width: 40px;
+.comp-name {
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    width: 67px;
     height: 40px;
+    line-height: 40px;
     margin-left: 10px;
     margin-right: 17px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* text shown instead of the picture when a residue has no image: same footprint as the picture (60 x 40) */
+.comp-image-text {
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    width: 60px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
 }
