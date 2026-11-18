@@ -556,7 +556,7 @@ const Glycan = (props) => {
                         </span>
                       </Tooltip>
                     </div>
-                    <FormLabel label={compositionLabel} className="required-asterik"/>
+                    <FormLabel label="Compositions" className="required-asterik"/>
                     <Form.Control
                       as="textarea"
                       rows="10"

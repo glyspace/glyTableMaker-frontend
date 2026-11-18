@@ -37,7 +37,7 @@ export default function TextAlert(props) {
     <div style={{marginBottom: "15px"}}>
       <Alert severity="error">
          <AlertTitle>{getValue("title")}</AlertTitle>
-            <span className="alert-text">
+            <span className="alert-text" style={{ whiteSpace: "pre-line" }}>
               {getValue("message")}
             </span>            
         </Alert>
