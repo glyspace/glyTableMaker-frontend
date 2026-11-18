@@ -620,6 +620,7 @@ export default function CompositionFormatDialog(props) {
 
     // edit, clone and view load the full format (the list does not carry the definition)
     useEffect(() => {
+        props.authCheckAgent && props.authCheckAgent();
         if (mode === "add") return undefined;
         let cancelled = false;
         getJson("api/data/getcompositionformat/" + formatId, getAuthorizationHeader())

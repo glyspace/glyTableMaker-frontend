@@ -20,7 +20,7 @@ export const DEFAULT_LEFT = "(";
 export const DEFAULT_RIGHT = ")";
 
 // residues shown when "Show all" is off
-export const COMMON_RESIDUES = ["Hex", "HexNAc", "dHex", "Neu5Ac", "HexN", "HexA", "Pen", "P", "S", "Ac"];
+export const COMMON_RESIDUES = ["Hex", "HexNAc", "dHex", "Neu5Ac", "HexN", "HexA", "Pen", "P", "S", "Ac", "Me"];
 
 // a residue field that has anything typed in it (it owns a badge)
 export const entered = (v) => typeof v === "string" && v.length > 0;
@@ -49,7 +49,7 @@ export function syncOrder(order, texts, residueIds) {
     return [...kept, ...added];
 }
 
-/** Splits a list over `columns` columns, filling column by column (27 -> 9/9/9, 10 -> 4/3/3). */
+/** Splits a list over `columns` columns, filling column by column (27 -> 9/9/9, 11 -> 4/4/3). */
 export function splitIntoColumns(items, columns = 3) {
     const base = Math.floor(items.length / columns);
     const extra = items.length % columns;
