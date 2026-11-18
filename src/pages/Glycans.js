@@ -100,10 +100,11 @@ const Glycans = (props) => {
         accessorKey: 'glytoucanID', 
         header: 'GlyTouCan ID',
         size: 50,
-        Cell: ({renderedCellValue, row}) => <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
+        Cell: ({renderedCellValue, row}) => 
+        {renderedCellValue && <a href={"https://glytoucan.org/Structures/Glycans/" + renderedCellValue} target="_blank" rel="noopener noreferrer">
                         {renderedCellValue}
                         <OpenInNewIcon sx={{ fontSize: '0.9em', ml: 0.5, verticalAlign: 'middle' }}/>
-                        </a>
+                        </a>}
       },
       {
         accessorKey: 'status',

@@ -7,10 +7,10 @@ import Container from "@mui/material/Container";
 import { Card } from "react-bootstrap";
 import { PageHeading } from "../components/FormControls";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, ListItemText, MenuItem, Select, Slider } from "@mui/material";
 import GlycoGlyph from "../components/GlycoGlyph";
 import { Loading } from "../components/Loading";
-import { getAuthorizationHeader, postJson } from "../utils/api";
+import { getAuthorizationHeader, getJson, postJson } from "../utils/api";
 import TextAlert from "../components/TextAlert";
 import DialogAlert from "../components/DialogAlert";
 import { axiosError } from "../utils/axiosError";
@@ -20,19 +20,90 @@ import Tag from "../components/Tag";
 import { Dialog, DialogContent, DialogActions, DialogTitle, IconButton, Typography, Tooltip } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
+import CompositionFormatDialog from "../components/CompositionFormatDialog";
+import compositionMarks from "../data/compositiontype.json";
+
+
+const PAGE_HEADINGS = {
+    "composition-string": {
+        title: "Add Glycans by Composition",
+        subTitle: "Select the composition format and enter one composition per line",
+    },
+};
+const DEFAULT_HEADING = { title: "Add Glycan", subTitle: "Please provide the information for the new glycan." };
+
+const BUILT_IN_ENCODINGS = [
+    {
+        value: "composition-pp",
+        name: "ProteinProspector Encoding",
+        description: "Composition notation used by ProteinProspector",
+        compositionType: "PROTEINPROSPECTOR",
+    },
+    {
+        value: "composition-gg",
+        name: "GlycoGenius Encoding",
+        description: "Composition notation used by GlycoGenius",
+        compositionType: "GLYCOGENIUS",
+    },
+];
+
+const COMPOSITION_KINDS = ["BASE", "GLYGEN", "DEFINED"];
 
 const Glycan = (props) => {
 
     const [searchParams] = useSearchParams();
     let type = searchParams ? searchParams.get("type") : "sequence";
-    const [subType, setSubType] = useState ("composition-single");
+    const [subType, setSubType] = useState ("");
+    const [compositionFormats, setCompositionFormats] = useState ([]);
+    const [viewFormatId, setViewFormatId] = useState (null);
+    const [compositionKind, setCompositionKind] = useState ("BASE");
     
-    const compositionLabel = subType === "composition-single" ? "Single Letter Code" 
-                            : subType === "composition-byonic" ?
-                              "Byonic Encoding" : subType === "composition-gg" ? "GlycoGenius Encoding" : "ProteinProspector Encoding";
+   const formatOptions = useMemo(() => [
+        ...compositionFormats.map((f) => ({
+            value: "format:" + f.id, id: f.id, name: f.name, description: f.description, example: f.example, builtIn: false
+        })),
+        ...BUILT_IN_ENCODINGS.map((b) => ({ ...b, builtIn: true })),
+    ], [compositionFormats]);
+    const selectedFormat = formatOptions.find((o) => o.value === subType);
+    const compositionLabel = selectedFormat ? selectedFormat.name : "Compositions";
 
     useEffect(props.authCheckAgent, []);
+
+    useEffect(() => {
+        if (type !== "composition-string") return;
+        getJson("api/data/getcompositionformats", getAuthorizationHeader()).then(({ data }) => {
+            const list = data.data || [];
+            setCompositionFormats(list);
+            // start with the first format, or a built-in encoding when there is none
+            setSubType((current) => current || (list.length > 0 ? "format:" + list[0].id : BUILT_IN_ENCODINGS[0].value));
+        }).catch(function(error) {
+            setSubType((current) => current || BUILT_IN_ENCODINGS[0].value);
+            axiosError(error, null, setAlertDialogInput);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [type]);
+
+    useEffect(() => {
+        if (type !== "composition-string") return;
+        getJson("api/setting/getsettings", getAuthorizationHeader()).then(({ data }) => {
+            (data.data || []).forEach((setting) => {
+                if (setting.name && setting.name.toLowerCase() === "compositiontype" && COMPOSITION_KINDS.includes(setting.value)) {
+                    setCompositionKind(setting.value);
+                }
+            });
+        }).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [type]);
+
+    const saveCompositionKind = () => {
+        postJson("api/setting/updatesetting", { name: "compositionType", value: compositionKind }, getAuthorizationHeader()).catch(function(error) {
+            axiosError(error, null, setAlertDialogInput);
+        });
+    };
 
     const [glycoGlyphDialog, setGlycoGlyphDialog] = useState(type ? type === "draw" : false);
     const [compositionDialog, setCompositionDialog] = useState(false);
@@ -83,9 +154,8 @@ const Glycan = (props) => {
     };
 
     const handleCompositionTypeChange = e => {
-      const select = e.target.options[e.target.selectedIndex].value;
       setUserSelection ({compositionString: ""});
-      setSubType (select);
+      setSubType (e.target.value);
     };
 
      const toLines = (text) =>
@@ -118,8 +188,12 @@ const Glycan = (props) => {
               return;
           }
         } else if (type === "composition-string") {
-            t = (subType === "composition-single" ? "COMPACT" : (subType === "composition-byonic" ? "BYONIC" : 
-              subType === "composition-gg" ? "GLYCOGENIUS" : "PROTEINPROSPECTOR"));
+            if (!selectedFormat) {
+                setError(true);
+                setTextAlertInput ({"show": true, "message": "Please select a composition format"});
+                return;
+            }
+            t = selectedFormat.builtIn ? selectedFormat.compositionType : null;
             if (userSelection.compositionString === "" || userSelection.compositionString.trim().length < 1) {
               setValidate(true);
               setError(true);
@@ -133,7 +207,11 @@ const Glycan = (props) => {
             glytoucanID: userSelection.glytoucanId,
             composition: userSelection.composition && userSelection.composition.length > 0 ? userSelection.composition : 
                   userSelection.compositionString && userSelection.compositionString.trim().length > 0 ? toLines(userSelection.compositionString) : null,
-            format: userSelection.sequenceType}
+            format: userSelection.sequenceType,
+            compositionFormat: type === "composition-string" && selectedFormat && !selectedFormat.builtIn
+                  ? { id: selectedFormat.id, name: selectedFormat.name } : null,
+            compositionKind: type === "composition-string" && selectedFormat && !selectedFormat.builtIn
+                 ? compositionKind : null}
         
         addGlycan(glycan, t);
         
@@ -161,7 +239,9 @@ const Glycan = (props) => {
             if (comp.trim().length > 0) {
               const g = { 
                 composition: comp.trim(),
-                type: (userSelection.compositionType && userSelection.compositionType[index]) ? userSelection.compositionType[index] : null,
+                type: (userSelection.compositionType && userSelection.compositionType[index]) ? userSelection.compositionType[index]
+                      : (glycan.compositionKind ? glycan.compositionKind : null),
+                compositionFormat: glycan.compositionFormat ? glycan.compositionFormat : null,
               }
               return g;
             }
@@ -388,9 +468,20 @@ const Glycan = (props) => {
             }}
             submit={(input, type) => addComposition(input, type)}
         />
+        {viewFormatId !== null && (
+          <CompositionFormatDialog
+            mode="view"
+            formatId={viewFormatId}
+            existingFormats={compositionFormats}
+            setAlertDialogInput={setAlertDialogInput}
+            onClose={() => setViewFormatId(null)}
+            onSaved={() => setViewFormatId(null)}
+          />
+        )}
         <Container maxWidth="xl">
             <div className="page-container">
-             <PageHeading title="Add Glycan" subTitle="Please provide the information for the new glycan." />
+            <PageHeading title={(PAGE_HEADINGS[type] || DEFAULT_HEADING).title}
+                          subTitle={(PAGE_HEADINGS[type] || DEFAULT_HEADING).subTitle} />
             <Card>
             <Card.Body>
             <div className="mt-4 mb-4">
@@ -431,18 +522,40 @@ const Glycan = (props) => {
                   className="gg-align-center mb-3"
                 >
                   <Col xs={12} lg={9}>
-                    <FormLabel label="Composition input type"/>
-                    <Form.Select
-                      name={"compType"}
-                      value={subType}
-                      style={{ marginBottom: "30px"}}
-                      onChange={handleCompositionTypeChange}
-                    >
-                    <option value="composition-single">Single Letter Code</option>
-                    <option value="composition-byonic">Byonic Encoding</option>
-                    <option value="composition-pp">ProteinProspector Encoding</option>
-                    <option value="composition-gg">GlycoGenius Encoding</option>
-                    </Form.Select>
+                    <FormLabel label="Composition format"/>
+                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "30px" }}>
+                      <Select
+                        fullWidth
+                        size="small"
+                        value={selectedFormat ? selectedFormat.value : ""}
+                        onChange={handleCompositionTypeChange}
+                        renderValue={() => (selectedFormat ? selectedFormat.name : "")}
+                        inputProps={{ "aria-label": "Composition format" }}
+                        MenuProps={{ PaperProps: { sx: { maxWidth: 700 } } }}
+                      >
+                        {formatOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value} sx={{ whiteSpace: "normal" }}>
+                            <ListItemText
+                              primary={option.name}
+                              secondary={option.description || undefined}
+                              secondaryTypographyProps={{ sx: { whiteSpace: "normal" } }}
+                            />
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <Tooltip title={selectedFormat && !selectedFormat.builtIn
+                                  ? "View the details of this format"
+                                  : "Details are not available for this encoding"}>
+                        <span>
+                          <IconButton
+                            aria-label="View composition format details"
+                            disabled={!selectedFormat || selectedFormat.builtIn}
+                            onClick={() => setViewFormatId(selectedFormat.id)}>
+                            <VisibilityIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </div>
                     <FormLabel label={compositionLabel} className="required-asterik"/>
                     <Form.Control
                       as="textarea"
@@ -457,15 +570,63 @@ const Glycan = (props) => {
                     <Feedback message="Please enter a valid composition value" />
                     <Row>
                       <Col className="gg-align-left">
-                          <ExampleSequenceControl
-                            setInputValue={id => {
-                              setUserSelection({ compositionString: id });
-                            }}
-                            inputValue={moleculeExamples.glycan[subType].examples}
-                          />
+                          {selectedFormat && selectedFormat.builtIn && (
+                            <ExampleSequenceControl
+                              setInputValue={id => {
+                                setUserSelection({ compositionString: id });
+                              }}
+                              inputValue={moleculeExamples.glycan[subType].examples}
+                            />
+                          )}
+                          {selectedFormat && !selectedFormat.builtIn && selectedFormat.example && (
+                            <Button variant="link" className="p-0"
+                              onClick={() => setUserSelection({ compositionString: selectedFormat.example })}>
+                              Use example: {selectedFormat.example}
+                            </Button>
+                          )}
                       </Col>
                     </Row>
                     </Col>
+                    {selectedFormat && !selectedFormat.builtIn && (
+                    <Col xs={12} lg={9}>
+                    <div style={{ marginTop: "30px", marginBottom: "30px" }}>
+                      <FormLabel label="Composition Type"/>
+                      <Row>
+                        <Col xs={12} md={8}>
+                          <Box sx={{ px: 4 }}>
+                            <Slider
+                              aria-label="Composition Type"
+                              value={COMPOSITION_KINDS.indexOf(compositionKind)}
+                              valueLabelDisplay="off"
+                              step={1}
+                              min={0}
+                              max={2}
+                              marks={compositionMarks}
+                              onChange={(event, newValue) => setCompositionKind(COMPOSITION_KINDS[newValue])}
+                              sx={{
+                                  "& .MuiSlider-mark": {
+                                      width: 10,
+                                      height: 10,
+                                      backgroundColor: '#1976d2',
+                                  },
+                              }}
+                            />
+                          </Box>
+                        </Col>
+                        <Col xs={12} md={4} style={{ display: "flex", justifyContent: "flex-end" }}>
+                          <Tooltip title="Save composition type selection as default">
+                            <Button className="gg-btn-outline-reg" onClick={saveCompositionKind}>Save as default</Button>
+                          </Tooltip>
+                        </Col>
+                      </Row>
+                      {compositionMarks[COMPOSITION_KINDS.indexOf(compositionKind)] &&
+                       compositionMarks[COMPOSITION_KINDS.indexOf(compositionKind)].description && (
+                        <h6>{compositionMarks[COMPOSITION_KINDS.indexOf(compositionKind)].description}</h6>
+                      )}
+                    </div>
+                    </Col>
+                    )}
+                    
                     <Col xs={12} lg={9}>
                       <FormLabel label="Add Tag"/>
                         <Tag validate={validate} setValidate={setValidate}

@@ -213,10 +213,12 @@ function CompositionFormatForm({
         () => validateFormat({ name, texts, left, right }, RESIDUE_IDS, existingFormats, currentId),
         [name, texts, left, right, existingFormats, currentId]
     );
-    const example = useMemo(
+    const builtExample = useMemo(
         () => buildExample({ texts, order, noOrder, left, right, omitOne }, RESIDUE_IDS),
         [texts, order, noOrder, left, right, omitOne]
     );
+
+    const example = view && initial.system && initial.example ? initial.example : builtExample;
 
     const visibleResidues = showAll ? RESIDUES : RESIDUES.filter((r) => COMMON_RESIDUES.includes(r.id));
     // full list: same columns as the composition dialog; the common subset is spread evenly (4/3/3)
@@ -627,6 +629,8 @@ export default function CompositionFormatDialog(props) {
                 setInitial({
                     name: f.name || "",
                     description: f.description || "",
+                    example: f.example || "",
+                    system: f.system === true,
                     ...fromDefinition(f.definition, RESIDUE_IDS, RESIDUE_TYPES),
                 });
             })
